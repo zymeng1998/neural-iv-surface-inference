@@ -25,8 +25,11 @@ data/processed/*
 !data/processed/.gitkeep
 !data/samples/.gitkeep
 
+# Pipeline data directories (large downloaded / processed files)
+data_raw/
+data_processed/
+
 # Model weights and large artifacts
-*.parquet
 *.h5
 *.hdf5
 *.pt
@@ -40,6 +43,11 @@ artifacts/checkpoints/*
 !artifacts/figures/.gitkeep
 !artifacts/tables/.gitkeep
 !artifacts/checkpoints/.gitkeep
+
+# Generated plots and reports (regenerable from pipeline)
+/plots/
+/reports/
+/logs/
 
 # OS
 .DS_Store

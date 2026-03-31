@@ -93,3 +93,32 @@ Each entry should capture:
 - Choose primary SPY EOD option chain data source
 - Acquire first raw data and load into `data/raw/`
 - Begin data cleaning and preprocessing implementation
+
+---
+
+## 2026-03-31 (update 4)
+
+### Completed
+
+- Built complete Phase 1 SPY data pipeline (3 scripts + config + notebook + cleaning doc)
+- Data source: Philipp Dubach historical options dataset (static.philippdubach.com)
+- `src/data/01_ingest_spy_github_dataset.py` — downloads SPY options + underlying Parquet
+- `src/data/02_inspect_spy_schema.py` — schema inspection + quality report
+- `src/data/03_build_spy_surface_table.py` — join, clean, derive, produce conservative + strict subsets
+- `src/data/config.py` — centralized paths, URLs, thresholds
+- `notebooks/01_spy_data_firstlook.ipynb` — EDA notebook
+- `docs/data_assumptions_and_cleaning.md` — cleaning rules and assumptions documented
+- Updated `.gitignore` for pipeline data directories
+
+### Notes
+
+- Primary source uses the broader repo (richer schema: includes mark, last, bid_size, ask_size, in_the_money)
+- Spot = unadjusted close (NOT adjusted_close) for moneyness computation
+- Conservative dataset keeps quality flags; strict subset enforces tighter thresholds
+- Pipeline designed to run end-to-end from command line on RunPod
+
+### Next Actions
+
+- Run the pipeline on RunPod: ingest → inspect → build
+- Review schema report and EDA plots
+- Begin sparse masking and baseline implementation
