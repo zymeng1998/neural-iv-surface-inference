@@ -9,7 +9,6 @@ Usage:
     python src/data/01_ingest_spy_github_dataset.py
 """
 
-import io
 import json
 import sys
 import time
@@ -23,14 +22,6 @@ from config import (
     RAW_DIR, RAW_OPTIONS_FILE, RAW_UNDERLYING_FILE,
     SPY_OPTIONS_URL, SPY_UNDERLYING_URL,
     REPORTS_DIR,
-)
-
-# Yahoo Finance CSV download for SPY daily prices
-# Covers 2008-01-02 onward; period1/period2 in epoch seconds
-YAHOO_SPY_URL = (
-    "https://query1.finance.yahoo.com/v7/finance/download/SPY"
-    "?period1=1199145600&period2=9999999999"
-    "&interval=1d&events=history&includeAdjustedClose=true"
 )
 
 
@@ -166,25 +157,20 @@ def download_underlying_with_fallback() -> None:
         print(f"[warn] Dubach underlying download failed: {e}")
         print("[fallback] Trying Yahoo Finance...")
 
-    # Fallback: Yahoo Finance
-    print("[download] SPY underlying from Yahoo Finance...")
-    req = urllib.request.Request(YAHOO_SPY_URL)
-    req.add_header("User-Agent", "neural-iv-surface-inference/0.1")
-
+    # Fallback: yfinance (handles Yahoo auth properly)
+    print("[download] SPY underlying from Yahoo Finance via yfinance...")
     try:
-        with urllib.request.urlopen(req) as resp:
-            csv_bytes = resp.read()
-        df = pd.read_csv(io.BytesIO(csv_bytes), parse_dates=["Date"])
-    except Exception:
-        # Yahoo sometimes blocks; try with different header
-        print("[fallback] Retrying Yahoo with alternate headers...")
-        req.add_header("Accept", "text/csv")
-        req.add_header("Referer", "https://finance.yahoo.com")
-        with urllib.request.urlopen(req) as resp:
-            csv_bytes = resp.read()
-        df = pd.read_csv(io.BytesIO(csv_bytes), parse_dates=["Date"])
+        import yfinance as yf
+    except ImportError:
+        raise RuntimeError(
+            "yfinance not installed. Run: pip install yfinance"
+        )
 
-    # Normalize to match expected schema
+    ticker = yf.Ticker("SPY")
+    df = ticker.history(start="2008-01-01", end="2026-01-01", auto_adjust=False)
+    df = df.reset_index()
+
+    # Normalize column names to match expected schema
     col_map = {
         "Date": "date",
         "Open": "open",
@@ -193,12 +179,19 @@ def download_underlying_with_fallback() -> None:
         "Close": "close",
         "Adj Close": "adjusted_close",
         "Volume": "volume",
+        "Dividends": "dividend_amount",
+        "Stock Splits": "split_coefficient",
     }
     df = df.rename(columns=col_map)
+
+    # Ensure date is timezone-naive
+    if hasattr(df["date"].dtype, "tz") and df["date"].dtype.tz is not None:
+        df["date"] = df["date"].dt.tz_localize(None)
+
     df["symbol"] = "SPY"
 
-    # Add missing columns as null
-    for col in ["dividend_amount", "split_coefficient"]:
+    # Add any missing expected columns as null
+    for col in ["adjusted_close", "dividend_amount", "split_coefficient"]:
         if col not in df.columns:
             df[col] = None
 
