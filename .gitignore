@@ -1,0 +1,35 @@
+# SSH keys — NEVER commit private keys
+.ssh_keys/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+*.so
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data / model weights (typically large)
+data/raw/
+*.parquet
+*.h5
+*.hdf5
+*.pt
+*.pth
+*.ckpt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
