@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 """
-Step 1: Download SPY options + underlying data from Philipp Dubach's dataset.
+Step 1: Download SPY options + underlying data.
 
-Primary source:  static.philippdubach.com (single-file Parquet, richer schema)
-Fallback:        github.com/philippdubach/options-dataset-hist (year-partitioned)
+Options source:     static.philippdubach.com (single-file Parquet)
+Underlying source:  static.philippdubach.com first, then Yahoo Finance fallback
 
 Usage:
     python src/data/01_ingest_spy_github_dataset.py
 """
 
+import io
 import json
 import sys
 import time
 from datetime import datetime, timezone
 
+import pandas as pd
 import pyarrow.parquet as pq
 import urllib.request
 
@@ -21,6 +23,14 @@ from config import (
     RAW_DIR, RAW_OPTIONS_FILE, RAW_UNDERLYING_FILE,
     SPY_OPTIONS_URL, SPY_UNDERLYING_URL,
     REPORTS_DIR,
+)
+
+# Yahoo Finance CSV download for SPY daily prices
+# Covers 2008-01-02 onward; period1/period2 in epoch seconds
+YAHOO_SPY_URL = (
+    "https://query1.finance.yahoo.com/v7/finance/download/SPY"
+    "?period1=1199145600&period2=9999999999"
+    "&interval=1d&events=history&includeAdjustedClose=true"
 )
 
 
@@ -131,6 +141,72 @@ def write_ingest_report(summaries: list[dict]) -> None:
     print(f"[report]   Written to {report_path}")
 
 
+def download_underlying_with_fallback() -> None:
+    """Download underlying prices; fall back to Yahoo Finance if Dubach file is empty."""
+    if RAW_UNDERLYING_FILE.exists():
+        # Check if existing file has rows
+        pf = pq.ParquetFile(RAW_UNDERLYING_FILE)
+        if pf.metadata.num_rows > 0:
+            print(f"[skip] {RAW_UNDERLYING_FILE} already exists "
+                  f"({pf.metadata.num_rows:,} rows)")
+            return
+        else:
+            print("[warn] Existing underlying file has 0 rows, re-downloading...")
+
+    # Try Dubach source first
+    try:
+        download_with_progress(
+            SPY_UNDERLYING_URL, RAW_UNDERLYING_FILE, "SPY underlying.parquet (Dubach)"
+        )
+        pf = pq.ParquetFile(RAW_UNDERLYING_FILE)
+        if pf.metadata.num_rows > 0:
+            return
+        print("[warn] Dubach underlying file is empty. Falling back to Yahoo Finance...")
+    except Exception as e:
+        print(f"[warn] Dubach underlying download failed: {e}")
+        print("[fallback] Trying Yahoo Finance...")
+
+    # Fallback: Yahoo Finance
+    print("[download] SPY underlying from Yahoo Finance...")
+    req = urllib.request.Request(YAHOO_SPY_URL)
+    req.add_header("User-Agent", "neural-iv-surface-inference/0.1")
+
+    try:
+        with urllib.request.urlopen(req) as resp:
+            csv_bytes = resp.read()
+        df = pd.read_csv(io.BytesIO(csv_bytes), parse_dates=["Date"])
+    except Exception:
+        # Yahoo sometimes blocks; try with different header
+        print("[fallback] Retrying Yahoo with alternate headers...")
+        req.add_header("Accept", "text/csv")
+        req.add_header("Referer", "https://finance.yahoo.com")
+        with urllib.request.urlopen(req) as resp:
+            csv_bytes = resp.read()
+        df = pd.read_csv(io.BytesIO(csv_bytes), parse_dates=["Date"])
+
+    # Normalize to match expected schema
+    col_map = {
+        "Date": "date",
+        "Open": "open",
+        "High": "high",
+        "Low": "low",
+        "Close": "close",
+        "Adj Close": "adjusted_close",
+        "Volume": "volume",
+    }
+    df = df.rename(columns=col_map)
+    df["symbol"] = "SPY"
+
+    # Add missing columns as null
+    for col in ["dividend_amount", "split_coefficient"]:
+        if col not in df.columns:
+            df[col] = None
+
+    df.to_parquet(RAW_UNDERLYING_FILE, index=False)
+    print(f"  Saved {len(df):,} rows to {RAW_UNDERLYING_FILE}")
+    print(f"  Date range: {df['date'].min().date()} → {df['date'].max().date()}\n")
+
+
 def main():
     RAW_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -143,14 +219,8 @@ def main():
             SPY_OPTIONS_URL, RAW_OPTIONS_FILE, "SPY options.parquet"
         )
 
-    # ── Download underlying ──────────────────────────────────────────
-    if RAW_UNDERLYING_FILE.exists():
-        print(f"[skip] {RAW_UNDERLYING_FILE} already exists "
-              f"({RAW_UNDERLYING_FILE.stat().st_size / 1e6:.0f} MB)")
-    else:
-        download_with_progress(
-            SPY_UNDERLYING_URL, RAW_UNDERLYING_FILE, "SPY underlying.parquet"
-        )
+    # ── Download underlying (with Yahoo fallback) ────────────────────
+    download_underlying_with_fallback()
 
     # ── Summarize ────────────────────────────────────────────────────
     print("=" * 60)
