@@ -50,3 +50,31 @@ Each entry should capture:
 - Run a GPU smoke test from within a Python script
 - Begin SPY EOD options data acquisition planning
 - Continue with Phase 1 project initialization
+
+---
+
+## 2026-03-31 (update 2)
+
+### Completed
+
+- Added minimal ML project scaffold: `src/`, `scripts/`, `configs/`, `tests/`, `artifacts/`, `data/`, `notebooks/`
+- Created Python package `src/neural_iv_surface_inference/` with submodules for data, features, models, training, and utils
+- Moved `smoke_test.py` from repo root to `scripts/smoke_test.py`
+- Added placeholder scripts: `prepare_data.py`, `run_baseline.py`
+- Added YAML configs: `data.yaml`, `baseline.yaml`
+- Added placeholder tests: `test_smoke.py`, `test_data_pipeline.py`
+- Added `.gitkeep` files to preserve empty directory structure
+- Updated `.gitignore` with data/artifact ignore rules and `.gitkeep` exceptions
+- Updated `README.md` with repo structure section
+
+### Notes
+
+- All Python stubs are import-safe placeholders with TODO comments
+- `data/samples/` is not globally ignored so small committed sample files are possible
+- `baseline_mlp.py` contains a minimal class skeleton ready for implementation
+
+### Next Actions
+
+- Begin SPY EOD options data acquisition
+- Implement data loading and cleaning logic
+- Run GPU smoke test on remote to verify scaffold

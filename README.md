@@ -19,6 +19,7 @@ Completed so far:
 - Cursor Remote-SSH connection working
 - Python, PyTorch, CUDA, and core scientific packages verified on remote
 - Initial project documentation scaffold established
+- Minimal ML project scaffold in place (src, scripts, configs, tests, artifacts)
 
 ## Documentation Map
 
@@ -27,12 +28,24 @@ Completed so far:
 - `docs/logs/progress_log.md` — chronological project progress log
 - `docs/decisions/0001_remote_dev_stack.md` — architecture / workflow decision record
 
+## Repository Structure
+
+```text
+src/neural_iv_surface_inference/   Python package (data, features, models, training, utils)
+scripts/                           Entry-point scripts (smoke test, data prep, training)
+configs/                           YAML configuration files
+notebooks/                         Jupyter notebooks
+tests/                             Test suite
+data/                              Data directories (raw, interim, processed, samples)
+artifacts/                         Output artifacts (figures, tables, checkpoints)
+docs/                              Project documentation
+```
+
 ## Immediate Next Steps
 
-- Initialize project directories for code, data, notebooks, figures, and artifacts
-- Add a minimal GPU smoke test
 - Define the first-pass data pipeline layout
 - Begin SPY EOD options data acquisition
+- Implement data loading and cleaning stubs
 
 ## Security Note
 

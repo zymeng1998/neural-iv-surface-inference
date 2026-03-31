@@ -16,14 +16,30 @@ env/
 # Jupyter
 .ipynb_checkpoints/
 
-# Data / model weights (typically large)
-data/raw/
+# Data (large files — keep .gitkeep for directory structure)
+data/raw/*
+data/interim/*
+data/processed/*
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+!data/samples/.gitkeep
+
+# Model weights and large artifacts
 *.parquet
 *.h5
 *.hdf5
 *.pt
 *.pth
 *.ckpt
+
+# Artifacts (outputs — keep .gitkeep for directory structure)
+artifacts/figures/*
+artifacts/tables/*
+artifacts/checkpoints/*
+!artifacts/figures/.gitkeep
+!artifacts/tables/.gitkeep
+!artifacts/checkpoints/.gitkeep
 
 # OS
 .DS_Store
