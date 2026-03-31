@@ -78,3 +78,18 @@ Each entry should capture:
 - Begin SPY EOD options data acquisition
 - Implement data loading and cleaning logic
 - Run GPU smoke test on remote to verify scaffold
+
+---
+
+## 2026-03-31 (update 3)
+
+### Completed
+
+- Formally froze Phase 1 scope via ADR 0002: SPY-only, EOD-only, fixed task definition
+- Defined required deliverables before scope can expand
+
+### Next Actions
+
+- Choose primary SPY EOD option chain data source
+- Acquire first raw data and load into `data/raw/`
+- Begin data cleaning and preprocessing implementation
