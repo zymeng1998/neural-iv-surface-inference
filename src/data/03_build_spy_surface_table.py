@@ -298,36 +298,51 @@ def main():
         del df
         gc.collect()
 
-    # ── Concatenate partitions ───────────────────────────────────────
-    print(f"\n[concat] Merging {len(year_stats)} partitions...")
+    # ── Merge partitions using PyArrow (memory-safe) ───────────────
     partition_files = sorted(PARTITIONS_DIR.glob("spy_surface_*.parquet"))
-    chunks = [pd.read_parquet(p) for p in partition_files]
-    full = pd.concat(chunks, ignore_index=True)
-    del chunks
-    gc.collect()
 
-    total_rows = len(full)
-    print(f"  Total: {total_rows:,} rows")
+    print(f"\n[concat] Merging {len(partition_files)} partitions → conservative file...")
+    import pyarrow.parquet as pq_writer
+    import pyarrow as pa
 
-    # ── Save conservative ────────────────────────────────────────────
-    print(f"[save] {SURFACE_POINTS_FILE}")
-    full.to_parquet(SURFACE_POINTS_FILE, index=False)
-    print(f"  {total_rows:,} rows, "
-          f"{SURFACE_POINTS_FILE.stat().st_size / 1e6:.1f} MB")
+    # Write consolidated conservative file partition-by-partition
+    writer = None
+    total_rows = 0
+    for pf_path in partition_files:
+        tbl = pq.read_table(pf_path)
+        if writer is None:
+            writer = pq_writer.ParquetWriter(str(SURFACE_POINTS_FILE), tbl.schema)
+        writer.write_table(tbl)
+        total_rows += tbl.num_rows
+        del tbl
+    if writer is not None:
+        writer.close()
+    print(f"  {total_rows:,} rows → {SURFACE_POINTS_FILE.name} "
+          f"({SURFACE_POINTS_FILE.stat().st_size / 1e6:.1f} MB)")
 
-    # ── Build and save strict subset ─────────────────────────────────
-    strict = build_strict_subset(full)
-    strict_rows = len(strict)
-    print(f"[strict] {total_rows:,} → {strict_rows:,} "
-          f"(kept {strict_rows / total_rows * 100:.1f}%)")
+    # ── Build strict subset partition-by-partition ────────────────────
+    print(f"[strict] Building strict subset partition-by-partition...")
+    strict_writer = None
+    strict_rows = 0
+    for pf_path in partition_files:
+        chunk = pd.read_parquet(pf_path)
+        s = build_strict_subset(chunk)
+        strict_rows += len(s)
+        tbl = pa.Table.from_pandas(s, preserve_index=False)
+        if strict_writer is None:
+            strict_writer = pq_writer.ParquetWriter(
+                str(SURFACE_POINTS_STRICT_FILE), tbl.schema
+            )
+        strict_writer.write_table(tbl)
+        del chunk, s, tbl
+        gc.collect()
+    if strict_writer is not None:
+        strict_writer.close()
 
-    print(f"[save] {SURFACE_POINTS_STRICT_FILE}")
-    strict.to_parquet(SURFACE_POINTS_STRICT_FILE, index=False)
-    print(f"  {strict_rows:,} rows, "
-          f"{SURFACE_POINTS_STRICT_FILE.stat().st_size / 1e6:.1f} MB")
-
-    del full, strict
-    gc.collect()
+    print(f"  {total_rows:,} → {strict_rows:,} "
+          f"(kept {strict_rows / max(total_rows, 1) * 100:.1f}%)")
+    print(f"  {strict_rows:,} rows → {SURFACE_POINTS_STRICT_FILE.name} "
+          f"({SURFACE_POINTS_STRICT_FILE.stat().st_size / 1e6:.1f} MB)")
 
     # ── Report ───────────────────────────────────────────────────────
     write_build_report(total_rows, strict_rows, year_stats)
