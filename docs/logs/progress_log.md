@@ -122,3 +122,26 @@ Each entry should capture:
 - Run the pipeline on RunPod: ingest → inspect → build
 - Review schema report and EDA plots
 - Begin sparse masking and baseline implementation
+
+---
+
+## 2026-03-31 (update 5)
+
+### Completed
+
+- Ran SPY data ingestion on RunPod: 24,681,665 option rows + 4,529 underlying rows downloaded successfully
+- Ran schema inspection on RunPod: all 21 expected columns present, minimal quality issues confirmed
+- Step 3 (build processed table) failed due to OOM — eager pandas workflow on the full 24.7M-row dataset exceeded Pod memory
+- Added retrospective note: `docs/retrospectives/0001_spy_step3_oom_and_pipeline_fix.md`
+
+### Notes
+
+- The failure was a pipeline design mistake, not a data-quality mistake
+- Schema validation succeeded but execution scalability was not tested before full-scale run
+- Multiple concurrent SSH sessions compounded the OOM condition
+
+### Next Actions
+
+- Refactor `src/data/03_build_spy_surface_table.py` to a year-by-year partitioned workflow
+- Test the refactored build on a single year before running full scale
+- Produce two outputs: broad processed table (conservative drops + flags) and strict modeling subset
