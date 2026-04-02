@@ -1,0 +1,35 @@
+# Pre-commit configuration for Neural IV Surface Inference
+#
+# This configures the PMR (Project Memory Reviewer) pre-push gate.
+#
+# Installation (run in any clone from which you may push):
+#
+#   pip install pre-commit
+#   pre-commit install --hook-type pre-push
+#
+# The pre-push hook will check whether evidence-source file changes
+# (src/, scripts/, tests/, configs/, notebooks/) have corresponding
+# PMR documentation updates. If not, it blocks the push and tells
+# you how to run the PMR reviewer.
+#
+# Manual installation (without pre-commit framework):
+#
+#   Copy the following into .git/hooks/pre-push and chmod +x:
+#
+#   #!/bin/sh
+#   python3 scripts/pmr_prepush_gate.py
+#
+# Bypass:
+#   git push --no-verify
+#   SKIP_PMR_GATE=1 git push
+
+repos:
+  - repo: local
+    hooks:
+      - id: pmr-prepush-gate
+        name: PMR Pre-Push Gate
+        entry: python3 scripts/pmr_prepush_gate.py
+        language: system
+        always_run: true
+        pass_filenames: false
+        stages: [pre-push]

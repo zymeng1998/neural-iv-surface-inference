@@ -1,0 +1,260 @@
+# Data Lineage — Phase 1 (SPY EOD)
+
+---
+created_at: 2026-04-02T02:00:00-04:00
+last_updated_at: 2026-04-02T02:00:00-04:00
+---
+
+> Repo-specific data lineage for the Neural IV Surface Inference project.
+> Covers the raw → processed → modeling-ready data flow for Phase 1 (SPY-only, EOD-only).
+
+---
+
+## 1. Purpose
+
+This document traces how data flows through the repository:
+
+- Where raw data comes from
+- How it is validated
+- How it is transformed into modeling-ready surfaces
+- What scripts, configs, and docs govern each step
+- What decisions and constraints apply
+
+It is grounded in actual repository evidence. Sections where the pipeline has not yet been fully executed on the current machine are marked explicitly.
+
+---
+
+## 2. Data layers
+
+| Layer | Path | Contents | Persistence |
+|---|---|---|---|
+| **Raw** | `data_raw/spy/` | Downloaded Parquet files from external sources | Gitignored; downloaded on-demand by ingestion script |
+| **Processed (partitions)** | `data_processed/spy/partitions/` | Year-by-year cleaned surface point Parquet files | Gitignored; produced by build script |
+| **Processed (consolidated)** | `data_processed/spy/` | `spy_surface_points.parquet` (conservative) and `spy_surface_points_strict.parquet` (strict) | Gitignored; produced by build script |
+| **Reports** | `reports/` | Markdown summaries from each pipeline step | Gitignored; produced by pipeline scripts |
+| **Metadata** | `data_raw/ingest_metadata.json` | Download timestamp and source info | Gitignored; produced by ingestion script |
+
+All data files are gitignored. The pipeline is designed to be re-run from scratch on any machine with network access.
+
+---
+
+## 3. Source-of-truth paths
+
+### External sources
+
+| Source | URL | What it provides |
+|---|---|---|
+| Philipp Dubach options dataset | `https://static.philippdubach.com/data/options/spy/options.parquet` | ~24.7M rows of SPY EOD option chain data (2008–2025) |
+| Philipp Dubach underlying dataset | `https://static.philippdubach.com/data/options/spy/underlying.parquet` | ~4,529 rows of SPY daily underlying prices |
+| Yahoo Finance (fallback) | Via `yfinance` library | SPY underlying prices (2008–2026) — used if Dubach underlying file is empty |
+
+### Internal file paths
+
+| File | Role | Produced by |
+|---|---|---|
+| `data_raw/spy/spy_options.parquet` | Raw options chain | `src/data/01_ingest_spy_github_dataset.py` |
+| `data_raw/spy/spy_underlying.parquet` | Raw underlying prices | `src/data/01_ingest_spy_github_dataset.py` |
+| `data_processed/spy/partitions/spy_surface_YYYY.parquet` | Per-year cleaned surface points | `src/data/03_build_spy_surface_table.py` |
+| `data_processed/spy/spy_surface_points.parquet` | Conservative cleaned surface (hard drops + quality flags) | `src/data/03_build_spy_surface_table.py` |
+| `data_processed/spy/spy_surface_points_strict.parquet` | Strict modeling subset (tighter thresholds) | `src/data/03_build_spy_surface_table.py` |
+| `reports/spy_ingest_summary.md` | Ingestion report | `src/data/01_ingest_spy_github_dataset.py` |
+| `reports/spy_schema_report.md` | Schema validation report | `src/data/02_inspect_spy_schema.py` |
+| `reports/spy_build_report.md` | Build processing report | `src/data/03_build_spy_surface_table.py` |
+
+---
+
+## 4. Pipeline flow
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  STEP 1 — Ingest                                        │
+│  Script: src/data/01_ingest_spy_github_dataset.py       │
+│  Config: src/data/config.py (URLs, paths)               │
+│                                                         │
+│  Input:  External URLs (Dubach + Yahoo fallback)        │
+│  Output: data_raw/spy/spy_options.parquet                │
+│          data_raw/spy/spy_underlying.parquet             │
+│          reports/spy_ingest_summary.md                   │
+│          data_raw/ingest_metadata.json                   │
+│                                                         │
+│  Notes:  Skips re-download if files already exist.      │
+│          Yahoo Finance fallback for empty underlying.    │
+└────────────────────────┬────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│  STEP 2 — Inspect / Validate Schema                     │
+│  Script: src/data/02_inspect_spy_schema.py              │
+│  Config: src/data/config.py (required/optional columns) │
+│                                                         │
+│  Input:  data_raw/spy/spy_options.parquet                │
+│          data_raw/spy/spy_underlying.parquet             │
+│  Output: reports/spy_schema_report.md                   │
+│                                                         │
+│  Checks: Required columns present, null counts,         │
+│          data types, date ranges, suspicious rows        │
+│          (negative bids, crossed quotes, extreme IV)     │
+└────────────────────────┬────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│  STEP 3 — Build Surface Table                           │
+│  Script: src/data/03_build_spy_surface_table.py         │
+│  Config: src/data/config.py (thresholds, paths)         │
+│  Docs:   docs/data_assumptions_and_cleaning.md          │
+│                                                         │
+│  Input:  data_raw/spy/spy_options.parquet                │
+│          data_raw/spy/spy_underlying.parquet             │
+│                                                         │
+│  Processing (per year, 2008–2025):                      │
+│    1. Load year's options via chunked scan (500k rows)  │
+│    2. Prune to required + optional columns              │
+│    3. Join with underlying on date                      │
+│    4. Derive: mid, days_to_expiry, tau, spot,           │
+│       log_moneyness                                     │
+│    5. Apply hard cleaning drops                         │
+│    6. Add quality flags                                 │
+│    7. Write partition to partitions/ dir                 │
+│                                                         │
+│  After all years:                                       │
+│    8. Concatenate partitions → conservative file        │
+│    9. Apply strict thresholds → strict subset file      │
+│   10. Generate build report                             │
+│                                                         │
+│  Output: data_processed/spy/partitions/spy_surface_*    │
+│          data_processed/spy/spy_surface_points.parquet   │
+│          data_processed/spy/spy_surface_points_strict.p… │
+│          reports/spy_build_report.md                     │
+└────────────────────────┬────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│  STEP 4 — EDA / First Look (manual)                    │
+│  Notebook: notebooks/01_spy_data_firstlook.ipynb        │
+│                                                         │
+│  Input:  data_processed/spy/spy_surface_points.parquet   │
+│          data_processed/spy/spy_surface_points_strict.p… │
+│                                                         │
+│  Analyses: Row counts by year, call/put split,          │
+│            IV distribution, tau distribution,            │
+│            log-moneyness distribution,                   │
+│            IV surface sample dates, spread diagnostics,  │
+│            missingness diagnostics, strict subset stats  │
+└────────────────────────┬────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│  FUTURE — Feature Engineering + Training Pipeline       │
+│  Scripts: scripts/prepare_data.py (stub)                │
+│           scripts/run_baseline.py (stub)                │
+│  Configs: configs/data.yaml, configs/baseline.yaml      │
+│  Models:  src/neural_iv_surface_inference/               │
+│                                                         │
+│  Status:  Not yet implemented. Scripts and modules      │
+│           contain placeholder stubs with TODOs.         │
+│           The modeling package has skeleton files for    │
+│           features, models (MLP), training, and utils.  │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 5. Derived columns
+
+| Column | Formula | Defined in |
+|---|---|---|
+| `mid` | `(bid + ask) / 2` | `03_build_spy_surface_table.py`, `data_assumptions_and_cleaning.md` |
+| `days_to_expiry` | `(expiration - date).days` | `03_build_spy_surface_table.py` |
+| `tau` | `days_to_expiry / 365.0` | `03_build_spy_surface_table.py` |
+| `spot` | `close` (unadjusted) | `03_build_spy_surface_table.py`, `data_assumptions_and_cleaning.md` |
+| `log_moneyness` | `ln(strike / spot)` | `03_build_spy_surface_table.py`, `data_assumptions_and_cleaning.md` |
+
+**Critical convention:** `spot = close` (unadjusted closing price), NOT `adjusted_close`. This is because option strikes are quoted against unadjusted prices; using adjusted close would distort moneyness computations. Documented in `docs/data_assumptions_and_cleaning.md`.
+
+---
+
+## 6. Cleaning thresholds
+
+### Hard drops (conservative — rows removed entirely)
+
+| Rule | Threshold | Source |
+|---|---|---|
+| Null critical field | date, expiration, strike, type, IV, close | `config.py`, `data_assumptions_and_cleaning.md` |
+| Negative bid | `bid < 0` | `config.py` |
+| Negative ask | `ask < 0` | `config.py` |
+| Crossed quote | `ask < bid` | `config.py` |
+| Non-positive IV | `IV <= 0` | `config.py` |
+| Extreme IV | `IV > 5.0` (500%) | `config.py` |
+| Expired option | `tau <= 0` | `config.py` |
+| Far-dated option | `tau > 3.0` (3 years) | `config.py` |
+
+### Strict subset additional thresholds
+
+| Parameter | Range | Source |
+|---|---|---|
+| IV | 0.01 – 3.0 (1% – 300%) | `config.py`, `data_assumptions_and_cleaning.md` |
+| Tau | 1/365 – 2.0 years | `config.py`, `data_assumptions_and_cleaning.md` |
+| Log-moneyness | -1.0 – 1.0 | `config.py`, `data_assumptions_and_cleaning.md` |
+| Bid | > 0 (positive) | `config.py` |
+| Ask | > 0 (positive) | `config.py` |
+| Mid | > 0 (nonzero) | `config.py` |
+
+### Quality flags (attached, not used for exclusion in conservative set)
+
+| Flag | Condition | Source |
+|---|---|---|
+| `flag_zero_bid` | `bid == 0` | `config.py` |
+| `flag_zero_volume` | `volume == 0` | `config.py` |
+| `flag_zero_oi` | `open_interest == 0` | `config.py` |
+| `flag_wide_spread` | `(ask - bid) / max(mid, ε) > 0.5` | `config.py` |
+
+---
+
+## 7. Known decisions and constraints
+
+| Decision | Rationale | ADR / Reference |
+|---|---|---|
+| SPY-only for Phase 1 | Most liquid equity option; lowest data quality risk | `docs/decisions/0002_phase1_scope_freeze.md` |
+| EOD-only for Phase 1 | Simplifies pipeline; avoids real-time infrastructure | `docs/decisions/0002_phase1_scope_freeze.md` |
+| Spot = unadjusted close | Option strikes quoted against unadjusted prices | `docs/data_assumptions_and_cleaning.md` |
+| Year-by-year partitioned processing | Avoids OOM on 24.7M-row dataset | `docs/retrospectives/0001_spy_step3_oom_and_pipeline_fix.md` |
+| Two-tier output (conservative + strict) | Conservative preserves market structure for auditing; strict enables cleaner early experiments | `docs/retrospectives/0001_spy_step3_oom_and_pipeline_fix.md` |
+| Yahoo Finance fallback for underlying | Direct URL download was blocked | Commits `b0cfde5`, `e6b31de` |
+| Thresholds are first-pass conservative | Will be revisited after EDA | `docs/data_assumptions_and_cleaning.md` |
+
+---
+
+## 8. Governing references
+
+| Document | What it governs |
+|---|---|
+| `src/data/config.py` | Centralized paths, URLs, thresholds, column lists |
+| `docs/data_assumptions_and_cleaning.md` | Cleaning rules, spot price convention, threshold rationale |
+| `docs/decisions/0002_phase1_scope_freeze.md` | Scope: SPY-only, EOD-only |
+| `docs/retrospectives/0001_spy_step3_oom_and_pipeline_fix.md` | Why partitioned processing; two-output strategy |
+| `configs/data.yaml` | Pipeline config (partially stubbed) |
+| `configs/baseline.yaml` | Baseline model config (partially stubbed) |
+
+---
+
+## 9. Open questions and unresolved lineage details
+
+### Pipeline execution status on current machine
+
+The pipeline scripts exist and the code is committed. However, the `data_raw/spy/` and `data_processed/spy/` directories on the current local clone are empty. The full pipeline execution (Steps 1–3) has been run on RunPod based on progress log evidence, but the resulting data files are not present in this clone. Data files are gitignored by design.
+
+**Uncertainty:** Whether the most recent committed version of `03_build_spy_surface_table.py` has been fully re-executed end-to-end on RunPod after the OOM fix. The progress log records the fix was committed, but does not explicitly confirm a successful full-scale run of the final version.
+
+### Feature engineering pipeline
+
+`scripts/prepare_data.py` and the `src/neural_iv_surface_inference/data/` submodules (`loaders.py`, `cleaning.py`, `splits.py`) are stubs with TODO markers. The bridge from `data_processed/spy/spy_surface_points_strict.parquet` to the modeling-ready input (sparse masking, noise injection, train/val/test splits) is not yet implemented in these modules.
+
+**Note:** The roadmap (`docs/roadmaps/phase1_structural_roadmap.md`) shows subtasks S2.1 (sparse masking), S2.2 (noise injection), and S2.3 (time-based splits) as "Completed" — so this functionality may exist elsewhere (possibly in the training scripts or notebook) rather than in the stub modules. The exact location of this implementation is uncertain from the current evidence.
+
+### Config alignment
+
+`configs/data.yaml` references paths (`data/raw`, `data/interim`, `data/processed`) that differ from the actual paths used by the pipeline scripts (`data_raw/spy/`, `data_processed/spy/`). The config file has TODO markers and appears to be a template that was not updated to match the actual pipeline. The operative config is `src/data/config.py`, not `configs/data.yaml`.
+
+### Vendor-style reference data
+
+Subtask S3.3 (vendor-style reference) is marked "In Progress" in the roadmap. No vendor reference data files or integration scripts are present in the repository. This lineage gap will need to be documented when the vendor reference stream is implemented.

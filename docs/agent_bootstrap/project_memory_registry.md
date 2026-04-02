@@ -109,6 +109,7 @@ These provide context but are not updated by the project memory reviewer unless 
 |---|---|---|
 | `README.md` | Project readme | Update only when project structure materially changes |
 | `docs/data_assumptions_and_cleaning.md` | Data pipeline rules | Update only when cleaning rules change |
+| `docs/data/data_lineage.md` | Data lineage (raw → processed → modeling-ready) | Update when pipeline structure changes |
 | `docs/setup/remote_dev.md` | Remote dev setup guide | Infra reference |
 | `docs/setup/ai_agent_runpod_manual.md` | RunPod agent manual | Infra reference |
 | `docs/setup/private_runbook_template.md` | Private runbook template | Template — do not fill in |
@@ -150,3 +151,5 @@ These provide context but are not updated by the project memory reviewer unless 
 | `docs/retrospectives/README.md` | Retrospective guidance |
 | `docs/retrospectives/_template.md` | Retrospective template |
 | `scripts/build_project_memory_review_packet.py` | Review packet builder (with fingerprinting) |
+| `scripts/pmr_prepush_gate.py` | Pre-push gate script |
+| `.pre-commit-config.yaml` | Pre-commit hook configuration |
