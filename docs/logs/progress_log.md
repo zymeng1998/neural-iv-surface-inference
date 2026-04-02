@@ -211,3 +211,29 @@ Each entry should capture:
 - Commit the bootstrap system and this progress log update
 - Use `python scripts/build_project_memory_review_packet.py` before future reviewer runs
 - Begin routine experiment tracking in `docs/experiments/experiment_journal.md` when training runs start
+
+---
+
+## 2026-04-02T02:00:00-04:00
+
+### Completed
+
+- Created data lineage document (`docs/data/data_lineage.md`) tracing the full raw → processed → modeling-ready pipeline for Phase 1 SPY data
+- Built pre-push PMR gate (`scripts/pmr_prepush_gate.py`) that blocks pushes when evidence-source files change without corresponding PMR doc updates
+- Added `.pre-commit-config.yaml` for hook installation via pre-commit framework
+- Installed the pre-push hook in the current clone
+- Added idempotence hardening to the PMR system (`reviewer_state.json`, packet fingerprinting)
+- Created operator manual and quickstart guide in `docs/private/`
+
+### Notes
+
+- The pre-push hook is clone-local — must be installed in any clone from which `git push` is run
+- Remediation path when push is blocked: run PMR reviewer via Claude/Cursor on the same remote repo, commit doc updates, retry push
+- Bypass: `git push --no-verify` or `SKIP_PMR_GATE=1 git push`
+- Data lineage doc explicitly calls out open questions: whether full pipeline was re-run after OOM fix, where S2.1–S2.3 masking logic lives, config path mismatch between `configs/data.yaml` and `src/data/config.py`
+
+### Next Actions
+
+- Install the pre-push hook on the RunPod clone if pushes happen there
+- Resolve the data lineage open questions when the pipeline is next run
+- Begin routine experiment tracking when training runs start

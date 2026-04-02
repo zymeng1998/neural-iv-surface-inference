@@ -47,7 +47,6 @@ EVIDENCE_DIRS = {
 # Individual evidence files outside the dirs above
 EVIDENCE_FILES = {
     "docs/data_assumptions_and_cleaning.md",
-    "docs/data/data_lineage.md",
 }
 
 # PMR documentation directories — if evidence changed, these should also show changes
@@ -57,6 +56,7 @@ PMR_DOC_PATHS = {
     "docs/decisions/",
     "docs/retrospectives/",
     "docs/roadmaps/",
+    "docs/data/",
 }
 
 # Files that are part of the PMR system itself — changes here don't require PMR updates
