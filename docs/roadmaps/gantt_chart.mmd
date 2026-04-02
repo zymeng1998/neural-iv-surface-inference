@@ -1,0 +1,40 @@
+gantt
+    title Neural IV Surface Inference — Project Roadmap
+    dateFormat YYYY-MM-DD
+    axisFormat %b %Y
+
+    section Phase 1 Data Foundation
+    S1.1 Ingest SPY EOD chains           :done, s11, 2026-01-01, 14d
+    S1.2 Cleaning and normalization       :done, s12, after s11, 14d
+    S1.3 Coordinate mapping               :done, s13, after s12, 7d
+
+    section Phase 1 Task Construction
+    S2.1 Sparse masking generator          :done, s21, after s13, 7d
+    S2.2 Noise injection regimes           :done, s22, after s13, 7d
+    S2.3 Train val test splits             :done, s23, after s13, 7d
+
+    section Phase 1 Baselines
+    S3.1 Interpolation baseline            :done, s31, after s23, 10d
+    S3.2 Masked MLP baseline               :done, s32, after s23, 14d
+    S3.3 Vendor reference alignment        :active, s33, after s32, 21d
+
+    section Phase 1 Evaluation
+    S4.1 MAE RMSE metrics                  :done, s41, after s32, 7d
+    S4.2 Regional diagnostics              :done, s42, after s41, 7d
+    S4.3 Result package and memo           :done, s43, after s42, 7d
+
+    section Phase 2 Latent Inference
+    S5 Conditional autoencoder             :s5, after s33, 30d
+
+    section Phase 3 Uncertainty and Structure
+    S6 Uncertainty calibration             :s6, after s5, 30d
+    S7 Arbitrage-aware constraints         :s7, after s5, 30d
+
+    section Phase 4 Energy-Based
+    S8 Structured energy inference         :s8, after s7, 30d
+
+    section Milestones
+    Phase 1 Decision Gate                  :milestone, m1, after s43, 0d
+    Phase 2 Latent Quality Review          :milestone, m2, after s5, 0d
+    Phase 3 Surface Quality Gate           :milestone, m3, after s7, 0d
+    Decision-Grade Surface Achieved        :milestone, m4, after s8, 0d

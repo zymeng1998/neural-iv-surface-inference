@@ -1,0 +1,75 @@
+flowchart TD
+    subgraph Phase1["Phase 1: Benchmarkable Prototype"]
+        direction TB
+
+        subgraph S1["S1 — Data Foundation"]
+            S11["S1.1 Ingest SPY EOD chains ✅"]
+            S12["S1.2 Cleaning & normalization ✅"]
+            S13["S1.3 Coordinate mapping ✅"]
+            S11 --> S12 --> S13
+        end
+
+        subgraph S2["S2 — Task Construction (parallel)"]
+            S21["S2.1 Sparse masking ✅"]
+            S22["S2.2 Noise injection ✅"]
+            S23["S2.3 Train/val/test splits ✅"]
+        end
+
+        subgraph S3["S3 — Baselines"]
+            S31["S3.1 Interpolation baseline ✅"]
+            S32["S3.2 Masked MLP baseline ✅"]
+            S33["S3.3 Vendor reference 🔧"]
+        end
+
+        subgraph S4["S4 — Evaluation"]
+            S41["S4.1 MAE/RMSE metrics ✅"]
+            S42["S4.2 Regional diagnostics ✅"]
+            S43["S4.3 Result package & memo ✅"]
+        end
+
+        S13 --> S21 & S22 & S23
+        S21 & S22 & S23 --> S31 & S32
+        S32 --> S33
+        S31 & S32 --> S41 --> S42 --> S43
+    end
+
+    DG1{{"Decision Gate 1:<br/>Baseline quality stable<br/>across regimes?"}}
+    S43 & S33 --> DG1
+
+    subgraph Phase2["Phase 2: Latent Inference Upgrade"]
+        S5["S5 Conditional autoencoder /<br/>latent bottleneck"]
+    end
+
+    DG1 -- "Unstable → prioritize latent" --> Phase2
+    DG1 -- "Stable → continue" --> Phase2
+
+    DG2{{"Decision Gate 2:<br/>Point estimates good?<br/>Structure risk?"}}
+    S5 --> DG2
+
+    subgraph Phase3["Phase 3: Uncertainty + Structure (parallel)"]
+        S6["S6 Uncertainty calibration<br/>(heteroscedastic / quantile)"]
+        S7["S7 Arbitrage-aware<br/>constraints & diagnostics"]
+    end
+
+    DG2 -- "Reliability unclear → prioritize S6" --> S6
+    DG2 -- "Structure risk → prioritize S7" --> S7
+
+    DG3{{"Decision Gate 3:<br/>Modular upgrades unify<br/>objectives?"}}
+    S6 & S7 --> DG3
+
+    subgraph Phase4["Phase 4: Energy-Based Formulation"]
+        S8["S8 Structured energy-based<br/>inference over (x, z, y)"]
+    end
+
+    DG3 -- "No → escalate to EBM" --> Phase4
+    DG3 -- "Yes → skip" --> FINAL
+
+    Phase4 --> FINAL
+
+    FINAL(["Decision-Grade<br/>IV Surface"])
+
+    style DG1 fill:#fff3cd,stroke:#856404,color:#856404
+    style DG2 fill:#fff3cd,stroke:#856404,color:#856404
+    style DG3 fill:#fff3cd,stroke:#856404,color:#856404
+    style FINAL fill:#d4edda,stroke:#155724,color:#155724
+    style S33 fill:#cce5ff,stroke:#004085,color:#004085
