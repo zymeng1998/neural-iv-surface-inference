@@ -145,3 +145,69 @@ Each entry should capture:
 - Refactor `src/data/03_build_spy_surface_table.py` to a year-by-year partitioned workflow
 - Test the refactored build on a single year before running full scale
 - Produce two outputs: broad processed table (conservative drops + flags) and strict modeling subset
+
+---
+
+## 2026-03-31T22:28:00-04:00
+
+### Completed
+
+- Refactored `src/data/03_build_spy_surface_table.py` to a year-by-year partitioned workflow as planned in retrospective 0001
+- Each year is read, joined, cleaned, and written to disk independently before proceeding to the next
+- Added memory-safe concatenation and strict subset generation (`fa82e71`)
+- Step 3 OOM issue from retrospective 0001 is now resolved
+
+### Notes
+
+- The Yahoo Finance direct download URL for underlying data was blocked; added a `yfinance` fallback (`b0cfde5`, `e6b31de`)
+- The fix produces two outputs as planned: `spy_surface_points.parquet` (broad) and `spy_surface_points_strict.parquet` (strict subset)
+
+### Next Actions
+
+- Run the full refactored pipeline end-to-end on RunPod
+- Review output quality and row counts
+- Begin task construction (sparse masking, noise injection, evaluation splits)
+
+---
+
+## 2026-04-01T05:30:00+00:00
+
+### Completed
+
+- Created `docs/roadmaps/phase1_structural_roadmap.md` with end-goal task decomposition, subtask-to-method matrix, and decision rules
+- Added Mermaid dependency flowchart (`docs/roadmaps/flowchart_deps.mmd`) and gantt chart (`docs/roadmaps/gantt_chart.mmd`) with rendered PNGs (`cec12b1`)
+
+### Notes
+
+- Roadmap marks S1.1 through S4.3 as completed or in progress, with S3.3 (vendor-style reference) as the open Phase 1 gap
+- Phase 2–4 subtasks (latent inference, uncertainty, structure constraints, EBM) are marked as planned
+
+### Next Actions
+
+- Close the S3.3 vendor-style reference gap
+- Prepare for first full evaluation run
+
+---
+
+## 2026-04-02T01:35:00-04:00
+
+### Completed
+
+- Installed repo-local Project Memory Reviewer system (`docs/agent_bootstrap/`)
+- Created project memory registry, update policy, runbook, and change event taxonomy
+- Created experiment journal (`docs/experiments/experiment_journal.md`)
+- Created retrospective guidance and template (`docs/retrospectives/README.md`, `docs/retrospectives/_template.md`)
+- Created review packet builder script (`scripts/build_project_memory_review_packet.py`)
+- Ran first baseline project memory review
+
+### Notes
+
+- The reviewer system extends the existing documentation structure without replacing it
+- Timestamp policy (ISO 8601 with timezone) is enforced for all new project-memory files; existing files will be updated when next materially touched
+- No existing files were modified except this progress log
+
+### Next Actions
+
+- Commit the bootstrap system and this progress log update
+- Use `python scripts/build_project_memory_review_packet.py` before future reviewer runs
+- Begin routine experiment tracking in `docs/experiments/experiment_journal.md` when training runs start

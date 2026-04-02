@@ -1,0 +1,78 @@
+Neural IV Surface inference/
+├── .claude
+│   └── settings.local.json
+├── configs
+│   ├── baseline.yaml
+│   └── data.yaml
+├── data_processed
+│   └── spy
+├── data_raw
+│   └── spy
+├── docs
+│   ├── agent_bootstrap
+│   │   ├── repo_tree.txt
+│   │   └── repo_tree_summary.md
+│   ├── decisions
+│   │   ├── 0001_remote_dev_stack.md
+│   │   └── 0002_phase1_scope_freeze.md
+│   ├── logs
+│   │   └── progress_log.md
+│   ├── private
+│   │   ├── .gitkeep
+│   │   └── infra_local.md
+│   ├── retrospectives
+│   │   └── 0001_spy_step3_oom_and_pipeline_fix.md
+│   ├── roadmaps
+│   │   ├── flowchart_deps.mmd
+│   │   ├── flowchart_deps.png
+│   │   ├── gantt_chart.mmd
+│   │   ├── gantt_chart.png
+│   │   └── phase1_structural_roadmap.md
+│   ├── setup
+│   │   ├── ai_agent_runpod_manual.md
+│   │   ├── private_runbook_template.md
+│   │   └── remote_dev.md
+│   └── data_assumptions_and_cleaning.md
+├── logs
+├── notebooks
+│   ├── .gitkeep
+│   └── 01_spy_data_firstlook.ipynb
+├── plots
+├── reports
+├── scripts
+│   ├── prepare_data.py
+│   ├── run_baseline.py
+│   └── smoke_test.py
+├── src
+│   └── neural_iv_surface_inference
+│       ├── features
+│       │   ├── __init__.py
+│       │   └── surface_features.py
+│       ├── models
+│       │   ├── __init__.py
+│       │   ├── baseline_mlp.py
+│       │   └── losses.py
+│       ├── training
+│       │   ├── __init__.py
+│       │   ├── eval.py
+│       │   └── train.py
+│       ├── utils
+│       │   ├── __init__.py
+│       │   ├── io.py
+│       │   └── seed.py
+│       └── __init__.py
+├── tests
+│   ├── test_data_pipeline.py
+│   └── test_smoke.py
+├── .gitignore
+├── README.md
+├── ml_finance_iv_surface_project_plan_notes.md
+└── phase1_actions_remote_workstation_plan.md
+
+Excluded directories (per bootstrap spec):
+  .git, node_modules, .venv, venv, __pycache__, dist, build, .cache,
+  .mypy_cache, .pytest_cache, .ipynb_checkpoints, data, datasets,
+  outputs, artifacts, checkpoints, tmp, temp, coverage, .next, target
+
+Generated: 2026-04-02
+Method: Python find+sort (tree not available)
