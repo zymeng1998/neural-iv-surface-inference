@@ -1,15 +1,33 @@
-# Baseline MLP training configuration — Phase 1
+# Baseline training and evaluation configuration — Phase 1
 
 seed: 42
-batch_size: 64
-learning_rate: 0.001
-epochs: 50
-hidden_dim: 128
 
+# ── Data ────────────────────────────────────────────────────────────
+data:
+  # Path to a benchmark Parquet file (from Step 4)
+  # Override via --benchmark CLI arg
+  benchmark_file: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+  batch_size: 256
+  num_workers: 0
+
+# ── Interpolation baseline (S3.1) ──────────────────────────────────
+interpolation:
+  method: rbf   # linear | cubic | rbf | nearest
+
+# ── MLP baseline (S3.2) ────────────────────────────────────────────
+mlp:
+  input_dim: 2
+  hidden_dim: 128
+  n_layers: 3
+  dropout: 0.1
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  epochs: 50
+  patience: 10      # early stopping patience
+
+# ── Output paths ───────────────────────────────────────────────────
 paths:
-  processed_data_dir: data/processed
   checkpoint_dir: artifacts/checkpoints
   figures_dir: artifacts/figures
   tables_dir: artifacts/tables
-
-# TODO: add model architecture and evaluation settings
+  results_dir: artifacts/results

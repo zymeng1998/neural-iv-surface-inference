@@ -62,6 +62,8 @@ All data files are gitignored. The pipeline is designed to be re-run from scratc
 | `reports/spy_schema_report.md` | Schema validation report | `src/data/02_inspect_spy_schema.py` |
 | `reports/spy_build_report.md` | Build processing report | `src/data/03_build_spy_surface_table.py` |
 | `data_processed/spy/benchmarks/spy_phase1_*.parquet` | Benchmark task datasets (masked, noised, split) | `src/data/04_build_benchmark_tasks.py` |
+| `artifacts/checkpoints/best_mlp.pt` | Best MLP model checkpoint | `scripts/run_baseline.py` via `training/train.py` |
+| `artifacts/results/baseline_results.csv` | Baseline comparison metrics (interp vs MLP) | `scripts/run_baseline.py` |
 
 ---
 
@@ -177,15 +179,33 @@ All data files are gitignored. The pipeline is designed to be re-run from scratc
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────┐
-│  FUTURE — Baselines + Training + Evaluation Pipeline    │
-│  Scripts: scripts/prepare_data.py (stub)                │
-│           scripts/run_baseline.py (stub)                │
-│  Configs: configs/baseline.yaml                         │
-│  Models:  src/neural_iv_surface_inference/models/       │
-│  Training: src/neural_iv_surface_inference/training/    │
+│  STEP 5 — Baselines + Training + Evaluation             │
+│  Entry point: scripts/run_baseline.py                   │
+│  Config: configs/baseline.yaml                          │
 │                                                         │
-│  Status:  Not yet implemented. Model, training, and     │
-│           evaluation modules are placeholder stubs.     │
+│  Models:                                                │
+│    models/interpolation.py — S3.1 per-date RBF/griddata│
+│    models/baseline_mlp.py  — S3.2 global masked MLP    │
+│    models/losses.py        — masked MSE/MAE/combined   │
+│                                                         │
+│  Data:                                                  │
+│    data/loaders.py — IVSurfaceDataset + DataLoader      │
+│                                                         │
+│  Training:                                              │
+│    training/train.py — training loop, early stopping,   │
+│                        checkpointing, LR scheduling     │
+│    training/eval.py  — MAE/RMSE/MAPE, regional         │
+│                        diagnostics (maturity/moneyness) │
+│                                                         │
+│  Input:  data_processed/spy/benchmarks/*.parquet        │
+│          (from Step 4)                                  │
+│                                                         │
+│  Output: artifacts/checkpoints/best_mlp.pt              │
+│          artifacts/results/baseline_results.csv          │
+│                                                         │
+│  Status: Implemented and tested (25 unit tests).        │
+│          Awaiting benchmark data (Steps 3+4 on RunPod)  │
+│          before full-scale execution.                   │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -287,7 +307,7 @@ Task construction modules (S2.1–S2.3) are now implemented and tested:
 
 Orchestration: `src/data/04_build_benchmark_tasks.py` reads `configs/benchmark_tasks.yaml` (11 variants) and produces one Parquet per variant in `data_processed/spy/benchmarks/`.
 
-**Remaining stubs**: `scripts/prepare_data.py`, `src/neural_iv_surface_inference/data/loaders.py`, `src/neural_iv_surface_inference/data/cleaning.py` still contain TODO placeholders. The baseline model (`models/baseline_mlp.py`), training loop (`training/train.py`), and evaluation (`training/eval.py`) are also stubs.
+**Remaining stubs**: `scripts/prepare_data.py` and `src/neural_iv_surface_inference/data/cleaning.py` still contain TODO placeholders. All other modules (loaders, models, training, evaluation) are now implemented.
 
 ### Config alignment
 

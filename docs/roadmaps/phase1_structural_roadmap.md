@@ -86,12 +86,12 @@ mindmap
 | S2.1 | Sparse observations | random + structured + realistic liquidity masking | Completed — `data/masking.py`, 32 tests |
 | S2.2 | Noisy observations | none/low/med/high + heteroscedastic noise | Completed — `data/noise.py`, tested |
 | S2.3 | Evaluation splits | chronological 70/15/15 + benchmark versioning | Completed — `data/splits.py`, tested |
-| S3.1 | Simple baseline | interpolation-style baseline | Not Started — stub only |
-| S3.2 | Neural baseline | PyTorch masked MLP reconstruction | Not Started — empty skeleton in `baseline_mlp.py` |
+| S3.1 | Simple baseline | per-date RBF/griddata interpolation on observed points | Completed — `models/interpolation.py`, tested |
+| S3.2 | Neural baseline | global masked MLP (SiLU + LayerNorm + softplus output) | Completed — `models/baseline_mlp.py`, `training/train.py`, tested |
 | S3.3 | Vendor-style reference | external reference integration and alignment | Not Started |
-| S4.1 | Core metrics | MAE/RMSE, observed vs unobserved error | Not Started — stub in `eval.py` |
-| S4.2 | Regional diagnostics | by maturity and moneyness bucket | Not Started |
-| S4.3 | Result artifact | plots + summary table + phase memo | Not Started |
+| S4.1 | Core metrics | MAE/RMSE/MAPE, observed vs unobserved split | Completed — `training/eval.py`, tested |
+| S4.2 | Regional diagnostics | by maturity bucket (short/med/long) + moneyness bucket (5 bins) | Completed — `training/eval.py`, tested |
+| S4.3 | Result artifact | plots + summary table + phase memo | Not Started — `run_baseline.py` produces CSV, plots/memo not yet generated |
 | S5 | Latent inference | conditional autoencoder / latent bottleneck | Planned |
 | S6 | Uncertainty layer | predictive uncertainty/calibration | Planned |
 | S7 | Structure constraints | arbitrage diagnostics + structure-aware losses | Planned |
@@ -109,9 +109,14 @@ mindmap
 | `src/neural_iv_surface_inference/data/splits.py` | S2.3 — chronological splits + benchmark versioning |
 | `src/data/04_build_benchmark_tasks.py` + `configs/benchmark_tasks.yaml` | S2.1–S2.3 orchestration (11 variants) |
 | `tests/test_task_construction.py` | 32 unit tests covering masking, noise, splits, save/load |
-| `scripts/run_baseline.py` + model/training modules | S3.1, S3.2 — **stubs only, not yet implemented** |
-| `training/eval.py` | S4.1, S4.2 — **stub only, not yet implemented** |
-| `configs/data.yaml`, `configs/baseline.yaml` | reproducible configuration (partially stubbed) |
+| `models/interpolation.py` | S3.1 — per-date RBF/griddata interpolation baseline |
+| `models/baseline_mlp.py` + `models/losses.py` | S3.2 — masked MLP with softplus output + masked MSE/MAE losses |
+| `training/train.py` | S3.2 training loop with early stopping, checkpointing, LR scheduling |
+| `training/eval.py` | S4.1, S4.2 — MAE/RMSE/MAPE + regional diagnostics by maturity and moneyness |
+| `data/loaders.py` | IVSurfaceDataset + DataLoader factory for benchmark Parquets |
+| `scripts/run_baseline.py` | Entry point: runs both baselines, compares, saves CSV |
+| `tests/test_baselines.py` | 25 unit tests covering model, losses, dataset, training, eval, end-to-end |
+| `configs/baseline.yaml` | Full config for interpolation + MLP + paths |
 | `docs/logs/progress_log.md` + phase action plan | execution traceability and task-level accountability |
 
 ---

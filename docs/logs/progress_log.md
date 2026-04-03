@@ -265,3 +265,61 @@ Each entry should capture:
 - Run Step 3 on RunPod to produce `spy_surface_points_strict.parquet`
 - Run Step 4 on RunPod: `python src/data/04_build_benchmark_tasks.py`
 - Begin baseline implementation (S3.1 interpolation, S3.2 neural MLP)
+
+---
+
+## 2026-04-02T17:00:00-04:00
+
+### Completed
+
+- Implemented S3.1 interpolation baseline (`src/neural_iv_surface_inference/models/interpolation.py`):
+  - Per-date interpolation using scipy RBF (thin-plate spline), linear, cubic, or nearest-neighbor
+  - Automatic fallback: RBF → linear → nearest for edge cases; mean IV when < 3 observed points
+  - `run_interpolation_baseline()` runs across all dates in a benchmark dataset
+
+- Implemented S3.2 masked MLP baseline (`src/neural_iv_surface_inference/models/baseline_mlp.py`):
+  - Global model trained across all dates on observed points only
+  - Architecture: Linear → LayerNorm → SiLU × n_layers, softplus output (ensures positive IV)
+  - Kaiming weight initialization
+  - Configurable hidden_dim, n_layers, dropout
+
+- Implemented loss functions (`src/neural_iv_surface_inference/models/losses.py`):
+  - MaskedMSELoss, MaskedMAELoss, CombinedLoss (weighted MSE+MAE)
+  - All losses accept a boolean mask to restrict computation to observed points
+
+- Implemented PyTorch Dataset and loaders (`src/neural_iv_surface_inference/data/loaders.py`):
+  - IVSurfaceDataset wraps benchmark Parquet output from Step 4
+  - Each sample: (log_moneyness, tau) features, iv_clean target, observed flag, date index
+  - `load_benchmark_splits()` factory returns train/val/test DataLoaders + raw DataFrames
+
+- Implemented training loop (`src/neural_iv_surface_inference/training/train.py`):
+  - Full training with AdamW, ReduceLROnPlateau scheduler, early stopping, checkpointing
+  - Per-epoch logging of train loss, val observed MSE, val unobserved MAE
+
+- Implemented evaluation framework (`src/neural_iv_surface_inference/training/eval.py`):
+  - Core metrics: MAE, RMSE, MAPE
+  - Split by observed vs unobserved points
+  - Regional diagnostics: 3 maturity buckets (short/medium/long), 5 moneyness buckets (deep ITM → deep OTM)
+  - `metrics_to_dataframe()` for tabular comparison, `print_evaluation()` for console output
+
+- Wired up entry point (`scripts/run_baseline.py`):
+  - Config-driven via `configs/baseline.yaml`
+  - Runs interpolation + MLP, evaluates both, saves comparison CSV to `artifacts/results/`
+  - CLI flags: `--interp-only`, `--mlp-only`, `--benchmark <path>`
+
+- Updated `configs/baseline.yaml` with full settings (data, interpolation, MLP, paths)
+- Updated `utils/io.py` with YAML config loader
+- Wrote 25 unit tests (`tests/test_baselines.py`) — all passing; 59/59 total tests pass
+
+### Notes
+
+- Both baselines are tested on synthetic data locally. Real-data execution requires Steps 3+4 on RunPod first.
+- The MLP is a global model (trained across all dates), not per-date. This is intentional — per-date fitting has too few points for meaningful neural training.
+- The interpolation baseline is per-date by design (it doesn't learn, just interpolates).
+- S4.3 (result artifact: plots, summary memo) is not yet implemented — `run_baseline.py` only produces a CSV comparison table so far.
+
+### Next Actions
+
+- Run Steps 3 + 4 on RunPod to produce benchmark datasets
+- Run `python scripts/run_baseline.py` on RunPod to get first real results
+- Implement S4.3: visualization plots and Phase 1 result memo
