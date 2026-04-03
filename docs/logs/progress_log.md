@@ -237,3 +237,31 @@ Each entry should capture:
 - Install the pre-push hook on the RunPod clone if pushes happen there
 - Resolve the data lineage open questions when the pipeline is next run
 - Begin routine experiment tracking when training runs start
+
+---
+
+## 2026-04-02T15:00:00-04:00
+
+### Completed
+
+- Implemented task construction modules S2.1–S2.3 as standalone, tested modules:
+  - **S2.1 Masking** (`src/neural_iv_surface_inference/data/masking.py`): 7 strategies — random uniform, drop short/long/random maturity, drop wings/ATM, realistic liquidity-weighted. High-level `apply_mask()` API adds an `observed` boolean column.
+  - **S2.2 Noise** (`src/neural_iv_surface_inference/data/noise.py`): 4 regimes (none/low/med/high) with i.i.d. Gaussian and heteroscedastic modes. Noise applied only to observed points; `iv_clean` always preserved for evaluation.
+  - **S2.3 Splits & versioning** (`src/neural_iv_surface_inference/data/splits.py`): chronological train/val/test split (70/15/15), canonical benchmark naming (e.g. `spy_phase1_random20_noise0`), Parquet save/load with embedded provenance metadata.
+- Built orchestration script `src/data/04_build_benchmark_tasks.py` — config-driven, reads `configs/benchmark_tasks.yaml`, produces one Parquet per variant
+- Defined 11 benchmark variants in `configs/benchmark_tasks.yaml` covering core grid (random masking × noise levels), realistic liquidity masking, and structured stress tests
+- Updated `src/neural_iv_surface_inference/data/__init__.py` with public API exports
+- Wrote 32 unit tests (`tests/test_task_construction.py`) — all passing
+- Reviewed `src/data/03_build_spy_surface_table.py` for RunPod re-run readiness — script is solid post-OOM refactor, no changes needed
+
+### Notes
+
+- Raw data only exists on RunPod (`data_raw/spy/` is empty locally); Step 3 must be re-run on RunPod before Step 4 can execute
+- Data lineage open question resolved: S2.1–S2.3 masking/noise/splits now live in `src/neural_iv_surface_inference/data/` as proper modules
+- Config path mismatch persists: `configs/data.yaml` is legacy; `src/data/config.py` is source of truth for pipeline paths; `configs/benchmark_tasks.yaml` is source of truth for task construction
+
+### Next Actions
+
+- Run Step 3 on RunPod to produce `spy_surface_points_strict.parquet`
+- Run Step 4 on RunPod: `python src/data/04_build_benchmark_tasks.py`
+- Begin baseline implementation (S3.1 interpolation, S3.2 neural MLP)

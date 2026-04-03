@@ -1,6 +1,6 @@
 # Neural IV Surface Inference - Structural Roadmap
 
-_Last updated: 2026-04-01_
+_Last updated: 2026-04-02_
 
 ## 1) End Goal (Decision-Grade Output)
 
@@ -50,9 +50,9 @@ mindmap
         S2.2 Noise injection regimes
         S2.3 Time-based train/val/test splits
       S3 Baselines
-        S3.1 Non-neural interpolation baseline
-        S3.2 PyTorch masked MLP baseline
-        S3.3 Vendor-style reference alignment (in progress)
+        S3.1 Non-neural interpolation baseline (not started)
+        S3.2 PyTorch masked MLP baseline (not started)
+        S3.3 Vendor-style reference alignment (not started)
       S4 Evaluation
         S4.1 MAE/RMSE on observed and unobserved points
         S4.2 Regional error diagnostics
@@ -83,15 +83,15 @@ mindmap
 | S1.1 | Ingest real options data | scripted ingestion, Parquet snapshotting | Completed |
 | S1.2 | Clean and normalize | quality filters, derived features, conservative/strict subsets | Completed |
 | S1.3 | Surface coordinates | moneyness + maturity representation | Completed |
-| S2.1 | Sparse observations | random + structured masking schemes | Completed |
-| S2.2 | Noisy observations | low/medium/high noise regimes | Completed |
-| S2.3 | Evaluation splits | time-based split logic | Completed |
-| S3.1 | Simple baseline | interpolation-style baseline | Completed |
-| S3.2 | Neural baseline | PyTorch masked MLP reconstruction | Completed |
-| S3.3 | Vendor-style reference | external reference integration and alignment | In Progress |
-| S4.1 | Core metrics | MAE/RMSE, observed vs unobserved error | Completed |
-| S4.2 | Regional diagnostics | by maturity and moneyness bucket | Completed |
-| S4.3 | Result artifact | plots + summary table + phase memo | Completed |
+| S2.1 | Sparse observations | random + structured + realistic liquidity masking | Completed — `data/masking.py`, 32 tests |
+| S2.2 | Noisy observations | none/low/med/high + heteroscedastic noise | Completed — `data/noise.py`, tested |
+| S2.3 | Evaluation splits | chronological 70/15/15 + benchmark versioning | Completed — `data/splits.py`, tested |
+| S3.1 | Simple baseline | interpolation-style baseline | Not Started — stub only |
+| S3.2 | Neural baseline | PyTorch masked MLP reconstruction | Not Started — empty skeleton in `baseline_mlp.py` |
+| S3.3 | Vendor-style reference | external reference integration and alignment | Not Started |
+| S4.1 | Core metrics | MAE/RMSE, observed vs unobserved error | Not Started — stub in `eval.py` |
+| S4.2 | Regional diagnostics | by maturity and moneyness bucket | Not Started |
+| S4.3 | Result artifact | plots + summary table + phase memo | Not Started |
 | S5 | Latent inference | conditional autoencoder / latent bottleneck | Planned |
 | S6 | Uncertainty layer | predictive uncertainty/calibration | Planned |
 | S7 | Structure constraints | arbitrage diagnostics + structure-aware losses | Planned |
@@ -103,11 +103,15 @@ mindmap
 
 | Existing Work Item | What It Fulfilled |
 |---|---|
-| `scripts/prepare_data.py` + data modules | S1.2, S1.3, S2.1, S2.2, S2.3 |
-| `scripts/run_baseline.py` + model/training modules | S3.1, S3.2, S4.1, S4.2 |
-| `configs/data.yaml`, `configs/baseline.yaml` | reproducible configuration across S1-S4 |
-| `tests/test_data_pipeline.py`, `tests/test_smoke.py` | reproducibility and minimum reliability checks |
-| `docs/phase1_result_memo.md` | S4.3 narrative and Phase 2 bridge justification |
+| `src/data/01–03_*.py` + `src/data/config.py` | S1.1, S1.2, S1.3 — data ingestion, cleaning, coordinate mapping |
+| `src/neural_iv_surface_inference/data/masking.py` | S2.1 — sparse observation masking (7 strategies) |
+| `src/neural_iv_surface_inference/data/noise.py` | S2.2 — noise injection (4 regimes + heteroscedastic) |
+| `src/neural_iv_surface_inference/data/splits.py` | S2.3 — chronological splits + benchmark versioning |
+| `src/data/04_build_benchmark_tasks.py` + `configs/benchmark_tasks.yaml` | S2.1–S2.3 orchestration (11 variants) |
+| `tests/test_task_construction.py` | 32 unit tests covering masking, noise, splits, save/load |
+| `scripts/run_baseline.py` + model/training modules | S3.1, S3.2 — **stubs only, not yet implemented** |
+| `training/eval.py` | S4.1, S4.2 — **stub only, not yet implemented** |
+| `configs/data.yaml`, `configs/baseline.yaml` | reproducible configuration (partially stubbed) |
 | `docs/logs/progress_log.md` + phase action plan | execution traceability and task-level accountability |
 
 ---

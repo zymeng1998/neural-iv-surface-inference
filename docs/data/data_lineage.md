@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-04-02T02:00:00-04:00
-last_updated_at: 2026-04-02T02:00:00-04:00
+last_updated_at: 2026-04-02T15:00:00-04:00
 ---
 
 > Repo-specific data lineage for the Neural IV Surface Inference project.
@@ -32,6 +32,7 @@ It is grounded in actual repository evidence. Sections where the pipeline has no
 | **Processed (partitions)** | `data_processed/spy/partitions/` | Year-by-year cleaned surface point Parquet files | Gitignored; produced by build script |
 | **Processed (consolidated)** | `data_processed/spy/` | `spy_surface_points.parquet` (conservative) and `spy_surface_points_strict.parquet` (strict) | Gitignored; produced by build script |
 | **Reports** | `reports/` | Markdown summaries from each pipeline step | Gitignored; produced by pipeline scripts |
+| **Benchmarks** | `data_processed/spy/benchmarks/` | Per-variant masked/noised/split Parquet files with provenance metadata | Gitignored; produced by benchmark task script |
 | **Metadata** | `data_raw/ingest_metadata.json` | Download timestamp and source info | Gitignored; produced by ingestion script |
 
 All data files are gitignored. The pipeline is designed to be re-run from scratch on any machine with network access.
@@ -60,6 +61,7 @@ All data files are gitignored. The pipeline is designed to be re-run from scratc
 | `reports/spy_ingest_summary.md` | Ingestion report | `src/data/01_ingest_spy_github_dataset.py` |
 | `reports/spy_schema_report.md` | Schema validation report | `src/data/02_inspect_spy_schema.py` |
 | `reports/spy_build_report.md` | Build processing report | `src/data/03_build_spy_surface_table.py` |
+| `data_processed/spy/benchmarks/spy_phase1_*.parquet` | Benchmark task datasets (masked, noised, split) | `src/data/04_build_benchmark_tasks.py` |
 
 ---
 
@@ -144,16 +146,46 @@ All data files are gitignored. The pipeline is designed to be re-run from scratc
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────┐
-│  FUTURE — Feature Engineering + Training Pipeline       │
+│  STEP 4 — Build Benchmark Tasks                         │
+│  Script: src/data/04_build_benchmark_tasks.py           │
+│  Config: configs/benchmark_tasks.yaml                   │
+│  Modules:                                               │
+│    src/neural_iv_surface_inference/data/masking.py      │
+│    src/neural_iv_surface_inference/data/noise.py        │
+│    src/neural_iv_surface_inference/data/splits.py       │
+│                                                         │
+│  Input:  data_processed/spy/spy_surface_points_strict.  │
+│          parquet (from Step 3)                          │
+│                                                         │
+│  Processing (per benchmark variant):                    │
+│    1. Apply observation mask (random, structured, or    │
+│       realistic liquidity-weighted)                     │
+│    2. Inject noise on observed points only              │
+│       (none/low/med/high, i.i.d. or heteroscedastic)   │
+│    3. Apply chronological train/val/test split          │
+│       (70/15/15 by unique dates)                        │
+│    4. Save as Parquet with provenance metadata          │
+│                                                         │
+│  Output: data_processed/spy/benchmarks/                 │
+│          spy_phase1_<strategy><pct>_noise<level>.parquet│
+│          (11 variants configured)                       │
+│                                                         │
+│  Status: Implemented and tested (32 unit tests).        │
+│          Awaiting Step 3 re-run on RunPod before        │
+│          execution.                                     │
+└────────────────────────┬────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│  FUTURE — Baselines + Training + Evaluation Pipeline    │
 │  Scripts: scripts/prepare_data.py (stub)                │
 │           scripts/run_baseline.py (stub)                │
-│  Configs: configs/data.yaml, configs/baseline.yaml      │
-│  Models:  src/neural_iv_surface_inference/               │
+│  Configs: configs/baseline.yaml                         │
+│  Models:  src/neural_iv_surface_inference/models/       │
+│  Training: src/neural_iv_surface_inference/training/    │
 │                                                         │
-│  Status:  Not yet implemented. Scripts and modules      │
-│           contain placeholder stubs with TODOs.         │
-│           The modeling package has skeleton files for    │
-│           features, models (MLP), training, and utils.  │
+│  Status:  Not yet implemented. Model, training, and     │
+│           evaluation modules are placeholder stubs.     │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -234,6 +266,7 @@ All data files are gitignored. The pipeline is designed to be re-run from scratc
 | `docs/retrospectives/0001_spy_step3_oom_and_pipeline_fix.md` | Why partitioned processing; two-output strategy |
 | `configs/data.yaml` | Pipeline config (partially stubbed) |
 | `configs/baseline.yaml` | Baseline model config (partially stubbed) |
+| `configs/benchmark_tasks.yaml` | Benchmark variant definitions (masking, noise, split params) |
 
 ---
 
@@ -247,9 +280,14 @@ The pipeline scripts exist and the code is committed. However, the `data_raw/spy
 
 ### Feature engineering pipeline
 
-`scripts/prepare_data.py` and the `src/neural_iv_surface_inference/data/` submodules (`loaders.py`, `cleaning.py`, `splits.py`) are stubs with TODO markers. The bridge from `data_processed/spy/spy_surface_points_strict.parquet` to the modeling-ready input (sparse masking, noise injection, train/val/test splits) is not yet implemented in these modules.
+Task construction modules (S2.1–S2.3) are now implemented and tested:
+- **S2.1 Masking**: `src/neural_iv_surface_inference/data/masking.py` — 7 strategies (random, structured maturity/moneyness, realistic liquidity)
+- **S2.2 Noise**: `src/neural_iv_surface_inference/data/noise.py` — 4 regimes (none/low/med/high), i.i.d. and heteroscedastic modes
+- **S2.3 Splits**: `src/neural_iv_surface_inference/data/splits.py` — chronological train/val/test (70/15/15), benchmark naming and Parquet save/load with provenance
 
-**Note:** The roadmap (`docs/roadmaps/phase1_structural_roadmap.md`) shows subtasks S2.1 (sparse masking), S2.2 (noise injection), and S2.3 (time-based splits) as "Completed" — so this functionality may exist elsewhere (possibly in the training scripts or notebook) rather than in the stub modules. The exact location of this implementation is uncertain from the current evidence.
+Orchestration: `src/data/04_build_benchmark_tasks.py` reads `configs/benchmark_tasks.yaml` (11 variants) and produces one Parquet per variant in `data_processed/spy/benchmarks/`.
+
+**Remaining stubs**: `scripts/prepare_data.py`, `src/neural_iv_surface_inference/data/loaders.py`, `src/neural_iv_surface_inference/data/cleaning.py` still contain TODO placeholders. The baseline model (`models/baseline_mlp.py`), training loop (`training/train.py`), and evaluation (`training/eval.py`) are also stubs.
 
 ### Config alignment
 

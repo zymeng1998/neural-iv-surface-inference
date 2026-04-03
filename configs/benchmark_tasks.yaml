@@ -1,0 +1,83 @@
+# Benchmark task configuration — Phase 1
+#
+# Each variant defines a (masking, noise) combination applied to the
+# strict surface-point dataset.  The orchestration script
+# (src/data/04_build_benchmark_tasks.py) iterates over these variants
+# and produces one Parquet file per variant in output_dir.
+
+output_dir: data_processed/spy/benchmarks
+
+# Time-based split fractions (applied to all variants)
+split:
+  train_frac: 0.70
+  val_frac: 0.15
+  # test = remainder (0.15)
+
+# ── Benchmark variants ──────────────────────────────────────────────
+# Required keys per variant:
+#   strategy   : masking strategy (random, realistic, drop_wings, etc.)
+#   keep_frac  : fraction of points retained as "observed"
+#   noise_regime: none | low | medium | high
+# Optional:
+#   heteroscedastic: true/false (default false)
+#   seed: int (default 42)
+
+variants:
+  # ── Core grid: random masking × noise levels ──────────────────────
+  - strategy: random
+    keep_frac: 0.20
+    noise_regime: none
+    seed: 42
+
+  - strategy: random
+    keep_frac: 0.40
+    noise_regime: none
+    seed: 42
+
+  - strategy: random
+    keep_frac: 0.60
+    noise_regime: none
+    seed: 42
+
+  - strategy: random
+    keep_frac: 0.20
+    noise_regime: low
+    seed: 42
+
+  - strategy: random
+    keep_frac: 0.40
+    noise_regime: low
+    seed: 42
+
+  - strategy: random
+    keep_frac: 0.40
+    noise_regime: medium
+    seed: 42
+
+  - strategy: random
+    keep_frac: 0.40
+    noise_regime: high
+    seed: 42
+
+  # ── Realistic liquidity-weighted masking ──────────────────────────
+  - strategy: realistic
+    keep_frac: 0.40
+    noise_regime: low
+    seed: 42
+
+  - strategy: realistic
+    keep_frac: 0.40
+    noise_regime: medium
+    heteroscedastic: true
+    seed: 42
+
+  # ── Structured masking stress tests ───────────────────────────────
+  - strategy: drop_wings
+    keep_frac: 1.0     # keep_frac not used by structured masks, set 1.0
+    noise_regime: none
+    seed: 42
+
+  - strategy: drop_short_maturity
+    keep_frac: 1.0
+    noise_regime: none
+    seed: 42
