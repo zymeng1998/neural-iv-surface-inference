@@ -323,3 +323,37 @@ Each entry should capture:
 - Run Steps 3 + 4 on RunPod to produce benchmark datasets
 - Run `python scripts/run_baseline.py` on RunPod to get first real results
 - Implement S4.3: visualization plots and Phase 1 result memo
+
+---
+
+## 2026-04-03T00:00:00-04:00
+
+### Completed
+
+- Rewrote `src/data/04_build_benchmark_tasks.py` for memory-safe streaming after OOM on RunPod (21M-row strict dataset caused ~11GB peak memory with eager loading)
+  - Now streams via PyArrow `iter_batches` (500K rows/batch) instead of loading full dataset
+  - Precomputes global date→split map by scanning partition files (reads only date column)
+  - Per-batch: mask → noise → split assignment → ParquetWriter, with `gc.collect()` after each batch
+  - Fallback: if no partition files exist, reads only the date column from strict file
+- Added `compute_date_split_map()` to `src/neural_iv_surface_inference/data/splits.py` — scans partition files to build date→split mapping without loading full data
+- Optimized `src/neural_iv_surface_inference/data/loaders.py`:
+  - Column pruning on load (only reads 8 needed columns instead of all)
+  - `del df; gc.collect()` after splitting into train/val/test
+- Changed `run_interpolation_baseline()` in `models/interpolation.py` to return `np.ndarray` instead of a full DataFrame copy
+- Updated `scripts/run_baseline.py` to assign `iv_pred` from the returned array
+- Updated 2 tests in `tests/test_baselines.py` for new return type
+- All 59 tests pass
+
+### Notes
+
+- Root cause of Step 4 OOM: the original script loaded 21M rows at once, then for each of 11 variants, called `.copy()` 3 times (mask, noise, split) creating ~11GB peak per variant
+- Masking and noise functions are stateless array operations — they work on any chunk size with no cross-chunk dependencies
+- The only global dependency is the date→split mapping, which is precomputed once (~4,500 dates, trivial memory)
+- The seed for masking/noise now includes a batch offset (`seed + batch_num`) to ensure different random draws per batch while remaining deterministic
+
+### Next Actions
+
+- Commit and push changes
+- Pull on RunPod and re-run Step 4 with memory monitoring
+- Run Step 5 (baselines) on RunPod
+- Verify benchmark parquet row counts match expectations

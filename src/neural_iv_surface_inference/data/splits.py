@@ -22,6 +22,69 @@ import pandas as pd
 # Time-based splitting
 # ---------------------------------------------------------------------------
 
+def compute_date_split_map(
+    partition_dir: Path,
+    train_frac: float = 0.70,
+    val_frac: float = 0.15,
+    date_col: str = "date",
+    glob_pattern: str = "spy_surface_*.parquet",
+) -> dict:
+    """Precompute a date → split mapping by scanning partition files.
+
+    Only reads the *date_col* column from each partition file, so memory
+    usage is tiny (~4,500 unique dates regardless of total row count).
+
+    Parameters
+    ----------
+    partition_dir : Path
+        Directory containing year-partitioned Parquet files from Step 3.
+    train_frac, val_frac : float
+        Chronological split fractions.
+    date_col : str
+        Date column name.
+    glob_pattern : str
+        Glob pattern to match partition files.
+
+    Returns
+    -------
+    dict mapping each date (pd.Timestamp) → 'train' / 'val' / 'test'.
+    """
+    import pyarrow.parquet as pq
+
+    if train_frac + val_frac >= 1.0:
+        raise ValueError("train_frac + val_frac must be < 1.0")
+
+    partition_dir = Path(partition_dir)
+    files = sorted(partition_dir.glob(glob_pattern))
+    if not files:
+        raise FileNotFoundError(
+            f"No partition files matching '{glob_pattern}' in {partition_dir}"
+        )
+
+    # Collect unique dates from all partitions (read only the date column)
+    all_dates = set()
+    for f in files:
+        table = pq.read_table(f, columns=[date_col])
+        dates = pd.to_datetime(table[date_col].to_pandas()).unique()
+        all_dates.update(dates)
+
+    sorted_dates = sorted(all_dates)
+    n = len(sorted_dates)
+    n_train = int(n * train_frac)
+    n_val = int(n * val_frac)
+
+    date_split_map = {}
+    for i, d in enumerate(sorted_dates):
+        if i < n_train:
+            date_split_map[d] = "train"
+        elif i < n_train + n_val:
+            date_split_map[d] = "val"
+        else:
+            date_split_map[d] = "test"
+
+    return date_split_map
+
+
 def time_split(
     df: pd.DataFrame,
     train_frac: float = 0.70,

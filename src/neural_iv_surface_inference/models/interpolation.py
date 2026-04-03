@@ -95,7 +95,7 @@ def run_interpolation_baseline(
     df: pd.DataFrame,
     method: str = "rbf",
     verbose: bool = True,
-) -> pd.DataFrame:
+) -> np.ndarray:
     """Run interpolation baseline on all dates in a benchmark dataset.
 
     Parameters
@@ -110,17 +110,16 @@ def run_interpolation_baseline(
 
     Returns
     -------
-    pd.DataFrame — copy of *df* with added ``iv_pred`` column.
+    np.ndarray of shape (len(df),) — predicted IV for every point.
     """
-    df = df.copy()
-    df["iv_pred"] = np.nan
+    iv_pred = np.full(len(df), np.nan)
 
     dates = df["date"].unique()
     for i, date in enumerate(dates):
-        mask = df["date"] == date
+        mask = (df["date"] == date).values
         df_date = df[mask]
         preds = interpolate_surface_date(df_date, method=method)
-        df.loc[mask, "iv_pred"] = preds
+        iv_pred[mask] = preds
 
         if verbose and (i + 1) % 200 == 0:
             print(f"  [{i + 1}/{len(dates)}] dates interpolated")
@@ -128,4 +127,4 @@ def run_interpolation_baseline(
     if verbose:
         print(f"  Interpolation complete: {len(dates)} dates, method={method}")
 
-    return df
+    return iv_pred

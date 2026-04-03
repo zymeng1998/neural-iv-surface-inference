@@ -239,9 +239,10 @@ class TestInterpolation:
         test_df = synthetic_benchmark_df[
             synthetic_benchmark_df["split"] == "test"
         ].reset_index(drop=True)
-        result = run_interpolation_baseline(test_df, method="linear", verbose=False)
-        assert "iv_pred" in result.columns
-        assert result["iv_pred"].notna().all()
+        iv_pred = run_interpolation_baseline(test_df, method="linear", verbose=False)
+        assert isinstance(iv_pred, np.ndarray)
+        assert len(iv_pred) == len(test_df)
+        assert not np.isnan(iv_pred).any()
 
     def test_few_points_fallback(self):
         """When only 1-2 observed points exist, should return mean."""
@@ -360,8 +361,9 @@ class TestEndToEnd:
             synthetic_benchmark_df["split"] == "test"
         ].reset_index(drop=True)
 
-        result_df = run_interpolation_baseline(test_df, method="linear", verbose=False)
-        metrics = evaluate_predictions(result_df)
+        test_df = test_df.copy()
+        test_df["iv_pred"] = run_interpolation_baseline(test_df, method="linear", verbose=False)
+        metrics = evaluate_predictions(test_df)
 
         # The interpolation should do better than random on synthetic smile data
         assert metrics["overall"]["mae"] < 0.5  # generous threshold

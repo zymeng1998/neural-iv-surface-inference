@@ -1,6 +1,6 @@
 # Neural IV Surface Inference - Structural Roadmap
 
-_Last updated: 2026-04-02_
+_Last updated: 2026-04-03_
 
 ## 1) End Goal (Decision-Grade Output)
 
@@ -85,7 +85,7 @@ mindmap
 | S1.3 | Surface coordinates | moneyness + maturity representation | Completed |
 | S2.1 | Sparse observations | random + structured + realistic liquidity masking | Completed — `data/masking.py`, 32 tests |
 | S2.2 | Noisy observations | none/low/med/high + heteroscedastic noise | Completed — `data/noise.py`, tested |
-| S2.3 | Evaluation splits | chronological 70/15/15 + benchmark versioning | Completed — `data/splits.py`, tested |
+| S2.3 | Evaluation splits | chronological 70/15/15 + benchmark versioning + `compute_date_split_map()` for streaming | Completed — `data/splits.py`, tested |
 | S3.1 | Simple baseline | per-date RBF/griddata interpolation on observed points | Completed — `models/interpolation.py`, tested |
 | S3.2 | Neural baseline | global masked MLP (SiLU + LayerNorm + softplus output) | Completed — `models/baseline_mlp.py`, `training/train.py`, tested |
 | S3.3 | Vendor-style reference | external reference integration and alignment | Not Started |
@@ -107,13 +107,13 @@ mindmap
 | `src/neural_iv_surface_inference/data/masking.py` | S2.1 — sparse observation masking (7 strategies) |
 | `src/neural_iv_surface_inference/data/noise.py` | S2.2 — noise injection (4 regimes + heteroscedastic) |
 | `src/neural_iv_surface_inference/data/splits.py` | S2.3 — chronological splits + benchmark versioning |
-| `src/data/04_build_benchmark_tasks.py` + `configs/benchmark_tasks.yaml` | S2.1–S2.3 orchestration (11 variants) |
+| `src/data/04_build_benchmark_tasks.py` + `configs/benchmark_tasks.yaml` | S2.1–S2.3 orchestration (11 variants, memory-safe streaming via PyArrow iter_batches) |
 | `tests/test_task_construction.py` | 32 unit tests covering masking, noise, splits, save/load |
 | `models/interpolation.py` | S3.1 — per-date RBF/griddata interpolation baseline |
 | `models/baseline_mlp.py` + `models/losses.py` | S3.2 — masked MLP with softplus output + masked MSE/MAE losses |
 | `training/train.py` | S3.2 training loop with early stopping, checkpointing, LR scheduling |
 | `training/eval.py` | S4.1, S4.2 — MAE/RMSE/MAPE + regional diagnostics by maturity and moneyness |
-| `data/loaders.py` | IVSurfaceDataset + DataLoader factory for benchmark Parquets |
+| `data/loaders.py` | IVSurfaceDataset + DataLoader factory for benchmark Parquets (column-pruned, gc-optimized) |
 | `scripts/run_baseline.py` | Entry point: runs both baselines, compares, saves CSV |
 | `tests/test_baselines.py` | 25 unit tests covering model, losses, dataset, training, eval, end-to-end |
 | `configs/baseline.yaml` | Full config for interpolation + MLP + paths |

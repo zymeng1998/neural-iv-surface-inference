@@ -41,14 +41,16 @@ def run_interpolation(data: dict, config: dict) -> pd.DataFrame:
     all_results = []
 
     for split in ["train", "val", "test"]:
-        df_split = data[f"{split}_df"]
+        df_split = data[f"{split}_df"].copy()
         print(f"\n[interp] Running on {split} ({len(df_split):,} points)...")
         t0 = time.time()
 
-        df_pred = run_interpolation_baseline(df_split, method=method, verbose=False)
+        df_split["iv_pred"] = run_interpolation_baseline(
+            df_split, method=method, verbose=False,
+        )
         elapsed = time.time() - t0
 
-        results = evaluate_predictions(df_pred)
+        results = evaluate_predictions(df_split)
         print_evaluation(results, model_name=f"Interpolation ({method}) — {split}")
         print(f"  Time: {elapsed:.1f}s")
 

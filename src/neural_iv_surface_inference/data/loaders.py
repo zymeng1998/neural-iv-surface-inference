@@ -7,12 +7,19 @@ observation mask, and split label.
 
 from __future__ import annotations
 
+import gc
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import Dataset, DataLoader
+
+# Only load columns needed for training / evaluation
+_REQUIRED_COLUMNS = [
+    "date", "tau", "log_moneyness", "implied_volatility",
+    "iv_clean", "observed", "split", "noise_sigma",
+]
 
 
 class IVSurfaceDataset(Dataset):
@@ -88,7 +95,12 @@ def load_benchmark_splits(
         'train_loader', 'val_loader', 'test_loader' — DataLoader instances
         'train_df', 'val_df', 'test_df' — raw DataFrames (for interpolation baseline)
     """
-    df = pd.read_parquet(path)
+    # Read only needed columns to reduce memory
+    import pyarrow.parquet as pq
+
+    available_cols = pq.read_schema(path).names
+    cols_to_read = [c for c in _REQUIRED_COLUMNS if c in available_cols]
+    df = pd.read_parquet(path, columns=cols_to_read)
 
     result = {}
     for split in ["train", "val", "test"]:
@@ -104,5 +116,9 @@ def load_benchmark_splits(
             num_workers=num_workers,
             pin_memory=torch.cuda.is_available(),
         )
+
+    # Free the full dataframe — splits are now held independently
+    del df
+    gc.collect()
 
     return result

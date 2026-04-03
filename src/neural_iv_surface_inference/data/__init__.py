@@ -3,6 +3,7 @@
 from neural_iv_surface_inference.data.masking import apply_mask
 from neural_iv_surface_inference.data.noise import inject_noise, NOISE_REGIMES
 from neural_iv_surface_inference.data.splits import (
+    compute_date_split_map,
     time_split,
     split_summary,
     benchmark_name,

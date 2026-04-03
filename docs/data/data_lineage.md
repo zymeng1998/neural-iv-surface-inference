@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-04-02T02:00:00-04:00
-last_updated_at: 2026-04-02T15:00:00-04:00
+last_updated_at: 2026-04-03T00:00:00-04:00
 ---
 
 > Repo-specific data lineage for the Neural IV Surface Inference project.
@@ -148,7 +148,7 @@ All data files are gitignored. The pipeline is designed to be re-run from scratc
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────┐
-│  STEP 4 — Build Benchmark Tasks                         │
+│  STEP 4 — Build Benchmark Tasks (memory-safe streaming) │
 │  Script: src/data/04_build_benchmark_tasks.py           │
 │  Config: configs/benchmark_tasks.yaml                   │
 │  Modules:                                               │
@@ -158,23 +158,27 @@ All data files are gitignored. The pipeline is designed to be re-run from scratc
 │                                                         │
 │  Input:  data_processed/spy/spy_surface_points_strict.  │
 │          parquet (from Step 3)                          │
+│          data_processed/spy/partitions/ (for date scan) │
 │                                                         │
-│  Processing (per benchmark variant):                    │
-│    1. Apply observation mask (random, structured, or    │
-│       realistic liquidity-weighted)                     │
-│    2. Inject noise on observed points only              │
-│       (none/low/med/high, i.i.d. or heteroscedastic)   │
-│    3. Apply chronological train/val/test split          │
-│       (70/15/15 by unique dates)                        │
-│    4. Save as Parquet with provenance metadata          │
+│  Processing:                                            │
+│    0. Precompute global date→split map by scanning      │
+│       partition files (reads only date column, ~4.5K    │
+│       dates, trivial memory)                            │
+│    Per benchmark variant:                               │
+│    1. Stream strict file via PyArrow iter_batches       │
+│       (500K rows per batch)                             │
+│    2. Per batch: apply mask → inject noise → assign     │
+│       split from precomputed map → write via            │
+│       ParquetWriter                                     │
+│    3. gc.collect() after each batch                     │
+│    4. Close writer with provenance metadata             │
 │                                                         │
 │  Output: data_processed/spy/benchmarks/                 │
 │          spy_phase1_<strategy><pct>_noise<level>.parquet│
 │          (11 variants configured)                       │
 │                                                         │
-│  Status: Implemented and tested (32 unit tests).        │
-│          Awaiting Step 3 re-run on RunPod before        │
-│          execution.                                     │
+│  Status: Implemented and tested. Rewritten from eager   │
+│          full-load to streaming after OOM on RunPod.    │
 └────────────────────────┬────────────────────────────────┘
                          │
                          ▼
@@ -190,6 +194,7 @@ All data files are gitignored. The pipeline is designed to be re-run from scratc
 │                                                         │
 │  Data:                                                  │
 │    data/loaders.py — IVSurfaceDataset + DataLoader      │
+│      (column-pruned load + gc.collect after split)      │
 │                                                         │
 │  Training:                                              │
 │    training/train.py — training loop, early stopping,   │
@@ -305,7 +310,9 @@ Task construction modules (S2.1–S2.3) are now implemented and tested:
 - **S2.2 Noise**: `src/neural_iv_surface_inference/data/noise.py` — 4 regimes (none/low/med/high), i.i.d. and heteroscedastic modes
 - **S2.3 Splits**: `src/neural_iv_surface_inference/data/splits.py` — chronological train/val/test (70/15/15), benchmark naming and Parquet save/load with provenance
 
-Orchestration: `src/data/04_build_benchmark_tasks.py` reads `configs/benchmark_tasks.yaml` (11 variants) and produces one Parquet per variant in `data_processed/spy/benchmarks/`.
+Orchestration: `src/data/04_build_benchmark_tasks.py` reads `configs/benchmark_tasks.yaml` (11 variants) and produces one Parquet per variant in `data_processed/spy/benchmarks/`. The script uses memory-safe streaming (PyArrow `iter_batches`, 500K rows/batch) with a precomputed date→split map via `compute_date_split_map()` in `splits.py`.
+
+`run_interpolation_baseline()` returns `np.ndarray` (not a DataFrame copy) to avoid duplicating the full dataset in memory. `loaders.py` prunes to only needed columns on load and calls `gc.collect()` after splitting.
 
 **Remaining stubs**: `scripts/prepare_data.py` and `src/neural_iv_surface_inference/data/cleaning.py` still contain TODO placeholders. All other modules (loaders, models, training, evaluation) are now implemented.
 
