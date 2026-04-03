@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-04-02T02:00:00-04:00
-last_updated_at: 2026-04-03T00:00:00-04:00
+last_updated_at: 2026-04-03T12:10:00-04:00
 ---
 
 > Repo-specific data lineage for the Neural IV Surface Inference project.
@@ -301,7 +301,11 @@ All data files are gitignored. The pipeline is designed to be re-run from scratc
 
 The pipeline scripts exist and the code is committed. However, the `data_raw/spy/` and `data_processed/spy/` directories on the current local clone are empty. The full pipeline execution (Steps 1–3) has been run on RunPod based on progress log evidence, but the resulting data files are not present in this clone. Data files are gitignored by design.
 
-**Uncertainty:** Whether the most recent committed version of `03_build_spy_surface_table.py` has been fully re-executed end-to-end on RunPod after the OOM fix. The progress log records the fix was committed, but does not explicitly confirm a successful full-scale run of the final version.
+**Resolved (Step 4 output validation):** Benchmark parquet outputs were verified directly on RunPod. Evidence:
+- strict source file (`data_processed/spy/spy_surface_points_strict.parquet`) row count = `21,386,789`
+- benchmark outputs present = `11/11` configured files
+- every benchmark file row count = `21,386,789` (matches strict source exactly)
+- per-file split counts are internally consistent: train `10,458,763`, val `5,617,807`, test `5,310,219` (sum = total)
 
 ### Feature engineering pipeline
 

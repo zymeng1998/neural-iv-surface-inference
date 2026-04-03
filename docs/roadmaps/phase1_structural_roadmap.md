@@ -132,8 +132,8 @@ mindmap
 
 ## 7) Next Milestone Priorities
 
-1. Integrate true vendor-style reference stream (close S3.3 gap).
-2. Promote MLP baseline to conditional autoencoder (Phase 2 entry point).
-3. Add first uncertainty-aware output head and calibration diagnostics.
-4. Add lightweight arbitrage diagnostics to evaluation reports.
+1. Run Step 5 on RunPod (`python scripts/run_baseline.py`) to produce first real-data baseline results on the verified benchmark datasets.
+2. Complete S4.3 result artifact package: plots + summary table + Phase 1 memo.
+3. Integrate true vendor-style reference stream (close S3.3 gap).
+4. After Phase 1 artifact completion, begin Phase 2 entry work (conditional autoencoder baseline).
 

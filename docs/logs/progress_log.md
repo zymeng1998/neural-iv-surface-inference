@@ -357,3 +357,30 @@ Each entry should capture:
 - Pull on RunPod and re-run Step 4 with memory monitoring
 - Run Step 5 (baselines) on RunPod
 - Verify benchmark parquet row counts match expectations
+
+---
+
+## 2026-04-03T12:10:00-04:00
+
+### Completed
+
+- Verified benchmark parquet row counts on RunPod against strict source output.
+- Confirmed strict source row count: `21,386,789` (`data_processed/spy/spy_surface_points_strict.parquet`).
+- Confirmed benchmark outputs: `11/11` expected files in `data_processed/spy/benchmarks/`.
+- Confirmed each benchmark file has `21,386,789` rows (no row-loss/duplication across variants).
+- Confirmed split counts are internally consistent for each file:
+  - train: `10,458,763`
+  - val: `5,617,807`
+  - test: `5,310,219`
+  - split sum equals total rows in every benchmark file.
+
+### Notes
+
+- Verification was run directly on RunPod using Parquet metadata and split-column counts.
+- This resolves the previously listed action item to verify benchmark parquet row counts.
+
+### Next Actions
+
+- Run Step 5 on RunPod: `python scripts/run_baseline.py` on the verified benchmark datasets.
+- Save and review first real-data baseline outputs in `artifacts/results/` and `artifacts/checkpoints/`.
+- Implement S4.3 deliverables: visualization plots and a Phase 1 summary memo.
