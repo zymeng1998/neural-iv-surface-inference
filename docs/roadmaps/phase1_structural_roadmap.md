@@ -88,7 +88,7 @@ mindmap
 | S2.3 | Evaluation splits | chronological 70/15/15 + benchmark versioning + `compute_date_split_map()` for streaming | Completed — `data/splits.py`, tested |
 | S3.1 | Simple baseline | per-date RBF/griddata interpolation on observed points | Completed — `models/interpolation.py`, tested |
 | S3.2 | Neural baseline | global masked MLP (SiLU + LayerNorm + softplus output) | Completed — `models/baseline_mlp.py`, `training/train.py`, tested |
-| S3.3 | Vendor-style reference | external reference integration and alignment | Not Started |
+| S3.3 | Vendor-style reference | external reference integration and alignment | Blocked — waiting on approved vendor reference source/schema and access path definition |
 | S4.1 | Core metrics | MAE/RMSE/MAPE, observed vs unobserved split | Completed — `training/eval.py`, tested |
 | S4.2 | Regional diagnostics | by maturity bucket (short/med/long) + moneyness bucket (5 bins) | Completed — `training/eval.py`, tested |
 | S4.3 | Result artifact | plots + summary table + phase memo | Not Started — `run_baseline.py` produces CSV, plots/memo not yet generated |

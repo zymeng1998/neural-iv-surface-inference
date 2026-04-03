@@ -384,3 +384,36 @@ Each entry should capture:
 - Run Step 5 on RunPod: `python scripts/run_baseline.py` on the verified benchmark datasets.
 - Save and review first real-data baseline outputs in `artifacts/results/` and `artifacts/checkpoints/`.
 - Implement S4.3 deliverables: visualization plots and a Phase 1 summary memo.
+
+---
+
+## 2026-04-03T13:00:00-04:00
+
+### Completed
+
+- Aligned `phase1_actions_remote_workstation_plan.md` with current Phase 1 status (completed milestones vs remaining gaps).
+- Reviewed and incorporated RunPod untracked Phase 1 artifacts:
+  - added `docs/phase1_result_memo.md`
+  - added repo-level `requirements.txt`
+  - imported `artifacts/results/baseline_results.csv` for baseline evidence tracking
+- Ran an additional RunPod regime sweep for interpolation on sampled test dates (120 dates each) across:
+  - `random40_noiselow`
+  - `random40_noisemed`
+  - `random40_noisehigh`
+- Saved sweep outputs to `artifacts/results/interp_sweep_sampled_test.csv`.
+- Implemented `scripts/generate_phase1_artifacts.py` and generated S4.3 artifacts:
+  - summary table: `artifacts/tables/phase1_summary_table.csv`
+  - figures in `artifacts/figures/`
+- Explicitly marked S3.3 (vendor-style reference) as blocked pending approved data source/schema/access path.
+
+### Notes
+
+- Full-dataset multi-variant interpolation sweeps are computationally heavy; sampled-date sweep was used to provide fast comparative regime evidence while preserving chronological structure.
+- Sweep trend is monotonic as noise increases (`overall_mae`: low < med < high), consistent with expected task difficulty progression.
+- RunPod notebook `notebooks/01_spy_data_firstlook.executed.ipynb` was reviewed for status (executed outputs present) and intentionally not added to git to avoid committing large executed notebook artifacts.
+
+### Next Actions
+
+- Unblock S3.3 by selecting vendor reference source and freezing schema mapping into project surface coordinates.
+- Extend Step 5 runs to additional benchmarks (including full test ranges where needed for final report confidence).
+- Finalize Phase 1 closeout package by refining regional diagnostics and linking memo + tables + figures in one summary readme.

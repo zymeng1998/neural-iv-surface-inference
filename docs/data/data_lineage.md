@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-04-02T02:00:00-04:00
-last_updated_at: 2026-04-03T12:10:00-04:00
+last_updated_at: 2026-04-03T13:00:00-04:00
 ---
 
 > Repo-specific data lineage for the Neural IV Surface Inference project.
@@ -326,4 +326,9 @@ Orchestration: `src/data/04_build_benchmark_tasks.py` reads `configs/benchmark_t
 
 ### Vendor-style reference data
 
-Subtask S3.3 (vendor-style reference) is marked "In Progress" in the roadmap. No vendor reference data files or integration scripts are present in the repository. This lineage gap will need to be documented when the vendor reference stream is implemented.
+Subtask S3.3 (vendor-style reference) is currently **blocked**. No vendor reference data files or integration scripts are present in the repository yet.
+
+Concrete next dependency to unblock S3.3:
+- approve one vendor-style reference source and access path
+- freeze minimal schema mapping into current surface coordinates (`date`, `tau`, `log_moneyness`, reference IV field)
+- define ingestion location under `data_raw/` and alignment output format under `data_processed/`

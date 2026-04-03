@@ -1,6 +1,6 @@
 # Phase 1 Actions — Remote Working Station First
 
-_Last updated: 2026-03-31_
+_Last updated: 2026-04-03_
 
 ## 0. What this document is
 
@@ -45,6 +45,25 @@ By the end of Phase 1, we want:
    - baseline vs neural comparison plot
    - error vs sparsity plot
    - one summary table
+
+## Current Phase 1 status (alignment snapshot)
+
+Completed from repository evidence:
+- Remote workstation workflow is operational on RunPod (SSH + persistent workspace + Git workflow documented).
+- SPY EOD data pipeline is implemented and run through strict surface generation (S1 complete).
+- Benchmark task construction is implemented and run (S2 complete).
+- Benchmark parity check is complete on RunPod: strict rows and all 11 benchmark files match expected row counts.
+- Interpolation and masked MLP baselines are implemented with tests (S3.1 and S3.2 complete in code).
+- Core evaluation metrics and regional diagnostics are implemented (S4.1 and S4.2 complete in code).
+
+Remaining Phase 1 gaps:
+- S3.3 vendor-style reference alignment is not yet implemented.
+- S4.3 result artifact package (plots + summary table + memo) is not yet completed on real benchmark runs.
+
+Immediate execution order to finish Phase 1:
+1. Run real-data Step 5 baselines on RunPod (primary benchmark + small regime sweep).
+2. Produce S4.3 artifacts from those runs.
+3. Resolve S3.3 either by initial implementation or by documenting a concrete external dependency block with next action owner.
 
 ---
 
