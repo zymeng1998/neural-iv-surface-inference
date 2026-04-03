@@ -124,7 +124,7 @@ def inject_noise(
     df["noise_sigma"] = sigma
 
     obs_mask = df["observed"].values
-    iv = df["implied_volatility"].values
+    iv = df["implied_volatility"].values.copy()  # copy to avoid read-only arrays from Parquet
 
     if sigma > 0 and obs_mask.any():
         obs_idx = np.where(obs_mask)[0]
