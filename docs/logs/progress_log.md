@@ -417,3 +417,28 @@ Each entry should capture:
 - Unblock S3.3 by selecting vendor reference source and freezing schema mapping into project surface coordinates.
 - Extend Step 5 runs to additional benchmarks (including full test ranges where needed for final report confidence).
 - Finalize Phase 1 closeout package by refining regional diagnostics and linking memo + tables + figures in one summary readme.
+
+---
+
+## 2026-04-03T20:05:00-04:00
+
+### Completed
+
+- Updated `notebooks/01_spy_data_firstlook.ipynb` to be reliably runnable across environments:
+  - robust project-root/config path resolution
+  - graceful parquet loading fallback (conservative -> strict -> synthetic demo dataset)
+  - strict-surface plotting fallback when strict parquet is absent
+- Added structured markdown guidance before each plot/table section in the notebook:
+  - what we are doing
+  - why it is important
+  - what was observed
+  - how it contributes to the project end goal
+
+### Notes
+
+- The new markdown framing is aligned with the project end goal in `ml_finance_iv_surface_project_plan_notes.md` (decision-grade IV surface inference from sparse/noisy/irregular observations for pricing/hedging/risk use).
+
+### Next Actions
+
+- Re-run notebook end-to-end on RunPod using real parquet files and refresh exported figures.
+- Keep using the same section template for future EDA extensions to preserve narrative consistency.
