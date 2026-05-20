@@ -58,6 +58,30 @@ Thumbs.db
 .idea/
 *.swp
 
+# AI / coding-assistant config and context files
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+.claude*
+.cursor/
+.cursorrules
+.cursorignore
+.cursor*
+.aider*
+.continue/
+.github/copilot-instructions.md
+.codeium/
+.windsurf/
+.windsurfrules
+.tabnine/
+GEMINI.md
+.gemini/
+AGENTS.md
+.agent/
+.openhands/
+.codex/
+.zed/
+
 # Local-only private operational notes
 docs/private/*.md
 
