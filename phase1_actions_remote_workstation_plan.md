@@ -307,11 +307,11 @@ RunPod has direct docs for VS Code/Cursor Remote-SSH on Pods that support SSH ov
 Suggested `~/.ssh/config` entry:
 
 ```ssh
-Host runpod-iv
-  HostName YOUR_POD_IP
-  User root
-  Port YOUR_EXPOSED_SSH_PORT
-  IdentityFile ~/.ssh/id_ed25519
+Host <ssh-alias>
+  HostName <remote-host>
+  User <remote-user>
+  Port <remote-port>
+  IdentityFile <private-key-path>
 ```
 
 ---

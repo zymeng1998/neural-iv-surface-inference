@@ -83,10 +83,29 @@ AGENTS.md
 .zed/
 
 # Local-only private operational notes
-docs/private/*.md
+docs/private/**
+!docs/private/.gitkeep
+
+# Local infrastructure readiness / migration notes (operational, never public)
+docs/*runpod*readiness*.md
+docs/*migration*readiness*.md
+docs/**/*runpod*readiness*.md
+docs/**/*migration*readiness*.md
+docs/**/*runpod*private*.md
+docs/**/*infra*private*.md
+
+# Generated repo-tree / local structure snapshots (leak local paths)
+docs/agent_bootstrap/repo_tree.txt
+docs/agent_bootstrap/repo_tree_summary.md
+
+# Project-memory review packets / local reports
+reports/project_memory/**
 
 # Common local secret material
 .env
 .env.*
 *.pem
 *.key
+*.p8
+*.ppk
+.ssh_keys/

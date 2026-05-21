@@ -26,6 +26,15 @@
 repos:
   - repo: local
     hooks:
+      # Runs before the PMR gate. Blocks commits/pushes that contain secrets
+      # or operational-metadata leaks (IPs, SSH endpoints, key paths, tokens).
+      - id: security-scan-changed-files
+        name: Security Scan (secrets / infra leaks)
+        entry: python3 scripts/security_scan_changed_files.py --all
+        language: system
+        always_run: true
+        pass_filenames: false
+        stages: [pre-commit, pre-push]
       - id: pmr-prepush-gate
         name: PMR Pre-Push Gate
         entry: python3 scripts/pmr_prepush_gate.py

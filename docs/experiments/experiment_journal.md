@@ -72,8 +72,9 @@ with corresponding unobserved MAE increases (0.07875 → 0.07954 → 0.08104). S
 
 ## 2026-05-20T03:50:00+00:00 — Repair: regenerate missing MLP baseline rows (eval-only)
 
-**Purpose:** Phase 1 closeout repair. After migrating to the new RunPod network
-volume (`/workspace`, pod `0019e3f632c4`, host `213.173.102.225`), the committed
+**Purpose:** Phase 1 closeout repair. After migrating to a new remote network
+volume (operational endpoint details intentionally omitted — see local-only
+private runbook), the committed
 `artifacts/results/baseline_results.csv` was found to contain only `interp_rbf`
 rows. The 2026-04-03 baseline entry documents `mlp` results that no surviving CSV
 (committed or in either backup) actually contained — only the trained checkpoint

@@ -287,14 +287,14 @@ Note: pip packages installed via the system pip may not survive Pod restarts dep
 ### Small files: use SSH
 
 ```bash
-# Local → RunPod
-scp -P 10188 local_file.py root@203.57.40.102:/workspace/Neural-IV-Surface-inference/
+# Local → remote
+scp -P <remote-port> local_file.py <remote-user>@<remote-host>:<workspace-path>/Neural-IV-Surface-inference/
 
-# RunPod → Local
-scp -P 10188 root@203.57.40.102:/workspace/file.txt ./
+# remote → Local
+scp -P <remote-port> <remote-user>@<remote-host>:<workspace-path>/file.txt ./
 ```
 
-**Note**: SCP requires the direct TCP SSH endpoint (IP + port from RunPod console). The port may change after restart. Prefer git for code and Cyberduck for data files.
+**Note**: SCP requires the direct TCP SSH endpoint (host + port from the provider console). These values are intentionally not committed — keep them in a local-only private runbook. The port may change after restart. Prefer git for code and a GUI SFTP client for data files.
 
 ### Code: use git
 
