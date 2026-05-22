@@ -642,3 +642,52 @@ Each entry should capture:
   benchmark + add MLP-predictor wiring (load checkpoint) to compare both
   baselines through the same interface.
 - Begin Epic 2B (sensitivity & structure diagnostics) decomposition.
+
+---
+
+## 2026-05-22T11:45:00-04:00
+
+### Completed
+
+- Phase 1 visual result package, local track (advances S4.3). Built a reusable,
+  tested visualization layer and presentation tooling — no RunPod needed for the
+  aggregate figures (all derive from committed result CSVs).
+  - `src/neural_iv_surface_inference/viz/`: `style.py` (house style + semantic
+    palette), `results_plots.py` (baseline comparison, observed-vs-unobserved,
+    regional error bars, joint maturity×moneyness heatmap, noise sweep),
+    `surface_plots.py` (surface scatter, reference/observed/reconstructed
+    triptych, spatial absolute-error map). Functions return Matplotlib Figures;
+    caller owns persistence.
+  - `training/eval.py`: added `evaluate_predictions_2d` +
+    `evaluate_predictions_2d_counts` for the **joint** maturity×moneyness error
+    grid (existing eval only had marginals).
+  - `notebooks/02_phase1_baseline_results.ipynb`: technical results notebook
+    (executed, figures embedded) reading the committed CSVs; RunPod-independent.
+  - `scripts/generate_phase1_presentation.py`: curated captioned figure set via
+    the viz module; aggregate path needs no data, surface path runs on RunPod
+    when `--benchmark` exists.
+  - `tests/test_viz.py`: 21 tests (2D-grid orientation/counts, every plot
+    function on synthetic data, error paths).
+
+### Notes
+
+- Figure dirs (`artifacts/figures/*`, `plots/`, `reports/`) are gitignored —
+  figures are regenerable; the committed evidence is the code + the executed
+  notebook (figures embedded inline in the .ipynb).
+- Surface/spatial visuals + real-data joint heatmap + EDA refresh require the
+  benchmark parquet (RunPod). Surface-gallery notebook (03) + RunPod runbook are
+  the next deliverable.
+
+### Tests
+
+- `pytest tests/test_viz.py -q` → 21 passed.
+- `pytest tests/ -q` → 142 passed (full regression).
+- `python3 scripts/smoke_test.py` → exit 0.
+- Executed `notebooks/02_phase1_baseline_results.ipynb` via nbconvert (exit 0).
+
+### Next Actions
+
+- RunPod: build `notebooks/03_phase1_surface_gallery.ipynb` + run
+  `generate_phase1_presentation.py --benchmark <parquet>` for surface visuals and
+  the real joint maturity×moneyness heatmap; write the RunPod runbook + Phase 1
+  memo to close S4.3.

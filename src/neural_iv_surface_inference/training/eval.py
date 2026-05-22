@@ -130,6 +130,77 @@ def evaluate_predictions(df: pd.DataFrame) -> dict:
     return results
 
 
+def evaluate_predictions_2d(
+    df: pd.DataFrame,
+    metric: str = "mae",
+) -> pd.DataFrame:
+    """Joint maturity x moneyness error grid (for a true 2D heatmap).
+
+    ``evaluate_predictions`` reports maturity and moneyness as independent
+    marginals; this computes the *joint* cell error so a real
+    (maturity x moneyness) heatmap can be plotted.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Must contain ``iv_pred``, ``iv_clean``, ``tau``, ``log_moneyness``.
+    metric : str
+        ``"mae"`` or ``"rmse"``.
+
+    Returns
+    -------
+    pd.DataFrame
+        Indexed by maturity bucket (rows, in ``TAU_BUCKETS`` order), columns =
+        moneyness buckets (in ``MONEYNESS_BUCKETS`` order). Each value is the
+        cell error; empty cells are ``nan``. A companion count grid is available
+        via :func:`evaluate_predictions_2d_counts`.
+    """
+    if metric not in ("mae", "rmse"):
+        raise ValueError(f"metric must be 'mae' or 'rmse', got {metric!r}")
+    err_fn = mae if metric == "mae" else rmse
+
+    pred = df["iv_pred"].values
+    target = df["iv_clean"].values
+    tau = df["tau"].values
+    log_m = df["log_moneyness"].values
+
+    grid = np.full((len(TAU_BUCKETS), len(MONEYNESS_BUCKETS)), np.nan)
+    for i, (_, (t_lo, t_hi)) in enumerate(TAU_BUCKETS.items()):
+        t_mask = (tau >= t_lo) & (tau < t_hi)
+        for j, (_, (m_lo, m_hi)) in enumerate(MONEYNESS_BUCKETS.items()):
+            mask = t_mask & (log_m >= m_lo) & (log_m < m_hi)
+            if mask.any():
+                grid[i, j] = err_fn(pred[mask], target[mask])
+
+    return pd.DataFrame(
+        grid,
+        index=list(TAU_BUCKETS.keys()),
+        columns=list(MONEYNESS_BUCKETS.keys()),
+    )
+
+
+def evaluate_predictions_2d_counts(df: pd.DataFrame) -> pd.DataFrame:
+    """Point counts per joint (maturity x moneyness) cell.
+
+    Same shape/orientation as :func:`evaluate_predictions_2d`; useful to flag
+    sparsely-populated cells when reading a heatmap.
+    """
+    tau = df["tau"].values
+    log_m = df["log_moneyness"].values
+
+    grid = np.zeros((len(TAU_BUCKETS), len(MONEYNESS_BUCKETS)), dtype=int)
+    for i, (_, (t_lo, t_hi)) in enumerate(TAU_BUCKETS.items()):
+        t_mask = (tau >= t_lo) & (tau < t_hi)
+        for j, (_, (m_lo, m_hi)) in enumerate(MONEYNESS_BUCKETS.items()):
+            grid[i, j] = int((t_mask & (log_m >= m_lo) & (log_m < m_hi)).sum())
+
+    return pd.DataFrame(
+        grid,
+        index=list(TAU_BUCKETS.keys()),
+        columns=list(MONEYNESS_BUCKETS.keys()),
+    )
+
+
 def metrics_to_dataframe(results: dict, model_name: str = "") -> pd.DataFrame:
     """Flatten evaluation results into a single-row summary DataFrame."""
     flat = {"model": model_name}
