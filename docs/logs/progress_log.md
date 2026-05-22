@@ -442,3 +442,70 @@ Each entry should capture:
 
 - Re-run notebook end-to-end on RunPod using real parquet files and refresh exported figures.
 - Keep using the same section template for future EDA extensions to preserve narrative consistency.
+
+---
+
+## 2026-05-22T01:29:47-04:00
+
+### Completed
+
+- Entered epic 2A (Phase 2 Workstream W1 — Uncertainty Evaluation) and ran its
+  phase-entry decomposition (story 2A.1, Plan mode).
+- Set epic 2A to `in_progress` on `docs/tasks/BOARD.md` and added story rows
+  2A.1 (`done`) through 2A.5 (`backlog`).
+- Wrote five story specs under `docs/tasks/specs/`:
+  - 2A.1 Decompose Phase 2A (this decomposition)
+  - 2A.2 Model-agnostic predictor interface
+  - 2A.3 Core uncertainty-evaluation metrics
+  - 2A.4 Abstention / selective-prediction curves
+  - 2A.5 Uncertainty-evaluation runner + artifacts
+
+### Notes
+
+- Decomposition only — no code, no runs, no downloads. The repo currently emits
+  point predictions only; W1 adds a model-agnostic uncertainty-evaluation layer
+  (interface → metrics → abstention → runner) that future predictors share.
+- Baseline adapters carry `uncertainty=None` until W4 supplies real signals;
+  2A.3/2A.4 are validated against synthetic fixtures with known answers.
+- Per progressive-decomposition policy, epics 2B–2D remain single `backlog`
+  rows and were not decomposed.
+
+### Next Actions
+
+- Human reviews specs 2A.2–2A.5 and promotes ready ones from `backlog` to `todo`.
+- Implement 2A.2 first (predictor interface is the contract 2A.3–2A.5 consume).
+
+---
+
+## 2026-05-22T02:10:00-04:00
+
+### Completed
+
+- Implemented story 2A.2 (model-agnostic predictor interface, Phase 2 W1).
+  Added new `src/neural_iv_surface_inference/eval/` subpackage:
+  - `predictor.py`: frozen `PredictionResult` dataclass (`pred`, optional
+    `uncertainty`/`lower`/`upper`, `meta`) with array-length validation in
+    `__post_init__`, plus a `@runtime_checkable` `Predictor` Protocol
+    (`predict(df) -> PredictionResult`).
+  - `adapters.py`: `InterpolationPredictor` (wraps `run_interpolation_baseline`)
+    and `MLPPredictor` (wraps `predict_mlp` via a non-shuffled DataLoader). Both
+    return `uncertainty=None`.
+- Added `tests/test_predictor_interface.py` (result construction/validation,
+  length-mismatch rejection, Protocol conformance, both adapters return
+  finite preds of `len(df)`).
+- Set 2A.2 to `done` on `docs/tasks/BOARD.md` and in the story spec.
+
+### Notes
+
+- Purely additive: no existing module, data, config, or checkpoint touched
+  (`eval.py` / `run_baseline.py` unchanged).
+- Baseline adapters carry `uncertainty=None` until W4 supplies real signals.
+
+### Tests
+
+- `pytest tests/test_predictor_interface.py tests/test_baselines.py -q` → 35 passed.
+- `python3 scripts/smoke_test.py` → exit 0.
+
+### Next Actions
+
+- Implement 2A.3 (core uncertainty-evaluation metrics) — consumes this interface.

@@ -167,6 +167,12 @@ Sequencing principle: **2A before 2C** (we measure reliability before we model
 it), and **2B diagnostics before any hard structural constraints** (we quantify
 violations before penalizing them).
 
+> **Status (2026-05-22):** Epic 2A is `in_progress`. It has been decomposed into
+> stories 2A.1–2A.5 (see `docs/tasks/BOARD.md` and `docs/tasks/specs/`):
+> 2A.1 decomposition (done), 2A.2 predictor interface, 2A.3 core uncertainty
+> metrics, 2A.4 abstention curves, 2A.5 evaluation runner + artifacts.
+> Epics 2B–2D remain undecomposed (progressive decomposition).
+
 ## 6) Acceptance Criteria
 
 Phase 2 is complete when the following hold:
