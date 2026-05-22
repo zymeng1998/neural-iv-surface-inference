@@ -509,3 +509,43 @@ Each entry should capture:
 ### Next Actions
 
 - Implement 2A.3 (core uncertainty-evaluation metrics) — consumes this interface.
+
+---
+
+## 2026-05-22T02:40:00-04:00
+
+### Completed
+
+- Implemented story 2A.3 (core uncertainty-evaluation metrics, Phase 2 W1).
+  Added `src/neural_iv_surface_inference/eval/uncertainty_metrics.py` with five
+  pure, typed metric families over numpy arrays:
+  - `interval_coverage(y_true, lower, upper)` — empirical coverage fraction.
+  - `mean_interval_width(lower, upper)` — sharpness companion.
+  - `error_uncertainty_correlation(abs_error, uncertainty)` — pearson + spearman.
+  - `confidence_bucket_metrics(abs_error, confidence, n_buckets)` — MAE per
+    confidence-quantile bucket (bucket 0 = lowest confidence).
+  - `high_confidence_mae(abs_error, confidence, keep_fraction)` — retained MAE
+    on the top-confidence subset.
+- Added `tests/test_uncertainty_metrics.py` (26 tests): Gaussian coverage tracks
+  nominal, monotone error∝uncertainty → corr≈1, buckets recover injected
+  ordering, NaN/empty returns documented, length mismatch raises.
+- Set 2A.3 to `done` on `docs/tasks/BOARD.md` and in the story spec.
+
+### Notes
+
+- Convention: `confidence` higher = more confident; callers convert a raw
+  `uncertainty` via `confidence = -uncertainty`. Documented in the module.
+- NaN/empty rows are dropped (never silently coerced); empty input yields
+  documented `nan` / empty-list / `0`-count returns.
+- Purely additive: `training/eval.py` point metrics unchanged. Abstention /
+  risk–coverage curves intentionally deferred to 2A.4.
+
+### Tests
+
+- `pytest tests/test_uncertainty_metrics.py -q` → 26 passed.
+- `pytest tests/ -q` → 95 passed (full regression).
+- `python3 scripts/smoke_test.py` → exit 0.
+
+### Next Actions
+
+- Implement 2A.4 (abstention / risk–coverage curves) — builds on these metrics.
