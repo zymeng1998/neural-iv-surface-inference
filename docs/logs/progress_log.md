@@ -766,3 +766,41 @@ Each entry should capture:
 
 - Human reviews specs 2B.2–2B.5 and promotes ready ones from `backlog` to `todo`.
 - Implement 2B.2 first (masking-sensitivity harness), then 2B.3.
+
+---
+
+## 2026-05-22T18:00:00+00:00
+
+### Completed
+
+- Implemented story 2B.2 (masking-sensitivity harness). New
+  `diagnostics/` subpackage:
+  - `mask_resample(df_date, keep_fraction, n_draws, seed)` — draws random
+    observed-subsets (subsamples the observed set; never invents observations;
+    seed-reproducible; clamps keep-count to ≥1; all-False when nothing observed).
+  - `masking_sensitivity(predictor, df_date, ...)` — per-draw re-masking over
+    the model-agnostic `Predictor` protocol; returns a typed
+    `MaskingSensitivityResult` with NaN-safe per-point mean, std (instability),
+    finite-draw counts, and the raw stacked predictions.
+  - `instability_summary(...)` — mean/median per-point std, optionally
+    restricted to originally-unobserved points.
+- Set 2B.2 `in_review` on the board, spec, and roadmap status note.
+
+### Key Results
+
+- `pytest tests/test_masking_sensitivity.py -q` → 16 passed.
+- `pytest tests/ -q` → 158 passed (no regressions).
+- `python3 scripts/smoke_test.py` → exit 0.
+- Behavior verified: constant predictor → 0 instability; predictor keyed off
+  observed-row identity → positive, seed-reproducible instability; never-finite
+  point → `nan` mean/std with `n_draws = 0`.
+
+### Notes
+
+- Inference-time only (no retraining); applies to the interpolation predictor.
+  Train-time masking sensitivity for the MLP stays deferred to 2C.
+- No risk flags / heatmaps (2B.4) and no runner/artifacts (2B.5) here — scope held.
+
+### Next Actions
+
+- Human review of 2B.2 diff; then implement 2B.3 (no-arbitrage diagnostics).

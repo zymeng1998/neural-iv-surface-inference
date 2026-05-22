@@ -174,9 +174,10 @@ violations before penalizing them).
 >
 > Epic 2B (W2 — sensitivity & structure diagnostics) is `in_progress`, decomposed
 > into stories 2B.1–2B.5: 2B.1 decomposition (done), 2B.2 masking-sensitivity
-> harness, 2B.3 no-arbitrage diagnostics, 2B.4 risk-flag synthesis + region
-> heatmaps, 2B.5 diagnostics runner + artifacts (2B.2–2B.5 `backlog`). Epics
-> 2C–2D remain undecomposed (progressive decomposition).
+> harness (`done` — diagnostics subpackage implemented + tested), 2B.3
+> no-arbitrage diagnostics, 2B.4 risk-flag synthesis + region heatmaps, 2B.5
+> diagnostics runner + artifacts (2B.3–2B.5 `backlog`). Epics 2C–2D remain
+> undecomposed (progressive decomposition).
 
 ## 6) Acceptance Criteria
 
