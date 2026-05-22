@@ -844,3 +844,44 @@ Each entry should capture:
 
 - Human review of 2B.3 diff; then implement 2B.4 (risk-flag synthesis + region
   heatmaps).
+
+---
+
+## 2026-05-22T20:00:00+00:00
+
+### Completed
+
+- Implemented story 2B.4 (risk-flag synthesis + region heatmaps):
+  - `diagnostics/risk_flags.py`: `derive_risk_flags(diagnostics, instability,
+    config)` -> `RiskFlagResult` (per-point boolean `no_arb_risk_flag` +
+    continuous `risk_score` + `struct_flag` / `struct_count`), with a
+    configurable `RiskFlagConfig` (instability threshold + struct/instability
+    weights). `bin_to_regions(...)` aggregates any per-point value onto the
+    canonical `TAU_BUCKETS x MONEYNESS_BUCKETS` grid (mean/sum/max/fraction).
+  - `viz/diagnostic_plots.py`: `plot_risk_region_heatmap` /
+    `plot_instability_heatmap` return Matplotlib Figures (caller saves),
+    reusing the Phase 1 palette.
+- Extended 2B.3 `ViolationResult` (additive) with a per-point `point_mask` +
+  `n_points`, populated by each check, so risk flags attribute violations to
+  points without re-implementing the diagnostics. Re-ran 2B.3 tests — green.
+- Set 2B.4 `in_review` on the board, spec, and roadmap status note.
+
+### Key Results
+
+- `pytest tests/test_risk_flags.py -q` → 13 passed.
+- `pytest tests/ -q` → 184 passed (no regressions).
+- `python3 scripts/smoke_test.py` → exit 0.
+- Verified: clean surface → no flags; localized vol spike → flags stay near the
+  affected region; instability threshold monotone in flag count; region binning
+  matches the eval bucket edges; heatmaps return Figures.
+
+### Notes
+
+- Diagnostic signals only — no tradability threshold / `abstain_flag` policy
+  (W5 / 2D). No disk artifacts / runner (2B.5).
+- `risk_score` instability term is normalized per-surface by its finite max, so
+  it is surface-relative; cross-surface comparability is a 2B.5 concern.
+
+### Next Actions
+
+- Human review of 2B.4 diff; then implement 2B.5 (diagnostics runner + artifacts).

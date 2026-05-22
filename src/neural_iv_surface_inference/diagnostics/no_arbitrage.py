@@ -67,6 +67,14 @@ class ViolationResult:
         Sum of the non-negative breach magnitudes (units depend on the check:
         total-variance units for calendar, undiscounted-price units for
         monotonicity/convexity). ``0.0`` when there are no violations.
+    point_mask : np.ndarray
+        Boolean array over the **original** ``df_date`` rows (length
+        ``n_points``), ``True`` where that row participates in at least one
+        breached unit. This is the per-point attribution the W2 risk-flag
+        synthesis (2B.4) consumes; a point flagged here means a structural
+        violation touches it.
+    n_points : int
+        Number of rows in the scored surface (length of ``point_mask``).
     meta : dict
         Free-form details (e.g. ``n_groups``, ``iv_col``).
     """
@@ -77,6 +85,10 @@ class ViolationResult:
     n_violations: int
     rate: float
     severity: float
+    point_mask: np.ndarray = field(
+        default_factory=lambda: np.zeros(0, dtype=bool)
+    )
+    n_points: int = 0
     meta: dict = field(default_factory=dict)
 
 
@@ -104,15 +116,21 @@ def _black_call_undiscounted(k: np.ndarray, tau: np.ndarray, sigma: np.ndarray) 
     return price
 
 
-def _finite_group_sort(values: np.ndarray, *arrays: np.ndarray):
-    """Drop non-finite rows (across ``values`` + ``arrays``) and sort by ``values``."""
+def _finite_group_sort(base_idx: np.ndarray, values: np.ndarray, *arrays: np.ndarray):
+    """Drop non-finite rows and sort by ``values``, carrying original indices.
+
+    Returns ``(base_idx_sorted, values_sorted, [arrays_sorted...])`` where
+    ``base_idx`` are the original ``df_date`` row positions, kept aligned through
+    the finite filter and the sort so violations can be attributed to points.
+    """
     finite = np.isfinite(values)
     for a in arrays:
         finite &= np.isfinite(a)
+    base_idx = base_idx[finite]
     values = values[finite]
     arrays = [a[finite] for a in arrays]
     order = np.argsort(values, kind="stable")
-    return values[order], [a[order] for a in arrays]
+    return base_idx[order], values[order], [a[order] for a in arrays]
 
 
 def calendar_violations(
@@ -125,16 +143,18 @@ def calendar_violations(
     (``w[i+1] < w[i]``). Severity sums the drop magnitudes. Groups with fewer than
     two distinct finite points contribute no evaluated pairs.
     """
+    n = len(df_date)
     k = df_date["log_moneyness"].to_numpy(dtype=float)
     tau = df_date["tau"].to_numpy(dtype=float)
     sigma = df_date[iv_col].to_numpy(dtype=float)
 
     masks: list[np.ndarray] = []
+    point_mask = np.zeros(n, dtype=bool)
     severity = 0.0
     n_groups = 0
     for kv in np.unique(k):
-        sel = k == kv
-        tau_s, (sigma_s,) = _finite_group_sort(tau[sel], sigma[sel])
+        sel = np.flatnonzero(k == kv)
+        bidx, tau_s, (sigma_s,) = _finite_group_sort(sel, tau[sel], sigma[sel])
         if len(tau_s) < 2:
             continue
         n_groups += 1
@@ -143,8 +163,13 @@ def calendar_violations(
         viol = diff < -_TOL
         masks.append(viol)
         severity += float(np.sum(-diff[viol]))
+        vpos = np.flatnonzero(viol)
+        point_mask[bidx[vpos]] = True
+        point_mask[bidx[vpos + 1]] = True
 
-    return _assemble("calendar", masks, severity, {"n_groups": n_groups, "iv_col": iv_col})
+    return _assemble(
+        "calendar", masks, severity, point_mask, n, {"n_groups": n_groups, "iv_col": iv_col}
+    )
 
 
 def monotonicity_violations(
@@ -158,16 +183,18 @@ def monotonicity_violations(
     with strike (``C[i+1] > C[i]``). Severity sums the positive increments.
     Groups with fewer than two distinct finite points contribute nothing.
     """
+    n = len(df_date)
     k = df_date["log_moneyness"].to_numpy(dtype=float)
     tau = df_date["tau"].to_numpy(dtype=float)
     sigma = df_date[iv_col].to_numpy(dtype=float)
 
     masks: list[np.ndarray] = []
+    point_mask = np.zeros(n, dtype=bool)
     severity = 0.0
     n_groups = 0
     for tv in np.unique(tau):
-        sel = tau == tv
-        k_s, (sigma_s,) = _finite_group_sort(k[sel], sigma[sel])
+        sel = np.flatnonzero(tau == tv)
+        bidx, k_s, (sigma_s,) = _finite_group_sort(sel, k[sel], sigma[sel])
         if len(k_s) < 2:
             continue
         n_groups += 1
@@ -176,8 +203,14 @@ def monotonicity_violations(
         viol = diff > _TOL
         masks.append(viol)
         severity += float(np.sum(diff[viol]))
+        vpos = np.flatnonzero(viol)
+        point_mask[bidx[vpos]] = True
+        point_mask[bidx[vpos + 1]] = True
 
-    return _assemble("monotonicity", masks, severity, {"n_groups": n_groups, "iv_col": iv_col})
+    return _assemble(
+        "monotonicity", masks, severity, point_mask, n,
+        {"n_groups": n_groups, "iv_col": iv_col},
+    )
 
 
 def convexity_violations(
@@ -192,16 +225,18 @@ def convexity_violations(
     negative second differences. Groups with fewer than three distinct finite
     points contribute no evaluated triples.
     """
+    n = len(df_date)
     k = df_date["log_moneyness"].to_numpy(dtype=float)
     tau = df_date["tau"].to_numpy(dtype=float)
     sigma = df_date[iv_col].to_numpy(dtype=float)
 
     masks: list[np.ndarray] = []
+    point_mask = np.zeros(n, dtype=bool)
     severity = 0.0
     n_groups = 0
     for tv in np.unique(tau):
-        sel = tau == tv
-        k_s, (sigma_s,) = _finite_group_sort(k[sel], sigma[sel])
+        sel = np.flatnonzero(tau == tv)
+        bidx, k_s, (sigma_s,) = _finite_group_sort(sel, k[sel], sigma[sel])
         if len(k_s) < 3:
             continue
         n_groups += 1
@@ -214,11 +249,25 @@ def convexity_violations(
         viol = second < -_TOL
         masks.append(viol)
         severity += float(np.sum(-second[viol]))
+        # interior position m (0-based over `second`) implicates sorted
+        # points m, m+1, m+2.
+        for m in np.flatnonzero(viol):
+            point_mask[bidx[m : m + 3]] = True
 
-    return _assemble("convexity", masks, severity, {"n_groups": n_groups, "iv_col": iv_col})
+    return _assemble(
+        "convexity", masks, severity, point_mask, n,
+        {"n_groups": n_groups, "iv_col": iv_col},
+    )
 
 
-def _assemble(check: str, masks: list[np.ndarray], severity: float, meta: dict) -> ViolationResult:
+def _assemble(
+    check: str,
+    masks: list[np.ndarray],
+    severity: float,
+    point_mask: np.ndarray,
+    n_points: int,
+    meta: dict,
+) -> ViolationResult:
     mask = np.concatenate(masks) if masks else np.zeros(0, dtype=bool)
     n_eval = int(mask.size)
     n_viol = int(mask.sum())
@@ -230,6 +279,8 @@ def _assemble(check: str, masks: list[np.ndarray], severity: float, meta: dict) 
         n_violations=n_viol,
         rate=rate,
         severity=float(severity),
+        point_mask=point_mask,
+        n_points=int(n_points),
         meta=meta,
     )
 
