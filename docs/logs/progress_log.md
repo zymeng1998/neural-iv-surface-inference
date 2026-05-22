@@ -549,3 +549,44 @@ Each entry should capture:
 ### Next Actions
 
 - Implement 2A.4 (abstention / risk–coverage curves) — builds on these metrics.
+
+---
+
+## 2026-05-22T09:20:00-04:00
+
+### Completed
+
+- Implemented story 2A.4 (abstention / selective-prediction curves, Phase 2 W1).
+  Added `src/neural_iv_surface_inference/eval/abstention.py`:
+  - `RiskCoverageCurve` — frozen dataclass (`coverage`, `retained_mae`,
+    `n_retained`), arrays ordered by increasing coverage, length-validated.
+  - `risk_coverage_curve(abs_error, confidence, n_points)` — ranks points by
+    confidence (desc), uses the cumulative mean of error over the top-k subset;
+    coverage reported as actual `k/n` so the keep-all endpoint is exactly 1.0
+    and `retained_mae[-1]` equals overall MAE. NaN-aware; empty input → empty
+    curve.
+  - `area_under_risk_coverage(curve)` — trapezoidal AURC (lower is better),
+    NumPy 1.x/2.x compatible (`np.trapz`/`np.trapezoid` fallback).
+- Added `tests/test_abstention.py` (14 tests): keep-all == overall MAE,
+  perfect-ranking monotone non-decreasing, random confidence ≈ flat,
+  AURC(perfect) < AURC(random), known small case, NaN/empty, length mismatch.
+- Promoted 2A.4 backlog → in_progress → `done` on `docs/tasks/BOARD.md` and in
+  the story spec; synced roadmap status note.
+
+### Notes
+
+- Convention shared with 2A.3: `confidence` higher = more confident; abstention
+  retains highest-confidence points first.
+- Purely additive. No threshold/policy choice (that is W5/2D); no disk artifacts
+  (the runner, 2A.5, owns persistence).
+
+### Tests
+
+- `pytest tests/test_abstention.py -q` → 14 passed.
+- `pytest tests/ -q` → 109 passed (full regression).
+- `python3 scripts/smoke_test.py` → exit 0.
+
+### Next Actions
+
+- Implement 2A.5 (uncertainty-evaluation runner + artifacts) — wires the
+  predictor interface, metrics, and abstention curves into an end-to-end run.

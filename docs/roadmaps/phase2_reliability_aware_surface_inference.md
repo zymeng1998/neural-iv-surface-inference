@@ -170,7 +170,7 @@ violations before penalizing them).
 > **Status (2026-05-22):** Epic 2A is `in_progress`. It has been decomposed into
 > stories 2A.1–2A.5 (see `docs/tasks/BOARD.md` and `docs/tasks/specs/`):
 > 2A.1 decomposition (done), 2A.2 predictor interface (done), 2A.3 core
-> uncertainty metrics (done), 2A.4 abstention curves (backlog), 2A.5 evaluation
+> uncertainty metrics (done), 2A.4 abstention curves (done), 2A.5 evaluation
 > runner + artifacts (backlog). Epics 2B–2D remain undecomposed (progressive
 > decomposition).
 
