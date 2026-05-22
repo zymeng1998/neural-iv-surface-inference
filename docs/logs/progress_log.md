@@ -927,3 +927,26 @@ Each entry should capture:
 
 - Human review of 2B.5 diff. Then: on RunPod run the real benchmark through
   `run_structure_diagnostics.py`; close Epic 2B; begin Epic 2C decomposition.
+
+---
+
+## 2026-05-22T21:00:00+00:00
+
+### Completed
+
+- Closed Epic 2B (W2 — sensitivity & structure diagnostics): marked the epic
+  and stories 2B.3–2B.5 `done` on the board + specs + roadmap status note
+  (2B.1/2B.2 already done). All five W2 stories complete; the W2 diagnostic
+  layer runs end-to-end (masking sensitivity → no-arb diagnostics → risk flags
+  → region heatmaps → committed artifacts).
+
+### Notes
+
+- Documentation-only change (status transitions). No code touched.
+- Real-data run on the RunPod benchmark via `run_structure_diagnostics.py`
+  remains a documented, non-blocking follow-up.
+
+### Next Actions
+
+- On RunPod: run the real SPY benchmark through the W2 runner.
+- Begin Epic 2C decomposition (conditional neural surface model).

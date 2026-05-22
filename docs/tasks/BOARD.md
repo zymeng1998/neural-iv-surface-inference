@@ -42,12 +42,12 @@ decomposition). The first story of any epic is always its decomposition story.
 | 2A.3 | Story | Core uncertainty-evaluation metrics | `done` | `docs/tasks/specs/2A.3_core_uncertainty_metrics.md` | 2026-05-22 |
 | 2A.4 | Story | Abstention / selective-prediction curves | `done` | `docs/tasks/specs/2A.4_abstention_curves.md` | 2026-05-22 |
 | 2A.5 | Story | Uncertainty-evaluation runner + artifacts | `done` | `docs/tasks/specs/2A.5_evaluation_runner_artifacts.md` | 2026-05-22 |
-| 2B | Epic | Sensitivity & structure diagnostics | `in_progress` | `docs/roadmaps/phase2_reliability_aware_surface_inference.md` (W2 / §5) | 2026-05-22 |
+| 2B | Epic | Sensitivity & structure diagnostics | `done` | `docs/roadmaps/phase2_reliability_aware_surface_inference.md` (W2 / §5) | 2026-05-22 |
 | 2B.1 | Story | Decompose Phase 2B | `done` | `docs/tasks/specs/2B.1_decompose_phase_2b.md` | 2026-05-22 |
 | 2B.2 | Story | Masking-sensitivity harness | `done` | `docs/tasks/specs/2B.2_masking_sensitivity.md` | 2026-05-22 |
-| 2B.3 | Story | No-arbitrage diagnostics | `in_review` | `docs/tasks/specs/2B.3_no_arb_diagnostics.md` | 2026-05-22 |
-| 2B.4 | Story | Risk-flag synthesis + region heatmaps | `in_review` | `docs/tasks/specs/2B.4_risk_flags_heatmaps.md` | 2026-05-22 |
-| 2B.5 | Story | Diagnostics runner + artifacts | `in_review` | `docs/tasks/specs/2B.5_diagnostics_runner_artifacts.md` | 2026-05-22 |
+| 2B.3 | Story | No-arbitrage diagnostics | `done` | `docs/tasks/specs/2B.3_no_arb_diagnostics.md` | 2026-05-22 |
+| 2B.4 | Story | Risk-flag synthesis + region heatmaps | `done` | `docs/tasks/specs/2B.4_risk_flags_heatmaps.md` | 2026-05-22 |
+| 2B.5 | Story | Diagnostics runner + artifacts | `done` | `docs/tasks/specs/2B.5_diagnostics_runner_artifacts.md` | 2026-05-22 |
 | 2C | Epic | Conditional neural surface model | `backlog` | `docs/roadmaps/phase2_reliability_aware_surface_inference.md` (W3 / §5) | 2026-05-22 |
 | 2D | Epic | Uncertainty-aware inference & decision layer | `backlog` | `docs/roadmaps/phase2_reliability_aware_surface_inference.md` (W4+W5 / §5) | 2026-05-22 |
 
