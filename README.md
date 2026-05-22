@@ -34,6 +34,9 @@ abstention / tradability decision layer. Target decision-grade outputs:
 - `docs/roadmaps/phase1_structural_roadmap.md` — Phase 1 task decomposition and subtask matrix
 - `docs/roadmaps/phase2_reliability_aware_surface_inference.md` — Phase 2 plan: workstreams, outputs, acceptance criteria
 - `docs/phase1_result_memo.md` — Phase 1 baseline results and analysis
+- `docs/tasks/BOARD.md` — Jira-style task board (epics, stories, statuses) for all implementation work
+- `docs/workflows/ai_human_collaboration.md` — human-AI operating model: modes, task lifecycle, validation gate
+- `docs/workflows/session_protocol.md` — start/end-of-session checklists and handoff template
 - `docs/setup/remote_dev.md` — sanitized remote development workflow and environment notes
 - `docs/setup/private_runbook_template.md` — template for local-only private ops notes
 - `docs/logs/progress_log.md` — chronological project progress log
