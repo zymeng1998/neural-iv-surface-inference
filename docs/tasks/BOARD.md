@@ -41,7 +41,7 @@ decomposition). The first story of any epic is always its decomposition story.
 | 2A.2 | Story | Model-agnostic predictor interface | `done` | `docs/tasks/specs/2A.2_predictor_interface.md` | 2026-05-22 |
 | 2A.3 | Story | Core uncertainty-evaluation metrics | `done` | `docs/tasks/specs/2A.3_core_uncertainty_metrics.md` | 2026-05-22 |
 | 2A.4 | Story | Abstention / selective-prediction curves | `done` | `docs/tasks/specs/2A.4_abstention_curves.md` | 2026-05-22 |
-| 2A.5 | Story | Uncertainty-evaluation runner + artifacts | `backlog` | `docs/tasks/specs/2A.5_evaluation_runner_artifacts.md` | 2026-05-22 |
+| 2A.5 | Story | Uncertainty-evaluation runner + artifacts | `done` | `docs/tasks/specs/2A.5_evaluation_runner_artifacts.md` | 2026-05-22 |
 | 2B | Epic | Sensitivity & structure diagnostics | `backlog` | `docs/roadmaps/phase2_reliability_aware_surface_inference.md` (W2 / §5) | 2026-05-22 |
 | 2C | Epic | Conditional neural surface model | `backlog` | `docs/roadmaps/phase2_reliability_aware_surface_inference.md` (W3 / §5) | 2026-05-22 |
 | 2D | Epic | Uncertainty-aware inference & decision layer | `backlog` | `docs/roadmaps/phase2_reliability_aware_surface_inference.md` (W4+W5 / §5) | 2026-05-22 |

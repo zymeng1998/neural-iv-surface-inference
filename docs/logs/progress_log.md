@@ -590,3 +590,55 @@ Each entry should capture:
 
 - Implement 2A.5 (uncertainty-evaluation runner + artifacts) — wires the
   predictor interface, metrics, and abstention curves into an end-to-end run.
+
+---
+
+## 2026-05-22T10:10:00-04:00
+
+### Completed
+
+- Implemented story 2A.5 (uncertainty-evaluation runner + artifacts, Phase 2 W1),
+  the integration story that wires 2A.2 → 2A.3 → 2A.4 into one runnable path.
+  - `src/neural_iv_surface_inference/eval/report.py` (pure table assembly):
+    `metrics_row`/`metrics_table` (point error + calibration [NaN without
+    interval bounds] + error–uncertainty correlation [NaN without an uncertainty
+    signal] + AURC + high-confidence MAE) and `risk_coverage_table` (long-form
+    sweep). Confidence = `-uncertainty` if present, else oracle `-abs_error`
+    (`confidence_source` column documents which).
+  - `scripts/run_uncertainty_eval.py` (CLI + importable helpers):
+    `make_synthetic_benchmark`, `split_frames`, `evaluate_predictor`,
+    `write_artifacts` (CSV + curve CSV + risk–coverage PNG into
+    `artifacts/results/`). Supports `--synthetic` (no data files) and
+    `--benchmark <parquet>`. Interpolation predictor wired; MLP wiring deferred
+    (needs checkpoint; no expensive training in this story).
+- Added `tests/test_uncertainty_eval_runner.py` (12 tests): report column
+  contracts, NaN calibration without bounds, coverage≈nominal with bounds,
+  curve shape, end-to-end artifact write (CSV reload + non-empty PNG).
+- Generated committed demo artifacts (synthetic, `interp_rbf`):
+  `artifacts/results/uncertainty_eval_synthetic_demo.csv` + `_curve.csv` +
+  `_risk_coverage.png`. Appended an experiment-journal entry with headline
+  numbers + artifact paths.
+- Set 2A.5 to `done` on `docs/tasks/BOARD.md` and in the story spec; synced
+  roadmap status note. All five 2A stories now done (epic row left in_progress
+  pending a human call on closing the epic vs. requiring a real-data run).
+
+### Notes
+
+- No local benchmark parquet (RunPod-only), so the committed demo is synthetic;
+  numbers are wiring/shape evidence, not research results. Real-data run + MLP
+  predictor wiring is the documented follow-up.
+- Baseline `uncertainty=None` → interval/coverage columns are NaN by design;
+  abstention uses the oracle ranking as a best-case reference until W4.
+
+### Tests
+
+- `pytest tests/test_uncertainty_eval_runner.py -q` → 12 passed.
+- `pytest tests/ -q` → 121 passed (full regression).
+- `python3 scripts/smoke_test.py` → exit 0.
+
+### Next Actions
+
+- RunPod: run `scripts/run_uncertainty_eval.py --benchmark <parquet>` on the real
+  benchmark + add MLP-predictor wiring (load checkpoint) to compare both
+  baselines through the same interface.
+- Begin Epic 2B (sensitivity & structure diagnostics) decomposition.

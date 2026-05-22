@@ -118,3 +118,41 @@ first-class evidence going forward.
 
 **Next step:** Review diff, commit repair (script + restored CSV + docs), then
 proceed to S4.3 artifact finalization.
+
+## 2026-05-22T10:06:00-04:00 — Experiment: W1 uncertainty-evaluation runner smoke (synthetic)
+
+**Purpose:** Validate the story 2A.5 end-to-end runner — predictor interface
+(2A.2) → core metrics (2A.3) → abstention curves (2A.4) → committed artifacts —
+on a tiny synthetic benchmark, since no real benchmark parquet exists locally
+(data lives on RunPod). This is an integration smoke run, not a research result.
+
+**Changed variables:** New script `scripts/run_uncertainty_eval.py` and module
+`src/neural_iv_surface_inference/eval/report.py`. Predictor: interpolation (RBF)
+via `InterpolationPredictor`. Dataset: in-code synthetic smile (20 dates × 80
+points, chronological train/val/test). Baseline carries `uncertainty=None`, so
+interval coverage/width and error–uncertainty correlation are reported as NaN by
+design; abstention uses the oracle (`-abs_error`) confidence ranking.
+
+**Result summary:** `interp_rbf` on synthetic data —
+- test: overall MAE 0.00865, RMSE 0.01118 (observed 0.00795 / unobserved 0.00914)
+- abstention (oracle): AURC 0.00371, high-confidence MAE 0.00354 at keep=0.5,
+  0.00578 at keep=0.8 — retained error falls below overall MAE as coverage drops.
+Artifacts written to `artifacts/results/uncertainty_eval_synthetic_demo.csv`
+(metrics), `..._curve.csv` (risk–coverage sweep), and
+`..._risk_coverage.png` (figure).
+
+**Interpretation:** The W1 measurement layer runs end-to-end through the
+model-agnostic interface and emits the documented metric + curve + figure
+artifacts. Numbers are not comparable to the real-data baseline (different,
+easier synthetic surface); their role here is to confirm wiring and artifact
+shape. The oracle abstention curve is the best-case reference until W4 supplies
+real model uncertainty.
+
+**Decision impact:** Closes Epic 2A (W1). Real-data uncertainty-eval runs (on the
+RunPod benchmark, and wiring the MLP predictor via its checkpoint) can now reuse
+this runner. Interval/coverage columns stay NaN until W4 produces uncertainty
+signals.
+
+**Next step:** On RunPod, run `run_uncertainty_eval.py --benchmark <parquet>` for
+`interp_rbf` and add MLP-predictor wiring (load checkpoint) to compare both
+baselines through the same interface; begin Epic 2B decomposition.

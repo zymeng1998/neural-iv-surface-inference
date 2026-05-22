@@ -171,7 +171,10 @@ violations before penalizing them).
 > stories 2A.1–2A.5 (see `docs/tasks/BOARD.md` and `docs/tasks/specs/`):
 > 2A.1 decomposition (done), 2A.2 predictor interface (done), 2A.3 core
 > uncertainty metrics (done), 2A.4 abstention curves (done), 2A.5 evaluation
-> runner + artifacts (backlog). Epics 2B–2D remain undecomposed (progressive
+> runner + artifacts (done). All five 2A stories complete; the W1
+> measurement layer runs end-to-end (interface → metrics → abstention →
+> committed artifacts). Real-data runs on RunPod and MLP-predictor wiring are
+> the documented follow-up. Epics 2B–2D remain undecomposed (progressive
 > decomposition).
 
 ## 6) Acceptance Criteria
