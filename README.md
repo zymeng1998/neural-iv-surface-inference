@@ -37,6 +37,7 @@ abstention / tradability decision layer. Target decision-grade outputs:
 - `docs/tasks/BOARD.md` — Jira-style task board (epics, stories, statuses) for all implementation work
 - `docs/workflows/ai_human_collaboration.md` — human-AI operating model: modes, task lifecycle, validation gate
 - `docs/workflows/session_protocol.md` — start/end-of-session checklists and handoff template
+- `docs/workflows/reusable_prompts.md` — copy-pasteable prompts for starting new sessions (epic decomposition, story implementation)
 - `docs/setup/remote_dev.md` — sanitized remote development workflow and environment notes
 - `docs/setup/private_runbook_template.md` — template for local-only private ops notes
 - `docs/logs/progress_log.md` — chronological project progress log
