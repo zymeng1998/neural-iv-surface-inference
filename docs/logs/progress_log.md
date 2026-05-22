@@ -691,3 +691,45 @@ Each entry should capture:
   `generate_phase1_presentation.py --benchmark <parquet>` for surface visuals and
   the real joint maturity×moneyness heatmap; write the RunPod runbook + Phase 1
   memo to close S4.3.
+
+---
+
+## 2026-05-22T16:15:00+00:00
+
+### Completed
+
+- Phase 1 surface gallery on the **real** SPY benchmark, executed end-to-end on
+  RunPod (driven over SSH from local). Closes the visual portion of S4.3.
+  - Authored `notebooks/03_phase1_surface_gallery.ipynb`; executed on the pod
+    against `spy_phase1_random40_noiselow.parquet` so real surface figures
+    (reference / observed→reconstructed triptych / spatial error / joint
+    maturity×moneyness heatmap) are embedded in the committed notebook.
+  - Generated 14 presentation figures via
+    `scripts/generate_phase1_presentation.py --benchmark <parquet> --n-dates 2
+    --heatmap-max-dates 60`; pulled to local (gitignored, regenerable).
+  - Added `--n-dates` and `--heatmap-max-dates` options to the presentation
+    script (per-date RBF over all 678 test dates is slow; cap keeps it tractable
+    — used 60 dates / 389,383 points for the heatmap).
+- Real joint MAE grid (interp_rbf): deep-ITM worst across all maturities
+  (~0.14–0.15), long deep-OTM secondary ridge (0.13), ATM best (~0.011–0.023).
+  Logged in `docs/experiments/experiment_journal.md`.
+
+### Notes
+
+- Pod had no GitHub key and lacked rsync; code was synced local→pod via
+  tar-over-SSH and results pulled back the same way. Scientific deps
+  (pandas/pyarrow/scipy/matplotlib) reinstalled on the pod (image, not volume).
+- Committed visual evidence is the executed notebook (figures embedded); the
+  standalone PNGs are gitignored/regenerable.
+
+### Tests
+
+- `pytest tests/test_viz.py -q` → 21 passed (after script edit).
+- `notebooks/03_*` executed via nbconvert on pod → exit 0.
+- `notebooks/02_*` + aggregate figure script re-run locally → exit 0.
+
+### Next Actions
+
+- Terminate the RunPod pod (awaiting real RUNPOD_API_KEY; placeholder was set).
+- Write the Phase 1 memo to fully close S4.3.
+- Resume Phase 2: real-data uncertainty-eval run + Epic 2B decomposition.

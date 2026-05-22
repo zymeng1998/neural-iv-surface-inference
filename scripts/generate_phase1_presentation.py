@@ -91,11 +91,14 @@ def generate_surface_figures(
     out_dir: Path,
     method: str = "rbf",
     n_dates: int = 1,
+    heatmap_max_dates: int | None = None,
 ) -> list[Path]:
     """Per-date surface visuals + joint heatmap. Requires the benchmark parquet.
 
     Uses the interpolation baseline for the reconstruction so the figure is
-    deterministic and needs no checkpoint.
+    deterministic and needs no checkpoint. ``heatmap_max_dates`` caps the number
+    of test dates used for the joint maturity x moneyness heatmap (per-date RBF
+    over the full test split can be very slow); ``None`` uses all test dates.
     """
     from neural_iv_surface_inference.models.interpolation import (
         run_interpolation_baseline,
@@ -130,8 +133,14 @@ def generate_surface_figures(
             plot_spatial_error(sample, title=f"Spatial abs error — {label}"),
             out_dir, f"fig08_{i}_spatial_error.png"))
 
-    # Joint maturity x moneyness heatmap over the full test split.
-    test_eval = test_df.copy()
+    # Joint maturity x moneyness heatmap. Optionally cap test dates for runtime.
+    test_eval = test_df
+    title_suffix = "test"
+    if heatmap_max_dates is not None:
+        keep = sorted(test_df["date"].unique())[:heatmap_max_dates]
+        test_eval = test_df[test_df["date"].isin(keep)]
+        title_suffix = f"test, {len(keep)} dates"
+    test_eval = test_eval.copy()
     test_eval["iv_pred"] = run_interpolation_baseline(
         test_eval, method=method, verbose=False)
     grid = evaluate_predictions_2d(test_eval, metric="mae")
@@ -139,7 +148,7 @@ def generate_surface_figures(
     written.append(_save(
         plot_joint_error_heatmap(
             grid, counts,
-            title=f"interp_{method} — joint MAE (maturity x moneyness, test)"),
+            title=f"interp_{method} — joint MAE (maturity x moneyness, {title_suffix})"),
         out_dir, "fig09_joint_error_heatmap.png"))
     return written
 
@@ -152,6 +161,10 @@ def main() -> None:
                         help="Benchmark parquet for surface figures (RunPod)")
     parser.add_argument("--out-dir", default="artifacts/figures/presentation")
     parser.add_argument("--method", default="rbf")
+    parser.add_argument("--n-dates", type=int, default=1,
+                        help="Number of sample dates for surface triptychs")
+    parser.add_argument("--heatmap-max-dates", type=int, default=None,
+                        help="Cap test dates for the joint heatmap (runtime)")
     args = parser.parse_args()
 
     apply_house_style()
@@ -175,7 +188,9 @@ def main() -> None:
         bench = Path(args.benchmark)
         if bench.exists():
             print(f"[figures] surface (from {bench}) -> {out_dir}")
-            written += generate_surface_figures(bench, out_dir, method=args.method)
+            written += generate_surface_figures(
+                bench, out_dir, method=args.method,
+                n_dates=args.n_dates, heatmap_max_dates=args.heatmap_max_dates)
         else:
             print(f"[figures] benchmark not found ({bench}); "
                   "skipping surface figures (run on RunPod)")

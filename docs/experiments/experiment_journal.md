@@ -119,6 +119,55 @@ first-class evidence going forward.
 **Next step:** Review diff, commit repair (script + restored CSV + docs), then
 proceed to S4.3 artifact finalization.
 
+## 2026-05-22T16:13:00+00:00 — Experiment: Phase 1 surface gallery on real SPY benchmark (RunPod)
+
+**Purpose:** Produce the real-data Phase 1 surface visuals (S4.3) — reference /
+sparse-observed / reconstructed triptych, spatial error map, and the joint
+maturity x moneyness error heatmap — that cannot be made locally (the benchmark
+parquet is RunPod-only).
+
+**Environment:** RunPod pod (host d69d0237e073), NVIDIA RTX PRO 4500 Blackwell
+32 GB, Python 3.11.10. Code synced from local via tar-over-SSH (pod had no
+GitHub key and lacked rsync); scientific deps (pandas/pyarrow/scipy/matplotlib)
+reinstalled into the image (they live in the image, not the network volume).
+No GPU compute needed — interpolation baseline is CPU/scipy.
+
+**Changed variables:** None modelling-wise. Ran the new
+`scripts/generate_phase1_presentation.py --benchmark
+spy_phase1_random40_noiselow.parquet --n-dates 2 --heatmap-max-dates 60` and
+executed `notebooks/03_phase1_surface_gallery.ipynb` in place. Reconstruction
+uses the per-date RBF interpolation baseline (deterministic, no checkpoint). The
+joint heatmap was capped to 60 test dates (389,383 points) for runtime; the full
+test split is 678 dates / 5.31M rows.
+
+**Result summary:** 14 presentation figures generated + executed notebook 03
+(figures embedded). Joint MAE grid (interp_rbf, 60 test dates) —
+
+|        | deep_itm | itm   | atm   | otm   | deep_otm |
+|--------|----------|-------|-------|-------|----------|
+| short  | 0.1399   | 0.0895| 0.0228| 0.0483| 0.0258   |
+| medium | 0.1489   | 0.0244| 0.0111| 0.0573| 0.0718   |
+| long   | 0.1412   | 0.0277| 0.0224| 0.0479| 0.1316   |
+
+Sample date 2023-04-03: 6,351 points, 2,593 observed.
+
+**Interpretation:** On real data the joint grid sharpens the marginal story:
+**deep-ITM is the worst region across every maturity** (~0.14–0.15), with a
+secondary ridge at long-maturity deep-OTM (0.13); ATM is best (~0.011–0.023).
+Error is lowest where quotes are dense (ATM) and worst in the sparse wings —
+consistent with the spatial error map.
+
+**Decision impact:** Confirms Phase 2 should target the wings and short maturity
+with structure-aware / mask-conditioned models. Closes the visual portion of
+S4.3 (figures + both notebooks); only the written Phase 1 memo remains.
+
+**Next step:** Write the Phase 1 memo; pull artifacts to local (done) and
+terminate the pod. Then resume Phase 2 (real-data uncertainty-eval run + Epic 2B).
+
+**Artifacts:** `notebooks/03_phase1_surface_gallery.ipynb` (committed, figures
+embedded); `artifacts/figures/presentation/fig0[1-9]*.png` (regenerable,
+gitignored — pulled to local).
+
 ## 2026-05-22T10:06:00-04:00 — Experiment: W1 uncertainty-evaluation runner smoke (synthetic)
 
 **Purpose:** Validate the story 2A.5 end-to-end runner — predictor interface

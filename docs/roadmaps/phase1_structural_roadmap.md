@@ -91,7 +91,7 @@ mindmap
 | S3.3 | Vendor-style reference | external reference integration and alignment | Blocked — waiting on approved vendor reference source/schema and access path definition |
 | S4.1 | Core metrics | MAE/RMSE/MAPE, observed vs unobserved split | Completed — `training/eval.py`, tested |
 | S4.2 | Regional diagnostics | by maturity bucket (short/med/long) + moneyness bucket (5 bins) | Completed — `training/eval.py`, tested |
-| S4.3 | Result artifact | plots + summary table + phase memo | In Progress — tested `viz/` plotting module + technical notebook (`notebooks/02_phase1_baseline_results.ipynb`) + presentation figure script (`scripts/generate_phase1_presentation.py`) + joint maturity×moneyness 2D eval done (local, from committed CSVs); surface-gallery notebook (03) + real-data figures pending RunPod run; phase memo pending |
+| S4.3 | Result artifact | plots + summary table + phase memo | In Progress — figures complete: tested `viz/` module, technical notebook (`notebooks/02_*`, committed-CSV based), surface-gallery notebook (`notebooks/03_*`, executed on RunPod with real-data figures embedded), presentation figure script, and joint maturity×moneyness 2D eval. Real joint-error grid produced on `random40_noiselow` (deep-ITM worst across maturities). Remaining: written Phase 1 memo |
 | S5 | Latent inference | conditional autoencoder / latent bottleneck | Planned |
 | S6 | Uncertainty layer | predictive uncertainty/calibration | Planned |
 | S7 | Structure constraints | arbitrage diagnostics + structure-aware losses | Planned |
