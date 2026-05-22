@@ -2,27 +2,38 @@
 
 ## Overview
 
-Neural IV Surface Inference is an ML × Finance project focused on recovering implied-volatility surfaces from sparse, noisy, and irregular option observations. The longer-term direction includes structured inference, uncertainty-aware modeling, and arbitrage-aware constraints. The current focus is Phase 1: establishing a reproducible remote development workflow and baseline experimentation stack.
+Neural IV Surface Inference is an ML × Finance project focused on recovering implied-volatility surfaces from sparse, noisy, and irregular option observations. The current direction is **reliability-aware surface inference**: beyond producing a smooth surface, the system aims to know where its predictions are trustworthy and to abstain where they are not. Future focus areas include uncertainty estimation, abstention, no-arbitrage diagnostics, and conditional neural models.
 
 ## Current Phase
 
-**Phase 1 — remote development environment and baseline pipeline setup**
+**Phase 1 baseline foundation complete; entering Phase 2 — Reliability-Aware Implied Volatility Surface Inference**
 
 ## Current Status
 
-Completed so far:
-- RunPod-based remote development environment provisioned
-- Persistent workspace verified and writable
-- Remote GitHub SSH authentication configured
-- Git clone on remote working without password prompts
-- Cyberduck connection working
-- Cursor Remote-SSH connection working
-- Python, PyTorch, CUDA, and core scientific packages verified on remote
-- Initial project documentation scaffold established
-- Minimal ML project scaffold in place (src, scripts, configs, tests, artifacts)
+Phase 1 baseline foundation completed:
+- Real SPY EOD option-chain data pipeline (ingest → inspect → build surface table → build benchmark tasks), memory-safe streaming over ~21M rows
+- Benchmark construction with configurable sparse masking (7 strategies) and noise regimes (none/low/med/high + heteroscedastic), chronological train/val/test splits
+- Per-date interpolation baseline (RBF / griddata)
+- Naive neural MLP baseline (global masked MLP) — runs end-to-end but is **intentionally limited**: it is a coordinate-regression model `(log_moneyness, tau) → implied_vol` and underperforms the interpolation floor, since it does not condition on the observed chain
+- Evaluation metrics: MAE / RMSE / MAPE, observed vs. unobserved split, regional diagnostics by maturity and moneyness
+- 59 passing unit tests; reproducible Phase 1 artifacts (figures, summary tables, result memo)
+- Reproducible remote (RunPod) development workflow and project-memory documentation system
+
+### Next Direction — Phase 2
+
+The naive MLP result motivates moving beyond pointwise interpolation toward a
+reliability-aware system. Phase 2 introduces uncertainty evaluation, masking
+sensitivity and no-arbitrage diagnostics, a conditional neural surface model
+(`observed chain O_t → latent z_t`, then `(k, tau, z_t) → sigma_hat`), and an
+abstention / tradability decision layer. Target decision-grade outputs:
+`sigma_hat`, `confidence_score`, `uncertainty_band`, `tradability_score`,
+`no_arb_risk_flags`, and `abstain_flag`. See the Phase 2 roadmap below.
 
 ## Documentation Map
 
+- `docs/roadmaps/phase1_structural_roadmap.md` — Phase 1 task decomposition and subtask matrix
+- `docs/roadmaps/phase2_reliability_aware_surface_inference.md` — Phase 2 plan: workstreams, outputs, acceptance criteria
+- `docs/phase1_result_memo.md` — Phase 1 baseline results and analysis
 - `docs/setup/remote_dev.md` — sanitized remote development workflow and environment notes
 - `docs/setup/private_runbook_template.md` — template for local-only private ops notes
 - `docs/logs/progress_log.md` — chronological project progress log
@@ -43,9 +54,9 @@ docs/                              Project documentation
 
 ## Immediate Next Steps
 
-- Define the first-pass data pipeline layout
-- Begin SPY EOD options data acquisition
-- Implement data loading and cleaning stubs
+- Build the model-agnostic uncertainty evaluation layer (Phase 2A)
+- Add masking-sensitivity and no-arbitrage structure diagnostics (Phase 2B)
+- Implement the first conditional neural surface model — Set Encoder + Coordinate Decoder (Phase 2C)
 
 ## Security Note
 
