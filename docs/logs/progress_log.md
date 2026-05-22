@@ -733,3 +733,36 @@ Each entry should capture:
 - Terminate the RunPod pod (awaiting real RUNPOD_API_KEY; placeholder was set).
 - Write the Phase 1 memo to fully close S4.3.
 - Resume Phase 2: real-data uncertainty-eval run + Epic 2B decomposition.
+
+---
+
+## 2026-05-22T16:35:00+00:00
+
+### Completed
+
+- Closed Epic 2A (`done` on the board): all five W1 stories complete; W1
+  measurement layer runs end-to-end. Real-data uncertainty-eval run + MLP
+  predictor wiring noted as a non-blocking follow-up.
+- Decomposed Epic 2B (W2 — sensitivity & structure diagnostics), story 2B.1
+  (Plan/decomposition). Wrote five specs under `docs/tasks/specs/`:
+  - 2B.1 Decompose Phase 2B (this decomposition; done)
+  - 2B.2 Masking-sensitivity harness (inference-time re-masking stability)
+  - 2B.3 No-arbitrage diagnostics (monotonicity / convexity / calendar +
+    counts & severity)
+  - 2B.4 Risk-flag synthesis + (k, tau) region heatmaps (`no_arb_risk_flags`)
+  - 2B.5 Diagnostics runner + artifacts
+- Set Epic 2B `in_progress`; added board rows 2B.1 (`done`) through 2B.5
+  (`backlog`); updated the phase-2 roadmap status note.
+
+### Notes
+
+- Decomposition only — no code, no runs, no downloads. Mirrors the 2A pattern.
+- 2B.2 scopes to inference-time re-masking (interpolation predictor, no
+  retraining); train-time masking sensitivity for the MLP is deferred until a
+  conditional model exists (2C).
+- Per progressive-decomposition policy, epics 2C–2D remain single `backlog` rows.
+
+### Next Actions
+
+- Human reviews specs 2B.2–2B.5 and promotes ready ones from `backlog` to `todo`.
+- Implement 2B.2 first (masking-sensitivity harness), then 2B.3.

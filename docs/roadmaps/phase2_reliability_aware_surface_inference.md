@@ -167,15 +167,16 @@ Sequencing principle: **2A before 2C** (we measure reliability before we model
 it), and **2B diagnostics before any hard structural constraints** (we quantify
 violations before penalizing them).
 
-> **Status (2026-05-22):** Epic 2A is `in_progress`. It has been decomposed into
-> stories 2A.1–2A.5 (see `docs/tasks/BOARD.md` and `docs/tasks/specs/`):
-> 2A.1 decomposition (done), 2A.2 predictor interface (done), 2A.3 core
-> uncertainty metrics (done), 2A.4 abstention curves (done), 2A.5 evaluation
-> runner + artifacts (done). All five 2A stories complete; the W1
-> measurement layer runs end-to-end (interface → metrics → abstention →
-> committed artifacts). Real-data runs on RunPod and MLP-predictor wiring are
-> the documented follow-up. Epics 2B–2D remain undecomposed (progressive
-> decomposition).
+> **Status (2026-05-22):** Epic 2A is `done` — all five stories (2A.1–2A.5)
+> complete; the W1 measurement layer runs end-to-end (interface → metrics →
+> abstention → committed artifacts). Real-data uncertainty-eval run on RunPod and
+> MLP-predictor wiring remain a documented follow-up (not blocking the epic).
+>
+> Epic 2B (W2 — sensitivity & structure diagnostics) is `in_progress`, decomposed
+> into stories 2B.1–2B.5: 2B.1 decomposition (done), 2B.2 masking-sensitivity
+> harness, 2B.3 no-arbitrage diagnostics, 2B.4 risk-flag synthesis + region
+> heatmaps, 2B.5 diagnostics runner + artifacts (2B.2–2B.5 `backlog`). Epics
+> 2C–2D remain undecomposed (progressive decomposition).
 
 ## 6) Acceptance Criteria
 
