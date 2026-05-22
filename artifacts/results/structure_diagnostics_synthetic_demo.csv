@@ -1,0 +1,9 @@
+model,split,date,n_points,calendar_n_eval,calendar_violations,calendar_rate,calendar_severity,monotonicity_n_eval,monotonicity_violations,monotonicity_rate,monotonicity_severity,convexity_n_eval,convexity_violations,convexity_rate,convexity_severity,mean_instability,risk_flag_rate
+interp_rbf,train,2020-01-02,35,28,0,0.0,0.0,30,0,0.0,0.0,25,0,0.0,0.0,0.0033096743525184167,0.0
+interp_rbf,train,2020-01-03,35,28,0,0.0,0.0,30,0,0.0,0.0,25,0,0.0,0.0,0.004883495438826862,0.0
+interp_rbf,train,2020-01-06,35,28,0,0.0,0.0,30,0,0.0,0.0,25,0,0.0,0.0,0.004652706157242267,0.0
+interp_rbf,train,2020-01-07,35,28,0,0.0,0.0,30,0,0.0,0.0,25,0,0.0,0.0,0.01089587910779676,0.0
+interp_rbf,train,2020-01-08,35,28,0,0.0,0.0,30,0,0.0,0.0,25,0,0.0,0.0,0.004280917826287309,0.0
+interp_rbf,val,2020-01-09,35,28,0,0.0,0.0,30,0,0.0,0.0,25,0,0.0,0.0,0.00569130230578688,0.0
+interp_rbf,test,2020-01-10,35,28,0,0.0,0.0,30,0,0.0,0.0,25,0,0.0,0.0,0.007227042638135853,0.0
+interp_rbf,test,2020-01-13,35,28,0,0.0,0.0,30,0,0.0,0.0,25,0,0.0,0.0,0.003956262969128228,0.0

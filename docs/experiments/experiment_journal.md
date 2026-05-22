@@ -205,3 +205,45 @@ signals.
 **Next step:** On RunPod, run `run_uncertainty_eval.py --benchmark <parquet>` for
 `interp_rbf` and add MLP-predictor wiring (load checkpoint) to compare both
 baselines through the same interface; begin Epic 2B decomposition.
+
+## 2026-05-22T20:30:00-04:00 — Experiment: W2 structure-diagnostics runner smoke (synthetic)
+
+**Purpose:** Validate the story 2B.5 end-to-end runner — masking-sensitivity
+harness (2B.2) → no-arbitrage diagnostics (2B.3) → risk-flag synthesis +
+region heatmaps (2B.4) → committed artifacts — on a tiny synthetic grid
+benchmark, since no real benchmark parquet exists locally (data lives on
+RunPod). Integration smoke run, not a research result.
+
+**Changed variables:** New script `scripts/run_structure_diagnostics.py` and
+module `src/neural_iv_surface_inference/diagnostics/report.py`. Predictor:
+interpolation (RBF) via `InterpolationPredictor`. Dataset: in-code synthetic
+**grid** smile (8 dates × 35 points = 7 log-moneyness × 5 maturities,
+chronological train/val/test). The grid is required so the no-arbitrage checks
+(which group by exact coordinate) have evaluable pairs/triples. The smile is
+smooth + arbitrage-free by construction.
+
+**Result summary:** `interp_rbf` on synthetic data —
+- Structural violations: 0 across all dates/splits for calendar, monotonicity,
+  and convexity (arbitrage-free grid, as designed). `risk_flag_rate` = 0 with
+  the default `instability_threshold = inf`.
+- Masking instability (per-date mean per-point std): ~0.003–0.011, positive and
+  finite — the harness exercises its full path.
+Artifacts: `artifacts/results/structure_diagnostics_synthetic_demo.csv`
+(per-date summary), `..._regions.csv` (long-form (maturity × moneyness) grid),
+and per-split region heatmaps `..._<split>_risk.png` / `..._<split>_instability.png`.
+
+**Interpretation:** The W2 diagnostic layer runs end-to-end through the
+model-agnostic predictor interface and emits the documented summary + region +
+heatmap artifacts. Zero structural violations is the expected outcome on a
+smooth arbitrage-free surface; the run confirms wiring and artifact shape, not a
+research finding. Region risk scores are instability-driven here (no structural
+signal) and are normalized per-surface, so they are surface-relative.
+
+**Decision impact:** Completes Epic 2B (W2). The runner is ready for the real
+RunPod benchmark, where genuine structural violations and larger instability are
+expected to appear. Tradability/abstention policy on top of these flags is W5
+(2D).
+
+**Next step:** On RunPod, run `run_structure_diagnostics.py --benchmark <parquet>`
+for `interp_rbf` on the real SPY benchmark; review whether genuine no-arb
+violations concentrate in specific (k, tau) regions. Then proceed to Epic 2C.

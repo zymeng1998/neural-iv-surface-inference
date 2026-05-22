@@ -885,3 +885,45 @@ Each entry should capture:
 ### Next Actions
 
 - Human review of 2B.4 diff; then implement 2B.5 (diagnostics runner + artifacts).
+
+---
+
+## 2026-05-22T20:45:00+00:00
+
+### Completed
+
+- Implemented story 2B.5 (W2 diagnostics runner + artifacts), wiring 2B.2–2B.4
+  into one end-to-end runner:
+  - `diagnostics/report.py`: `diagnose_date` (runs masking sensitivity + no-arb
+    diagnostics on the predicted surface + risk flags per date),
+    `diagnostics_summary_table` (per-date counts/rates/severities + mean
+    instability + risk-flag rate), `region_table` (long-form (maturity x
+    moneyness) grid: mean risk score, mean instability, flag fraction, count).
+  - `scripts/run_structure_diagnostics.py`: CLI mirroring the W1 runner
+    (`--synthetic` | `--benchmark`, `--predictor interp`, sampling caps),
+    synthetic GRID benchmark (so no-arb checks have evaluable groups), importable
+    `make_synthetic_benchmark` / `run_diagnostics` / `write_artifacts`.
+- Ran the synthetic smoke end-to-end; appended an experiment-journal entry.
+- Set 2B.5 `in_review` on the board, spec, and roadmap; all five W2 stories now
+  implemented.
+
+### Key Results
+
+- `pytest tests/test_structure_diagnostics_runner.py -q` → 6 passed.
+- `pytest tests/ -q` → 190 passed (no regressions).
+- `python3 scripts/smoke_test.py` → exit 0; PMR gate dry-run PASS.
+- Synthetic demo (`interp_rbf`, 8-date grid): 0 structural violations
+  (arbitrage-free by design), masking instability ~0.003–0.011. Artifacts:
+  `artifacts/results/structure_diagnostics_synthetic_demo.csv` (+ `_regions.csv`
+  + per-split risk/instability heatmaps).
+
+### Notes
+
+- Did not modify `run_baseline.py` / `run_uncertainty_eval.py` (non-goal).
+- Real structural violations + larger instability are expected on the RunPod
+  benchmark; the synthetic run validates wiring + artifact shape only.
+
+### Next Actions
+
+- Human review of 2B.5 diff. Then: on RunPod run the real benchmark through
+  `run_structure_diagnostics.py`; close Epic 2B; begin Epic 2C decomposition.
