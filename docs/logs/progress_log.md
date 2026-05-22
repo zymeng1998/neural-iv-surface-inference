@@ -804,3 +804,43 @@ Each entry should capture:
 ### Next Actions
 
 - Human review of 2B.2 diff; then implement 2B.3 (no-arbitrage diagnostics).
+
+---
+
+## 2026-05-22T19:00:00+00:00
+
+### Completed
+
+- Implemented story 2B.3 (no-arbitrage diagnostics) in
+  `diagnostics/no_arbitrage.py`. Three pure, typed checks over a single-date
+  surface, each returning a `ViolationResult` (mask / count / rate / severity):
+  - `calendar_violations` — total variance `w = sigma^2 * tau` non-decreasing
+    in `tau` at fixed log-moneyness.
+  - `monotonicity_violations` — undiscounted Black call price (forward 1,
+    strike `exp(k)`) non-increasing in strike at fixed `tau`.
+  - `convexity_violations` — undiscounted call price convex in strike (second
+    divided difference >= 0) at fixed `tau`.
+  - `no_arb_diagnostics` — aggregates all three with an overall summary.
+- Exported the new symbols from the `diagnostics` package `__init__`.
+- Set 2B.3 `in_review` on the board, spec, and roadmap status note.
+
+### Key Results
+
+- `pytest tests/test_no_arbitrage.py -q` → 13 passed.
+- `pytest tests/ -q` → 171 passed (no regressions).
+- `python3 scripts/smoke_test.py` → exit 0.
+- Behavior verified: flat surface → 0 violations; injected calendar inversion,
+  strike-increasing price, and central vol-spike concavity → detected with
+  positive severity; sparse axes → 0 evaluated + `nan` rate; NaN rows dropped.
+
+### Notes
+
+- Diagnostics only — no structure-aware losses / hard constraints (Phase 3),
+  no risk flags or heatmaps (2B.4), no runner (2B.5).
+- Severity units differ per check; the aggregate `total_severity` is a coarse
+  sum, with per-check severities retained.
+
+### Next Actions
+
+- Human review of 2B.3 diff; then implement 2B.4 (risk-flag synthesis + region
+  heatmaps).
