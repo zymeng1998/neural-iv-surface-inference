@@ -1187,3 +1187,35 @@ Each entry should capture:
 - Continue Phase A — next implementable story is **2C.3** (set encoder +
   coordinate decoder; no dependencies). 2C.6 (AV ingest) is the last
   Phase A milestone before the remote handoff.
+
+---
+
+## 2026-05-22 — Story 2C.3: Set encoder + coordinate decoder
+
+### Completed
+
+- Added `SetEncoder`, `CoordinateDecoder`, and `ConditionalSurfaceModel`
+  in `src/neural_iv_surface_inference/models/conditional_surface.py`.
+  Encoder is a DeepSets-style per-element MLP → masked-mean pool →
+  post-pool MLP → latent `z_t`; decoder concatenates `z_t` with each
+  `(k, tau)` query and emits softplus IV. The pooling op is exposed via a
+  constructor argument so a future story can swap masked mean for an
+  attention pool without rewriting the encoder.
+- Exported the three classes from `models/__init__.py`.
+- Tests (`tests/test_conditional_surface.py`) prove: shape contract,
+  **permutation invariance** of the encoder under shuffles, **mask
+  invariance** when padded rows are appended, decoder positivity, decoder
+  shape for variable query counts, and end-to-end forward of the wrapper.
+- `pytest tests/ -q` → 201 passed.
+
+### Notes
+
+- Padded outputs are explicitly zeroed before pooling; the masked-mean
+  divides by the non-pad count (`clamp_min(eps)`) so an all-padded sample
+  cannot NaN.
+- Init mirrors the baseline MLP (Kaiming-normal, zeros on biases) for
+  comparable optimization behavior.
+
+### Next Actions
+
+- Move to 2C.4 (conditional training loop + config + smoke test).
