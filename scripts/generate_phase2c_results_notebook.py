@@ -464,6 +464,219 @@ plt.tight_layout(); plt.show()
     ))
 
     # -----------------------------------------------------------------
+    # 3D SURFACE VISUALIZATION (static + spinning GIF + interactive Plotly)
+    # -----------------------------------------------------------------
+    cells.append(md(
+        """## 🌀 3D Surface visualization — the headline image
+
+The IV surface is fundamentally a **3D object**: `σ(k, τ)`. Showing it as
+2D smile slices loses the term-structure picture. The next three cells
+render the same surface three different ways:
+
+1. **Static 3D mesh** (matplotlib) — well-angled, publication-ready.
+2. **Animated spinning GIF** (matplotlib) — embed in slides / share via
+   Slack / email; no JavaScript needed.
+3. **Interactive Plotly** — drag with your mouse to rotate inside the
+   notebook; renders WebGL.
+
+All three plot the **conditional model's predicted surface** built from
+today's live SPY chain (from the section above), with the actual market
+quotes overlaid as black scatter points."""
+    ))
+    cells.append(code(
+        """# Build a dense (k, tau) mesh and run inference once.
+k_grid_3d   = np.linspace(-0.25, 0.25, 70, dtype=np.float32)
+# Pick a smoother tau axis than just the listed expirations
+tau_min     = float(chain['tau'].min())
+tau_max     = float(chain['tau'].max())
+tau_grid_3d = np.linspace(tau_min, tau_max, 40, dtype=np.float32)
+
+K3D, T3D = np.meshgrid(k_grid_3d, tau_grid_3d)
+mesh_q   = np.stack([K3D.ravel(), T3D.ravel()], axis=-1).astype(np.float32)
+mesh_t   = torch.from_numpy(mesh_q).unsqueeze(0)
+with torch.no_grad():
+    iv_mesh = model(live_context, live_mask, mesh_t).squeeze(0).numpy()
+IV3D = iv_mesh.reshape(K3D.shape)
+
+print(f'mesh: k={K3D.shape[1]} x tau={K3D.shape[0]} = {K3D.size:,} surface points')
+print(f'IV range on mesh: [{IV3D.min():.3f}, {IV3D.max():.3f}]')
+"""
+    ))
+    cells.append(code(
+        """# (1) Static 3D mesh — publication-ready.
+from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
+fig = plt.figure(figsize=(11, 7))
+ax = fig.add_subplot(111, projection='3d')
+
+# Days to expiry on the y-axis is more readable than raw tau
+DAYS3D = T3D * 365.25
+
+surf = ax.plot_surface(
+    K3D, DAYS3D, IV3D,
+    cmap='viridis', alpha=0.85,
+    linewidth=0, antialiased=True,
+    rcount=40, ccount=70,
+)
+# Overlay actual market quotes as 3D scatter
+ax.scatter(
+    chain['log_moneyness'].values,
+    chain['tau'].values * 365.25,
+    chain['impliedVolatility'].values,
+    c='red', s=10, alpha=0.6, label='market quotes', depthshade=True,
+)
+ax.set_xlabel('log_moneyness')
+ax.set_ylabel('days to expiry')
+ax.set_zlabel('Implied Volatility')
+ax.set_title(f"Conditional model — SPY surface (spot=${spot:.2f}, {len(chain):,} live quotes)",
+             pad=14)
+ax.view_init(elev=28, azim=-55)
+fig.colorbar(surf, shrink=0.55, aspect=20, label='IV')
+ax.legend(loc='upper right')
+plt.tight_layout(); plt.show()
+"""
+    ))
+    cells.append(md(
+        """### (2) Spinning GIF — render once, embed everywhere
+
+Builds 60 frames at 6° azimuth steps, stitches with Pillow → ~120-300 KB
+animated GIF saved to `artifacts/results/surface_3d_spin_<date>.gif`.
+Runs in ~10-20 seconds on a Mac CPU.
+
+The GIF is embedded inline below for the notebook itself, and lives on
+disk for use in slides, README, Slack, email, etc."""
+    ))
+    cells.append(code(
+        """import io
+from PIL import Image as PILImage
+from IPython.display import Image as IPyImage, display
+import datetime as _dt
+
+GIF_PATH = Path('../artifacts/results') / f'surface_3d_spin_{_dt.date.today().isoformat()}.gif'
+
+def render_frame(azim_deg: float) -> PILImage.Image:
+    fig = plt.figure(figsize=(7, 5), dpi=90)
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot_surface(K3D, DAYS3D, IV3D, cmap='viridis', alpha=0.9,
+                    linewidth=0, antialiased=True, rcount=40, ccount=70)
+    ax.scatter(chain['log_moneyness'].values,
+               chain['tau'].values * 365.25,
+               chain['impliedVolatility'].values,
+               c='red', s=6, alpha=0.55, depthshade=True)
+    ax.set_xlabel('log_moneyness'); ax.set_ylabel('days'); ax.set_zlabel('IV')
+    ax.set_title(f'SPY conditional surface (spot=${spot:.2f})')
+    ax.view_init(elev=25, azim=azim_deg)
+    ax.set_box_aspect((1, 1.2, 0.7))
+    fig.tight_layout()
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png', bbox_inches='tight'); plt.close(fig)
+    buf.seek(0)
+    return PILImage.open(buf).convert('P', palette=PILImage.Palette.ADAPTIVE)
+
+print('rendering 60 frames @ 6° each ...')
+frames = [render_frame(a) for a in np.linspace(0, 354, 60)]
+frames[0].save(
+    GIF_PATH, save_all=True, append_images=frames[1:],
+    duration=70, loop=0, optimize=True, disposal=2,
+)
+print(f'wrote {GIF_PATH}  ({GIF_PATH.stat().st_size/1024:.0f} KB)')
+display(IPyImage(filename=str(GIF_PATH)))
+"""
+    ))
+    cells.append(md(
+        """### (3) Interactive Plotly — drag to rotate inside the notebook
+
+The Plotly figure below renders as WebGL inside Jupyter. Click-and-drag
+to rotate, scroll to zoom, double-click to reset view. The same data,
+fully exploratory."""
+    ))
+    cells.append(code(
+        """import plotly.graph_objects as go
+import plotly.io as pio
+pio.renderers.default = 'notebook'
+
+surface = go.Surface(
+    x=k_grid_3d,
+    y=tau_grid_3d * 365.25,
+    z=IV3D,
+    colorscale='Viridis',
+    opacity=0.92,
+    colorbar=dict(title='IV', thickness=15),
+    name='model surface',
+    showscale=True,
+)
+scatter = go.Scatter3d(
+    x=chain['log_moneyness'].values,
+    y=chain['tau'].values * 365.25,
+    z=chain['impliedVolatility'].values,
+    mode='markers',
+    marker=dict(size=2.5, color='red', opacity=0.7),
+    name='market quotes',
+)
+fig3d = go.Figure(data=[surface, scatter])
+fig3d.update_layout(
+    title=f'SPY IV surface — conditional model (spot=${spot:.2f}, {len(chain):,} quotes)',
+    scene=dict(
+        xaxis_title='log_moneyness',
+        yaxis_title='days to expiry',
+        zaxis_title='Implied Volatility',
+        camera=dict(eye=dict(x=1.6, y=-1.6, z=0.9)),
+        aspectratio=dict(x=1, y=1.2, z=0.8),
+    ),
+    width=900, height=600,
+    margin=dict(l=0, r=0, t=40, b=0),
+)
+fig3d.show()
+"""
+    ))
+    cells.append(md(
+        """### (4) Side-by-side: model surface vs RBF interpolation surface
+
+Both surfaces are conditioned on the same input chain. The visual
+difference highlights the **inductive bias** of each method:
+
+- **RBF** has very strong locality — it hugs the observed points and
+  bends sharply between them. Smooth where quotes are dense (ATM), wilder
+  in the wings.
+- **Conditional model** produces a **smoother** surface globally — the
+  latent `z_t` averages over all observations and the MLP decoder
+  imposes a learned regularity from training on ~20M points of SPY history.
+"""
+    ))
+    cells.append(code(
+        """# Build the RBF interp surface on the same mesh, from the same chain.
+from scipy.interpolate import RBFInterpolator
+
+# Use only observed points (the chain) as RBF training data.
+rbf_xy = np.column_stack([
+    chain['log_moneyness'].values, chain['tau'].values
+])
+rbf_z  = chain['impliedVolatility'].values
+rbf    = RBFInterpolator(rbf_xy, rbf_z, kernel='thin_plate_spline', smoothing=1e-3)
+IV3D_RBF = rbf(mesh_q).reshape(IV3D.shape)
+# RBF can extrapolate to negative; clamp for display
+IV3D_RBF_clip = np.clip(IV3D_RBF, 0.01, 3.0)
+
+fig = plt.figure(figsize=(14, 6))
+for i, (Z, title) in enumerate([
+    (IV3D, 'Conditional model (W3)'),
+    (IV3D_RBF_clip, 'RBF interpolation (Phase 1 floor)'),
+], start=1):
+    ax = fig.add_subplot(1, 2, i, projection='3d')
+    ax.plot_surface(K3D, DAYS3D, Z, cmap='viridis', alpha=0.88,
+                    linewidth=0, antialiased=True, rcount=40, ccount=70)
+    ax.scatter(chain['log_moneyness'].values,
+               chain['tau'].values * 365.25,
+               chain['impliedVolatility'].values,
+               c='red', s=6, alpha=0.55, depthshade=True)
+    ax.set_xlabel('log_moneyness'); ax.set_ylabel('days'); ax.set_zlabel('IV')
+    ax.set_title(title); ax.view_init(elev=26, azim=-50)
+    ax.set_zlim(0, min(1.5, max(IV3D.max(), IV3D_RBF_clip.max())*1.05))
+plt.suptitle(f'Same chain ({len(chain)} quotes), two surfaces', y=1.02, fontsize=13)
+plt.tight_layout(); plt.show()
+"""
+    ))
+
+    # -----------------------------------------------------------------
     # Headline bar chart
     # -----------------------------------------------------------------
     cells.append(md(
