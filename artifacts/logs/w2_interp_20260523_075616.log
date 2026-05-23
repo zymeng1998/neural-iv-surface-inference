@@ -1,0 +1,1361 @@
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: invalid value encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: invalid value encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:246: RuntimeWarning: divide by zero encountered in divide
+  left = (c[1:-1] - c[:-2]) / (strike[1:-1] - strike[:-2])
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/diagnostics/no_arbitrage.py:247: RuntimeWarning: divide by zero encountered in divide
+  right = (c[2:] - c[1:-1]) / (strike[2:] - strike[1:-1])
+[data] Loading benchmark: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+[run] predictor=interp_rbf, splits=('train', 'val', 'test'), keep_fraction=0.8, n_draws=20
+
+[summary]
+     model split       date  n_points  calendar_n_eval  calendar_violations  calendar_rate  calendar_severity  monotonicity_n_eval  monotonicity_violations  monotonicity_rate  monotonicity_severity  convexity_n_eval  convexity_violations  convexity_rate  convexity_severity  mean_instability  risk_flag_rate
+interp_rbf train 2008-01-02      1343             1212                  205       0.169142           0.726202                 1332                       37           0.027778               0.000006              1321                     2        0.001514                 inf          0.013694        0.335071
+interp_rbf train 2008-01-03      1334             1203                  207       0.172070           0.668849                 1323                       50           0.037793               0.000058              1312                    18        0.013720                 inf          0.012755        0.379310
+interp_rbf train 2008-01-04      1360             1229                  194       0.157852           0.697956                 1348                       55           0.040801               0.000195              1336                     8        0.005988                 inf          0.011144        0.355882
+interp_rbf train 2008-01-07      1349             1218                  201       0.165025           0.688022                 1337                       41           0.030666               0.000028              1325                    12        0.009057                 inf          0.012261        0.343217
+interp_rbf train 2008-01-08      1348             1217                  191       0.156943           0.447720                 1336                       66           0.049401               0.000080              1324                     1        0.000755                 inf          0.011060        0.346439
+interp_rbf train 2008-01-09      1364             1233                  193       0.156529           0.689160                 1352                       43           0.031805               0.000311              1340                    13        0.009701                 inf          0.012617        0.337243
+interp_rbf train 2008-01-10      1374             1243                  184       0.148029           0.541265                 1362                       50           0.036711               0.000037              1350                    25        0.018519                 inf          0.011980        0.342067
+interp_rbf train 2008-01-11      1379             1248                  192       0.153846           0.862907                 1367                       71           0.051939               0.001131              1355                    14        0.010332                 inf          0.013323        0.362582
+interp_rbf train 2008-01-14      1370             1239                  187       0.150928           0.507949                 1358                       49           0.036082               0.000124              1346                    19        0.014116                 inf          0.013353        0.333577
+interp_rbf train 2008-01-15      1366             1235                  205       0.165992           0.482067                 1354                       44           0.032496               0.000021              1342                     6        0.004471                 inf          0.012707        0.344070
+interp_rbf train 2008-01-16      1361             1230                  182       0.147967           0.533662                 1349                       72           0.053373               0.001193              1337                    19        0.014211                 inf          0.012884        0.355621
+interp_rbf train 2008-01-17      1395             1264                  180       0.142405           0.790118                 1383                       83           0.060014               0.002860              1371                    32        0.023341                 inf          0.014868        0.367742
+interp_rbf train 2008-01-18      1361             1230                  180       0.146341           0.609628                 1349                       88           0.065234               0.001385              1337                    20        0.014959                 inf          0.015570        0.362968
+interp_rbf train 2008-01-22      1627             1496                  295       0.197193           0.936935                 1615                      106           0.065635               0.000417              1603                    17        0.010605                 inf          0.014946        0.463430
+interp_rbf train 2008-01-23      1703             1572                  285       0.181298           1.845605                 1689                       82           0.048549               0.001813              1675                    43        0.025672                 inf          0.014432        0.429243
+interp_rbf train 2008-01-24      1693             1562                  301       0.192702           1.565417                 1679                       73           0.043478               0.000196              1665                    22        0.013213                 inf          0.013583        0.427053
+interp_rbf train 2008-01-25      1694             1563                  302       0.193218           1.098572                 1680                       64           0.038095               0.000271              1666                     1        0.000600            0.268856          0.014950        0.412043
+interp_rbf train 2008-01-28      1689             1558                  334       0.214377           1.422360                 1675                       78           0.046567               0.000126              1661                    30        0.018061                 inf          0.012464        0.471285
+interp_rbf train 2008-01-29      1685             1554                  299       0.192407           1.097003                 1671                       62           0.037104               0.001101              1657                    49        0.029572                 inf          0.013156        0.436795
+interp_rbf train 2008-01-30      1683             1552                  278       0.179124           1.486298                 1669                       81           0.048532               0.000404              1655                    28        0.016918                 inf          0.012524        0.420083
+interp_rbf train 2008-01-31      1651             1520                  251       0.165132           0.959857                 1637                       80           0.048870               0.000117              1623                    42        0.025878                 inf          0.014423        0.418534
+interp_rbf train 2008-02-01      1668             1537                  293       0.190631           1.135146                 1654                       66           0.039903               0.000095              1640                    10        0.006098                 inf          0.014231        0.411871
+interp_rbf train 2008-02-04      1668             1537                  289       0.188029           1.349596                 1654                       85           0.051391               0.000143              1640                    34        0.020732                 inf          0.012656        0.434053
+interp_rbf train 2008-02-05      1676             1545                  270       0.174757           1.334297                 1662                       92           0.055355               0.001550              1648                    43        0.026092                 inf          0.013865        0.431384
+interp_rbf train 2008-02-06      1671             1540                  264       0.171429           1.121994                 1657                       94           0.056729               0.001316              1643                    26        0.015825                 inf          0.014415        0.413525
+interp_rbf train 2008-02-07      1664             1533                  273       0.178082           1.300610                 1650                       98           0.059394               0.000221              1636                    33        0.020171                 inf          0.015298        0.424880
+interp_rbf train 2008-02-08      1638             1507                  262       0.173855           1.072480                 1624                       83           0.051108               0.000144              1610                    46        0.028571                 inf          0.013619        0.420024
+interp_rbf train 2008-02-11      1646             1515                  273       0.180198           1.126709                 1632                       96           0.058824               0.002940              1618                    26        0.016069                 inf          0.015382        0.434386
+interp_rbf train 2008-02-12      1641             1510                  254       0.168212           1.234185                 1627                       72           0.044253               0.000412              1613                    11        0.006820                 inf          0.014084        0.375381
+interp_rbf train 2008-02-13      1631             1500                  279       0.186000           1.337063                 1617                       60           0.037106               0.000103              1603                    35        0.021834                 inf          0.014612        0.416309
+interp_rbf train 2008-02-14      1629             1498                  256       0.170895           1.125084                 1615                       62           0.038390               0.000858              1601                    47        0.029357                 inf          0.013890        0.410068
+interp_rbf train 2008-02-15      1600             1469                  218       0.148400           0.987458                 1586                       75           0.047289               0.001538              1572                    29        0.018448                 inf          0.012237        0.362500
+interp_rbf train 2008-02-19      1667             1536                  268       0.174479           1.145972                 1654                       65           0.039299               0.000357              1641                    16        0.009750                 inf          0.013318        0.395321
+interp_rbf train 2008-02-20      1650             1519                  275       0.181040           1.129123                 1638                       84           0.051282               0.000075              1626                    22        0.013530                 inf          0.013447        0.420606
+interp_rbf train 2008-02-21      1649             1518                  289       0.190382           0.865580                 1637                       62           0.037874               0.000042              1625                    28        0.017231                 inf          0.014202        0.428745
+interp_rbf train 2008-02-22      1630             1499                  277       0.184790           0.876012                 1618                       56           0.034611               0.000045              1606                    13        0.008095                 inf          0.014174        0.393252
+interp_rbf train 2008-02-25      1629             1498                  266       0.177570           0.820719                 1617                       83           0.051330               0.000454              1605                    25        0.015576                 inf          0.013991        0.408840
+interp_rbf train 2008-02-26      1622             1491                  251       0.168343           0.765869                 1610                       69           0.042857               0.000069              1598                     5        0.003129                 inf          0.013405        0.381011
+interp_rbf train 2008-02-27      1621             1490                  263       0.176510           0.743528                 1609                       74           0.045991               0.000071              1597                    11        0.006888                 inf          0.015427        0.394201
+interp_rbf train 2008-02-28      1621             1490                  268       0.179866           0.906965                 1609                       56           0.034804               0.000037              1597                    22        0.013776                 inf          0.012774        0.409007
+interp_rbf train 2008-02-29      1633             1502                  278       0.185087           1.013276                 1621                       77           0.047502               0.001181              1609                    28        0.017402                 inf          0.014800        0.432945
+interp_rbf train 2008-03-03      1619             1488                  262       0.176075           0.877963                 1607                       78           0.048538               0.000195              1595                    28        0.017555                 inf          0.015122        0.405188
+interp_rbf train 2008-03-04      1611             1480                  248       0.167568           0.857675                 1599                      101           0.063164               0.000133              1587                    13        0.008192                 inf          0.013852        0.391061
+interp_rbf train 2008-03-05      1599             1468                  281       0.191417           0.801470                 1587                       70           0.044108               0.000164              1575                    22        0.013968                 inf          0.014414        0.419637
+interp_rbf train 2008-03-06      1724             1593                  310       0.194601           1.900656                 1712                       92           0.053738               0.002542              1700                    17        0.010000                 inf          0.013895        0.447216
+interp_rbf train 2008-03-07      1611             1480                  264       0.178378           1.056586                 1599                       75           0.046904               0.000039              1587                    34        0.021424                 inf          0.013635        0.409683
+interp_rbf train 2008-03-10      1622             1491                  277       0.185781           1.329430                 1610                       95           0.059006               0.008465              1598                    33        0.020651                 inf          0.014980        0.432182
+interp_rbf train 2008-03-11      1610             1479                  294       0.198783           1.377386                 1598                       86           0.053817               0.000155              1586                    26        0.016393                 inf          0.014036        0.459627
+interp_rbf train 2008-03-12      1608             1477                  261       0.176710           1.398176                 1596                       76           0.047619               0.001121              1584                    27        0.017045                 inf          0.014733        0.402985
+interp_rbf train 2008-03-13      1608             1477                  261       0.176710           1.603425                 1596                       55           0.034461               0.000079              1584                     2        0.001263                 inf          0.013600        0.369403
+interp_rbf   val 2020-11-12      9219             8952                  616       0.068811           3.057183                 9186                      178           0.019377               0.084743              9153                  2004        0.218945                 inf          0.007617        0.627291
+interp_rbf   val 2020-11-13      9066             8800                  476       0.054091           3.950080                 9033                      145           0.016052               0.080092              9000                  1210        0.134444                 inf          0.005847        0.428524
+interp_rbf   val 2020-11-16      8823             8557                  523       0.061120           5.094993                 8791                      264           0.030031               0.107483              8759                  1962        0.223998                 inf          0.010673        0.606030
+interp_rbf   val 2020-11-17      8829             8561                  550       0.064245           3.726335                 8796                      148           0.016826               0.084440              8763                  1413        0.161246                 inf          0.006114        0.490996
+interp_rbf   val 2020-11-18      8731             8463                  537       0.063453           3.507594                 8699                      189           0.021727               0.107105              8667                  2054        0.236991                 inf          0.006549        0.634063
+interp_rbf   val 2020-11-19      8673             8405                  528       0.062820           3.170674                 8641                      172           0.019905               0.094870              8609                  2244        0.260657                 inf          0.006639        0.689496
+interp_rbf   val 2020-11-20      8480             8212                  612       0.074525           5.070679                 8448                      307           0.036340               0.155383              8416                   857        0.101830                 inf          0.012892        0.386557
+interp_rbf   val 2020-11-23      8257             7989                  432       0.054074           4.046753                 8226                      277           0.033674               0.133510              8195                  1399        0.170714                 inf          0.007768        0.509144
+interp_rbf   val 2020-11-24      8261             7993                  543       0.067934           3.792770                 8229                      163           0.019808               0.091842              8197                  1433        0.174820                 inf          0.007135        0.510229
+interp_rbf   val 2020-11-25      8332             8057                  570       0.070746           5.653290                 8300                      281           0.033855               0.115335              8268                  1345        0.162675                 inf          0.013135        0.514882
+interp_rbf   val 2020-11-27      8238             7963                  513       0.064423           5.218528                 8206                      266           0.032415               0.128654              8174                  1018        0.124541                 inf          0.011682        0.427045
+interp_rbf   val 2020-11-30      8078             7803                  533       0.068307           3.318137                 8047                      197           0.024481               0.073571              8016                  1323        0.165045                 inf          0.008422        0.511637
+interp_rbf   val 2020-12-01      8159             7884                  498       0.063166           4.691161                 8127                      279           0.034330               0.141007              8095                  1583        0.195553                 inf          0.009271        0.563427
+interp_rbf   val 2020-12-02      8009             7734                  623       0.080553           4.621477                 7978                      189           0.023690               0.107036              7947                  1588        0.199824                 inf          0.006921        0.596953
+interp_rbf   val 2020-12-03      8146             7869                  655       0.083238           6.229035                 8114                      322           0.039684               0.151592              8082                   933        0.115442                 inf          0.015253        0.421188
+interp_rbf   val 2020-12-04      8076             7800                  703       0.090128           6.324423                 8044                      289           0.035927               0.150368              8012                   821        0.102471                 inf          0.016565        0.410599
+interp_rbf   val 2020-12-07      8015             7739                  690       0.089159           5.688709                 7984                      311           0.038953               0.152196              7953                  1707        0.214636                 inf          0.016780        0.631691
+interp_rbf   val 2020-12-08      8061             7785                  647       0.083109           4.773947                 8029                      218           0.027152               0.140050              7997                  1438        0.179817                 inf          0.008414        0.553033
+interp_rbf   val 2020-12-09      8072             7794                  659       0.084552           6.043841                 8041                      343           0.042656               0.174759              8010                   826        0.103121                 inf          0.015996        0.403494
+interp_rbf   val 2020-12-10      8117             7838                  689       0.087905           5.941706                 8085                      398           0.049227               0.182179              8053                  1734        0.215323                 inf          0.016146        0.628065
+interp_rbf   val 2020-12-11      8020             7747                  620       0.080031           6.383592                 7988                      316           0.039559               0.140760              7956                  1202        0.151081                 inf          0.011184        0.506858
+interp_rbf   val 2020-12-14      7940             7667                  639       0.083344           3.266110                 7909                      348           0.044001               0.128337              7878                  1370        0.173902                 inf          0.007931        0.545088
+interp_rbf   val 2020-12-15      8228             7956                  827       0.103947           6.166221                 8196                      339           0.041362               0.183544              8164                   917        0.112322                 inf          0.017896        0.451507
+interp_rbf   val 2020-12-16      8305             8033                  894       0.111291           7.192532                 8273                      333           0.040251               0.185130              8241                  1276        0.154836                 inf          0.018591        0.535942
+interp_rbf   val 2020-12-17      8429             8157                  753       0.092313           5.564294                 8397                      336           0.040014               0.186328              8365                  2179        0.260490                 inf          0.008376        0.725353
+interp_rbf   val 2020-12-18      8159             7887                  438       0.055534           2.757369                 8127                      166           0.020426               0.037667              8095                  1908        0.235701                 inf          0.008558        0.653021
+interp_rbf   val 2020-12-21      8045             7771                  427       0.054948           2.977979                 8014                      280           0.034939               0.070339              7983                  1799        0.225354                 inf          0.006367        0.618894
+interp_rbf   val 2020-12-22      8062             7788                  458       0.058808           2.961356                 8030                      303           0.037733               0.080473              7998                   932        0.116529                 inf          0.009058        0.373605
+interp_rbf   val 2020-12-23      8053             7779                  553       0.071089           5.298535                 8022                      335           0.041760               0.079572              7991                  1662        0.207984                 inf          0.010745        0.597417
+interp_rbf   val 2020-12-24      7929             7655                  516       0.067407           3.541641                 7897                      303           0.038369               0.073771              7865                  1412        0.179530                 inf          0.008898        0.529449
+interp_rbf   val 2020-12-28      7789             7515                  393       0.052295           2.898481                 7758                      125           0.016112               0.070904              7727                  1731        0.224020                 inf          0.005719        0.620234
+interp_rbf   val 2020-12-29      8020             7745                  351       0.045320           2.811170                 7987                      226           0.028296               0.062327              7954                  1535        0.192985                 inf          0.005776        0.544888
+interp_rbf   val 2020-12-30      8012             7737                  447       0.057774           3.192207                 7980                      258           0.032331               0.076430              7948                   937        0.117891                 inf          0.010471        0.389291
+interp_rbf   val 2020-12-31      8050             7775                  393       0.050547           2.977535                 8017                      137           0.017089               0.057863              7984                  1460        0.182866                 inf          0.006100        0.531180
+interp_rbf   val 2021-01-04      8279             8004                  419       0.052349           2.279712                 8246                      118           0.014310               0.053712              8213                  1434        0.174601                 inf          0.005637        0.517816
+interp_rbf   val 2021-01-05      8453             8177                  416       0.050874           2.912370                 8419                      244           0.028982               0.087794              8385                  2315        0.276088                 inf          0.007364        0.702472
+interp_rbf   val 2021-01-06      8567             8291                  364       0.043903           3.199063                 8534                      105           0.012304               0.062290              8501                  1358        0.159746                 inf          0.005351        0.464807
+interp_rbf   val 2021-01-07      8619             8343                  462       0.055376           4.565611                 8585                      231           0.026907               0.073858              8551                  1372        0.160449                 inf          0.010243        0.480566
+interp_rbf   val 2021-01-08      8583             8304                  523       0.062982           2.408082                 8549                      143           0.016727               0.061258              8515                  1472        0.172871                 inf          0.006232        0.502621
+interp_rbf   val 2021-01-11      8490             8206                  468       0.057031           2.753619                 8457                      145           0.017146               0.062780              8424                  1469        0.174383                 inf          0.006245        0.506007
+interp_rbf   val 2021-01-12      8608             8324                  457       0.054901           3.147099                 8574                      269           0.031374               0.086652              8540                   607        0.071077                 inf          0.007587        0.276371
+interp_rbf   val 2021-01-13      8535             8259                  493       0.059692           3.229729                 8502                      132           0.015526               0.059757              8469                  1421        0.167788                 inf          0.006251        0.495958
+interp_rbf   val 2021-01-14      8580             8304                  524       0.063102           2.700150                 8546                      138           0.016148               0.057738              8512                   652        0.076598                 inf          0.006044        0.303963
+interp_rbf   val 2021-01-15      8538             8260                  791       0.095763           7.409666                 8504                      367           0.043156               0.141372              8470                   666        0.078630                 inf          0.014619        0.357461
+interp_rbf   val 2021-01-19      8342             8064                  466       0.057788           3.149973                 8308                      227           0.027323               0.088896              8274                   936        0.113125                 inf          0.007325        0.377487
+interp_rbf   val 2021-01-20      8381             8104                  513       0.063302           4.719356                 8347                      242           0.028992               0.073363              8313                  1985        0.238783                 inf          0.007754        0.646462
+interp_rbf   val 2021-01-21      8490             8212                  467       0.056868           4.151892                 8455                      265           0.031342               0.095455              8420                   706        0.083848                 inf          0.006415        0.314959
+interp_rbf   val 2021-01-22      8343             8064                  398       0.049355           3.285287                 8308                      132           0.015888               0.082106              8273                  2122        0.256497                 inf          0.004912        0.684526
+interp_rbf   val 2021-01-25      8251             7972                  363       0.045534           2.603072                 8217                      207           0.025192               0.071012              8183                  1632        0.199438                 inf          0.007583        0.569143
+interp_rbf   val 2021-01-26      8207             7928                  598       0.075429           3.852996                 8172                      140           0.017132               0.052710              8137                  2119        0.260415                 inf          0.007843        0.723407
+interp_rbf  test 2023-08-17      6398             6135                  786       0.128117          13.540415                 6369                      673           0.105668               0.987830              6340                   360        0.056782                 inf          0.018373        0.356518
+interp_rbf  test 2023-08-18      6698             6435                  684       0.106294          13.838416                 6670                      752           0.112744               1.159353              6642                   623        0.093797                 inf          0.015779        0.416990
+interp_rbf  test 2023-08-21      6677             6414                  897       0.139850          13.041248                 6650                      689           0.103609               0.944386              6623                   283        0.042730                 inf          0.020011        0.350756
+interp_rbf  test 2023-08-22      6478             6215                  787       0.126629          13.453866                 6451                      613           0.095024               0.912888              6424                   369        0.057441                 inf          0.019035        0.371874
+interp_rbf  test 2023-08-23      6362             6099                  874       0.143302          12.323993                 6335                      591           0.093291               0.881599              6308                   479        0.075935                 inf          0.018916        0.438541
+interp_rbf  test 2023-08-24      6513             6249                  862       0.137942          10.820117                 6485                      665           0.102544               0.964027              6457                   395        0.061174                 inf          0.017917        0.370797
+interp_rbf  test 2023-08-25      6459             6195                  708       0.114286          12.151715                 6432                      714           0.111007               0.849436              6405                   438        0.068384                 inf          0.017321        0.380399
+interp_rbf  test 2023-08-28      6314             6050                  807       0.133388          13.986920                 6287                      540           0.085892               1.010642              6260                   332        0.053035                 inf          0.016878        0.379316
+interp_rbf  test 2023-08-29      6240             5977                  855       0.143048          11.815869                 6213                      542           0.087236               0.855508              6186                   468        0.075655                 inf          0.016907        0.440064
+interp_rbf  test 2023-08-30      6471             6208                  937       0.150934          11.324897                 6444                      554           0.085971               0.841207              6417                   309        0.048153                 inf          0.018292        0.400247
+interp_rbf  test 2023-08-31      6326             6063                  948       0.156358          11.732595                 6298                      440           0.069863               0.773938              6270                   216        0.034450                 inf          0.017161        0.400411
+interp_rbf  test 2023-09-01      6185             5922                  791       0.133570          11.224315                 6158                      536           0.087041               0.897088              6131                   369        0.060186                 inf          0.018837        0.393209
+interp_rbf  test 2023-09-05      5980             5717                  779       0.136260          10.699741                 5952                      542           0.091062               0.855958              5924                   657        0.110905                 inf          0.020649        0.508361
+interp_rbf  test 2023-09-06      5886             5622                  703       0.125044          10.259416                 5858                      568           0.096961               0.854360              5830                   539        0.092453                 inf          0.020256        0.442066
+interp_rbf  test 2023-09-07      5889             5625                  682       0.121244          11.251250                 5860                      571           0.097440               0.889232              5831                   655        0.112331                 inf          0.019693        0.482085
+interp_rbf  test 2023-09-08      5819             5556                  838       0.150828          13.704084                 5791                      486           0.083923               0.928551              5763                   617        0.107062                 inf          0.019464        0.514521
+interp_rbf  test 2023-09-11      6350             6087                  905       0.148678           9.831581                 6322                      601           0.095065               0.940154              6294                   472        0.074992                 inf          0.020104        0.438583
+interp_rbf  test 2023-09-12      6301             6038                 1021       0.169096          10.393364                 6273                      571           0.091025               0.967028              6245                   398        0.063731                 inf          0.019685        0.443580
+interp_rbf  test 2023-09-13      6033             5770                 1108       0.192028           9.972409                 6005                      635           0.105745               1.019563              5977                   701        0.117283                 inf          0.019773        0.566385
+interp_rbf  test 2023-09-14      5915             5653                 1201       0.212454          11.555207                 5887                      583           0.099032               0.903048              5859                   617        0.105308                 inf          0.020780        0.554015
+interp_rbf  test 2023-09-15      5641             5378                  529       0.098364          10.105666                 5614                      565           0.100641               0.840182              5587                   741        0.132629                 inf          0.013991        0.465520
+interp_rbf  test 2023-09-18      5899             5636                  627       0.111249          12.114479                 5872                      546           0.092984               0.801567              5845                   731        0.125064                 inf          0.012920        0.484319
+interp_rbf  test 2023-09-19      6086             5823                  650       0.111626          12.531817                 6059                      587           0.096881               0.734543              6032                   759        0.125829                 inf          0.012683        0.491291
+interp_rbf  test 2023-09-20      6092             5829                  805       0.138103          10.061300                 6065                      711           0.117230               0.966769              6038                   547        0.090593                 inf          0.016026        0.400197
+interp_rbf  test 2023-09-21      5994             5730                  703       0.122688          10.812863                 5966                      700           0.117332               1.028816              5938                   775        0.130515                 inf          0.015385        0.481148
+interp_rbf  test 2023-09-22      5770             5506                  527       0.095714           9.610261                 5743                      687           0.119624               0.902971              5716                   845        0.147831                 inf          0.012695        0.516118
+interp_rbf  test 2023-09-25      6137             5873                  588       0.100119          12.305085                 6110                      755           0.123568               0.888494              6083                   607        0.099786                 inf          0.013922        0.416001
+interp_rbf  test 2023-09-26      6107             5843                  601       0.102858          14.322953                 6080                      539           0.088651               0.804776              6053                   429        0.070874                 inf          0.013397        0.379728
+interp_rbf  test 2023-09-27      6294             6030                  666       0.110448          12.623920                 6267                      577           0.092070               0.859998              6240                   516        0.082692                 inf          0.013463        0.416587
+interp_rbf  test 2023-09-28      6448             6180                  936       0.151456           9.729132                 6420                      683           0.106386               0.957987              6392                   364        0.056946                 inf          0.016027        0.382289
+interp_rbf  test 2023-09-29      6655             6387                  609       0.095350          11.701686                 6627                      758           0.114381               0.936295              6599                   551        0.083497                 inf          0.011551        0.366942
+interp_rbf  test 2023-10-02      6777             6509                  680       0.104471          12.131108                 6748                      592           0.087730               0.990138              6719                   562        0.083643                 inf          0.013569        0.378043
+interp_rbf  test 2023-10-03      6604             6336                  604       0.095328          13.316917                 6575                      592           0.090038               0.874143              6546                   501        0.076535                 inf          0.012620        0.373713
+interp_rbf  test 2023-10-04      6859             6591                  758       0.115005          11.498276                 6830                      785           0.114934               0.956619              6801                   752        0.110572                 inf          0.015126        0.430967
+interp_rbf  test 2023-10-05      6770             6502                  868       0.133497          13.476791                 6740                      734           0.108902               0.887819              6710                   534        0.079583                 inf          0.017050        0.384343
+interp_rbf  test 2023-10-06      6571             6303                  616       0.097731          12.870714                 6542                      500           0.076429               0.971724              6513                   338        0.051896                 inf          0.012437        0.319282
+interp_rbf  test 2023-10-09      6460             6192                  613       0.098999          12.283313                 6431                      519           0.080703               0.809107              6402                   255        0.039831                 inf          0.013637        0.298607
+interp_rbf  test 2023-10-10      6395             6127                  609       0.099396          11.435301                 6366                      564           0.088596               0.788292              6337                   334        0.052706                 inf          0.014899        0.319312
+interp_rbf  test 2023-10-11      6186             5919                  638       0.107788          11.348734                 6157                      348           0.056521               0.794140              6128                   344        0.056136                 inf          0.015198        0.362916
+interp_rbf  test 2023-10-12      6162             5894                  627       0.106379          11.587252                 6132                      450           0.073386               0.846951              6102                   426        0.069813                 inf          0.014673        0.387212
+interp_rbf  test 2023-10-13      6884             6617                  781       0.118029          13.352134                 6855                      750           0.109409               0.921215              6826                   637        0.093320                 inf          0.016668        0.429547
+interp_rbf  test 2023-10-16      6776             6510                  619       0.095084          12.039435                 6747                      671           0.099452               0.901745              6718                   523        0.077851                 inf          0.013071        0.363636
+interp_rbf  test 2023-10-17      6753             6487                  887       0.136735          11.817968                 6724                      670           0.099643               0.798690              6695                   925        0.138163                 inf          0.016854        0.512365
+interp_rbf  test 2023-10-18      6611             6344                  601       0.094735          10.793405                 6582                      464           0.070495               0.823311              6553                   160        0.024416                 inf          0.013968        0.286643
+interp_rbf  test 2023-10-19      6447             6180                  856       0.138511          11.618527                 6418                      697           0.108601               0.961101              6389                   246        0.038504                 inf          0.019005        0.321700
+interp_rbf  test 2023-10-20      6786             6521                  637       0.097684          11.908238                 6758                      739           0.109352               0.953406              6730                   637        0.094651                 inf          0.011905        0.410551
+interp_rbf  test 2023-10-23      6583             6318                  518       0.081988          11.045544                 6555                      429           0.065446               1.034217              6527                   219        0.033553                 inf          0.013132        0.266748
+interp_rbf  test 2023-10-24      6663             6399                  597       0.093296           8.488490                 6635                      569           0.085757               0.906239              6607                   614        0.092932                 inf          0.012782        0.401321
+interp_rbf  test 2023-10-25      6753             6488                  637       0.098181          12.263983                 6725                      602           0.089517               1.010435              6697                   597        0.089144                 inf          0.012826        0.406338
+interp_rbf  test 2023-10-26      7044             6778                  621       0.091620          11.474997                 7015                      602           0.085816               0.945379              6986                   889        0.127255                 inf          0.012616        0.491198
+
+[artifacts]
+  summary: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf.csv
+  regions: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_regions.csv
+  risk_train: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_train_risk.png
+  instability_train: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_train_instability.png
+  risk_val: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_val_risk.png
+  instability_val: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_val_instability.png
+  risk_test: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_test_risk.png
+  instability_test: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_test_instability.png

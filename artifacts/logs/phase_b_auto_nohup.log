@@ -1,0 +1,312 @@
+[06:34:48] wall-clock guard armed: PID=8349  max_hours=8
+[06:34:48] === Phase B autonomous start  pod_id=s3d42nmizlbo1d  max_hours=8 ===
+[06:34:48] av pull pid: 6478
+[06:34:48] waiting for AV pull PID 6478 to exit ...
+[06:35:18] still waiting on AV pull ... elapsed=30s
+[06:35:48] still waiting on AV pull ... elapsed=60s
+[06:36:18] still waiting on AV pull ... elapsed=90s
+[06:36:48] still waiting on AV pull ... elapsed=120s
+[06:37:18] still waiting on AV pull ... elapsed=150s
+[06:37:48] still waiting on AV pull ... elapsed=180s
+[06:38:18] still waiting on AV pull ... elapsed=210s
+[06:38:48] still waiting on AV pull ... elapsed=240s
+[06:39:18] still waiting on AV pull ... elapsed=270s
+[06:39:48] still waiting on AV pull ... elapsed=300s
+[06:40:19] still waiting on AV pull ... elapsed=331s
+[06:40:49] still waiting on AV pull ... elapsed=361s
+[06:41:19] still waiting on AV pull ... elapsed=391s
+[06:41:49] still waiting on AV pull ... elapsed=421s
+[06:42:19] still waiting on AV pull ... elapsed=451s
+[06:42:49] still waiting on AV pull ... elapsed=481s
+[06:43:19] still waiting on AV pull ... elapsed=511s
+[06:43:49] still waiting on AV pull ... elapsed=541s
+[06:44:19] still waiting on AV pull ... elapsed=571s
+[06:44:49] still waiting on AV pull ... elapsed=601s
+[06:45:19] still waiting on AV pull ... elapsed=631s
+[06:45:49] still waiting on AV pull ... elapsed=661s
+[06:46:19] still waiting on AV pull ... elapsed=691s
+[06:46:49] still waiting on AV pull ... elapsed=721s
+[06:47:19] still waiting on AV pull ... elapsed=751s
+[06:47:49] still waiting on AV pull ... elapsed=781s
+[06:48:19] still waiting on AV pull ... elapsed=811s
+[06:48:49] still waiting on AV pull ... elapsed=841s
+[06:49:19] still waiting on AV pull ... elapsed=871s
+[06:49:49] still waiting on AV pull ... elapsed=901s
+[06:50:19] still waiting on AV pull ... elapsed=931s
+[06:50:49] still waiting on AV pull ... elapsed=961s
+[06:51:19] still waiting on AV pull ... elapsed=991s
+[06:51:49] still waiting on AV pull ... elapsed=1021s
+[06:52:19] still waiting on AV pull ... elapsed=1051s
+[06:52:49] still waiting on AV pull ... elapsed=1081s
+[06:53:19] still waiting on AV pull ... elapsed=1111s
+[06:53:49] still waiting on AV pull ... elapsed=1141s
+[06:54:19] still waiting on AV pull ... elapsed=1171s
+[06:54:49] still waiting on AV pull ... elapsed=1201s
+[06:55:19] still waiting on AV pull ... elapsed=1231s
+[06:55:50] still waiting on AV pull ... elapsed=1262s
+[06:56:20] still waiting on AV pull ... elapsed=1292s
+[06:56:50] still waiting on AV pull ... elapsed=1322s
+[06:57:20] still waiting on AV pull ... elapsed=1352s
+[06:57:50] still waiting on AV pull ... elapsed=1382s
+[06:58:20] still waiting on AV pull ... elapsed=1412s
+[06:58:50] still waiting on AV pull ... elapsed=1442s
+[06:59:20] still waiting on AV pull ... elapsed=1472s
+[06:59:50] still waiting on AV pull ... elapsed=1502s
+[07:00:20] still waiting on AV pull ... elapsed=1532s
+[07:00:50] still waiting on AV pull ... elapsed=1562s
+[07:01:20] still waiting on AV pull ... elapsed=1592s
+[07:01:50] still waiting on AV pull ... elapsed=1622s
+[07:02:20] still waiting on AV pull ... elapsed=1652s
+[07:02:50] still waiting on AV pull ... elapsed=1682s
+[07:03:20] still waiting on AV pull ... elapsed=1712s
+[07:03:50] still waiting on AV pull ... elapsed=1742s
+[07:04:20] still waiting on AV pull ... elapsed=1772s
+[07:04:50] still waiting on AV pull ... elapsed=1802s
+[07:05:20] still waiting on AV pull ... elapsed=1832s
+[07:05:50] still waiting on AV pull ... elapsed=1862s
+[07:06:20] still waiting on AV pull ... elapsed=1892s
+[07:06:50] still waiting on AV pull ... elapsed=1922s
+[07:07:20] still waiting on AV pull ... elapsed=1952s
+[07:07:50] still waiting on AV pull ... elapsed=1982s
+[07:08:20] still waiting on AV pull ... elapsed=2012s
+[07:08:50] still waiting on AV pull ... elapsed=2042s
+[07:09:20] still waiting on AV pull ... elapsed=2072s
+[07:09:50] still waiting on AV pull ... elapsed=2102s
+[07:10:20] still waiting on AV pull ... elapsed=2132s
+[07:10:51] still waiting on AV pull ... elapsed=2163s
+[07:11:21] still waiting on AV pull ... elapsed=2193s
+[07:11:51] still waiting on AV pull ... elapsed=2223s
+[07:12:21] still waiting on AV pull ... elapsed=2253s
+[07:12:51] still waiting on AV pull ... elapsed=2283s
+[07:13:21] still waiting on AV pull ... elapsed=2313s
+[07:13:51] still waiting on AV pull ... elapsed=2343s
+[07:14:21] still waiting on AV pull ... elapsed=2373s
+[07:14:51] still waiting on AV pull ... elapsed=2403s
+[07:15:21] still waiting on AV pull ... elapsed=2433s
+[07:15:51] still waiting on AV pull ... elapsed=2463s
+[07:16:21] still waiting on AV pull ... elapsed=2493s
+[07:16:51] still waiting on AV pull ... elapsed=2523s
+[07:17:21] still waiting on AV pull ... elapsed=2553s
+[07:17:51] still waiting on AV pull ... elapsed=2583s
+[07:18:21] still waiting on AV pull ... elapsed=2613s
+[07:18:51] still waiting on AV pull ... elapsed=2643s
+[07:19:21] still waiting on AV pull ... elapsed=2673s
+[07:19:51] still waiting on AV pull ... elapsed=2703s
+[07:20:21] still waiting on AV pull ... elapsed=2733s
+[07:20:51] still waiting on AV pull ... elapsed=2763s
+[07:21:21] still waiting on AV pull ... elapsed=2793s
+[07:21:51] still waiting on AV pull ... elapsed=2823s
+[07:22:21] still waiting on AV pull ... elapsed=2853s
+[07:22:51] still waiting on AV pull ... elapsed=2883s
+[07:23:21] still waiting on AV pull ... elapsed=2913s
+[07:23:51] still waiting on AV pull ... elapsed=2943s
+[07:24:21] still waiting on AV pull ... elapsed=2973s
+[07:24:51] still waiting on AV pull ... elapsed=3003s
+[07:25:21] still waiting on AV pull ... elapsed=3033s
+[07:25:51] still waiting on AV pull ... elapsed=3063s
+[07:26:22] still waiting on AV pull ... elapsed=3094s
+[07:26:52] still waiting on AV pull ... elapsed=3124s
+[07:27:22] still waiting on AV pull ... elapsed=3154s
+[07:27:52] still waiting on AV pull ... elapsed=3184s
+[07:28:22] still waiting on AV pull ... elapsed=3214s
+[07:28:52] still waiting on AV pull ... elapsed=3244s
+[07:29:22] still waiting on AV pull ... elapsed=3274s
+[07:29:52] still waiting on AV pull ... elapsed=3304s
+[07:30:22] still waiting on AV pull ... elapsed=3334s
+[07:30:52] still waiting on AV pull ... elapsed=3364s
+[07:31:22] still waiting on AV pull ... elapsed=3394s
+[07:31:52] still waiting on AV pull ... elapsed=3424s
+[07:32:22] still waiting on AV pull ... elapsed=3454s
+[07:32:52] still waiting on AV pull ... elapsed=3484s
+[07:33:22] still waiting on AV pull ... elapsed=3514s
+[07:33:52] still waiting on AV pull ... elapsed=3544s
+[07:34:22] still waiting on AV pull ... elapsed=3574s
+[07:34:52] still waiting on AV pull ... elapsed=3604s
+[07:35:22] still waiting on AV pull ... elapsed=3634s
+[07:35:52] still waiting on AV pull ... elapsed=3664s
+[07:36:22] still waiting on AV pull ... elapsed=3694s
+[07:36:52] still waiting on AV pull ... elapsed=3724s
+[07:37:22] still waiting on AV pull ... elapsed=3754s
+[07:37:52] still waiting on AV pull ... elapsed=3784s
+[07:38:22] still waiting on AV pull ... elapsed=3814s
+[07:38:52] still waiting on AV pull ... elapsed=3844s
+[07:39:22] still waiting on AV pull ... elapsed=3874s
+[07:39:52] still waiting on AV pull ... elapsed=3904s
+[07:40:22] still waiting on AV pull ... elapsed=3934s
+[07:40:52] still waiting on AV pull ... elapsed=3964s
+[07:41:22] still waiting on AV pull ... elapsed=3994s
+[07:41:53] still waiting on AV pull ... elapsed=4025s
+[07:42:23] still waiting on AV pull ... elapsed=4055s
+[07:42:53] still waiting on AV pull ... elapsed=4085s
+[07:43:23] still waiting on AV pull ... elapsed=4115s
+[07:43:53] still waiting on AV pull ... elapsed=4145s
+[07:44:23] still waiting on AV pull ... elapsed=4175s
+[07:44:53] still waiting on AV pull ... elapsed=4205s
+[07:44:53] AV pull PID gone.
+[07:44:53] AV options parquet present: 953976658 bytes
+[07:44:53] --- chain stage 1: rebuild_pipeline_on_av.sh ---
+[07:44:53] === 2C.7 pipeline rebuild starting ===
+[07:45:41] AV options rows: 26063475
+[07:45:41] moving Dubach raw -> data_raw/spy_dubach_pre_av_20260523_074453/
+[07:45:41] underlying parquet present (size=240927)
+[07:45:41] moving Dubach processed -> data_processed/spy_dubach_pre_av_20260523_074453/
+[07:45:41] Dubach processed backed up to data_processed/spy_dubach_pre_av_20260523_074453
+[07:45:41] moving AV pull -> canonical data_raw/spy/spy_options.parquet
+[07:45:41] active options parquet size: 953976658 bytes
+[07:45:41] --- step 02: schema inspection ---
+[07:45:46] step 02 done
+[07:45:46] --- step 03: surface build (year-by-year) ---
+[07:48:57] step 03 done
+-rw-rw-rw- 1 root root 990719885 May 23 07:48 data_processed/spy/spy_surface_points.parquet
+-rw-rw-rw- 1 root root 892905814 May 23 07:48 data_processed/spy/spy_surface_points_strict.parquet
+[07:48:57] --- step 04: benchmark tasks (all 11 variants) ---
+[07:56:16] step 04 done
+total 10247217
+drwxrwxrwx 2 root root    3000976 May 23 07:55 .
+drwxrwxrwx 4 root root    3001244 May 23 07:49 ..
+-rw-rw-rw- 1 root root  904755679 May 23 07:56 spy_phase1_drop_short_maturity100_noise0.parquet
+-rw-rw-rw- 1 root root  905188988 May 23 07:55 spy_phase1_drop_wings100_noise0.parquet
+-rw-rw-rw- 1 root root  907403011 May 23 07:49 spy_phase1_random20_noise0.parquet
+-rw-rw-rw- 1 root root  962081756 May 23 07:51 spy_phase1_random20_noiselow.parquet
+-rw-rw-rw- 1 root root  907402980 May 23 07:50 spy_phase1_random40_noise0.parquet
+-rw-rw-rw- 1 root root  998758359 May 23 07:53 spy_phase1_random40_noisehigh.parquet
+-rw-rw-rw- 1 root root 1000760157 May 23 07:52 spy_phase1_random40_noiselow.parquet
+-rw-rw-rw- 1 root root  999300245 May 23 07:53 spy_phase1_random40_noisemed.parquet
+-rw-rw-rw- 1 root root  907402980 May 23 07:51 spy_phase1_random60_noise0.parquet
+-rw-rw-rw- 1 root root  997950946 May 23 07:54 spy_phase1_realistic40_noiselow.parquet
+-rw-rw-rw- 1 root root  996139609 May 23 07:54 spy_phase1_realistic40_noisemed_hetero.parquet
+[07:56:16] === 2C.7 rebuild SUCCESS ===
+[07:56:16] Outputs:
+512	data_raw/spy/ingest_metadata.json
+910M	data_raw/spy/spy_options.parquet
+236K	data_raw/spy/spy_underlying.parquet
+9.8G	data_processed/spy/benchmarks
+948M	data_processed/spy/partitions
+945M	data_processed/spy/spy_surface_points.parquet
+852M	data_processed/spy/spy_surface_points_strict.parquet
+scripts/rebuild_pipeline_on_av.sh: line 87: $1: unbound variable
+[07:56:16] Total persistent data: 
+[07:56:16] Backups preserved at: data_raw/spy_dubach_pre_av_20260523_074453 and data_processed/spy_dubach_pre_av_20260523_074453
+[07:56:16] Master log: artifacts/logs/rebuild_pipeline_20260523_074453.log
+[07:56:16] stage 1 done.
+[07:56:16] --- chain stage 2: rerun_phase1_and_conditional_on_av.sh ---
+[07:56:16] === 2C.8 + 2C.4-R + 2C.5-R START  tag=av_rerun_20260523_075616 ===
+[07:56:16] benchmark size: 1000760157 bytes
+[07:56:16] --- 2C.8 stage A: run_baseline.py (interp + MLP on random40_noiselow) ---
+[13:27:55] stage A done; tail:
+
+[save] Results saved to artifacts/results/baseline_results.csv
+
+======================================================================
+  COMPARISON SUMMARY (test split)
+======================================================================
+     model  overall_mae  overall_rmse  observed_mae  unobserved_mae
+interp_rbf     0.066199      0.112405      0.054227        0.074171
+       mlp     0.095124      0.166482      0.095123        0.095125
+
+[13:27:55] --- 2C.8 stage B: run_uncertainty_eval.py --predictor interp ---
+[16:02:42] stage B done; metrics:
+[data] Loading benchmark: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+[run] predictor=interp_rbf, splits=('train', 'val', 'test')
+
+[metrics]
+     model split        n  overall_mae  overall_rmse  observed_mae  unobserved_mae  interval_coverage  mean_interval_width  err_unc_pearson  err_unc_spearman confidence_source     aurc  hc_mae_keep0.5  hc_mae_keep0.8
+interp_rbf train 11112617     0.048475      0.088826      0.036690        0.056323                NaN                  NaN              NaN               NaN      oracle_error 0.012914        0.010315        0.020626
+interp_rbf   val  5593759     0.046274      0.090509      0.037897        0.051865                NaN                  NaN              NaN               NaN      oracle_error 0.010608        0.007669        0.016832
+interp_rbf  test  5805664     0.066199      0.112405      0.054227        0.074171                NaN                  NaN              NaN               NaN      oracle_error 0.016843        0.011037        0.029428
+
+[artifacts]
+  metrics: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_interp_rbf.csv
+  curve: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_interp_rbf_curve.csv
+  figure: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_interp_rbf_risk_coverage.png
+[16:02:42] --- 2C.8 stage C: run_structure_diagnostics.py --predictor interp ---
+[17:39:12] stage C done; summary tail:
+
+[artifacts]
+  summary: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf.csv
+  regions: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_regions.csv
+  risk_train: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_train_risk.png
+  instability_train: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_train_instability.png
+  risk_val: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_val_risk.png
+  instability_val: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_val_instability.png
+  risk_test: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_test_risk.png
+  instability_test: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_test_instability.png
+[17:39:12] --- 2C.4-R stage D: run_conditional.py (full real-data training) ---
+[17:43:12] stage D done; tail:
+[conditional] benchmark: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+  Training Conditional: 85,057 params, device=cuda
+  Epoch   1/50  train_loss=0.033374  val_loss=0.039895  val_obs_mae=0.132361  val_unobs_mae=0.132288  lr=1.00e-03  (4.6s)
+  Epoch   5/50  train_loss=0.019575  val_loss=0.023175  val_obs_mae=0.094568  val_unobs_mae=0.094492  lr=1.00e-03  (4.2s)
+  Epoch  10/50  train_loss=0.012487  val_loss=0.016825  val_obs_mae=0.079014  val_unobs_mae=0.079007  lr=1.00e-03  (4.1s)
+  Epoch  15/50  train_loss=0.010725  val_loss=0.014912  val_obs_mae=0.071420  val_unobs_mae=0.071379  lr=1.00e-03  (4.3s)
+  Epoch  20/50  train_loss=0.010671  val_loss=0.012743  val_obs_mae=0.065138  val_unobs_mae=0.065151  lr=1.00e-03  (4.2s)
+  Epoch  25/50  train_loss=0.009862  val_loss=0.012871  val_obs_mae=0.069104  val_unobs_mae=0.069076  lr=1.00e-03  (4.2s)
+  Epoch  30/50  train_loss=0.010033  val_loss=0.011564  val_obs_mae=0.062244  val_unobs_mae=0.062275  lr=1.00e-03  (4.2s)
+  Epoch  35/50  train_loss=0.009424  val_loss=0.011337  val_obs_mae=0.062742  val_unobs_mae=0.062765  lr=5.00e-04  (4.3s)
+  Epoch  40/50  train_loss=0.009300  val_loss=0.010804  val_obs_mae=0.062093  val_unobs_mae=0.062129  lr=5.00e-04  (4.8s)
+  Epoch  45/50  train_loss=0.009015  val_loss=0.010243  val_obs_mae=0.057759  val_unobs_mae=0.057805  lr=2.50e-04  (4.8s)
+  Epoch  50/50  train_loss=0.008961  val_loss=0.010611  val_obs_mae=0.060925  val_unobs_mae=0.060971  lr=2.50e-04  (4.9s)
+  Loaded best checkpoint from epoch 46
+[conditional] done in 219.6s  epochs=50  final_train_loss=0.008961  final_val_loss=0.010611
+[17:43:12] checkpoint size: 1055782 bytes
+[17:43:12] --- 2C.5-R stage E: run_uncertainty_eval.py --predictor conditional ---
+[17:43:55] stage E done; metrics:
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/eval/adapters.py:159: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at ../torch/csrc/utils/tensor_numpy.cpp:206.)
+  ctx_t = torch.from_numpy(ctx).unsqueeze(0).to(self.device)
+[data] Loading benchmark: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+[run] predictor=conditional_surface, splits=('train', 'val', 'test')
+
+[metrics]
+              model split        n  overall_mae  overall_rmse  observed_mae  unobserved_mae  interval_coverage  mean_interval_width  err_unc_pearson  err_unc_spearman confidence_source     aurc  hc_mae_keep0.5  hc_mae_keep0.8
+conditional_surface train 11112617     0.057314      0.094343      0.057192        0.057396                NaN                  NaN              NaN               NaN      oracle_error 0.017993        0.015078        0.028987
+conditional_surface   val  5593759     0.058036      0.098745      0.058011        0.058054                NaN                  NaN              NaN               NaN      oracle_error 0.016613        0.013362        0.026800
+conditional_surface  test  5805664     0.075334      0.119280      0.075255        0.075387                NaN                  NaN              NaN               NaN      oracle_error 0.022790        0.017334        0.038943
+
+[artifacts]
+  metrics: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_conditional.csv
+  curve: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_conditional_curve.csv
+  figure: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_conditional_risk_coverage.png
+[17:43:55] --- 2C.5-R stage F: run_structure_diagnostics.py --predictor conditional ---
+[17:44:30] stage F done; summary tail:
+
+[artifacts]
+  summary: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional.csv
+  regions: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_regions.csv
+  risk_train: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_train_risk.png
+  instability_train: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_train_instability.png
+  risk_val: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_val_risk.png
+  instability_val: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_val_instability.png
+  risk_test: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_test_risk.png
+  instability_test: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_test_instability.png
+[17:44:30] === ALL STAGES COMPLETE  tag=av_rerun_20260523_075616 ===
+[17:44:30] Artifacts under artifacts/results/ with tag prefix 'av_rerun_20260523_075616':
+-rw-rw-rw- 1 root root 31363 May 23 17:44 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional.csv
+-rw-rw-rw- 1 root root  4533 May 23 17:44 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_regions.csv
+-rw-rw-rw- 1 root root 49208 May 23 17:44 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_test_instability.png
+-rw-rw-rw- 1 root root 41857 May 23 17:44 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_test_risk.png
+-rw-rw-rw- 1 root root 56545 May 23 17:44 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_train_instability.png
+-rw-rw-rw- 1 root root 43769 May 23 17:44 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_train_risk.png
+-rw-rw-rw- 1 root root 50721 May 23 17:44 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_val_instability.png
+-rw-rw-rw- 1 root root 40751 May 23 17:44 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_val_risk.png
+-rw-rw-rw- 1 root root 30526 May 23 17:39 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf.csv
+-rw-rw-rw- 1 root root  4276 May 23 17:39 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_regions.csv
+-rw-rw-rw- 1 root root 46772 May 23 17:39 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_test_instability.png
+-rw-rw-rw- 1 root root 40291 May 23 17:39 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_test_risk.png
+-rw-rw-rw- 1 root root 49188 May 23 17:39 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_train_instability.png
+-rw-rw-rw- 1 root root 41224 May 23 17:39 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_train_risk.png
+-rw-rw-rw- 1 root root 49961 May 23 17:39 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_val_instability.png
+-rw-rw-rw- 1 root root 43663 May 23 17:39 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_val_risk.png
+-rw-rw-rw- 1 root root   766 May 23 17:43 artifacts/results/uncertainty_eval_av_rerun_20260523_075616_conditional.csv
+-rw-rw-rw- 1 root root 12897 May 23 17:43 artifacts/results/uncertainty_eval_av_rerun_20260523_075616_conditional_curve.csv
+-rw-rw-rw- 1 root root 56289 May 23 17:43 artifacts/results/uncertainty_eval_av_rerun_20260523_075616_conditional_risk_coverage.png
+-rw-rw-rw- 1 root root   746 May 23 16:02 artifacts/results/uncertainty_eval_av_rerun_20260523_075616_interp_rbf.csv
+-rw-rw-rw- 1 root root 11573 May 23 16:02 artifacts/results/uncertainty_eval_av_rerun_20260523_075616_interp_rbf_curve.csv
+-rw-rw-rw- 1 root root 53310 May 23 16:02 artifacts/results/uncertainty_eval_av_rerun_20260523_075616_interp_rbf_risk_coverage.png
+[17:44:30] Master log: artifacts/logs/av_rerun_master_20260523_075616.log
+[17:44:30] stage 2 done.
+[17:44:30] === Phase B chain complete. exit -> trap fires terminate. ===
+[17:44:30] Total elapsed: 40182 s
+[17:44:30] === final terminate path  pod_id=s3d42nmizlbo1d ===
+[17:44:31] firing terminate: runpodctl remove pod s3d42nmizlbo1d
+pod "s3d42nmizlbo1d" removed
+[17:44:32] === end of final_terminate ===

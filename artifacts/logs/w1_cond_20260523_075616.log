@@ -1,0 +1,15 @@
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/eval/adapters.py:159: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at ../torch/csrc/utils/tensor_numpy.cpp:206.)
+  ctx_t = torch.from_numpy(ctx).unsqueeze(0).to(self.device)
+[data] Loading benchmark: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+[run] predictor=conditional_surface, splits=('train', 'val', 'test')
+
+[metrics]
+              model split        n  overall_mae  overall_rmse  observed_mae  unobserved_mae  interval_coverage  mean_interval_width  err_unc_pearson  err_unc_spearman confidence_source     aurc  hc_mae_keep0.5  hc_mae_keep0.8
+conditional_surface train 11112617     0.057314      0.094343      0.057192        0.057396                NaN                  NaN              NaN               NaN      oracle_error 0.017993        0.015078        0.028987
+conditional_surface   val  5593759     0.058036      0.098745      0.058011        0.058054                NaN                  NaN              NaN               NaN      oracle_error 0.016613        0.013362        0.026800
+conditional_surface  test  5805664     0.075334      0.119280      0.075255        0.075387                NaN                  NaN              NaN               NaN      oracle_error 0.022790        0.017334        0.038943
+
+[artifacts]
+  metrics: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_conditional.csv
+  curve: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_conditional_curve.csv
+  figure: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_conditional_risk_coverage.png

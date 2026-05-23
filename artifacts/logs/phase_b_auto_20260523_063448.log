@@ -1,0 +1,156 @@
+[06:34:48] wall-clock guard armed: PID=8349  max_hours=8
+[06:34:48] === Phase B autonomous start  pod_id=s3d42nmizlbo1d  max_hours=8 ===
+[06:34:48] av pull pid: 6478
+[06:34:48] waiting for AV pull PID 6478 to exit ...
+[06:35:18] still waiting on AV pull ... elapsed=30s
+[06:35:48] still waiting on AV pull ... elapsed=60s
+[06:36:18] still waiting on AV pull ... elapsed=90s
+[06:36:48] still waiting on AV pull ... elapsed=120s
+[06:37:18] still waiting on AV pull ... elapsed=150s
+[06:37:48] still waiting on AV pull ... elapsed=180s
+[06:38:18] still waiting on AV pull ... elapsed=210s
+[06:38:48] still waiting on AV pull ... elapsed=240s
+[06:39:18] still waiting on AV pull ... elapsed=270s
+[06:39:48] still waiting on AV pull ... elapsed=300s
+[06:40:19] still waiting on AV pull ... elapsed=331s
+[06:40:49] still waiting on AV pull ... elapsed=361s
+[06:41:19] still waiting on AV pull ... elapsed=391s
+[06:41:49] still waiting on AV pull ... elapsed=421s
+[06:42:19] still waiting on AV pull ... elapsed=451s
+[06:42:49] still waiting on AV pull ... elapsed=481s
+[06:43:19] still waiting on AV pull ... elapsed=511s
+[06:43:49] still waiting on AV pull ... elapsed=541s
+[06:44:19] still waiting on AV pull ... elapsed=571s
+[06:44:49] still waiting on AV pull ... elapsed=601s
+[06:45:19] still waiting on AV pull ... elapsed=631s
+[06:45:49] still waiting on AV pull ... elapsed=661s
+[06:46:19] still waiting on AV pull ... elapsed=691s
+[06:46:49] still waiting on AV pull ... elapsed=721s
+[06:47:19] still waiting on AV pull ... elapsed=751s
+[06:47:49] still waiting on AV pull ... elapsed=781s
+[06:48:19] still waiting on AV pull ... elapsed=811s
+[06:48:49] still waiting on AV pull ... elapsed=841s
+[06:49:19] still waiting on AV pull ... elapsed=871s
+[06:49:49] still waiting on AV pull ... elapsed=901s
+[06:50:19] still waiting on AV pull ... elapsed=931s
+[06:50:49] still waiting on AV pull ... elapsed=961s
+[06:51:19] still waiting on AV pull ... elapsed=991s
+[06:51:49] still waiting on AV pull ... elapsed=1021s
+[06:52:19] still waiting on AV pull ... elapsed=1051s
+[06:52:49] still waiting on AV pull ... elapsed=1081s
+[06:53:19] still waiting on AV pull ... elapsed=1111s
+[06:53:49] still waiting on AV pull ... elapsed=1141s
+[06:54:19] still waiting on AV pull ... elapsed=1171s
+[06:54:49] still waiting on AV pull ... elapsed=1201s
+[06:55:19] still waiting on AV pull ... elapsed=1231s
+[06:55:50] still waiting on AV pull ... elapsed=1262s
+[06:56:20] still waiting on AV pull ... elapsed=1292s
+[06:56:50] still waiting on AV pull ... elapsed=1322s
+[06:57:20] still waiting on AV pull ... elapsed=1352s
+[06:57:50] still waiting on AV pull ... elapsed=1382s
+[06:58:20] still waiting on AV pull ... elapsed=1412s
+[06:58:50] still waiting on AV pull ... elapsed=1442s
+[06:59:20] still waiting on AV pull ... elapsed=1472s
+[06:59:50] still waiting on AV pull ... elapsed=1502s
+[07:00:20] still waiting on AV pull ... elapsed=1532s
+[07:00:50] still waiting on AV pull ... elapsed=1562s
+[07:01:20] still waiting on AV pull ... elapsed=1592s
+[07:01:50] still waiting on AV pull ... elapsed=1622s
+[07:02:20] still waiting on AV pull ... elapsed=1652s
+[07:02:50] still waiting on AV pull ... elapsed=1682s
+[07:03:20] still waiting on AV pull ... elapsed=1712s
+[07:03:50] still waiting on AV pull ... elapsed=1742s
+[07:04:20] still waiting on AV pull ... elapsed=1772s
+[07:04:50] still waiting on AV pull ... elapsed=1802s
+[07:05:20] still waiting on AV pull ... elapsed=1832s
+[07:05:50] still waiting on AV pull ... elapsed=1862s
+[07:06:20] still waiting on AV pull ... elapsed=1892s
+[07:06:50] still waiting on AV pull ... elapsed=1922s
+[07:07:20] still waiting on AV pull ... elapsed=1952s
+[07:07:50] still waiting on AV pull ... elapsed=1982s
+[07:08:20] still waiting on AV pull ... elapsed=2012s
+[07:08:50] still waiting on AV pull ... elapsed=2042s
+[07:09:20] still waiting on AV pull ... elapsed=2072s
+[07:09:50] still waiting on AV pull ... elapsed=2102s
+[07:10:20] still waiting on AV pull ... elapsed=2132s
+[07:10:51] still waiting on AV pull ... elapsed=2163s
+[07:11:21] still waiting on AV pull ... elapsed=2193s
+[07:11:51] still waiting on AV pull ... elapsed=2223s
+[07:12:21] still waiting on AV pull ... elapsed=2253s
+[07:12:51] still waiting on AV pull ... elapsed=2283s
+[07:13:21] still waiting on AV pull ... elapsed=2313s
+[07:13:51] still waiting on AV pull ... elapsed=2343s
+[07:14:21] still waiting on AV pull ... elapsed=2373s
+[07:14:51] still waiting on AV pull ... elapsed=2403s
+[07:15:21] still waiting on AV pull ... elapsed=2433s
+[07:15:51] still waiting on AV pull ... elapsed=2463s
+[07:16:21] still waiting on AV pull ... elapsed=2493s
+[07:16:51] still waiting on AV pull ... elapsed=2523s
+[07:17:21] still waiting on AV pull ... elapsed=2553s
+[07:17:51] still waiting on AV pull ... elapsed=2583s
+[07:18:21] still waiting on AV pull ... elapsed=2613s
+[07:18:51] still waiting on AV pull ... elapsed=2643s
+[07:19:21] still waiting on AV pull ... elapsed=2673s
+[07:19:51] still waiting on AV pull ... elapsed=2703s
+[07:20:21] still waiting on AV pull ... elapsed=2733s
+[07:20:51] still waiting on AV pull ... elapsed=2763s
+[07:21:21] still waiting on AV pull ... elapsed=2793s
+[07:21:51] still waiting on AV pull ... elapsed=2823s
+[07:22:21] still waiting on AV pull ... elapsed=2853s
+[07:22:51] still waiting on AV pull ... elapsed=2883s
+[07:23:21] still waiting on AV pull ... elapsed=2913s
+[07:23:51] still waiting on AV pull ... elapsed=2943s
+[07:24:21] still waiting on AV pull ... elapsed=2973s
+[07:24:51] still waiting on AV pull ... elapsed=3003s
+[07:25:21] still waiting on AV pull ... elapsed=3033s
+[07:25:51] still waiting on AV pull ... elapsed=3063s
+[07:26:22] still waiting on AV pull ... elapsed=3094s
+[07:26:52] still waiting on AV pull ... elapsed=3124s
+[07:27:22] still waiting on AV pull ... elapsed=3154s
+[07:27:52] still waiting on AV pull ... elapsed=3184s
+[07:28:22] still waiting on AV pull ... elapsed=3214s
+[07:28:52] still waiting on AV pull ... elapsed=3244s
+[07:29:22] still waiting on AV pull ... elapsed=3274s
+[07:29:52] still waiting on AV pull ... elapsed=3304s
+[07:30:22] still waiting on AV pull ... elapsed=3334s
+[07:30:52] still waiting on AV pull ... elapsed=3364s
+[07:31:22] still waiting on AV pull ... elapsed=3394s
+[07:31:52] still waiting on AV pull ... elapsed=3424s
+[07:32:22] still waiting on AV pull ... elapsed=3454s
+[07:32:52] still waiting on AV pull ... elapsed=3484s
+[07:33:22] still waiting on AV pull ... elapsed=3514s
+[07:33:52] still waiting on AV pull ... elapsed=3544s
+[07:34:22] still waiting on AV pull ... elapsed=3574s
+[07:34:52] still waiting on AV pull ... elapsed=3604s
+[07:35:22] still waiting on AV pull ... elapsed=3634s
+[07:35:52] still waiting on AV pull ... elapsed=3664s
+[07:36:22] still waiting on AV pull ... elapsed=3694s
+[07:36:52] still waiting on AV pull ... elapsed=3724s
+[07:37:22] still waiting on AV pull ... elapsed=3754s
+[07:37:52] still waiting on AV pull ... elapsed=3784s
+[07:38:22] still waiting on AV pull ... elapsed=3814s
+[07:38:52] still waiting on AV pull ... elapsed=3844s
+[07:39:22] still waiting on AV pull ... elapsed=3874s
+[07:39:52] still waiting on AV pull ... elapsed=3904s
+[07:40:22] still waiting on AV pull ... elapsed=3934s
+[07:40:52] still waiting on AV pull ... elapsed=3964s
+[07:41:22] still waiting on AV pull ... elapsed=3994s
+[07:41:53] still waiting on AV pull ... elapsed=4025s
+[07:42:23] still waiting on AV pull ... elapsed=4055s
+[07:42:53] still waiting on AV pull ... elapsed=4085s
+[07:43:23] still waiting on AV pull ... elapsed=4115s
+[07:43:53] still waiting on AV pull ... elapsed=4145s
+[07:44:23] still waiting on AV pull ... elapsed=4175s
+[07:44:53] still waiting on AV pull ... elapsed=4205s
+[07:44:53] AV pull PID gone.
+[07:44:53] AV options parquet present: 953976658 bytes
+[07:44:53] --- chain stage 1: rebuild_pipeline_on_av.sh ---
+[07:56:16] stage 1 done.
+[07:56:16] --- chain stage 2: rerun_phase1_and_conditional_on_av.sh ---
+[17:44:30] stage 2 done.
+[17:44:30] === Phase B chain complete. exit -> trap fires terminate. ===
+[17:44:30] Total elapsed: 40182 s
+[17:44:30] === final terminate path  pod_id=s3d42nmizlbo1d ===
+[17:44:31] firing terminate: runpodctl remove pod s3d42nmizlbo1d
+pod "s3d42nmizlbo1d" removed
+[17:44:32] === end of final_terminate ===

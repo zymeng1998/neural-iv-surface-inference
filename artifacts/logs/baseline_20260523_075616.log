@@ -1,0 +1,147 @@
+[data] Loading benchmark: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+  train: 11,112,617 points, 4,442,050 observed (40.0%)
+  val: 5,593,759 points, 2,239,181 observed (40.0%)
+  test: 5,805,664 points, 2,320,530 observed (40.0%)
+
+[interp] Running on train (11,112,617 points)...
+  Evaluation: Interpolation (rbf) — train
+  ==================================================
+  overall       MAE=0.048475  RMSE=0.088826  MAPE=110.32%  n=11112617
+  observed      MAE=0.036690  RMSE=0.064979  MAPE=81.02%  n=4442050
+  unobserved    MAE=0.056323  RMSE=0.101648  MAPE=129.83%  n=6670567
+
+  Maturity breakdown:
+    short         MAE=0.053352  RMSE=0.106770  n=2762389
+    medium        MAE=0.044407  RMSE=0.084161  n=4286493
+    long          MAE=0.049451  RMSE=0.079720  n=4063735
+
+  Moneyness breakdown:
+    deep_itm      MAE=0.096362  RMSE=0.148161  n=2946951
+    itm           MAE=0.035212  RMSE=0.063535  n=2651839
+    atm           MAE=0.017478  RMSE=0.026963  n=2761710
+    otm           MAE=0.036042  RMSE=0.050731  n=1866565
+    deep_otm      MAE=0.051707  RMSE=0.078610  n=885552
+
+  Time: 3052.0s
+
+[interp] Running on val (5,593,759 points)...
+  Evaluation: Interpolation (rbf) — val
+  ==================================================
+  overall       MAE=0.046274  RMSE=0.090509  MAPE=88.07%  n=5593759
+  observed      MAE=0.037897  RMSE=0.071170  MAPE=70.68%  n=2239181
+  unobserved    MAE=0.051865  RMSE=0.101385  MAPE=99.68%  n=3354578
+
+  Maturity breakdown:
+    short         MAE=0.060835  RMSE=0.108840  n=1982093
+    medium        MAE=0.037031  RMSE=0.081101  n=2026308
+    long          MAE=0.039881  RMSE=0.075412  n=1585358
+
+  Moneyness breakdown:
+    deep_itm      MAE=0.091832  RMSE=0.156076  n=1213887
+    itm           MAE=0.038815  RMSE=0.076045  n=1359928
+    atm           MAE=0.014318  RMSE=0.024899  n=1396606
+    otm           MAE=0.036859  RMSE=0.054610  n=1098669
+    deep_otm      MAE=0.064980  RMSE=0.089973  n=524669
+
+  Time: 2975.2s
+
+[interp] Running on test (5,805,664 points)...
+  Evaluation: Interpolation (rbf) — test
+  ==================================================
+  overall       MAE=0.066199  RMSE=0.112405  MAPE=142.67%  n=5805664
+  observed      MAE=0.054227  RMSE=0.089254  MAPE=114.22%  n=2320530
+  unobserved    MAE=0.074171  RMSE=0.125472  MAPE=161.61%  n=3485134
+
+  Maturity breakdown:
+    short         MAE=0.072195  RMSE=0.124709  n=1957278
+    medium        MAE=0.052624  RMSE=0.098701  n=2169287
+    long          MAE=0.076748  RMSE=0.113893  n=1679099
+
+  Moneyness breakdown:
+    deep_itm      MAE=0.132792  RMSE=0.187388  n=1339927
+    itm           MAE=0.050386  RMSE=0.088380  n=1534821
+    atm           MAE=0.017925  RMSE=0.030196  n=1637144
+    otm           MAE=0.055006  RMSE=0.070392  n=837003
+    deep_otm      MAE=0.117517  RMSE=0.137807  n=456769
+
+  Time: 3206.8s
+
+[mlp] Training on device: cuda
+  Training MLP: 34,305 params, device=cuda
+  Epoch   1/50  train_loss=0.027923  val_obs_mse=0.027367  val_unobs_mae=0.098664  lr=1.00e-03  (502.0s)
+  Epoch   5/50  train_loss=0.027156  val_obs_mse=0.027368  val_unobs_mae=0.099121  lr=1.00e-03  (499.7s)
+  Epoch  10/50  train_loss=0.027072  val_obs_mse=0.026158  val_unobs_mae=0.094859  lr=1.00e-03  (502.2s)
+  Epoch  15/50  train_loss=0.027022  val_obs_mse=0.027318  val_unobs_mae=0.099017  lr=1.00e-03  (502.4s)
+  Epoch  20/50  train_loss=0.026924  val_obs_mse=0.027053  val_unobs_mae=0.097755  lr=5.00e-04  (500.5s)
+  Early stopping at epoch 20 (patience=10)
+  Loaded best checkpoint from epoch 10
+
+[mlp] Evaluating on train (11,112,617 points)...
+  Evaluation: MLP — train
+  ==================================================
+  overall       MAE=0.139955  RMSE=0.217687  MAPE=245.50%  n=11112617
+  observed      MAE=0.139946  RMSE=0.217478  MAPE=245.70%  n=4442050
+  unobserved    MAE=0.139961  RMSE=0.217826  MAPE=245.37%  n=6670567
+
+  Maturity breakdown:
+    short         MAE=0.197010  RMSE=0.324420  n=2762389
+    medium        MAE=0.133330  RMSE=0.182641  n=4286493
+    long          MAE=0.108158  RMSE=0.151179  n=4063735
+
+  Moneyness breakdown:
+    deep_itm      MAE=0.209339  RMSE=0.304851  n=2946951
+    itm           MAE=0.113768  RMSE=0.175412  n=2651839
+    atm           MAE=0.101694  RMSE=0.149035  n=2761710
+    otm           MAE=0.115498  RMSE=0.174525  n=1866565
+    deep_otm      MAE=0.158347  RMSE=0.244502  n=885552
+
+
+[mlp] Evaluating on val (5,593,759 points)...
+  Evaluation: MLP — val
+  ==================================================
+  overall       MAE=0.094877  RMSE=0.161669  MAPE=187.32%  n=5593759
+  observed      MAE=0.094903  RMSE=0.161733  MAPE=187.72%  n=2239181
+  unobserved    MAE=0.094859  RMSE=0.161626  MAPE=187.06%  n=3354578
+
+  Maturity breakdown:
+    short         MAE=0.128188  RMSE=0.226778  n=1982093
+    medium        MAE=0.079368  RMSE=0.118834  n=2026308
+    long          MAE=0.073051  RMSE=0.099362  n=1585358
+
+  Moneyness breakdown:
+    deep_itm      MAE=0.182759  RMSE=0.256783  n=1213887
+    itm           MAE=0.073283  RMSE=0.125260  n=1359928
+    atm           MAE=0.046686  RMSE=0.063651  n=1396606
+    otm           MAE=0.072690  RMSE=0.121936  n=1098669
+    deep_otm      MAE=0.122256  RMSE=0.208602  n=524669
+
+
+[mlp] Evaluating on test (5,805,664 points)...
+  Evaluation: MLP — test
+  ==================================================
+  overall       MAE=0.095124  RMSE=0.166482  MAPE=246.13%  n=5805664
+  observed      MAE=0.095123  RMSE=0.166483  MAPE=245.98%  n=2320530
+  unobserved    MAE=0.095125  RMSE=0.166481  MAPE=246.23%  n=3485134
+
+  Maturity breakdown:
+    short         MAE=0.132334  RMSE=0.238452  n=1957278
+    medium        MAE=0.070647  RMSE=0.113309  n=2169287
+    long          MAE=0.083373  RMSE=0.113865  n=1679099
+
+  Moneyness breakdown:
+    deep_itm      MAE=0.187500  RMSE=0.266776  n=1339927
+    itm           MAE=0.070410  RMSE=0.139052  n=1534821
+    atm           MAE=0.035342  RMSE=0.056774  n=1637144
+    otm           MAE=0.077050  RMSE=0.117007  n=837003
+    deep_otm      MAE=0.154576  RMSE=0.204684  n=456769
+
+
+[save] Results saved to artifacts/results/baseline_results.csv
+
+======================================================================
+  COMPARISON SUMMARY (test split)
+======================================================================
+     model  overall_mae  overall_rmse  observed_mae  unobserved_mae
+interp_rbf     0.066199      0.112405      0.054227        0.074171
+       mlp     0.095124      0.166482      0.095123        0.095125
+

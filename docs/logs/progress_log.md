@@ -1361,3 +1361,59 @@ Full numbers + the like-for-like vs interp/MLP comparison are in
   ready, start the Pod and execute 2C.7 (full AV pull, replace dataset,
   rebuild 02→04) followed by 2C.8 (re-run baselines + W1/W2 + conditional
   on the new data).
+
+---
+
+## 2026-05-23 — Phase B complete (2C.7 + 2C.8 + 2C.4-R + 2C.5-R)
+
+### Completed
+
+- Full Alpha Vantage `HISTORICAL_OPTIONS` pull on RunPod (RTX A4500):
+  26,063,475 rows, 4,623 trading days, 2008-01-02 → 2026-05-22 in 2h 1m.
+- Dubach Parquet retired; `data_raw/spy_dubach_pre_av_20260523_074453/` and
+  `data_processed/spy_dubach_pre_av_20260523_074453/` preserved as backups
+  on `/workspace` (gitignored, network volume — destination after `2C.7`'s
+  rename-not-delete safety net).
+- Pipeline rebuild 02 → 03 → 04 succeeded: conservative cleaned surface
+  25.5M rows, strict 22.5M rows (88.2% retention), all 11 benchmark
+  variants regenerated, total `data_processed/spy/benchmarks/` 9.8 GB.
+- Phase 1 baselines re-derived on AV `random40_noiselow`:
+  - **interp_rbf** test MAE **0.0662** (vs Dubach-era 0.0687: -3.6%).
+  - **mlp** test MAE **0.0951** (vs Dubach-era 0.0967: -1.7%).
+  - Migration did not shift the comparison floor.
+- W3 conditional model trained + evaluated on real AV data:
+  - 85,057 params, 50 epochs, 3 m 40 s on RTX A4500.
+  - Test MAE **0.0753** — beats Phase 1 MLP by ~21%, loses to RBF interp
+    by ~14%. Phase 2 acceptance criterion #4 met on real SPY data.
+  - W1 uncertainty CSV + W2 structure diagnostics + checkpoint committed.
+- Pod self-terminated cleanly at chain exit (`runpodctl remove pod
+  s3d42nmizlbo1d` returned "removed"). Total Pod wall time 11h 10m;
+  no overnight billing past chain completion.
+
+### Notes
+
+- scipy CPU interpolation was 95%+ of Phase B wall time. The Pod has 48
+  CPUs and a GPU; scipy used 1 CPU. The conditional model's full
+  end-to-end (train + W1 + W2) took ~5 min on GPU vs ~7+ hours scipy.
+  Open retrospective: parallelize scipy across CPUs OR write a torch GPU
+  RBF before the next big benchmark rerun.
+- The 8-hour wall-clock guard never fired (chain finished naturally at
+  11h 10m via the EXIT trap). Need to audit why: either the
+  `sleep 28800` was interrupted, or the guard process exited early.
+  Not blocking; worth a forensic in the next session.
+- All Phase B artifacts rsync'd back to local from a cheap inspect Pod
+  (`d531assh9ptlic`, $0.06/h CPU) and committed under
+  `artifacts/results/` + `artifacts/checkpoints/`.
+- `runpodctl` now installed locally so future Pod create/inspect/destroy
+  is driven from this Mac without web-console handoffs.
+
+### Next Actions
+
+- Open Epic 2D (W4 + W5: uncertainty-aware inference, abstention,
+  decision layer). The W3 conditional model is the point-prediction
+  baseline that W4 wraps with reliability signals.
+- (Side task) Audit + fix the 8h wall-clock guard before the next
+  long-running Pod run.
+- (Side task) Parallelize scipy interp (joblib.Parallel across 48 CPUs)
+  OR port to torch GPU before the next benchmark rerun. Would cut
+  baseline rerun time from ~7h → ~10-30 min.

@@ -1,16 +1,15 @@
 # Phase 1 Result Memo
 
-> **Data-source note (2026-05-22):** The numbers in this memo were produced
-> against the Philipp Dubach SPY static-Parquet dataset (2008–2025, ~24.7M
-> rows). That source is now defunct (HTTP 404 + repos removed) and the
-> project has migrated to **Alpha Vantage `HISTORICAL_OPTIONS`** per
-> [ADR 0003](decisions/0003_spy_options_data_source_migration.md). The
-> benchmark Parquet files those baselines were trained/evaluated against
-> will be **replaced** (story **2C.7**) and the Phase 1 baselines
-> (interpolation + MLP) will be **re-derived on the new dataset** in story
-> **2C.8**. Until 2C.8 lands, the figures below are *historical Phase-1
-> numbers* — preserve them as context, but do not cite them as the current
-> baseline for Phase 2C comparisons.
+> **2026-05-23 update (Alpha Vantage rerun):** The Phase 1 baselines have
+> been re-derived on the new AV-sourced benchmarks (stories **2C.7** + **2C.8**).
+> See the new **"AV-era refresh"** section below for the current numbers; the
+> historical Dubach-era numbers immediately under "Baseline Results" are
+> preserved as comparison context. The AV-era numbers are the active baseline
+> floor for all Phase 2C+ comparisons.
+>
+> Both datasets produce nearly identical interp/MLP test MAE (interp 0.0662 vs
+> historical 0.0687; MLP 0.0951 vs 0.0967), confirming the data-source migration
+> didn't shift the comparison floor.
 
 ## Scope
 
@@ -43,6 +42,41 @@ The masked MLP uses only `(log_moneyness, tau)` as input. The `mlp` rows were
 regenerated during Phase 1 closeout by re-evaluating the saved checkpoint
 `artifacts/checkpoints/best_mlp.pt` (no retraining); see the 2026-05-20 entry in
 `docs/experiments/experiment_journal.md`.
+
+## AV-era Refresh (Alpha Vantage, 2026-05-23) — current baseline
+
+Story **2C.8** rerun on the AV-sourced `spy_phase1_random40_noiselow` benchmark
+(22.5M rows, conservative cleaning; chronological train/val/test = 11.1M/5.6M/5.8M).
+Source: `artifacts/results/baseline_results.csv` (refreshed),
+`uncertainty_eval_av_rerun_20260523_075616_*.csv`.
+
+| Model | Split | Overall MAE | Overall RMSE | Observed MAE | Unobserved MAE |
+|---|---|---|---|---|---|
+| interp_rbf         | test  | **0.0662** | 0.1124 | 0.0542 | 0.0742 |
+| **conditional (W3)** | test  | **0.0753** | 0.1193 | 0.0753 | 0.0754 |
+| mlp                | test  | 0.0951 | 0.1665 | 0.0951 | 0.0951 |
+| interp_rbf         | val   | 0.0463 | 0.0905 | 0.0379 | 0.0519 |
+| **conditional (W3)** | val   | 0.0580 | 0.0987 | 0.0580 | 0.0581 |
+| mlp                | val   | 0.0949 | 0.1617 | 0.0949 | 0.0949 |
+| interp_rbf         | train | 0.0485 | 0.0888 | 0.0367 | 0.0563 |
+| **conditional (W3)** | train | 0.0573 | 0.0943 | 0.0572 | 0.0574 |
+| mlp                | train | 0.1400 | 0.2177 | 0.1399 | 0.1400 |
+
+Headline shifts vs the historical Dubach-era table above:
+
+- AV-era interp/MLP test MAE: 0.0662 / 0.0951 vs Dubach 0.0687 / 0.0967 —
+  within ~3%. Data-source migration did **not** shift the comparison floor.
+- The **conditional surface model** (story 2C.4-R, 85,057 params,
+  ConditionalSurfaceModel = SetEncoder + CoordinateDecoder, trained 50 epochs
+  in 3.7 min on RTX A4500) **beats the Phase 1 MLP by ~21% on test MAE
+  (0.0753 vs 0.0951)** but **loses to RBF interpolation by ~14% (0.0753 vs 0.0662)**.
+- Conditional model's observed/unobserved MAE are nearly identical
+  (0.0753 / 0.0754) — characteristic of the parametric inductive bias; the
+  RBF interp shows the expected observed (0.0542) vs unobserved (0.0742) gap.
+- Phase 2 acceptance criterion #4 ("conditional model evaluated on the same
+  benchmarks as the Phase 1 baselines") is met on real SPY data.
+
+W3 caveat: this is a point predictor; uncertainty signals arrive in epic 2D.
 
 ## What Failed or Is Weak
 

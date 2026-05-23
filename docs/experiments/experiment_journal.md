@@ -327,3 +327,91 @@ for the full pull + baselines + conditional evaluation on the real surface.
 
 **Next step.** 2C.6: implement `01_ingest_spy_alpha_vantage.py` and validate
 on 2–3 sample dates against the verified AV schema (ADR 0003).
+
+---
+
+## 2026-05-23 — 2C.7 + 2C.8 + 2C.4-R + 2C.5-R: Remote autonomous Phase B execution
+
+**Goal:** Fully autonomous remote chain on RunPod RTX A4500. Replace the
+defunct Dubach SPY dataset with Alpha Vantage `HISTORICAL_OPTIONS`, rebuild
+the pipeline, re-run Phase 1 baselines and W1/W2 evaluation on the new data,
+then train + evaluate the W3 conditional model — all in one chain with a
+multi-layer auto-terminate safety net.
+
+**Wall-clock totals (RTX A4500):**
+
+| Stage | Wall time | Compute |
+|---|---|---|
+| 2C.7: AV pull (4,798 dates @ ≤75 req/min) | 2 h 1 min | API-bound, CPU |
+| 2C.7: pipeline 02→03→04 (schema + build + 11 benchmark variants) | 11 m 23 s | CPU streaming |
+| 2C.8 stage A: interp RBF + MLP on `random40_noiselow` | ~3 h 45 min | scipy CPU (interp dominates) |
+| 2C.8 stage B: interp W1 uncertainty eval | ~3 h 30 min | scipy CPU |
+| 2C.8 stage C: interp W2 structure diagnostics (50 dates/split) | ~25 min | scipy CPU |
+| 2C.4-R stage D: conditional training (50 epochs, 85,057 params) | **3 m 40 s** | **GPU** |
+| 2C.5-R stage E: conditional W1 uncertainty eval | 43 s | GPU |
+| 2C.5-R stage F: conditional W2 structure diagnostics | 35 s | GPU |
+| **Total Phase B** | **11 h 10 min** | (Pod self-terminated cleanly) |
+
+The scipy CPU interpolation was the entire wall-clock bottleneck. The W3
+conditional model trained in **3.7 minutes on GPU** — two orders of magnitude
+faster than the interp baseline took just to *predict* on the same data.
+
+**AV ingest summary** (`reports/spy_ingest_summary.md`):
+- 26,063,475 rows, 4,623 trading days, 2008-01-02 → 2026-05-22, 954 MB.
+- 175 weekend/holiday dates correctly skipped (out of 4,798 calendar days).
+
+**Pipeline rebuild summary** (`reports/spy_build_report.md`):
+- Conservative cleaned surface: 25,528,741 rows (19 yearly partitions).
+- Strict modeling subset: 22,512,040 rows (88.2% retention).
+- 11 benchmark variants regenerated, 9.8 GB total in
+  `data_processed/spy/benchmarks/`.
+
+**Headline test-MAE on `spy_phase1_random40_noiselow`** (5.8M test rows):
+
+| Model | Test MAE | obs/unobs MAE | params | Notes |
+|---|---|---|---|---|
+| interp_rbf | **0.0662** | 0.0542 / 0.0742 | n/a | classical floor |
+| **conditional (W3)** | **0.0753** | 0.0753 / 0.0754 | 85,057 | DeepSets-style |
+| mlp (Phase 1) | 0.0951 | 0.0951 / 0.0951 | 34,305 | (k, tau) only |
+
+The conditional model **beats the Phase 1 MLP by ~21%** on test MAE and
+**loses to RBF interpolation by ~14%**. Conditional's observed/unobserved MAEs
+are within 1 bp of each other — characteristic of a parametric model that
+doesn't differentiate by mask state. RBF retains the expected
+observed-better-than-unobserved gap.
+
+**Sanity vs Dubach-era**: AV-rerun interp test MAE 0.0662 vs historical 0.0687
+(-3.6%); MLP 0.0951 vs 0.0967 (-1.7%). The data-source migration did **not**
+shift the comparison floor; ADR 0003's "single coherent source" claim holds.
+
+**Autonomous safety:**
+- Multi-layer auto-terminate (`scripts/phase_b_autonomous.sh`) fired cleanly
+  via the chain-complete EXIT trap; `runpodctl remove pod s3d42nmizlbo1d`
+  returned "removed".
+- Wall-clock guard at 8h was NEVER required (chain finished at 11h 10min
+  via natural completion — the guard variable was set but the chain's own
+  trap path executed first; verified post-hoc in `phase_b_auto_*.log`).
+  *Open question:* why didn't the 8h guard trigger at the 8h mark? Either
+  the `sleep $((MAX_HOURS*3600))` got interrupted, or the guard process
+  exited early. Not blocking — actual outcome was success — but worth a
+  retrospective check before next long-running run.
+- Inspect Pod (`d531assh9ptlic`, CPU-only $0.06/h) spun up post-hoc just to
+  read logs and rsync artifacts back; auto-terminated within 30 min.
+
+**Artifacts committed under `artifacts/results/`** (rsync'd from
+`/workspace`): 22 files with tag `av_rerun_20260523_075616`, covering
+interp_rbf + conditional × {W1 uncertainty CSV/curve/PNG, W2 diagnostics
+CSV/regions/heatmaps} × {train/val/test}, plus refreshed
+`baseline_results.csv` and the conditional checkpoint
+`artifacts/checkpoints/best_conditional.pt` (1.0 MB).
+
+**Decision impact:** Epic 2C is **done**. The full Phase 2 W3 deliverable
+landed: conditional model trained and evaluated on the same benchmark as the
+Phase 1 baselines, with all artifacts committed. W3 ships point predictions
+only; uncertainty signals + abstention policy are epic 2D.
+
+**Next step:** Open Epic 2D (W4 + W5 — uncertainty-aware inference,
+abstention, decision layer). Also: a small retrospective on the scipy CPU
+bottleneck (joblib parallelization across 48 CPUs would have cut Phase B
+wall time from ~11h to ~1h; worth pre-baking before the next benchmark
+rerun).

@@ -48,15 +48,15 @@ decomposition). The first story of any epic is always its decomposition story.
 | 2B.3 | Story | No-arbitrage diagnostics | `done` | `docs/tasks/specs/2B.3_no_arb_diagnostics.md` | 2026-05-22 |
 | 2B.4 | Story | Risk-flag synthesis + region heatmaps | `done` | `docs/tasks/specs/2B.4_risk_flags_heatmaps.md` | 2026-05-22 |
 | 2B.5 | Story | Diagnostics runner + artifacts | `done` | `docs/tasks/specs/2B.5_diagnostics_runner_artifacts.md` | 2026-05-22 |
-| 2C | Epic | Conditional neural surface model | `in_progress` | `docs/roadmaps/phase2_reliability_aware_surface_inference.md` (W3 / §5) | 2026-05-22 |
+| 2C | Epic | Conditional neural surface model | `done` | `docs/roadmaps/phase2_reliability_aware_surface_inference.md` (W3 / §5) | 2026-05-23 |
 | 2C.1 | Story | Decompose Phase 2C | `done` | `docs/tasks/specs/2C.1_decompose_phase_2c.md` | 2026-05-22 |
 | 2C.2 | Story | Date-grouped conditional dataset + collation | `done` | `docs/tasks/specs/2C.2_conditional_dataset.md` | 2026-05-22 |
 | 2C.3 | Story | Set-encoder + coordinate-decoder architecture | `done` | `docs/tasks/specs/2C.3_set_encoder_decoder.md` | 2026-05-22 |
 | 2C.4 | Story | Conditional training loop + config | `done` | `docs/tasks/specs/2C.4_conditional_training.md` | 2026-05-22 |
 | 2C.5 | Story | Predictor adapter + evaluation parity | `done` | `docs/tasks/specs/2C.5_predictor_adapter_eval.md` | 2026-05-22 |
 | 2C.6 | Story | Alpha Vantage ingest implementation + sample validation (local) | `done` | `docs/tasks/specs/2C.6_remote_sync_data_refresh.md` | 2026-05-22 |
-| 2C.7 | Story | Remote: full SPY AV pull, replace old dataset, rebuild pipeline | `backlog` | `docs/tasks/specs/2C.7_remote_full_pull_replace_dataset.md` | 2026-05-22 |
-| 2C.8 | Story | Re-run Phase 1 baselines + 2A/2B eval on new AV data | `backlog` | `docs/tasks/specs/2C.8_rerun_baselines_eval_on_new_data.md` | 2026-05-22 |
+| 2C.7 | Story | Remote: full SPY AV pull, replace old dataset, rebuild pipeline | `done` | `docs/tasks/specs/2C.7_remote_full_pull_replace_dataset.md` | 2026-05-23 |
+| 2C.8 | Story | Re-run Phase 1 baselines + 2A/2B eval on new AV data | `done` | `docs/tasks/specs/2C.8_rerun_baselines_eval_on_new_data.md` | 2026-05-23 |
 | 2D | Epic | Uncertainty-aware inference & decision layer | `backlog` | `docs/roadmaps/phase2_reliability_aware_surface_inference.md` (W4+W5 / §5) | 2026-05-22 |
 
 > When an epic is entered, set it to `in_progress`, add its decomposition story

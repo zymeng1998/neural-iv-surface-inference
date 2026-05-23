@@ -1,0 +1,13 @@
+[data] Loading benchmark: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+[run] predictor=interp_rbf, splits=('train', 'val', 'test')
+
+[metrics]
+     model split        n  overall_mae  overall_rmse  observed_mae  unobserved_mae  interval_coverage  mean_interval_width  err_unc_pearson  err_unc_spearman confidence_source     aurc  hc_mae_keep0.5  hc_mae_keep0.8
+interp_rbf train 11112617     0.048475      0.088826      0.036690        0.056323                NaN                  NaN              NaN               NaN      oracle_error 0.012914        0.010315        0.020626
+interp_rbf   val  5593759     0.046274      0.090509      0.037897        0.051865                NaN                  NaN              NaN               NaN      oracle_error 0.010608        0.007669        0.016832
+interp_rbf  test  5805664     0.066199      0.112405      0.054227        0.074171                NaN                  NaN              NaN               NaN      oracle_error 0.016843        0.011037        0.029428
+
+[artifacts]
+  metrics: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_interp_rbf.csv
+  curve: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_interp_rbf_curve.csv
+  figure: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_interp_rbf_risk_coverage.png

@@ -1,0 +1,876 @@
+[07:44:53] === 2C.7 pipeline rebuild starting ===
+[07:45:41] AV options rows: 26063475
+[07:45:41] moving Dubach raw -> data_raw/spy_dubach_pre_av_20260523_074453/
+[07:45:41] underlying parquet present (size=240927)
+[07:45:41] moving Dubach processed -> data_processed/spy_dubach_pre_av_20260523_074453/
+[07:45:41] Dubach processed backed up to data_processed/spy_dubach_pre_av_20260523_074453
+[07:45:41] moving AV pull -> canonical data_raw/spy/spy_options.parquet
+[07:45:41] active options parquet size: 953976658 bytes
+[07:45:41] --- step 02: schema inspection ---
+Inspecting SPY options data...
+Inspecting SPY underlying data...
+
+✓ Report written to /workspace/Neural-IV-Surface-inference/reports/spy_schema_report.md
+
+============================================================
+# SPY Schema & Quality Report
+
+## SPY Options
+
+**File**: `/workspace/Neural-IV-Surface-inference/data_raw/spy/spy_options.parquet`
+
+**Rows**: 26,063,475
+**Columns**: 20
+
+### Column Schema
+
+| Column | Dtype | Non-null | Null % |
+|--------|-------|----------|--------|
+| `date` | datetime64[us] | 26,063,475 | 0.00% |
+| `expiration` | datetime64[us] | 26,063,475 | 0.00% |
+| `strike` | float64 | 26,063,475 | 0.00% |
+| `type` | str | 26,063,475 | 0.00% |
+| `bid` | float64 | 26,063,475 | 0.00% |
+| `ask` | float64 | 26,063,475 | 0.00% |
+| `volume` | int64 | 26,063,475 | 0.00% |
+| `open_interest` | int64 | 26,063,475 | 0.00% |
+| `implied_volatility` | float64 | 26,060,671 | 0.01% |
+| `contractID` | str | 26,063,475 | 0.00% |
+| `symbol` | str | 26,063,475 | 0.00% |
+| `last` | float64 | 26,063,475 | 0.00% |
+| `mark` | float64 | 26,063,475 | 0.00% |
+| `bid_size` | int64 | 26,063,475 | 0.00% |
+| `ask_size` | int64 | 26,063,475 | 0.00% |
+| `delta` | float64 | 26,060,707 | 0.01% |
+| `gamma` | float64 | 26,060,707 | 0.01% |
+| `theta` | float64 | 26,060,707 | 0.01% |
+| `vega` | float64 | 26,060,707 | 0.01% |
+| `rho` | float64 | 26,060,707 | 0.01% |
+
+**✓ All required columns present.**
+
+### Key Ranges
+
+- `date`: min=2008-01-02 00:00:00, max=2026-05-22 00:00:00
+- `expiration`: min=2008-01-19 00:00:00, max=2028-12-15 00:00:00
+- `strike`: min=0.18, max=35000.0
+- `implied_volatility`: min=0.01488, max=9.99512
+- `bid`: min=0.0, max=4451.19
+- `ask`: min=0.0, max=200001.0
+
+### Option Types
+
+Distinct values: `['call', 'put']`
+
+### Suspicious Row Counts
+
+| Check | Count | % of total |
+|-------|------:|----------:|
+| bid < 0 | 0 | 0.000% |
+| ask < 0 | 0 | 0.000% |
+| ask < bid | 2,084 | 0.008% |
+| IV <= 0 | 0 | 0.000% |
+| IV > 5.0 | 10,974 | 0.042% |
+| date is null | 0 | 0.000% |
+| expiration is null | 0 | 0.000% |
+| strike is null | 0 | 0.000% |
+| type is null | 0 | 0.000% |
+
+## SPY Underlying
+
+**File**: `/workspace/Neural-IV-Surface-inference/data_raw/spy/spy_underlying.parquet`
+
+**Rows**: 4,627
+**Columns**: 11
+
+### Column Schema
+
+| Column | Dtype | Non-null | Null % |
+|--------|-------|----------|--------|
+| `date` | datetime64[ms] | 4,627 | 0.00% |
+| `open` | float64 | 4,627 | 0.00% |
+| `high` | float64 | 4,627 | 0.00% |
+| `low` | float64 | 4,627 | 0.00% |
+| `close` | float64 | 4,627 | 0.00% |
+| `adjusted_close` | float64 | 4,627 | 0.00% |
+| `volume` | int64 | 4,627 | 0.00% |
+| `dividend_amount` | float64 | 4,627 | 0.00% |
+| `split_coefficient` | float64 | 4,627 | 0.00% |
+| `Capital Gains` | float64 | 4,627 | 0.00% |
+| `symbol` | str | 4,627 | 0.00% |
+
+**✓ All required columns present.**
+
+### Key Ranges
+
+- `date`: min=2008-01-02 00:00:00, max=2026-05-22 00:00:00
+- `close`: min=68.11000061035156, max=748.1699829101562
+
+### Suspicious Row Counts
+
+| Check | Count | % of total |
+|-------|------:|----------:|
+| date is null | 0 | 0.000% |
+
+[07:45:46] step 02 done
+[07:45:46] --- step 03: surface build (year-by-year) ---
+[load] Underlying: /workspace/Neural-IV-Surface-inference/data_raw/spy/spy_underlying.parquet
+  4,627 rows
+  4,627 unique dates after dedup
+[scan] Discovering years in /workspace/Neural-IV-Surface-inference/data_raw/spy/spy_options.parquet...
+  Found 19 years: 2008–2026
+
+[1/19] Processing 2008...
+    loaded: 515,605 rows
+    clean: 515,605 → 515,078 (dropped 527)
+    saved: 515,078 rows → spy_surface_2008.parquet (13.1 MB, 5.1s)
+
+[2/19] Processing 2009...
+    loaded: 593,143 rows
+    clean: 593,143 → 592,014 (dropped 1,129)
+    saved: 592,014 rows → spy_surface_2009.parquet (13.8 MB, 5.8s)
+
+[3/19] Processing 2010...
+    loaded: 528,410 rows
+    clean: 528,410 → 526,646 (dropped 1,764)
+    saved: 526,646 rows → spy_surface_2010.parquet (16.5 MB, 4.8s)
+
+[4/19] Processing 2011...
+    loaded: 587,018 rows
+    clean: 587,018 → 584,479 (dropped 2,539)
+    saved: 584,479 rows → spy_surface_2011.parquet (20.6 MB, 4.6s)
+
+[5/19] Processing 2012...
+    loaded: 682,650 rows
+    clean: 682,650 → 679,543 (dropped 3,107)
+    saved: 679,543 rows → spy_surface_2012.parquet (23.5 MB, 5.0s)
+
+[6/19] Processing 2013...
+    loaded: 713,879 rows
+    clean: 713,879 → 705,437 (dropped 8,442)
+    saved: 705,437 rows → spy_surface_2013.parquet (24.7 MB, 5.1s)
+
+[7/19] Processing 2014...
+    loaded: 846,021 rows
+    clean: 846,021 → 837,927 (dropped 8,094)
+    saved: 837,927 rows → spy_surface_2014.parquet (30.1 MB, 5.3s)
+
+[8/19] Processing 2015...
+    loaded: 988,086 rows
+    clean: 988,086 → 975,495 (dropped 12,591)
+    saved: 975,495 rows → spy_surface_2015.parquet (35.4 MB, 5.8s)
+
+[9/19] Processing 2016...
+    loaded: 1,104,007 rows
+    clean: 1,104,007 → 1,086,597 (dropped 17,410)
+    saved: 1,086,597 rows → spy_surface_2016.parquet (40.2 MB, 5.7s)
+
+[10/19] Processing 2017...
+    loaded: 1,224,215 rows
+    clean: 1,224,215 → 1,203,935 (dropped 20,280)
+    saved: 1,203,935 rows → spy_surface_2017.parquet (44.4 MB, 5.9s)
+
+[11/19] Processing 2018...
+    loaded: 1,501,616 rows
+    clean: 1,501,616 → 1,470,215 (dropped 31,401)
+    saved: 1,470,215 rows → spy_surface_2018.parquet (55.9 MB, 6.1s)
+
+[12/19] Processing 2019...
+    loaded: 1,689,059 rows
+    clean: 1,689,059 → 1,655,490 (dropped 33,569)
+    saved: 1,655,490 rows → spy_surface_2019.parquet (65.3 MB, 6.3s)
+
+[13/19] Processing 2020...
+    loaded: 2,355,398 rows
+    clean: 2,355,398 → 2,313,957 (dropped 41,441)
+    saved: 2,313,957 rows → spy_surface_2020.parquet (94.8 MB, 7.5s)
+
+[14/19] Processing 2021...
+    loaded: 2,555,800 rows
+    clean: 2,555,800 → 2,509,355 (dropped 46,445)
+    saved: 2,509,355 rows → spy_surface_2021.parquet (103.4 MB, 8.1s)
+
+[15/19] Processing 2022...
+    loaded: 2,252,820 rows
+    clean: 2,252,820 → 2,196,998 (dropped 55,822)
+    saved: 2,196,998 rows → spy_surface_2022.parquet (91.4 MB, 7.2s)
+
+[16/19] Processing 2023...
+    loaded: 1,943,946 rows
+    clean: 1,943,946 → 1,873,735 (dropped 70,211)
+    saved: 1,873,735 rows → spy_surface_2023.parquet (75.5 MB, 6.7s)
+
+[17/19] Processing 2024...
+    loaded: 2,292,798 rows
+    clean: 2,292,798 → 2,225,536 (dropped 67,262)
+    saved: 2,225,536 rows → spy_surface_2024.parquet (92.2 MB, 7.6s)
+
+[18/19] Processing 2025...
+    loaded: 2,443,650 rows
+    clean: 2,443,650 → 2,366,162 (dropped 77,488)
+    saved: 2,366,162 rows → spy_surface_2025.parquet (99.2 MB, 7.6s)
+
+[19/19] Processing 2026...
+    loaded: 1,245,354 rows
+    clean: 1,245,354 → 1,210,142 (dropped 35,212)
+    saved: 1,210,142 rows → spy_surface_2026.parquet (51.2 MB, 5.5s)
+
+[concat] Merging 19 partitions → conservative file...
+  25,528,741 rows → spy_surface_points.parquet (990.7 MB)
+[strict] Building strict subset partition-by-partition...
+  25,528,741 → 22,512,040 (kept 88.2%)
+  22,512,040 rows → spy_surface_points_strict.parquet (892.9 MB)
+[report] Written to /workspace/Neural-IV-Surface-inference/reports/spy_build_report.md
+
+✓ Build complete in 189.7s
+[07:48:57] step 03 done
+-rw-rw-rw- 1 root root 990719885 May 23 07:48 data_processed/spy/spy_surface_points.parquet
+-rw-rw-rw- 1 root root 892905814 May 23 07:48 data_processed/spy/spy_surface_points_strict.parquet
+[07:48:57] --- step 04: benchmark tasks (all 11 variants) ---
+[split] Precomputing date→split map from partitions in /workspace/Neural-IV-Surface-inference/data_processed/spy/partitions
+  4,622 dates: 3235 train, 693 val, 694 test
+
+[build] spy_phase1_random20_noise0
+  strategy=random  keep_frac=0.2  noise=none  hetero=False  seed=42
+  streaming 22,512,040 total rows in batches of 500,000
+  batch 1: 500,000 rows processed
+  batch 2: 1,000,000 rows processed
+  batch 3: 1,500,000 rows processed
+  batch 4: 2,000,000 rows processed
+  batch 5: 2,500,000 rows processed
+  batch 6: 3,000,000 rows processed
+  batch 7: 3,500,000 rows processed
+  batch 8: 4,000,000 rows processed
+  batch 9: 4,500,000 rows processed
+  batch 10: 5,000,000 rows processed
+  batch 11: 5,500,000 rows processed
+  batch 12: 6,000,000 rows processed
+  batch 13: 6,500,000 rows processed
+  batch 14: 7,000,000 rows processed
+  batch 15: 7,500,000 rows processed
+  batch 16: 8,000,000 rows processed
+  batch 17: 8,500,000 rows processed
+  batch 18: 9,000,000 rows processed
+  batch 19: 9,500,000 rows processed
+  batch 20: 10,000,000 rows processed
+  batch 21: 10,500,000 rows processed
+  batch 22: 11,000,000 rows processed
+  batch 23: 11,500,000 rows processed
+  batch 24: 12,000,000 rows processed
+  batch 25: 12,500,000 rows processed
+  batch 26: 13,000,000 rows processed
+  batch 27: 13,500,000 rows processed
+  batch 28: 14,000,000 rows processed
+  batch 29: 14,500,000 rows processed
+  batch 30: 15,000,000 rows processed
+  batch 31: 15,500,000 rows processed
+  batch 32: 16,000,000 rows processed
+  batch 33: 16,500,000 rows processed
+  batch 34: 17,000,000 rows processed
+  batch 35: 17,500,000 rows processed
+  batch 36: 18,000,000 rows processed
+  batch 37: 18,500,000 rows processed
+  batch 38: 19,000,000 rows processed
+  batch 39: 19,500,000 rows processed
+  batch 40: 20,000,000 rows processed
+  batch 41: 20,500,000 rows processed
+  batch 42: 21,000,000 rows processed
+  batch 43: 21,500,000 rows processed
+  batch 44: 22,000,000 rows processed
+  batch 45: 22,500,000 rows processed
+  batch 46: 22,512,040 rows processed
+  total: 22,512,040 rows, 4,501,355 observed (20.0%)
+  train: 11,112,617 rows
+  val  : 5,593,759 rows
+  test : 5,805,664 rows
+  saved: spy_phase1_random20_noise0.parquet (907.4 MB, 42.9s)
+
+[build] spy_phase1_random40_noise0
+  strategy=random  keep_frac=0.4  noise=none  hetero=False  seed=42
+  streaming 22,512,040 total rows in batches of 500,000
+  batch 1: 500,000 rows processed
+  batch 2: 1,000,000 rows processed
+  batch 3: 1,500,000 rows processed
+  batch 4: 2,000,000 rows processed
+  batch 5: 2,500,000 rows processed
+  batch 6: 3,000,000 rows processed
+  batch 7: 3,500,000 rows processed
+  batch 8: 4,000,000 rows processed
+  batch 9: 4,500,000 rows processed
+  batch 10: 5,000,000 rows processed
+  batch 11: 5,500,000 rows processed
+  batch 12: 6,000,000 rows processed
+  batch 13: 6,500,000 rows processed
+  batch 14: 7,000,000 rows processed
+  batch 15: 7,500,000 rows processed
+  batch 16: 8,000,000 rows processed
+  batch 17: 8,500,000 rows processed
+  batch 18: 9,000,000 rows processed
+  batch 19: 9,500,000 rows processed
+  batch 20: 10,000,000 rows processed
+  batch 21: 10,500,000 rows processed
+  batch 22: 11,000,000 rows processed
+  batch 23: 11,500,000 rows processed
+  batch 24: 12,000,000 rows processed
+  batch 25: 12,500,000 rows processed
+  batch 26: 13,000,000 rows processed
+  batch 27: 13,500,000 rows processed
+  batch 28: 14,000,000 rows processed
+  batch 29: 14,500,000 rows processed
+  batch 30: 15,000,000 rows processed
+  batch 31: 15,500,000 rows processed
+  batch 32: 16,000,000 rows processed
+  batch 33: 16,500,000 rows processed
+  batch 34: 17,000,000 rows processed
+  batch 35: 17,500,000 rows processed
+  batch 36: 18,000,000 rows processed
+  batch 37: 18,500,000 rows processed
+  batch 38: 19,000,000 rows processed
+  batch 39: 19,500,000 rows processed
+  batch 40: 20,000,000 rows processed
+  batch 41: 20,500,000 rows processed
+  batch 42: 21,000,000 rows processed
+  batch 43: 21,500,000 rows processed
+  batch 44: 22,000,000 rows processed
+  batch 45: 22,500,000 rows processed
+  batch 46: 22,512,040 rows processed
+  total: 22,512,040 rows, 9,001,761 observed (40.0%)
+  train: 11,112,617 rows
+  val  : 5,593,759 rows
+  test : 5,805,664 rows
+  saved: spy_phase1_random40_noise0.parquet (907.4 MB, 40.3s)
+
+[build] spy_phase1_random60_noise0
+  strategy=random  keep_frac=0.6  noise=none  hetero=False  seed=42
+  streaming 22,512,040 total rows in batches of 500,000
+  batch 1: 500,000 rows processed
+  batch 2: 1,000,000 rows processed
+  batch 3: 1,500,000 rows processed
+  batch 4: 2,000,000 rows processed
+  batch 5: 2,500,000 rows processed
+  batch 6: 3,000,000 rows processed
+  batch 7: 3,500,000 rows processed
+  batch 8: 4,000,000 rows processed
+  batch 9: 4,500,000 rows processed
+  batch 10: 5,000,000 rows processed
+  batch 11: 5,500,000 rows processed
+  batch 12: 6,000,000 rows processed
+  batch 13: 6,500,000 rows processed
+  batch 14: 7,000,000 rows processed
+  batch 15: 7,500,000 rows processed
+  batch 16: 8,000,000 rows processed
+  batch 17: 8,500,000 rows processed
+  batch 18: 9,000,000 rows processed
+  batch 19: 9,500,000 rows processed
+  batch 20: 10,000,000 rows processed
+  batch 21: 10,500,000 rows processed
+  batch 22: 11,000,000 rows processed
+  batch 23: 11,500,000 rows processed
+  batch 24: 12,000,000 rows processed
+  batch 25: 12,500,000 rows processed
+  batch 26: 13,000,000 rows processed
+  batch 27: 13,500,000 rows processed
+  batch 28: 14,000,000 rows processed
+  batch 29: 14,500,000 rows processed
+  batch 30: 15,000,000 rows processed
+  batch 31: 15,500,000 rows processed
+  batch 32: 16,000,000 rows processed
+  batch 33: 16,500,000 rows processed
+  batch 34: 17,000,000 rows processed
+  batch 35: 17,500,000 rows processed
+  batch 36: 18,000,000 rows processed
+  batch 37: 18,500,000 rows processed
+  batch 38: 19,000,000 rows processed
+  batch 39: 19,500,000 rows processed
+  batch 40: 20,000,000 rows processed
+  batch 41: 20,500,000 rows processed
+  batch 42: 21,000,000 rows processed
+  batch 43: 21,500,000 rows processed
+  batch 44: 22,000,000 rows processed
+  batch 45: 22,500,000 rows processed
+  batch 46: 22,512,040 rows processed
+  total: 22,512,040 rows, 13,502,287 observed (60.0%)
+  train: 11,112,617 rows
+  val  : 5,593,759 rows
+  test : 5,805,664 rows
+  saved: spy_phase1_random60_noise0.parquet (907.4 MB, 41.0s)
+
+[build] spy_phase1_random20_noiselow
+  strategy=random  keep_frac=0.2  noise=low  hetero=False  seed=42
+  streaming 22,512,040 total rows in batches of 500,000
+  batch 1: 500,000 rows processed
+  batch 2: 1,000,000 rows processed
+  batch 3: 1,500,000 rows processed
+  batch 4: 2,000,000 rows processed
+  batch 5: 2,500,000 rows processed
+  batch 6: 3,000,000 rows processed
+  batch 7: 3,500,000 rows processed
+  batch 8: 4,000,000 rows processed
+  batch 9: 4,500,000 rows processed
+  batch 10: 5,000,000 rows processed
+  batch 11: 5,500,000 rows processed
+  batch 12: 6,000,000 rows processed
+  batch 13: 6,500,000 rows processed
+  batch 14: 7,000,000 rows processed
+  batch 15: 7,500,000 rows processed
+  batch 16: 8,000,000 rows processed
+  batch 17: 8,500,000 rows processed
+  batch 18: 9,000,000 rows processed
+  batch 19: 9,500,000 rows processed
+  batch 20: 10,000,000 rows processed
+  batch 21: 10,500,000 rows processed
+  batch 22: 11,000,000 rows processed
+  batch 23: 11,500,000 rows processed
+  batch 24: 12,000,000 rows processed
+  batch 25: 12,500,000 rows processed
+  batch 26: 13,000,000 rows processed
+  batch 27: 13,500,000 rows processed
+  batch 28: 14,000,000 rows processed
+  batch 29: 14,500,000 rows processed
+  batch 30: 15,000,000 rows processed
+  batch 31: 15,500,000 rows processed
+  batch 32: 16,000,000 rows processed
+  batch 33: 16,500,000 rows processed
+  batch 34: 17,000,000 rows processed
+  batch 35: 17,500,000 rows processed
+  batch 36: 18,000,000 rows processed
+  batch 37: 18,500,000 rows processed
+  batch 38: 19,000,000 rows processed
+  batch 39: 19,500,000 rows processed
+  batch 40: 20,000,000 rows processed
+  batch 41: 20,500,000 rows processed
+  batch 42: 21,000,000 rows processed
+  batch 43: 21,500,000 rows processed
+  batch 44: 22,000,000 rows processed
+  batch 45: 22,500,000 rows processed
+  batch 46: 22,512,040 rows processed
+  total: 22,512,040 rows, 4,501,355 observed (20.0%)
+  train: 11,112,617 rows
+  val  : 5,593,759 rows
+  test : 5,805,664 rows
+  saved: spy_phase1_random20_noiselow.parquet (962.1 MB, 37.9s)
+
+[build] spy_phase1_random40_noiselow
+  strategy=random  keep_frac=0.4  noise=low  hetero=False  seed=42
+  streaming 22,512,040 total rows in batches of 500,000
+  batch 1: 500,000 rows processed
+  batch 2: 1,000,000 rows processed
+  batch 3: 1,500,000 rows processed
+  batch 4: 2,000,000 rows processed
+  batch 5: 2,500,000 rows processed
+  batch 6: 3,000,000 rows processed
+  batch 7: 3,500,000 rows processed
+  batch 8: 4,000,000 rows processed
+  batch 9: 4,500,000 rows processed
+  batch 10: 5,000,000 rows processed
+  batch 11: 5,500,000 rows processed
+  batch 12: 6,000,000 rows processed
+  batch 13: 6,500,000 rows processed
+  batch 14: 7,000,000 rows processed
+  batch 15: 7,500,000 rows processed
+  batch 16: 8,000,000 rows processed
+  batch 17: 8,500,000 rows processed
+  batch 18: 9,000,000 rows processed
+  batch 19: 9,500,000 rows processed
+  batch 20: 10,000,000 rows processed
+  batch 21: 10,500,000 rows processed
+  batch 22: 11,000,000 rows processed
+  batch 23: 11,500,000 rows processed
+  batch 24: 12,000,000 rows processed
+  batch 25: 12,500,000 rows processed
+  batch 26: 13,000,000 rows processed
+  batch 27: 13,500,000 rows processed
+  batch 28: 14,000,000 rows processed
+  batch 29: 14,500,000 rows processed
+  batch 30: 15,000,000 rows processed
+  batch 31: 15,500,000 rows processed
+  batch 32: 16,000,000 rows processed
+  batch 33: 16,500,000 rows processed
+  batch 34: 17,000,000 rows processed
+  batch 35: 17,500,000 rows processed
+  batch 36: 18,000,000 rows processed
+  batch 37: 18,500,000 rows processed
+  batch 38: 19,000,000 rows processed
+  batch 39: 19,500,000 rows processed
+  batch 40: 20,000,000 rows processed
+  batch 41: 20,500,000 rows processed
+  batch 42: 21,000,000 rows processed
+  batch 43: 21,500,000 rows processed
+  batch 44: 22,000,000 rows processed
+  batch 45: 22,500,000 rows processed
+  batch 46: 22,512,040 rows processed
+  total: 22,512,040 rows, 9,001,761 observed (40.0%)
+  train: 11,112,617 rows
+  val  : 5,593,759 rows
+  test : 5,805,664 rows
+  saved: spy_phase1_random40_noiselow.parquet (1000.8 MB, 39.7s)
+
+[build] spy_phase1_random40_noisemed
+  strategy=random  keep_frac=0.4  noise=medium  hetero=False  seed=42
+  streaming 22,512,040 total rows in batches of 500,000
+  batch 1: 500,000 rows processed
+  batch 2: 1,000,000 rows processed
+  batch 3: 1,500,000 rows processed
+  batch 4: 2,000,000 rows processed
+  batch 5: 2,500,000 rows processed
+  batch 6: 3,000,000 rows processed
+  batch 7: 3,500,000 rows processed
+  batch 8: 4,000,000 rows processed
+  batch 9: 4,500,000 rows processed
+  batch 10: 5,000,000 rows processed
+  batch 11: 5,500,000 rows processed
+  batch 12: 6,000,000 rows processed
+  batch 13: 6,500,000 rows processed
+  batch 14: 7,000,000 rows processed
+  batch 15: 7,500,000 rows processed
+  batch 16: 8,000,000 rows processed
+  batch 17: 8,500,000 rows processed
+  batch 18: 9,000,000 rows processed
+  batch 19: 9,500,000 rows processed
+  batch 20: 10,000,000 rows processed
+  batch 21: 10,500,000 rows processed
+  batch 22: 11,000,000 rows processed
+  batch 23: 11,500,000 rows processed
+  batch 24: 12,000,000 rows processed
+  batch 25: 12,500,000 rows processed
+  batch 26: 13,000,000 rows processed
+  batch 27: 13,500,000 rows processed
+  batch 28: 14,000,000 rows processed
+  batch 29: 14,500,000 rows processed
+  batch 30: 15,000,000 rows processed
+  batch 31: 15,500,000 rows processed
+  batch 32: 16,000,000 rows processed
+  batch 33: 16,500,000 rows processed
+  batch 34: 17,000,000 rows processed
+  batch 35: 17,500,000 rows processed
+  batch 36: 18,000,000 rows processed
+  batch 37: 18,500,000 rows processed
+  batch 38: 19,000,000 rows processed
+  batch 39: 19,500,000 rows processed
+  batch 40: 20,000,000 rows processed
+  batch 41: 20,500,000 rows processed
+  batch 42: 21,000,000 rows processed
+  batch 43: 21,500,000 rows processed
+  batch 44: 22,000,000 rows processed
+  batch 45: 22,500,000 rows processed
+  batch 46: 22,512,040 rows processed
+  total: 22,512,040 rows, 9,001,761 observed (40.0%)
+  train: 11,112,617 rows
+  val  : 5,593,759 rows
+  test : 5,805,664 rows
+  saved: spy_phase1_random40_noisemed.parquet (999.3 MB, 38.9s)
+
+[build] spy_phase1_random40_noisehigh
+  strategy=random  keep_frac=0.4  noise=high  hetero=False  seed=42
+  streaming 22,512,040 total rows in batches of 500,000
+  batch 1: 500,000 rows processed
+  batch 2: 1,000,000 rows processed
+  batch 3: 1,500,000 rows processed
+  batch 4: 2,000,000 rows processed
+  batch 5: 2,500,000 rows processed
+  batch 6: 3,000,000 rows processed
+  batch 7: 3,500,000 rows processed
+  batch 8: 4,000,000 rows processed
+  batch 9: 4,500,000 rows processed
+  batch 10: 5,000,000 rows processed
+  batch 11: 5,500,000 rows processed
+  batch 12: 6,000,000 rows processed
+  batch 13: 6,500,000 rows processed
+  batch 14: 7,000,000 rows processed
+  batch 15: 7,500,000 rows processed
+  batch 16: 8,000,000 rows processed
+  batch 17: 8,500,000 rows processed
+  batch 18: 9,000,000 rows processed
+  batch 19: 9,500,000 rows processed
+  batch 20: 10,000,000 rows processed
+  batch 21: 10,500,000 rows processed
+  batch 22: 11,000,000 rows processed
+  batch 23: 11,500,000 rows processed
+  batch 24: 12,000,000 rows processed
+  batch 25: 12,500,000 rows processed
+  batch 26: 13,000,000 rows processed
+  batch 27: 13,500,000 rows processed
+  batch 28: 14,000,000 rows processed
+  batch 29: 14,500,000 rows processed
+  batch 30: 15,000,000 rows processed
+  batch 31: 15,500,000 rows processed
+  batch 32: 16,000,000 rows processed
+  batch 33: 16,500,000 rows processed
+  batch 34: 17,000,000 rows processed
+  batch 35: 17,500,000 rows processed
+  batch 36: 18,000,000 rows processed
+  batch 37: 18,500,000 rows processed
+  batch 38: 19,000,000 rows processed
+  batch 39: 19,500,000 rows processed
+  batch 40: 20,000,000 rows processed
+  batch 41: 20,500,000 rows processed
+  batch 42: 21,000,000 rows processed
+  batch 43: 21,500,000 rows processed
+  batch 44: 22,000,000 rows processed
+  batch 45: 22,500,000 rows processed
+  batch 46: 22,512,040 rows processed
+  total: 22,512,040 rows, 9,001,761 observed (40.0%)
+  train: 11,112,617 rows
+  val  : 5,593,759 rows
+  test : 5,805,664 rows
+  saved: spy_phase1_random40_noisehigh.parquet (998.8 MB, 38.3s)
+
+[build] spy_phase1_realistic40_noiselow
+  strategy=realistic  keep_frac=0.4  noise=low  hetero=False  seed=42
+  streaming 22,512,040 total rows in batches of 500,000
+  batch 1: 500,000 rows processed
+  batch 2: 1,000,000 rows processed
+  batch 3: 1,500,000 rows processed
+  batch 4: 2,000,000 rows processed
+  batch 5: 2,500,000 rows processed
+  batch 6: 3,000,000 rows processed
+  batch 7: 3,500,000 rows processed
+  batch 8: 4,000,000 rows processed
+  batch 9: 4,500,000 rows processed
+  batch 10: 5,000,000 rows processed
+  batch 11: 5,500,000 rows processed
+  batch 12: 6,000,000 rows processed
+  batch 13: 6,500,000 rows processed
+  batch 14: 7,000,000 rows processed
+  batch 15: 7,500,000 rows processed
+  batch 16: 8,000,000 rows processed
+  batch 17: 8,500,000 rows processed
+  batch 18: 9,000,000 rows processed
+  batch 19: 9,500,000 rows processed
+  batch 20: 10,000,000 rows processed
+  batch 21: 10,500,000 rows processed
+  batch 22: 11,000,000 rows processed
+  batch 23: 11,500,000 rows processed
+  batch 24: 12,000,000 rows processed
+  batch 25: 12,500,000 rows processed
+  batch 26: 13,000,000 rows processed
+  batch 27: 13,500,000 rows processed
+  batch 28: 14,000,000 rows processed
+  batch 29: 14,500,000 rows processed
+  batch 30: 15,000,000 rows processed
+  batch 31: 15,500,000 rows processed
+  batch 32: 16,000,000 rows processed
+  batch 33: 16,500,000 rows processed
+  batch 34: 17,000,000 rows processed
+  batch 35: 17,500,000 rows processed
+  batch 36: 18,000,000 rows processed
+  batch 37: 18,500,000 rows processed
+  batch 38: 19,000,000 rows processed
+  batch 39: 19,500,000 rows processed
+  batch 40: 20,000,000 rows processed
+  batch 41: 20,500,000 rows processed
+  batch 42: 21,000,000 rows processed
+  batch 43: 21,500,000 rows processed
+  batch 44: 22,000,000 rows processed
+  batch 45: 22,500,000 rows processed
+  batch 46: 22,512,040 rows processed
+  total: 22,512,040 rows, 9,018,128 observed (40.1%)
+  train: 11,112,617 rows
+  val  : 5,593,759 rows
+  test : 5,805,664 rows
+  saved: spy_phase1_realistic40_noiselow.parquet (998.0 MB, 39.6s)
+
+[build] spy_phase1_realistic40_noisemed_hetero
+  strategy=realistic  keep_frac=0.4  noise=medium  hetero=True  seed=42
+  streaming 22,512,040 total rows in batches of 500,000
+  batch 1: 500,000 rows processed
+  batch 2: 1,000,000 rows processed
+  batch 3: 1,500,000 rows processed
+  batch 4: 2,000,000 rows processed
+  batch 5: 2,500,000 rows processed
+  batch 6: 3,000,000 rows processed
+  batch 7: 3,500,000 rows processed
+  batch 8: 4,000,000 rows processed
+  batch 9: 4,500,000 rows processed
+  batch 10: 5,000,000 rows processed
+  batch 11: 5,500,000 rows processed
+  batch 12: 6,000,000 rows processed
+  batch 13: 6,500,000 rows processed
+  batch 14: 7,000,000 rows processed
+  batch 15: 7,500,000 rows processed
+  batch 16: 8,000,000 rows processed
+  batch 17: 8,500,000 rows processed
+  batch 18: 9,000,000 rows processed
+  batch 19: 9,500,000 rows processed
+  batch 20: 10,000,000 rows processed
+  batch 21: 10,500,000 rows processed
+  batch 22: 11,000,000 rows processed
+  batch 23: 11,500,000 rows processed
+  batch 24: 12,000,000 rows processed
+  batch 25: 12,500,000 rows processed
+  batch 26: 13,000,000 rows processed
+  batch 27: 13,500,000 rows processed
+  batch 28: 14,000,000 rows processed
+  batch 29: 14,500,000 rows processed
+  batch 30: 15,000,000 rows processed
+  batch 31: 15,500,000 rows processed
+  batch 32: 16,000,000 rows processed
+  batch 33: 16,500,000 rows processed
+  batch 34: 17,000,000 rows processed
+  batch 35: 17,500,000 rows processed
+  batch 36: 18,000,000 rows processed
+  batch 37: 18,500,000 rows processed
+  batch 38: 19,000,000 rows processed
+  batch 39: 19,500,000 rows processed
+  batch 40: 20,000,000 rows processed
+  batch 41: 20,500,000 rows processed
+  batch 42: 21,000,000 rows processed
+  batch 43: 21,500,000 rows processed
+  batch 44: 22,000,000 rows processed
+  batch 45: 22,500,000 rows processed
+  batch 46: 22,512,040 rows processed
+  total: 22,512,040 rows, 9,018,128 observed (40.1%)
+  train: 11,112,617 rows
+  val  : 5,593,759 rows
+  test : 5,805,664 rows
+  saved: spy_phase1_realistic40_noisemed_hetero.parquet (996.1 MB, 38.8s)
+
+[build] spy_phase1_drop_wings100_noise0
+  strategy=drop_wings  keep_frac=1.0  noise=none  hetero=False  seed=42
+  streaming 22,512,040 total rows in batches of 500,000
+  batch 1: 500,000 rows processed
+  batch 2: 1,000,000 rows processed
+  batch 3: 1,500,000 rows processed
+  batch 4: 2,000,000 rows processed
+  batch 5: 2,500,000 rows processed
+  batch 6: 3,000,000 rows processed
+  batch 7: 3,500,000 rows processed
+  batch 8: 4,000,000 rows processed
+  batch 9: 4,500,000 rows processed
+  batch 10: 5,000,000 rows processed
+  batch 11: 5,500,000 rows processed
+  batch 12: 6,000,000 rows processed
+  batch 13: 6,500,000 rows processed
+  batch 14: 7,000,000 rows processed
+  batch 15: 7,500,000 rows processed
+  batch 16: 8,000,000 rows processed
+  batch 17: 8,500,000 rows processed
+  batch 18: 9,000,000 rows processed
+  batch 19: 9,500,000 rows processed
+  batch 20: 10,000,000 rows processed
+  batch 21: 10,500,000 rows processed
+  batch 22: 11,000,000 rows processed
+  batch 23: 11,500,000 rows processed
+  batch 24: 12,000,000 rows processed
+  batch 25: 12,500,000 rows processed
+  batch 26: 13,000,000 rows processed
+  batch 27: 13,500,000 rows processed
+  batch 28: 14,000,000 rows processed
+  batch 29: 14,500,000 rows processed
+  batch 30: 15,000,000 rows processed
+  batch 31: 15,500,000 rows processed
+  batch 32: 16,000,000 rows processed
+  batch 33: 16,500,000 rows processed
+  batch 34: 17,000,000 rows processed
+  batch 35: 17,500,000 rows processed
+  batch 36: 18,000,000 rows processed
+  batch 37: 18,500,000 rows processed
+  batch 38: 19,000,000 rows processed
+  batch 39: 19,500,000 rows processed
+  batch 40: 20,000,000 rows processed
+  batch 41: 20,500,000 rows processed
+  batch 42: 21,000,000 rows processed
+  batch 43: 21,500,000 rows processed
+  batch 44: 22,000,000 rows processed
+  batch 45: 22,500,000 rows processed
+  batch 46: 22,512,040 rows processed
+  total: 22,512,040 rows, 17,993,257 observed (79.9%)
+  train: 11,112,617 rows
+  val  : 5,593,759 rows
+  test : 5,805,664 rows
+  saved: spy_phase1_drop_wings100_noise0.parquet (905.2 MB, 37.2s)
+
+[build] spy_phase1_drop_short_maturity100_noise0
+  strategy=drop_short_maturity  keep_frac=1.0  noise=none  hetero=False  seed=42
+  streaming 22,512,040 total rows in batches of 500,000
+  batch 1: 500,000 rows processed
+  batch 2: 1,000,000 rows processed
+  batch 3: 1,500,000 rows processed
+  batch 4: 2,000,000 rows processed
+  batch 5: 2,500,000 rows processed
+  batch 6: 3,000,000 rows processed
+  batch 7: 3,500,000 rows processed
+  batch 8: 4,000,000 rows processed
+  batch 9: 4,500,000 rows processed
+  batch 10: 5,000,000 rows processed
+  batch 11: 5,500,000 rows processed
+  batch 12: 6,000,000 rows processed
+  batch 13: 6,500,000 rows processed
+  batch 14: 7,000,000 rows processed
+  batch 15: 7,500,000 rows processed
+  batch 16: 8,000,000 rows processed
+  batch 17: 8,500,000 rows processed
+  batch 18: 9,000,000 rows processed
+  batch 19: 9,500,000 rows processed
+  batch 20: 10,000,000 rows processed
+  batch 21: 10,500,000 rows processed
+  batch 22: 11,000,000 rows processed
+  batch 23: 11,500,000 rows processed
+  batch 24: 12,000,000 rows processed
+  batch 25: 12,500,000 rows processed
+  batch 26: 13,000,000 rows processed
+  batch 27: 13,500,000 rows processed
+  batch 28: 14,000,000 rows processed
+  batch 29: 14,500,000 rows processed
+  batch 30: 15,000,000 rows processed
+  batch 31: 15,500,000 rows processed
+  batch 32: 16,000,000 rows processed
+  batch 33: 16,500,000 rows processed
+  batch 34: 17,000,000 rows processed
+  batch 35: 17,500,000 rows processed
+  batch 36: 18,000,000 rows processed
+  batch 37: 18,500,000 rows processed
+  batch 38: 19,000,000 rows processed
+  batch 39: 19,500,000 rows processed
+  batch 40: 20,000,000 rows processed
+  batch 41: 20,500,000 rows processed
+  batch 42: 21,000,000 rows processed
+  batch 43: 21,500,000 rows processed
+  batch 44: 22,000,000 rows processed
+  batch 45: 22,500,000 rows processed
+  batch 46: 22,512,040 rows processed
+  total: 22,512,040 rows, 15,810,280 observed (70.2%)
+  train: 11,112,617 rows
+  val  : 5,593,759 rows
+  test : 5,805,664 rows
+  saved: spy_phase1_drop_short_maturity100_noise0.parquet (904.8 MB, 39.1s)
+
+✓ Built 11 benchmark(s) in 434.3s
+  data_processed/spy/benchmarks/spy_phase1_random20_noise0.parquet
+  data_processed/spy/benchmarks/spy_phase1_random40_noise0.parquet
+  data_processed/spy/benchmarks/spy_phase1_random60_noise0.parquet
+  data_processed/spy/benchmarks/spy_phase1_random20_noiselow.parquet
+  data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+  data_processed/spy/benchmarks/spy_phase1_random40_noisemed.parquet
+  data_processed/spy/benchmarks/spy_phase1_random40_noisehigh.parquet
+  data_processed/spy/benchmarks/spy_phase1_realistic40_noiselow.parquet
+  data_processed/spy/benchmarks/spy_phase1_realistic40_noisemed_hetero.parquet
+  data_processed/spy/benchmarks/spy_phase1_drop_wings100_noise0.parquet
+  data_processed/spy/benchmarks/spy_phase1_drop_short_maturity100_noise0.parquet
+[07:56:16] step 04 done
+total 10247217
+drwxrwxrwx 2 root root    3000976 May 23 07:55 .
+drwxrwxrwx 4 root root    3001244 May 23 07:49 ..
+-rw-rw-rw- 1 root root  904755679 May 23 07:56 spy_phase1_drop_short_maturity100_noise0.parquet
+-rw-rw-rw- 1 root root  905188988 May 23 07:55 spy_phase1_drop_wings100_noise0.parquet
+-rw-rw-rw- 1 root root  907403011 May 23 07:49 spy_phase1_random20_noise0.parquet
+-rw-rw-rw- 1 root root  962081756 May 23 07:51 spy_phase1_random20_noiselow.parquet
+-rw-rw-rw- 1 root root  907402980 May 23 07:50 spy_phase1_random40_noise0.parquet
+-rw-rw-rw- 1 root root  998758359 May 23 07:53 spy_phase1_random40_noisehigh.parquet
+-rw-rw-rw- 1 root root 1000760157 May 23 07:52 spy_phase1_random40_noiselow.parquet
+-rw-rw-rw- 1 root root  999300245 May 23 07:53 spy_phase1_random40_noisemed.parquet
+-rw-rw-rw- 1 root root  907402980 May 23 07:51 spy_phase1_random60_noise0.parquet
+-rw-rw-rw- 1 root root  997950946 May 23 07:54 spy_phase1_realistic40_noiselow.parquet
+-rw-rw-rw- 1 root root  996139609 May 23 07:54 spy_phase1_realistic40_noisemed_hetero.parquet
+[07:56:16] === 2C.7 rebuild SUCCESS ===
+[07:56:16] Outputs:
+512	data_raw/spy/ingest_metadata.json
+910M	data_raw/spy/spy_options.parquet
+236K	data_raw/spy/spy_underlying.parquet
+9.8G	data_processed/spy/benchmarks
+948M	data_processed/spy/partitions
+945M	data_processed/spy/spy_surface_points.parquet
+852M	data_processed/spy/spy_surface_points_strict.parquet
+[07:56:16] Total persistent data: 
+[07:56:16] Backups preserved at: data_raw/spy_dubach_pre_av_20260523_074453 and data_processed/spy_dubach_pre_av_20260523_074453
+[07:56:16] Master log: artifacts/logs/rebuild_pipeline_20260523_074453.log

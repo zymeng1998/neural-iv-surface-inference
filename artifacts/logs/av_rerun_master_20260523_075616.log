@@ -1,0 +1,113 @@
+[07:56:16] === 2C.8 + 2C.4-R + 2C.5-R START  tag=av_rerun_20260523_075616 ===
+[07:56:16] benchmark size: 1000760157 bytes
+[07:56:16] --- 2C.8 stage A: run_baseline.py (interp + MLP on random40_noiselow) ---
+[13:27:55] stage A done; tail:
+
+[save] Results saved to artifacts/results/baseline_results.csv
+
+======================================================================
+  COMPARISON SUMMARY (test split)
+======================================================================
+     model  overall_mae  overall_rmse  observed_mae  unobserved_mae
+interp_rbf     0.066199      0.112405      0.054227        0.074171
+       mlp     0.095124      0.166482      0.095123        0.095125
+
+[13:27:55] --- 2C.8 stage B: run_uncertainty_eval.py --predictor interp ---
+[16:02:42] stage B done; metrics:
+[data] Loading benchmark: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+[run] predictor=interp_rbf, splits=('train', 'val', 'test')
+
+[metrics]
+     model split        n  overall_mae  overall_rmse  observed_mae  unobserved_mae  interval_coverage  mean_interval_width  err_unc_pearson  err_unc_spearman confidence_source     aurc  hc_mae_keep0.5  hc_mae_keep0.8
+interp_rbf train 11112617     0.048475      0.088826      0.036690        0.056323                NaN                  NaN              NaN               NaN      oracle_error 0.012914        0.010315        0.020626
+interp_rbf   val  5593759     0.046274      0.090509      0.037897        0.051865                NaN                  NaN              NaN               NaN      oracle_error 0.010608        0.007669        0.016832
+interp_rbf  test  5805664     0.066199      0.112405      0.054227        0.074171                NaN                  NaN              NaN               NaN      oracle_error 0.016843        0.011037        0.029428
+
+[artifacts]
+  metrics: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_interp_rbf.csv
+  curve: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_interp_rbf_curve.csv
+  figure: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_interp_rbf_risk_coverage.png
+[16:02:42] --- 2C.8 stage C: run_structure_diagnostics.py --predictor interp ---
+[17:39:12] stage C done; summary tail:
+
+[artifacts]
+  summary: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf.csv
+  regions: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_regions.csv
+  risk_train: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_train_risk.png
+  instability_train: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_train_instability.png
+  risk_val: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_val_risk.png
+  instability_val: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_val_instability.png
+  risk_test: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_test_risk.png
+  instability_test: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_test_instability.png
+[17:39:12] --- 2C.4-R stage D: run_conditional.py (full real-data training) ---
+[17:43:12] stage D done; tail:
+[conditional] benchmark: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+  Training Conditional: 85,057 params, device=cuda
+  Epoch   1/50  train_loss=0.033374  val_loss=0.039895  val_obs_mae=0.132361  val_unobs_mae=0.132288  lr=1.00e-03  (4.6s)
+  Epoch   5/50  train_loss=0.019575  val_loss=0.023175  val_obs_mae=0.094568  val_unobs_mae=0.094492  lr=1.00e-03  (4.2s)
+  Epoch  10/50  train_loss=0.012487  val_loss=0.016825  val_obs_mae=0.079014  val_unobs_mae=0.079007  lr=1.00e-03  (4.1s)
+  Epoch  15/50  train_loss=0.010725  val_loss=0.014912  val_obs_mae=0.071420  val_unobs_mae=0.071379  lr=1.00e-03  (4.3s)
+  Epoch  20/50  train_loss=0.010671  val_loss=0.012743  val_obs_mae=0.065138  val_unobs_mae=0.065151  lr=1.00e-03  (4.2s)
+  Epoch  25/50  train_loss=0.009862  val_loss=0.012871  val_obs_mae=0.069104  val_unobs_mae=0.069076  lr=1.00e-03  (4.2s)
+  Epoch  30/50  train_loss=0.010033  val_loss=0.011564  val_obs_mae=0.062244  val_unobs_mae=0.062275  lr=1.00e-03  (4.2s)
+  Epoch  35/50  train_loss=0.009424  val_loss=0.011337  val_obs_mae=0.062742  val_unobs_mae=0.062765  lr=5.00e-04  (4.3s)
+  Epoch  40/50  train_loss=0.009300  val_loss=0.010804  val_obs_mae=0.062093  val_unobs_mae=0.062129  lr=5.00e-04  (4.8s)
+  Epoch  45/50  train_loss=0.009015  val_loss=0.010243  val_obs_mae=0.057759  val_unobs_mae=0.057805  lr=2.50e-04  (4.8s)
+  Epoch  50/50  train_loss=0.008961  val_loss=0.010611  val_obs_mae=0.060925  val_unobs_mae=0.060971  lr=2.50e-04  (4.9s)
+  Loaded best checkpoint from epoch 46
+[conditional] done in 219.6s  epochs=50  final_train_loss=0.008961  final_val_loss=0.010611
+[17:43:12] checkpoint size: 1055782 bytes
+[17:43:12] --- 2C.5-R stage E: run_uncertainty_eval.py --predictor conditional ---
+[17:43:55] stage E done; metrics:
+/workspace/Neural-IV-Surface-inference/src/neural_iv_surface_inference/eval/adapters.py:159: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at ../torch/csrc/utils/tensor_numpy.cpp:206.)
+  ctx_t = torch.from_numpy(ctx).unsqueeze(0).to(self.device)
+[data] Loading benchmark: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+[run] predictor=conditional_surface, splits=('train', 'val', 'test')
+
+[metrics]
+              model split        n  overall_mae  overall_rmse  observed_mae  unobserved_mae  interval_coverage  mean_interval_width  err_unc_pearson  err_unc_spearman confidence_source     aurc  hc_mae_keep0.5  hc_mae_keep0.8
+conditional_surface train 11112617     0.057314      0.094343      0.057192        0.057396                NaN                  NaN              NaN               NaN      oracle_error 0.017993        0.015078        0.028987
+conditional_surface   val  5593759     0.058036      0.098745      0.058011        0.058054                NaN                  NaN              NaN               NaN      oracle_error 0.016613        0.013362        0.026800
+conditional_surface  test  5805664     0.075334      0.119280      0.075255        0.075387                NaN                  NaN              NaN               NaN      oracle_error 0.022790        0.017334        0.038943
+
+[artifacts]
+  metrics: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_conditional.csv
+  curve: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_conditional_curve.csv
+  figure: artifacts/results/uncertainty_eval_av_rerun_20260523_075616_conditional_risk_coverage.png
+[17:43:55] --- 2C.5-R stage F: run_structure_diagnostics.py --predictor conditional ---
+[17:44:30] stage F done; summary tail:
+
+[artifacts]
+  summary: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional.csv
+  regions: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_regions.csv
+  risk_train: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_train_risk.png
+  instability_train: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_train_instability.png
+  risk_val: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_val_risk.png
+  instability_val: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_val_instability.png
+  risk_test: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_test_risk.png
+  instability_test: artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_test_instability.png
+[17:44:30] === ALL STAGES COMPLETE  tag=av_rerun_20260523_075616 ===
+[17:44:30] Artifacts under artifacts/results/ with tag prefix 'av_rerun_20260523_075616':
+-rw-rw-rw- 1 root root 31363 May 23 17:44 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional.csv
+-rw-rw-rw- 1 root root  4533 May 23 17:44 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_regions.csv
+-rw-rw-rw- 1 root root 49208 May 23 17:44 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_test_instability.png
+-rw-rw-rw- 1 root root 41857 May 23 17:44 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_test_risk.png
+-rw-rw-rw- 1 root root 56545 May 23 17:44 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_train_instability.png
+-rw-rw-rw- 1 root root 43769 May 23 17:44 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_train_risk.png
+-rw-rw-rw- 1 root root 50721 May 23 17:44 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_val_instability.png
+-rw-rw-rw- 1 root root 40751 May 23 17:44 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_conditional_val_risk.png
+-rw-rw-rw- 1 root root 30526 May 23 17:39 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf.csv
+-rw-rw-rw- 1 root root  4276 May 23 17:39 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_regions.csv
+-rw-rw-rw- 1 root root 46772 May 23 17:39 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_test_instability.png
+-rw-rw-rw- 1 root root 40291 May 23 17:39 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_test_risk.png
+-rw-rw-rw- 1 root root 49188 May 23 17:39 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_train_instability.png
+-rw-rw-rw- 1 root root 41224 May 23 17:39 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_train_risk.png
+-rw-rw-rw- 1 root root 49961 May 23 17:39 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_val_instability.png
+-rw-rw-rw- 1 root root 43663 May 23 17:39 artifacts/results/structure_diagnostics_av_rerun_20260523_075616_interp_rbf_val_risk.png
+-rw-rw-rw- 1 root root   766 May 23 17:43 artifacts/results/uncertainty_eval_av_rerun_20260523_075616_conditional.csv
+-rw-rw-rw- 1 root root 12897 May 23 17:43 artifacts/results/uncertainty_eval_av_rerun_20260523_075616_conditional_curve.csv
+-rw-rw-rw- 1 root root 56289 May 23 17:43 artifacts/results/uncertainty_eval_av_rerun_20260523_075616_conditional_risk_coverage.png
+-rw-rw-rw- 1 root root   746 May 23 16:02 artifacts/results/uncertainty_eval_av_rerun_20260523_075616_interp_rbf.csv
+-rw-rw-rw- 1 root root 11573 May 23 16:02 artifacts/results/uncertainty_eval_av_rerun_20260523_075616_interp_rbf_curve.csv
+-rw-rw-rw- 1 root root 53310 May 23 16:02 artifacts/results/uncertainty_eval_av_rerun_20260523_075616_interp_rbf_risk_coverage.png
+[17:44:30] Master log: artifacts/logs/av_rerun_master_20260523_075616.log
