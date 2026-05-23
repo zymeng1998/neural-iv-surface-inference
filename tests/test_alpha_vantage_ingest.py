@@ -88,7 +88,9 @@ def test_parse_response_produces_required_columns_with_dtypes(av):
     assert df["volume"].dtype.kind in ("i", "u")
     assert df["open_interest"].dtype.kind in ("i", "u")
     assert df["implied_volatility"].dtype.kind == "f"
-    assert df["type"].dtype == object
+    # ``type`` is string-like; accept both legacy object dtype and the
+    # newer pandas StringDtype.
+    assert df["type"].dtype == object or pd.api.types.is_string_dtype(df["type"])
     # Dates are parsed
     assert pd.api.types.is_datetime64_any_dtype(df["date"])
     assert pd.api.types.is_datetime64_any_dtype(df["expiration"])
