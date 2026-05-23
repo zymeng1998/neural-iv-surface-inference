@@ -1219,3 +1219,45 @@ Each entry should capture:
 ### Next Actions
 
 - Move to 2C.4 (conditional training loop + config + smoke test).
+
+---
+
+## 2026-05-22 — Story 2C.4: Conditional training loop + config
+
+### Completed
+
+- Added `src/neural_iv_surface_inference/training/train_conditional.py`
+  (loop + masked-query MSE + best-val checkpointing + early stopping +
+  ReduceLROnPlateau, mirroring `train.py` style).
+- Added `configs/conditional.yaml` (mirrors `configs/baseline.yaml`, does
+  not modify it). Batches are *dates*, not points.
+- Added `scripts/run_conditional.py` as the config-driven entrypoint with
+  a `--smoke` mode that trains on a tiny synthetic frame (no on-disk
+  benchmark required).
+- Added `tests/test_train_conditional.py`: smoke test asserts a
+  best-val checkpoint is written and final train loss < initial train
+  loss; a separate test proves `masked_query_mse` ignores padded query
+  positions (garbage targets at pads do not contribute).
+
+### Smoke run summary
+
+`python scripts/run_conditional.py --config configs/conditional.yaml --smoke`
+
+- 1,673 params on CPU, 8 epochs in ~1.5s.
+- train_loss: 0.5368 → 0.0012 ; val_loss: 0.2056 → 0.0011.
+- val_obs_mae 0.4491 → 0.0243 ; val_unobs_mae 0.4502 → 0.0316.
+- `artifacts/checkpoints/best_conditional.pt` written.
+- Full output redirected to `/tmp/cond_smoke.log` (CLAUDE.md context rule).
+
+### Notes
+
+- Masked-query MSE divides by the count of real (non-padded) query
+  positions; an all-padded batch row contributes zero. This matches the
+  2C.3 mask-invariance contract in the encoder.
+- The real-data training run is deferred to 2C.7 / 2C.8 on RunPod once
+  the Alpha Vantage data is in place; baseline training config and code
+  are untouched.
+
+### Next Actions
+
+- Move to 2C.5 (predictor adapter + eval parity).
