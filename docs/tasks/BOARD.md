@@ -52,7 +52,7 @@ decomposition). The first story of any epic is always its decomposition story.
 | 2C.1 | Story | Decompose Phase 2C | `done` | `docs/tasks/specs/2C.1_decompose_phase_2c.md` | 2026-05-22 |
 | 2C.2 | Story | Date-grouped conditional dataset + collation | `done` | `docs/tasks/specs/2C.2_conditional_dataset.md` | 2026-05-22 |
 | 2C.3 | Story | Set-encoder + coordinate-decoder architecture | `done` | `docs/tasks/specs/2C.3_set_encoder_decoder.md` | 2026-05-22 |
-| 2C.4 | Story | Conditional training loop + config | `backlog` | `docs/tasks/specs/2C.4_conditional_training.md` | 2026-05-22 |
+| 2C.4 | Story | Conditional training loop + config | `done` | `docs/tasks/specs/2C.4_conditional_training.md` | 2026-05-22 |
 | 2C.5 | Story | Predictor adapter + evaluation parity | `backlog` | `docs/tasks/specs/2C.5_predictor_adapter_eval.md` | 2026-05-22 |
 | 2C.6 | Story | Alpha Vantage ingest implementation + sample validation (local) | `backlog` | `docs/tasks/specs/2C.6_remote_sync_data_refresh.md` | 2026-05-22 |
 | 2C.7 | Story | Remote: full SPY AV pull, replace old dataset, rebuild pipeline | `backlog` | `docs/tasks/specs/2C.7_remote_full_pull_replace_dataset.md` | 2026-05-22 |
