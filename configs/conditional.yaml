@@ -1,0 +1,32 @@
+# Conditional surface model configuration (Phase 2 — W3, 2C.4)
+#
+# Mirrors configs/baseline.yaml structure; do not modify baseline.yaml.
+
+seed: 42
+
+# ── Data ────────────────────────────────────────────────────────────
+data:
+  benchmark_file: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+  batch_size: 32          # batches are *dates*, not points
+  num_workers: 0
+
+# ── Conditional surface model (2C.3 modules) ───────────────────────
+conditional:
+  context_dim: 3          # (log_moneyness, tau, implied_volatility)
+  coord_dim: 2            # (log_moneyness, tau) at query
+  hidden_dim: 128
+  latent_dim: 64
+  n_elem_layers: 2
+  n_post_layers: 1
+  n_decoder_layers: 3
+
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  epochs: 50
+  patience: 10
+
+# ── Output paths ───────────────────────────────────────────────────
+paths:
+  checkpoint_dir: artifacts/checkpoints
+  log_dir: artifacts/logs
+  results_dir: artifacts/results
