@@ -1261,3 +1261,54 @@ Each entry should capture:
 ### Next Actions
 
 - Move to 2C.5 (predictor adapter + eval parity).
+
+---
+
+## 2026-05-22 — Story 2C.5: Predictor adapter + evaluation parity
+
+### Completed
+
+- Added `ConditionalSurfacePredictor` to
+  `src/neural_iv_surface_inference/eval/adapters.py` (+ classmethod
+  `from_checkpoint`). `predict(df)` groups by date, builds context from
+  `observed == True` rows (2C.2 contract), and re-aligns outputs to input
+  `df` row order. `uncertainty=None` (same as the other Phase 1 baselines).
+- Exported via `eval/__init__.py`.
+- Wired `--predictor conditional` + `--checkpoint <path>` into both
+  `scripts/run_uncertainty_eval.py` and `scripts/run_structure_diagnostics.py`.
+  Only the `build_predictor` + CLI parser were touched; the metric
+  pipelines themselves are unchanged.
+- Added `tests/test_conditional_adapter.py` (3 tests): Protocol conformance,
+  alignment under shuffled `df` rows, graceful handling of zero-observed
+  dates.
+- Trained a synthetic-mode checkpoint via `scripts/run_conditional.py
+  --smoke`, then ran both W1 and W2 runners through the conditional
+  predictor on the synthetic benchmark — both produce baseline-shape
+  artifacts.
+
+### Smoke evaluation summary
+
+W1 uncertainty eval (synthetic, 1120 train / 240 val / 240 test):
+- overall MAE: 0.1097 / 0.1029 / 0.1134
+- aurc: 0.0824 / 0.0780 / 0.0834 (interval cols NaN — no uncertainty signal)
+
+W2 structure diagnostics (synthetic): 0 calendar / monotonicity / convexity
+violations (smooth synthetic surface, expected); harness exercised fully.
+
+Full numbers + the like-for-like vs interp/MLP comparison are in
+`docs/experiments/experiment_journal.md`.
+
+### Notes
+
+- The numbers themselves are **not** a research finding; this is a
+  wiring + artifact-shape proof on synthetic data. The like-for-like
+  comparison vs the interpolation floor + MLP on the real SPY benchmark
+  lands in 2C.7 / 2C.8 on RunPod once the Alpha Vantage data is in place.
+- Phase 2 acceptance criterion #4 (conditional model evaluated on the same
+  benchmarks as Phase 1 baselines) is satisfied on the local synthetic
+  path; real-data parity remains for the remote phase.
+- 206 tests pass.
+
+### Next Actions
+
+- Move to 2C.6 (Alpha Vantage ingest implementation).

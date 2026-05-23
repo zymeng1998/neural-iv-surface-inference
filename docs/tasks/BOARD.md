@@ -53,7 +53,7 @@ decomposition). The first story of any epic is always its decomposition story.
 | 2C.2 | Story | Date-grouped conditional dataset + collation | `done` | `docs/tasks/specs/2C.2_conditional_dataset.md` | 2026-05-22 |
 | 2C.3 | Story | Set-encoder + coordinate-decoder architecture | `done` | `docs/tasks/specs/2C.3_set_encoder_decoder.md` | 2026-05-22 |
 | 2C.4 | Story | Conditional training loop + config | `done` | `docs/tasks/specs/2C.4_conditional_training.md` | 2026-05-22 |
-| 2C.5 | Story | Predictor adapter + evaluation parity | `backlog` | `docs/tasks/specs/2C.5_predictor_adapter_eval.md` | 2026-05-22 |
+| 2C.5 | Story | Predictor adapter + evaluation parity | `done` | `docs/tasks/specs/2C.5_predictor_adapter_eval.md` | 2026-05-22 |
 | 2C.6 | Story | Alpha Vantage ingest implementation + sample validation (local) | `backlog` | `docs/tasks/specs/2C.6_remote_sync_data_refresh.md` | 2026-05-22 |
 | 2C.7 | Story | Remote: full SPY AV pull, replace old dataset, rebuild pipeline | `backlog` | `docs/tasks/specs/2C.7_remote_full_pull_replace_dataset.md` | 2026-05-22 |
 | 2C.8 | Story | Re-run Phase 1 baselines + 2A/2B eval on new AV data | `backlog` | `docs/tasks/specs/2C.8_rerun_baselines_eval_on_new_data.md` | 2026-05-22 |

@@ -180,9 +180,15 @@ violations before penalizing them).
 > documented follow-up (not blocking the epic).
 >
 > Epic 2C (W3 — conditional neural surface model) is `in_progress` and has been
-> decomposed (2026-05-22 → 2026-05-22): story 2C.1 `done`; stories 2C.2–2C.8
-> specced at `backlog`. The stories are split into a **local** phase and a
-> **remote** phase joined by an operator signal:
+> decomposed (2026-05-22 → 2026-05-22): stories 2C.1–2C.5 are `done` (local
+> Phase A code is complete: dataset + collation, set encoder + decoder,
+> training loop + config + synthetic smoke, predictor adapter wired into
+> the unchanged W1/W2 runners with artifact-shape parity verified). 2C.6
+> (Alpha Vantage ingest) is the last local Phase A story; 2C.7–2C.8 are
+> the remote-only stories.
+>
+> The stories are split into a **local** phase and a **remote** phase joined
+> by an operator signal:
 >
 > **Local phase (Mac).** Code, tests, and synthetic smokes — no Pod time, no
 > data egress. Stories: 2C.2 date-grouped conditional dataset + collation;

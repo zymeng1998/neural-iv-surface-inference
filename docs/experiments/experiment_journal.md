@@ -247,3 +247,83 @@ expected to appear. Tradability/abstention policy on top of these flags is W5
 **Next step:** On RunPod, run `run_structure_diagnostics.py --benchmark <parquet>`
 for `interp_rbf` on the real SPY benchmark; review whether genuine no-arb
 violations concentrate in specific (k, tau) regions. Then proceed to Epic 2C.
+
+---
+
+## 2026-05-22 — W3 conditional surface model: predictor adapter + evaluation parity (2C.5)
+
+**Goal:** Prove the conditional surface model (2C.3 + 2C.4) plugs into the
+**unchanged** W1 uncertainty-evaluation runner (2A.5) and W2 structure-
+diagnostics runner (2B.5) via the model-agnostic `Predictor` interface (2A.2),
+producing the same artifact shapes as the Phase 1 baselines. Local deliverable
+uses a synthetic checkpoint; full RunPod training + full-benchmark eval is
+deferred to 2C.7 / 2C.8.
+
+**Setup.** Trained a small `ConditionalSurfaceModel` (1,673 params,
+hidden=16/latent=8) for 8 epochs on the smoke-mode synthetic frame from
+`scripts/run_conditional.py --smoke`; saved `artifacts/checkpoints/best_conditional.pt`.
+
+**Adapter.** `ConditionalSurfacePredictor` (in
+`src/neural_iv_surface_inference/eval/adapters.py`):
+
+- Constructor accepts a model + device; classmethod `from_checkpoint(path)`
+  rebuilds architecture from the embedded `config` dict.
+- `predict(df)` groups `df` by date in input order, builds each date's
+  context from `observed == True` rows (the 2C.2 contract), decodes at that
+  date's query points, and **re-aligns** outputs to original `df` row order
+  using a preserved index. Mirrors `MLPPredictor`'s non-shuffled guarantee.
+- `uncertainty=None` like the other Phase 1 baselines; real signals arrive
+  in epic 2D.
+- Robust to dates with zero observed rows (returns 0 predictions for those
+  rows instead of crashing — these would never appear in *training* batches
+  per 2C.2, but can appear at eval time on adversarial frames).
+
+**Runner wiring.** `scripts/run_uncertainty_eval.py` and
+`scripts/run_structure_diagnostics.py` both gain `--predictor conditional`
+and `--checkpoint <path>` flags. Predictor selection is the only edit to
+each runner; the metric pipelines themselves are unchanged.
+
+**Smoke evaluation on synthetic benchmark.**
+
+`run_uncertainty_eval.py --synthetic --predictor conditional --checkpoint ...`:
+
+| split | n    | overall_mae | observed_mae | unobserved_mae | aurc   |
+|-------|------|-------------|--------------|----------------|--------|
+| train | 1120 | 0.1097      | 0.1083       | 0.1105         | 0.0824 |
+| val   | 240  | 0.1029      | 0.1043       | 0.1021         | 0.0780 |
+| test  | 240  | 0.1134      | 0.1158       | 0.1116         | 0.0834 |
+
+Interval coverage and uncertainty correlations are NaN (no uncertainty signal,
+same as the baselines). The model has the same artifact shape as `interp_rbf`
+and the MLP baseline ran through this runner — the parity test passes.
+
+`run_structure_diagnostics.py --synthetic --predictor conditional --checkpoint ...`:
+zero calendar / monotonicity / convexity violations across all dates and
+splits (synthetic surface is smooth + arbitrage-free by construction);
+masking instability is ~0.002–0.005, the harness exercises its full path.
+
+**Artifacts written:**
+- `artifacts/results/uncertainty_eval_synthetic_cond.csv`
+- `artifacts/results/uncertainty_eval_synthetic_cond_curve.csv`
+- `artifacts/results/uncertainty_eval_synthetic_cond_risk_coverage.png`
+- `artifacts/results/structure_diagnostics_synthetic_cond.csv`
+- `artifacts/results/structure_diagnostics_synthetic_cond_regions.csv`
+- `artifacts/results/structure_diagnostics_synthetic_cond_{train,val,test}_{risk,instability}.png`
+
+**Interpretation.** The conditional model is now a first-class citizen of the
+W1/W2 evaluation stack. The numbers themselves are **not** a research finding
+— they reflect 8 epochs on a toy frame and an under-parameterized model. The
+result that *does* matter: the runner internals are unchanged, the artifact
+shapes match the baseline artifacts, and the row alignment between
+`predict(df)` output and `df` is preserved under shuffle (verified by the
+adapter test). Phase 2 acceptance criterion #4 ("conditional model evaluated
+on the same benchmarks as Phase 1 baselines") is satisfied on the local
+synthetic path; the like-for-like comparison on the real SPY benchmark lands
+in 2C.7 / 2C.8 once the Alpha Vantage data is in place.
+
+**Decision impact.** Closes Epic 2C's local Phase A. The remaining 2C.6
+implements the Alpha Vantage ingest locally; 2C.7 / 2C.8 then move to RunPod
+for the full pull + baselines + conditional evaluation on the real surface.
+
+**Next step.** 2C.6: implement `01_ingest_spy_alpha_vantage.py` and validate
+on 2–3 sample dates against the verified AV schema (ADR 0003).

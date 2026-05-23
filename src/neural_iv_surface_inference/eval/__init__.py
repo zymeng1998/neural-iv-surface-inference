@@ -6,6 +6,7 @@ build on this.
 """
 
 from neural_iv_surface_inference.eval.adapters import (
+    ConditionalSurfacePredictor,
     InterpolationPredictor,
     MLPPredictor,
 )
@@ -19,4 +20,5 @@ __all__ = [
     "Predictor",
     "InterpolationPredictor",
     "MLPPredictor",
+    "ConditionalSurfacePredictor",
 ]

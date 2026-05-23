@@ -36,7 +36,10 @@ import numpy as np
 import pandas as pd
 
 from neural_iv_surface_inference.eval.predictor import Predictor
-from neural_iv_surface_inference.eval.adapters import InterpolationPredictor
+from neural_iv_surface_inference.eval.adapters import (
+    ConditionalSurfacePredictor,
+    InterpolationPredictor,
+)
 from neural_iv_surface_inference.eval.report import (
     metrics_row,
     metrics_table,
@@ -198,17 +201,29 @@ def write_artifacts(
 # CLI
 # ---------------------------------------------------------------------------
 
-def build_predictor(name: str, method: str) -> tuple[Predictor, str]:
+def build_predictor(
+    name: str, method: str, checkpoint: str | None = None
+) -> tuple[Predictor, str]:
     """Construct a predictor adapter and its model label.
 
-    Only the interpolation baseline is wired for the no-data / CI path. The MLP
-    baseline needs a trained checkpoint; running it through this CLI is left to a
-    later wiring step (this story does not run expensive training).
+    The interpolation baseline is wired for the no-data / CI path. The
+    conditional surface predictor (2C.5) is wired via a 2C.4 checkpoint. The
+    MLP baseline still requires explicit checkpoint loading and is not wired
+    through this CLI.
     """
     if name == "interp":
         return InterpolationPredictor(method=method), f"interp_{method}"
+    if name == "conditional":
+        if not checkpoint:
+            raise ValueError(
+                "predictor 'conditional' requires --checkpoint <path to best_conditional.pt>"
+            )
+        return (
+            ConditionalSurfacePredictor.from_checkpoint(checkpoint),
+            "conditional_surface",
+        )
     raise ValueError(
-        f"predictor '{name}' not supported by this runner yet (use 'interp')"
+        f"predictor '{name}' not supported by this runner yet (use 'interp' or 'conditional')"
     )
 
 
@@ -219,9 +234,12 @@ def main() -> None:
     parser.add_argument("--synthetic", action="store_true",
                         help="Use a tiny synthetic benchmark (no data files)")
     parser.add_argument("--predictor", type=str, default="interp",
-                        choices=["interp"])
+                        choices=["interp", "conditional"])
     parser.add_argument("--method", type=str, default="rbf",
                         help="Interpolation method (linear|cubic|rbf|nearest)")
+    parser.add_argument("--checkpoint", type=str, default=None,
+                        help="Path to a conditional-model checkpoint "
+                             "(required when --predictor conditional)")
     parser.add_argument("--splits", type=str, default="train,val,test",
                         help="Comma-separated splits to evaluate")
     parser.add_argument("--out-dir", type=str, default="artifacts/results")
@@ -249,7 +267,9 @@ def main() -> None:
         print("Provide --benchmark PATH or --synthetic", file=sys.stderr)
         sys.exit(1)
 
-    predictor, model_name = build_predictor(args.predictor, args.method)
+    predictor, model_name = build_predictor(
+        args.predictor, args.method, checkpoint=args.checkpoint
+    )
     print(f"[run] predictor={model_name}, splits={splits}")
 
     metrics_df, curve_df = evaluate_predictor(
