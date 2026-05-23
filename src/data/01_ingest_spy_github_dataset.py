@@ -2,11 +2,35 @@
 """
 Step 1: Download SPY options + underlying data.
 
-Options source:     static.philippdubach.com (single-file Parquet)
-Underlying source:  static.philippdubach.com first, then Yahoo Finance fallback
+***************************************************************************
+*  DEFUNCT (2026-05-22) — DO NOT RUN.                                     *
+*                                                                         *
+*  The upstream sources this script depends on are unreachable:           *
+*    - https://static.philippdubach.com/data/options/spy/options.parquet  *
+*      → HTTP 404 (verified with `curl --fail`, exit 56)                  *
+*    - https://static.philippdubach.com/data/options/spy/underlying.parquet
+*      → HTTP 404                                                         *
+*    - https://github.com/philippdubach/options-dataset-hist              *
+*      → repo absent from the maintainer's GitHub account                 *
+*                                                                         *
+*  The active SPY options data source is Alpha Vantage HISTORICAL_OPTIONS *
+*  (paid Standard tier). See:                                             *
+*    - docs/decisions/0003_spy_options_data_source_migration.md           *
+*    - docs/tasks/specs/2C.6_remote_sync_data_refresh.md                  *
+*                                                                         *
+*  The replacement implementation is                                      *
+*  `src/data/01_ingest_spy_alpha_vantage.py` (story 2C.6).                *
+*  Story 2C.7 will git-remove this file once the new ingest has been      *
+*  validated end-to-end on the remote.                                    *
+***************************************************************************
+
+Options source:     static.philippdubach.com (DEFUNCT)
+Underlying source:  static.philippdubach.com first (DEFUNCT), then Yahoo
+                    Finance fallback (still works for the underlying only;
+                    the option chain cannot be recovered from yfinance)
 
 Usage:
-    python src/data/01_ingest_spy_github_dataset.py
+    (do not run — see the DEFUNCT notice above)
 """
 
 import json
@@ -167,7 +191,11 @@ def download_underlying_with_fallback() -> None:
         )
 
     ticker = yf.Ticker("SPY")
-    df = ticker.history(start="2008-01-01", end="2026-01-01", auto_adjust=False)
+    # Dynamic end-date (was hardcoded "2026-01-01" — a known bug that would
+    # silently cap the underlying series in the past after that date).
+    # Kept for completeness even though this whole script is DEFUNCT.
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    df = ticker.history(start="2008-01-01", end=today_str, auto_adjust=False)
     df = df.reset_index()
 
     # Normalize column names to match expected schema

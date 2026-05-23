@@ -4,13 +4,35 @@
 
 - Underlying: SPY only
 - Granularity: EOD only
-- Source: Philipp Dubach historical options dataset
+- Source (Phase 1): Philipp Dubach historical options dataset *(now defunct
+  — see below; replaced by Alpha Vantage on 2026-05-22 per ADR 0003)*
 
 ## Data Source
 
-- **Primary**: `https://static.philippdubach.com/data/options/spy/options.parquet` (~608 MB, ~24.7M rows)
-- **Underlying**: `https://static.philippdubach.com/data/options/spy/underlying.parquet`
-- Coverage: 2008-01-02 through 2025-12-16
+**Active (2026-05-22 onward — per [ADR 0003](decisions/0003_spy_options_data_source_migration.md), used by Phase 2C and all
+subsequent training/eval runs):**
+
+- **Primary**: Alpha Vantage `HISTORICAL_OPTIONS` — paid Standard tier
+  ($49.99/month, 75 req/min, cancel-anytime). One HTTP request per trading
+  date returns the full SPY option chain with `date, expiration, strike,
+  type, bid, ask, bid_size, ask_size, volume, open_interest,
+  implied_volatility, delta, gamma, theta, vega, rho, last, mark,
+  contractID, symbol`. Values arrive as JSON strings and are parsed in
+  ingest. API key from `os.environ["ALPHAVANTAGE_API_KEY"]`.
+- **Underlying**: `yfinance` SPY daily close, end-date resolved dynamically
+  to today at runtime.
+- **Coverage**: 2008-01-02 → present (verified against the live endpoint on
+  2026-05-22; 2026-05-15 returned 13,796 contracts).
+- **Ingest script**: `src/data/01_ingest_spy_alpha_vantage.py` (story 2C.6).
+  Full pull on the remote happens in story 2C.7.
+
+**Defunct (Phase 1 evidence only — do not use):**
+
+- ~~`https://static.philippdubach.com/data/options/spy/options.parquet`~~ — HTTP 404
+- ~~`https://static.philippdubach.com/data/options/spy/underlying.parquet`~~ — HTTP 404
+- Phase 1 coverage from this source: 2008-01-02 through 2025-12-16 (~24.7M rows).
+  Replaced wholesale on the remote in story 2C.7 — the Dubach snapshot is
+  deleted, not kept alongside the new data.
 
 ## Spot Price Convention
 

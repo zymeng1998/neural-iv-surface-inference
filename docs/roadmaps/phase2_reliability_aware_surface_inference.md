@@ -177,8 +177,32 @@ violations before penalizing them).
 > diagnostics, risk-flag synthesis + (k, tau) region heatmaps, and the
 > end-to-end diagnostics runner with report tables + synthetic smoke run +
 > committed artifacts. The real-data run on the RunPod benchmark remains a
-> documented follow-up (not blocking the epic). Epics 2C–2D remain undecomposed
-> (progressive decomposition).
+> documented follow-up (not blocking the epic).
+>
+> Epic 2C (W3 — conditional neural surface model) is `in_progress` and has been
+> decomposed (2026-05-22 → 2026-05-22): story 2C.1 `done`; stories 2C.2–2C.8
+> specced at `backlog`. The stories are split into a **local** phase and a
+> **remote** phase joined by an operator signal:
+>
+> **Local phase (Mac).** Code, tests, and synthetic smokes — no Pod time, no
+> data egress. Stories: 2C.2 date-grouped conditional dataset + collation;
+> 2C.3 set-encoder + coordinate-decoder architecture; 2C.4 conditional
+> training loop + config + synthetic smoke; 2C.5 predictor adapter +
+> synthetic-eval wiring; 2C.6 Alpha Vantage ingest implementation + sample
+> validation. Source decision is locked: Alpha Vantage `HISTORICAL_OPTIONS`
+> (paid Standard, 75 req/min, 2008→present) — see ADR 0003. The prior Dubach
+> static-Parquet source is confirmed dead.
+>
+> **Remote phase (RunPod).** After all local stories are `done`, the operator
+> starts the Pod and we execute: 2C.7 full AV pull (≈40–65 GB final disk,
+> ≈1.5–2 hours) + **delete the Dubach snapshot** + rebuild 02→04; 2C.8 re-run
+> Phase 1 baselines + W1/W2 evaluation on the new dataset so the conditional
+> model's eventual comparison floor is like-for-like; then the remote
+> executions of 2C.4 (full conditional training) and 2C.5 (full conditional
+> eval parity).
+>
+> W3 ships point predictions only; uncertainty signals are deferred to epic
+> 2D (W4). Epic 2D remains undecomposed (progressive decomposition).
 
 ## 6) Acceptance Criteria
 

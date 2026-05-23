@@ -6,7 +6,15 @@ Neural IV Surface Inference is an ML × Finance project focused on recovering im
 
 ## Current Phase
 
-**Phase 1 baseline foundation complete; entering Phase 2 — Reliability-Aware Implied Volatility Surface Inference**
+**Phase 1 baseline foundation complete; in Phase 2 — Reliability-Aware Implied Volatility Surface Inference (Phase 2A & 2B done; Phase 2C in progress).**
+
+> **Data-source migration (2026-05-22):** the upstream Philipp Dubach SPY
+> Parquet that powered Phase 1 is now defunct (HTTP 404, repos removed). The
+> project has migrated to **Alpha Vantage `HISTORICAL_OPTIONS`** (paid
+> Standard tier, ~$50 one-month pull-and-cancel). The historical Phase 1
+> baseline numbers will be re-derived on the new dataset under stories 2C.7
+> (full pull on the remote) and 2C.8 (baseline + W1/W2 rerun). See
+> [ADR 0003](docs/decisions/0003_spy_options_data_source_migration.md).
 
 ## Current Status
 

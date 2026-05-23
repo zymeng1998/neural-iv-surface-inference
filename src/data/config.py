@@ -13,13 +13,44 @@ PLOTS_DIR     = PROJECT_ROOT / "plots"
 LOGS_DIR      = PROJECT_ROOT / "logs"
 NOTEBOOKS_DIR = PROJECT_ROOT / "notebooks"
 
-# ── Data source URLs (Philipp Dubach, broader repo) ─────────────────
-SPY_OPTIONS_URL    = "https://static.philippdubach.com/data/options/spy/options.parquet"
-SPY_UNDERLYING_URL = "https://static.philippdubach.com/data/options/spy/underlying.parquet"
+# ── Data source URLs ─────────────────────────────────────────────────
+#
+# DEFUNCT (2026-05-22) — the Philipp Dubach static-Parquet source and the
+# fallback GitHub LFS repo (`options-dataset-hist`) are both unreachable:
+# the parquet URLs and the host's `/data/options/spy/` path return HTTP 404
+# (verified with `curl --fail`, exit 56), and the GitHub repo is absent
+# from the maintainer's account. The maintainer's current vol project uses
+# live APIs instead. See:
+#   - docs/decisions/0003_spy_options_data_source_migration.md
+#   - docs/data/data_lineage.md §9 ("Upstream data source unreachable")
+#
+# These constants are retained ONLY as historical evidence; do NOT use them.
+# Story 2C.7 will remove `01_ingest_spy_github_dataset.py` entirely.
+SPY_OPTIONS_URL    = "https://static.philippdubach.com/data/options/spy/options.parquet"  # DEFUNCT
+SPY_UNDERLYING_URL = "https://static.philippdubach.com/data/options/spy/underlying.parquet"  # DEFUNCT
+ETF_REPO_BASE      = "https://github.com/philippdubach/options-dataset-hist"  # DEFUNCT
+ETF_PARQUET_YEARS  = range(2008, 2026)  # historical Dubach coverage
 
-# Fallback: ETF-focused repo (year-partitioned)
-ETF_REPO_BASE = "https://github.com/philippdubach/options-dataset-hist"
-ETF_PARQUET_YEARS = range(2008, 2026)  # 2008–2025
+# ── Active data source: Alpha Vantage HISTORICAL_OPTIONS ─────────────
+#
+# Chosen replacement source per ADR 0003. Verified 2026-05-22 against the
+# paid Standard tier: returns SPY option chains 2008 → present with all
+# required pipeline columns (date, expiration, strike, type, bid, ask,
+# volume, open_interest, implied_volatility) plus greeks. Response is JSON;
+# values arrive as strings and must be parsed.
+#
+# The implementation script is `src/data/01_ingest_spy_alpha_vantage.py`
+# (story 2C.6). The API key MUST come from the environment variable below
+# and must never be written to any tracked file.
+ALPHAVANTAGE_BASE_URL: str             = "https://www.alphavantage.co/query"
+ALPHAVANTAGE_FUNCTION: str             = "HISTORICAL_OPTIONS"
+ALPHAVANTAGE_API_KEY_ENV: str          = "ALPHAVANTAGE_API_KEY"
+ALPHAVANTAGE_RATE_LIMIT_PER_MIN: int   = 75   # Standard tier ($49.99/mo)
+INGEST_START_DATE: str                 = "2008-01-02"  # first SPY trading day in scope
+# INGEST_END_DATE: resolved dynamically at runtime to today's date — do NOT
+# hardcode a calendar date here (the `yfinance` fallback's hardcoded
+# end="2026-01-01" in the old ingest script is the kind of bug we are
+# avoiding).
 
 # ── Raw file names ───────────────────────────────────────────────────
 RAW_OPTIONS_FILE    = RAW_DIR / "spy_options.parquet"

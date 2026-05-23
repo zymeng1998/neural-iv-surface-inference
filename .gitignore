@@ -29,6 +29,12 @@ data/processed/*
 data_raw/
 data_processed/
 
+# Third-party / vendor datasets pulled locally or on the remote (never commit data)
+# (philippdubach options-dataset-hist via Git LFS, applied patches, derived outputs)
+data/raw/philippdubach/
+data/raw/patches/
+data/processed/philippdubach/
+
 # Model weights and large artifacts
 *.h5
 *.hdf5

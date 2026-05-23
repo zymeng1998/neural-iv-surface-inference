@@ -1,5 +1,9 @@
 """Data loading, cleaning, splitting, masking, and noise injection utilities."""
 
+from neural_iv_surface_inference.data.conditional_loaders import (
+    ConditionalIVSurfaceDataset,
+    collate_conditional,
+)
 from neural_iv_surface_inference.data.masking import apply_mask
 from neural_iv_surface_inference.data.noise import inject_noise, NOISE_REGIMES
 from neural_iv_surface_inference.data.splits import (

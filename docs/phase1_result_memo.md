@@ -1,5 +1,17 @@
 # Phase 1 Result Memo
 
+> **Data-source note (2026-05-22):** The numbers in this memo were produced
+> against the Philipp Dubach SPY static-Parquet dataset (2008–2025, ~24.7M
+> rows). That source is now defunct (HTTP 404 + repos removed) and the
+> project has migrated to **Alpha Vantage `HISTORICAL_OPTIONS`** per
+> [ADR 0003](decisions/0003_spy_options_data_source_migration.md). The
+> benchmark Parquet files those baselines were trained/evaluated against
+> will be **replaced** (story **2C.7**) and the Phase 1 baselines
+> (interpolation + MLP) will be **re-derived on the new dataset** in story
+> **2C.8**. Until 2C.8 lands, the figures below are *historical Phase-1
+> numbers* — preserve them as context, but do not cite them as the current
+> baseline for Phase 2C comparisons.
+
 ## Scope
 
 Phase 1 remained SPY-only and EOD-only with a fixed task:

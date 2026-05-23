@@ -950,3 +950,240 @@ Each entry should capture:
 
 - On RunPod: run the real SPY benchmark through the W2 runner.
 - Begin Epic 2C decomposition (conditional neural surface model).
+
+---
+
+## 2026-05-22T20:55:00+00:00
+
+### Completed
+
+- Entered Epic 2C (W3 — conditional neural surface model) and decomposed it:
+  set the epic `in_progress` on the board, wrote story 2C.1 (`done`) plus four
+  fully-specced stories at `backlog`:
+  - 2C.2 Date-grouped conditional dataset + collation (the `O_t` context-set
+    data layer; ragged-set padding + boolean context mask).
+  - 2C.3 Set-encoder + coordinate-decoder architecture (DeepSets-style
+    permutation-invariant encoder → latent `z_t`; `(k, tau, z_t) -> sigma`
+    decoder; pure modules + invariance tests).
+  - 2C.4 Conditional training loop + config (`configs/conditional.yaml`,
+    `train_conditional.py`, `run_conditional.py`; synthetic smoke locally, full
+    run on RunPod).
+  - 2C.5 Predictor adapter + evaluation parity (`ConditionalSurfacePredictor`
+    through the unchanged W1/W2 runners on the same benchmarks; committed
+    artifacts + experiment-journal comparison vs interpolation floor and MLP).
+
+### Notes
+
+- Documentation-only change (planning). No code, model, or data touched.
+- Dependency order: 2C.3 has no deps; 2C.2 needs only the existing data layer;
+  2C.4 needs 2C.2 + 2C.3; 2C.5 needs 2C.4 + the W1/W2 runners.
+- W3 ships point predictions only — `PredictionResult.uncertainty` stays `None`;
+  reliability signals (ensembles, heteroscedastic/quantile heads, calibrated
+  confidence) are deferred to Epic 2D (W4).
+
+### Open Questions (for human review)
+
+- 2C.2: context-set input should be the noisy observed IV
+  (`implied_volatility`), with `iv_clean` as the query target — confirm.
+- Local vs RunPod: training/eval deliverables are synthetic smokes locally; full
+  benchmark runs happen on RunPod (raw data is RunPod-only).
+
+### Next Actions
+
+- Human reviews specs 2C.2–2C.5 and promotes ready ones to `todo`.
+- Implement next (2C.3 has no dependencies, or 2C.2 for the data layer first).
+
+---
+
+## 2026-05-22T21:10:00+00:00
+
+### Completed
+
+- Added story **2C.6 — Remote sync + SPY data refresh & freshness check** as the
+  bridge between Phase A (local 2C.2–2C.5 code) and Phase B (remote full
+  train/eval). Spec at `docs/tasks/specs/2C.6_remote_sync_data_refresh.md`; board
+  row added at `backlog`.
+- Investigated whether the SPY data is outdated (it has been ~2 months). Probed
+  the documented upstream sources — **all return HTTP 404**:
+  `static.philippdubach.com/.../options.parquet`, `.../underlying.parquet`, the
+  host root, and the `philippdubach/options-dataset-hist` fallback repo.
+
+### Notes
+
+- The original ingest covered 2008–2025; source may be **moved or removed**, not
+  merely stale. Recorded in `docs/data/data_lineage.md` §9.
+- `yfinance` fallback covers only the underlying, not the option chain, and
+  hardcodes `end="2026-01-01"` — both flagged in the 2C.6 spec.
+- Documentation/planning only. No code, data, or config changed yet.
+
+### Next Actions
+
+- Finish Phase A locally (2C.3 → 2C.2 → 2C.4 code + synthetic smoke → 2C.5 wiring).
+- Then run 2C.6: re-establish a working options source (human sign-off on
+  provenance), start the remote, sync the branch, refresh + freshness-check the
+  data — before any GPU spend on full training (2C.4 remote) / eval (2C.5 remote).
+
+---
+
+## 2026-05-22T21:30:00+00:00
+
+### Completed
+
+- Confirmed the Dubach SPY options source is **discontinued** (not transient):
+  files + host path 404; dataset repos removed from his GitHub; his current vol
+  project uses live APIs (Alpha Vantage/CBOE/FRED/yfinance). Recorded in data
+  lineage §9.
+- Researched replacements (Alpha Vantage, OptionsDX, DoltHub, CBOE, Databento,
+  WRDS) and recorded the decision in **ADR 0003**: primary = Alpha Vantage
+  `HISTORICAL_OPTIONS` (2008+, IV+greeks, scriptable, ~$49.99/mo); fallback =
+  OptionsDX (free, ~2010+, manual files). Updated story 2C.6 Step 0 to wire the
+  chosen source.
+
+### Notes
+
+- Planning/decision only — no ingest code or config changed yet.
+- Blocking human action before 2C.6 implementation: provide an Alpha Vantage API
+  key (primary) OR complete OptionsDX registration (free fallback).
+- Known fix queued for the refresh: `yfinance` fallback hardcodes
+  `end="2026-01-01"` → must become current/dynamic.
+
+### Next Actions
+
+- Human: provide AV key or do the OptionsDX registration when 2C.6 is reached.
+- Continue Phase A (start with 2C.3). 2C.6 runs after Phase A, before remote train.
+
+---
+
+## 2026-05-23T00:35:00+00:00
+
+### Completed
+
+- Verified Alpha Vantage Standard end-to-end against the paid key: two
+  schema probes (2024-01-05 → 7,618 contracts, 5.12 MB JSON; 2026-05-15 →
+  13,796 contracts, 9.26 MB JSON). Coverage reaches the present trading
+  week. Each contract has 20 string fields; all of our pipeline's
+  `REQUIRED_OPTIONS_COLS` are present with identical names.
+- Booked the AV-cancel calendar reminder for 2026-06-18 (4 days before
+  the ~2026-06-22 renewal) with popups at T-1d and T-10m.
+- Updated ADR 0003 with verified facts (paid key works, schema captured,
+  cancel-anytime confirmed). OptionsDX downgraded to documentation only
+  after the operator confirmed its free SPY data stops at 2023;
+  QuantConnect AlgoSeek considered but starts only in 2012 with 2-dataset
+  ETL. Alpha Vantage is the sole chosen source.
+- Restructured epic 2C into an explicit local-then-remote two-phase plan
+  and added new stories:
+  - 2C.6 **rewritten** as a local-only story: build the AV ingest in
+    `src/data/01_ingest_spy_alpha_vantage.py`, env-var-keyed, rate-limited
+    to 75 req/min, streaming-to-Parquet, schema-conformant. Sample-pull
+    validation on 2 dates; no full pull.
+  - 2C.7 **new (remote-only)**: full 2008→today AV pull on RunPod, **scratch
+    the Dubach snapshot**, rebuild 02→03→04, retire the dead-source
+    ingest script. Destructive on the remote; ≥80 GB free required.
+  - 2C.8 **new (remote-only)**: re-run Phase 1 baselines (interp + MLP)
+    and W1/W2 evaluation on the new AV-sourced benchmarks so the
+    conditional model has a like-for-like comparison floor.
+- Size estimate produced from probe data: full pipeline ~40–65 GB on the
+  remote (the 11 benchmark variants dominate); time ≈1.5–2 hours
+  rate-limited.
+
+### Notes
+
+- Phase A handoff signal: when 2C.2–2C.6 are all `done`, the next session
+  surfaces "ready for remote" and the operator starts the Pod. All Phase A
+  work is local; no Pod time spent on code/tests.
+- No data files committed; AV key never written to a tracked file.
+- 2C.7 is the only destructive step; it will gate on operator confirmation
+  before deleting the Dubach data.
+
+### Next Actions
+
+- Continue Phase A: 2C.3 (set-encoder + decoder — no deps) is the cleanest
+  starting story. 2C.6 (AV ingest) is the last Phase A story before the
+  remote handoff.
+
+---
+
+## 2026-05-22 — Story 2C.2: Date-grouped conditional dataset + collation
+
+### Completed
+
+- Added `ConditionalIVSurfaceDataset` and `collate_conditional` in
+  `src/neural_iv_surface_inference/data/conditional_loaders.py`. The
+  dataset groups a benchmark split frame by `date` and emits one
+  `(context, query, target)` per date, with the context built **only** from
+  the date's `observed == True` rows. The collate pads ragged context and
+  query sets, produces boolean `context_mask` / `query_mask`, and zero-fills
+  padded positions.
+- Exported both from `data/__init__.py` next to the existing point-wise
+  loader (which is unchanged — Phase 1 baselines keep their loader).
+- Added `tests/test_conditional_loaders.py` covering: shape contract,
+  per-row `context_mask.sum()` equals each date's observed count, zero-fill
+  on padded rows, chronological date order preserved across `__getitem__`,
+  rejection of dates with zero observed points, and torch DataLoader
+  compatibility.
+- `pytest tests/ -q` → 195 passed (5 new + 190 prior; no regressions).
+
+### Notes
+
+- Context features chosen as `(log_moneyness, tau, implied_volatility)` —
+  the noisy IV column is what the model sees at inference, matching the
+  Phase 1 evaluation contract.
+- Query features are `(log_moneyness, tau)`; query set is the full date
+  frame so the 2C.3+ decoder predicts everywhere and 2A/2B evaluators can
+  still split observed vs unobserved at scoring time.
+
+### Next Actions
+
+- Move on to 2C.3 (set encoder + coordinate decoder).
+
+---
+
+## 2026-05-23T01:30:00+00:00
+
+### Completed
+
+- Brought all evidence files in sync with the AV migration design state:
+  - `src/data/config.py` — Dubach URL constants annotated DEFUNCT (kept as
+    historical evidence per ADR); added active Alpha Vantage constants
+    (`ALPHAVANTAGE_BASE_URL`, `ALPHAVANTAGE_FUNCTION`,
+    `ALPHAVANTAGE_API_KEY_ENV`, `ALPHAVANTAGE_RATE_LIMIT_PER_MIN`,
+    `INGEST_START_DATE`); inline note that no end-date may be hardcoded.
+  - `src/data/01_ingest_spy_github_dataset.py` — added prominent DEFUNCT
+    banner at the top of the docstring; fixed the `yfinance` hardcoded
+    `end="2026-01-01"` bug to a dynamic `datetime.now()` value (the
+    script is still slated for `git rm` in story 2C.7, but the lurking
+    bug is closed now so anyone running it before then doesn't silently
+    cap the underlying series).
+  - `docs/data/data_lineage.md` — §3 source-of-truth table split into
+    "Active (Alpha Vantage + yfinance)" and "Defunct (Dubach)" with a
+    pointer to §9 for the discovery trail; §4 Step-1 pipeline-flow box
+    rewritten to reference the new ingest script and the AV input.
+  - `docs/data_assumptions_and_cleaning.md` — Data Source section
+    rewritten with the active AV source, fields, env-var key handling,
+    coverage, and the defunct Dubach URLs preserved as historical evidence
+    only.
+  - `docs/phase1_result_memo.md` — top-of-document callout that the
+    Phase 1 baseline numbers are historical (Dubach-era) and will be
+    re-derived on the new dataset in story 2C.8.
+  - `README.md` — Current Phase block updated to note the data-source
+    migration with a link to ADR 0003.
+- Verified no stale source references remain in `src/`, `scripts/`,
+  `tests/`, `configs/`, or `docs/` outside the files I've already updated
+  (grep clean across `static.philippdubach`, `options-dataset-hist`, and
+  `2026-01-01`).
+
+### Notes
+
+- All updates are reversible (no destructive deletes); the old Dubach
+  ingest script is preserved in-tree, just annotated. Story 2C.7 is the
+  one that performs the destructive removal on the remote.
+- The Alpha Vantage paid API key is kept out of every tracked file; key
+  handling is documented as env-var-only in config.py, lineage, and the
+  cleaning doc.
+
+### Next Actions
+
+- PMR gate dry-run: passes.
+- Continue Phase A — next implementable story is **2C.3** (set encoder +
+  coordinate decoder; no dependencies). 2C.6 (AV ingest) is the last
+  Phase A milestone before the remote handoff.

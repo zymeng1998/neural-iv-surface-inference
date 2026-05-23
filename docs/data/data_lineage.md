@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-04-02T02:00:00-04:00
-last_updated_at: 2026-04-03T13:00:00-04:00
+last_updated_at: 2026-05-22T21:30:00-04:00
 ---
 
 > Repo-specific data lineage for the Neural IV Surface Inference project.
@@ -43,27 +43,45 @@ All data files are gitignored. The pipeline is designed to be re-run from scratc
 
 ### External sources
 
-| Source | URL | What it provides |
+**Active (2026-05-22 onward):**
+
+| Source | Endpoint | What it provides |
 |---|---|---|
-| Philipp Dubach options dataset | `https://static.philippdubach.com/data/options/spy/options.parquet` | ~24.7M rows of SPY EOD option chain data (2008–2025) |
-| Philipp Dubach underlying dataset | `https://static.philippdubach.com/data/options/spy/underlying.parquet` | ~4,529 rows of SPY daily underlying prices |
-| Yahoo Finance (fallback) | Via `yfinance` library | SPY underlying prices (2008–2026) — used if Dubach underlying file is empty |
+| Alpha Vantage `HISTORICAL_OPTIONS` (paid Standard, 75 req/min) | `https://www.alphavantage.co/query?function=HISTORICAL_OPTIONS&symbol=SPY&date=YYYY-MM-DD&apikey=…` | Full SPY EOD option chain per date (2008 → present); 20 fields per contract incl. IV, bid/ask, volume, open_interest, greeks |
+| Yahoo Finance (`yfinance`) | Python library | SPY underlying close (`date`, `close`), dynamic end-date — used until/unless a primary AV underlying ingest is added |
+
+API key handling: read from `os.environ["ALPHAVANTAGE_API_KEY"]`; never written
+to a tracked file. Provenance + cost rationale: see
+[ADR 0003](../decisions/0003_spy_options_data_source_migration.md).
+
+**Defunct (kept as historical evidence only):**
+
+| Source | URL | Status |
+|---|---|---|
+| Philipp Dubach options dataset | `https://static.philippdubach.com/data/options/spy/options.parquet` | HTTP 404; host path removed; covered 2008–2025 (~24.7M rows) |
+| Philipp Dubach underlying dataset | `https://static.philippdubach.com/data/options/spy/underlying.parquet` | HTTP 404 |
+| Philipp Dubach ETF fallback repo | `https://github.com/philippdubach/options-dataset-hist` | Repo absent from maintainer's account |
+
+See §9 "Upstream data source unreachable" for the discovery + replacement
+decision trail.
 
 ### Internal file paths
 
 | File | Role | Produced by |
 |---|---|---|
-| `data_raw/spy/spy_options.parquet` | Raw options chain | `src/data/01_ingest_spy_github_dataset.py` |
-| `data_raw/spy/spy_underlying.parquet` | Raw underlying prices | `src/data/01_ingest_spy_github_dataset.py` |
+| `data_raw/spy/spy_options.parquet` | Raw options chain | `src/data/01_ingest_spy_alpha_vantage.py` *(story 2C.6 — new active script; the old `01_ingest_spy_github_dataset.py` is DEFUNCT and slated for removal in 2C.7)* |
+| `data_raw/spy/spy_underlying.parquet` | Raw underlying prices | `src/data/01_ingest_spy_alpha_vantage.py` (yfinance, dynamic end-date) |
 | `data_processed/spy/partitions/spy_surface_YYYY.parquet` | Per-year cleaned surface points | `src/data/03_build_spy_surface_table.py` |
 | `data_processed/spy/spy_surface_points.parquet` | Conservative cleaned surface (hard drops + quality flags) | `src/data/03_build_spy_surface_table.py` |
 | `data_processed/spy/spy_surface_points_strict.parquet` | Strict modeling subset (tighter thresholds) | `src/data/03_build_spy_surface_table.py` |
-| `reports/spy_ingest_summary.md` | Ingestion report | `src/data/01_ingest_spy_github_dataset.py` |
+| `reports/spy_ingest_summary.md` | Ingestion report | `src/data/01_ingest_spy_alpha_vantage.py` |
 | `reports/spy_schema_report.md` | Schema validation report | `src/data/02_inspect_spy_schema.py` |
 | `reports/spy_build_report.md` | Build processing report | `src/data/03_build_spy_surface_table.py` |
 | `data_processed/spy/benchmarks/spy_phase1_*.parquet` | Benchmark task datasets (masked, noised, split) | `src/data/04_build_benchmark_tasks.py` |
-| `artifacts/checkpoints/best_mlp.pt` | Best MLP model checkpoint | `scripts/run_baseline.py` via `training/train.py` |
-| `artifacts/results/baseline_results.csv` | Baseline comparison metrics (interp vs MLP) | `scripts/run_baseline.py` |
+| `artifacts/checkpoints/best_mlp.pt` | Best MLP model checkpoint | `scripts/run_baseline.py` via `training/train.py` (refit on new data in 2C.8) |
+| `artifacts/results/baseline_results.csv` | Baseline comparison metrics (interp vs MLP) | `scripts/run_baseline.py` (refreshed on new data in 2C.8) |
+| (loader) `src/neural_iv_surface_inference/data/loaders.py::IVSurfaceDataset` | Point-wise loader used by the Phase 1 MLP baseline | Phase 1 |
+| (loader) `src/neural_iv_surface_inference/data/conditional_loaders.py::ConditionalIVSurfaceDataset` + `collate_conditional` | **Date-grouped** loader for the W3 conditional surface model (2C.2): one date per sample, ragged context = observed rows, padded with boolean masks for the set encoder | 2C.2 |
 
 ---
 
@@ -71,18 +89,23 @@ All data files are gitignored. The pipeline is designed to be re-run from scratc
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  STEP 1 — Ingest                                        │
-│  Script: src/data/01_ingest_spy_github_dataset.py       │
-│  Config: src/data/config.py (URLs, paths)               │
+│  STEP 1 — Ingest  (ACTIVE: Alpha Vantage)               │
+│  Script: src/data/01_ingest_spy_alpha_vantage.py        │
+│          (the old 01_ingest_spy_github_dataset.py is    │
+│           DEFUNCT — Dubach static Parquet is dead;      │
+│           ADR 0003 / story 2C.7 removes it)             │
+│  Config: src/data/config.py (AV constants + paths)      │
 │                                                         │
-│  Input:  External URLs (Dubach + Yahoo fallback)        │
+│  Input:  Alpha Vantage HISTORICAL_OPTIONS (paid),       │
+│          one HTTP GET per trading date, 75 req/min;     │
+│          underlying via yfinance with dynamic end-date  │
 │  Output: data_raw/spy/spy_options.parquet                │
 │          data_raw/spy/spy_underlying.parquet             │
 │          reports/spy_ingest_summary.md                   │
 │          data_raw/ingest_metadata.json                   │
 │                                                         │
-│  Notes:  Skips re-download if files already exist.      │
-│          Yahoo Finance fallback for empty underlying.    │
+│  Notes:  Streaming-to-Parquet (no raw JSON cache).      │
+│          API key from ALPHAVANTAGE_API_KEY env var only.│
 └────────────────────────┬────────────────────────────────┘
                          │
                          ▼
@@ -332,3 +355,38 @@ Concrete next dependency to unblock S3.3:
 - approve one vendor-style reference source and access path
 - freeze minimal schema mapping into current surface coordinates (`date`, `tau`, `log_moneyness`, reference IV field)
 - define ingestion location under `data_raw/` and alignment output format under `data_processed/`
+
+### Upstream data source unreachable (discovered 2026-05-22)
+
+During Phase 2C planning, the documented external sources in §3 were re-probed
+and **all return HTTP 404**:
+
+- `https://static.philippdubach.com/data/options/spy/options.parquet` → 404
+- `https://static.philippdubach.com/data/options/spy/underlying.parquet` → 404
+- `https://static.philippdubach.com/` (host root) → 404
+- `https://github.com/philippdubach/options-dataset-hist` (ETF fallback) → 404
+
+The original ingest covered **2008–2025**; it is now 2026-05, so the dataset is
+at minimum ~5 months stale and the source may be **gone entirely**. The 404s may
+be transient or reflect a moved/renamed path, but the host-root and fallback-repo
+404s suggest a genuine relocation/removal.
+
+Follow-up confirmation (2026-05-22): the source is **discontinued**, not merely
+moved. The maintainer's GitHub no longer hosts `options-data` /
+`options-dataset-hist` / `historic-options-dataset` (absent from
+`api.github.com/users/philippdubach/repos`), and his current volatility project
+(`philippdubach/vol-regime-prediction`) pulls from **live APIs**
+(Alpha Vantage, CBOE, FRED, yfinance) rather than a static SPY options parquet.
+The `static.philippdubach.com` host is alive (serves other assets) but the
+`/data/options/spy/` path is gone. Treat the documented parquet source as dead.
+
+Implications:
+- A data refresh (story **2C.6**) must first **re-establish a working options
+  source** — not just re-download. The `yfinance` fallback covers only the
+  **underlying** price series; it cannot reconstruct the option chain.
+- The `yfinance` fallback in `01_ingest_spy_github_dataset.py` also hardcodes
+  `end="2026-01-01"`, which would cap the underlying in the past and must be
+  fixed during refresh.
+- If no compatible options source is found, Phase 2C full train/eval must proceed
+  from the last-known-good snapshot on the remote (if preserved), with that
+  decision logged (candidate ADR in `docs/decisions/`).
