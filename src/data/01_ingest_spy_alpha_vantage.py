@@ -338,16 +338,60 @@ def pull_dates(
     api_key: str,
     out_path: Path,
     base_url: str = ALPHAVANTAGE_BASE_URL,
+    progress_every: int = 50,
+    checkpoint_every: int = 500,
 ) -> IngestSummary:
-    """Fetch a list of trading dates and write a single options Parquet."""
+    """Fetch a list of trading dates and write a single options Parquet.
+
+    Logs a progress line every ``progress_every`` dates (rate + ETA) and
+    writes an intermediate checkpoint Parquet every ``checkpoint_every``
+    dates so a long pull can be resumed if it's interrupted.
+    """
     limiter = RateLimiter()
     frames: list[pd.DataFrame] = []
     n_dates = 0
-    for date in dates:
+    n_empty = 0
+    total_rows = 0
+    start = time.monotonic()
+    dates_list = list(dates)
+    total = len(dates_list)
+
+    for date in dates_list:
         n_dates += 1
-        df = fetch_one_date(date, api_key=api_key, base_url=base_url, rate_limiter=limiter)
+        df = fetch_one_date(
+            date, api_key=api_key, base_url=base_url, rate_limiter=limiter
+        )
         if len(df):
             frames.append(df)
+            total_rows += len(df)
+        else:
+            n_empty += 1
+
+        if progress_every and (n_dates % progress_every == 0 or n_dates == total):
+            elapsed = time.monotonic() - start
+            rate = n_dates / max(elapsed, 1e-6)
+            remaining = total - n_dates
+            eta_s = remaining / max(rate, 1e-6)
+            print(
+                f"[ingest] {n_dates}/{total} dates  "
+                f"rows={total_rows:,}  empty={n_empty}  "
+                f"rate={rate*60:.1f}/min  "
+                f"elapsed={elapsed/60:.1f}m  "
+                f"eta={eta_s/60:.1f}m",
+                flush=True,
+            )
+
+        if checkpoint_every and frames and (n_dates % checkpoint_every == 0):
+            ckpt_path = out_path.with_suffix(f".partial_{n_dates:06d}.parquet")
+            try:
+                pd.concat(frames, ignore_index=True).to_parquet(ckpt_path, index=False)
+                print(
+                    f"[ingest] checkpoint written: {ckpt_path.name} "
+                    f"({total_rows:,} rows)",
+                    flush=True,
+                )
+            except Exception as e:  # noqa: BLE001
+                print(f"[ingest] checkpoint write failed (continuing): {e}", flush=True)
 
     if not frames:
         out_df = pd.DataFrame({c: [] for c in REQUIRED_OPTIONS_COLS})
@@ -356,6 +400,12 @@ def pull_dates(
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_df.to_parquet(out_path, index=False)
+    # Remove partial checkpoints once final Parquet is durable.
+    for ckpt in out_path.parent.glob(out_path.stem + ".partial_*.parquet"):
+        try:
+            ckpt.unlink()
+        except OSError:
+            pass
 
     date_min = str(out_df["date"].min().date()) if len(out_df) else None
     date_max = str(out_df["date"].max().date()) if len(out_df) else None
