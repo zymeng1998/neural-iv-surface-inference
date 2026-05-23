@@ -108,6 +108,119 @@ on the observed chain** — different days get different latents.
     ))
 
     # -----------------------------------------------------------------
+    # I/O contract + inference demo (placed AFTER imports below)
+    # -----------------------------------------------------------------
+    IO_CONTRACT_MD = md(
+        """## I/O contract — what you feed in, what comes out
+
+**Per-date inference takes two arrays and returns one:**
+
+| Argument | dtype | Shape | Per-row contents |
+|---|---|---|---|
+| `context` (today's observed chain) | `torch.float32` | `(N, 3)` — N = # quoted options today, typically 1K-13K | `[log_moneyness, tau, observed_IV]` |
+| `query` (where to predict) | `torch.float32` | `(M, 2)` — M = arbitrary | `[log_moneyness, tau]` |
+| **returns** | `torch.float32` | `(M,)` | predicted IV per query coord (softplus, > 0) |
+
+Field meanings:
+
+| Field | Unit | Typical range | How to compute |
+|---|---|---|---|
+| `log_moneyness` | dimensionless | ≈ `[-1, +1]` for SPY | `ln(strike / spot_close)` |
+| `tau` | years (fractional) | `[1/365, 2.0]` | `(expiration - trade_date).days / 365.25` |
+| `IV` | annualized vol, decimal | `[0.01, 3.0]` | from chain's `implied_volatility` |
+
+All `float32` after pipeline cleaning. **No single-scalar inputs**: the
+model is fundamentally set-to-function — give it a chain set, get back a
+surface you can query anywhere.
+
+The next cells load the trained checkpoint and run one inference call
+on a 5-quote synthetic chain so you can see the exact shapes."""
+    )
+    IO_CHECKPOINT_LOAD = code(
+        """import sys
+sys.path.insert(0, '../src')
+import torch
+from neural_iv_surface_inference.models.conditional_surface import ConditionalSurfaceModel
+
+# 1. Load the trained checkpoint.
+ckpt = torch.load('../artifacts/checkpoints/best_conditional.pt',
+                  map_location='cpu', weights_only=False)
+cfg = ckpt['config']
+print('checkpoint architecture config:', {k: cfg[k] for k in
+    ['context_dim','coord_dim','hidden_dim','latent_dim',
+     'n_elem_layers','n_post_layers','n_decoder_layers']})
+
+# 2. Rebuild the model and load weights.
+model = ConditionalSurfaceModel(
+    context_dim=cfg['context_dim'], coord_dim=cfg['coord_dim'],
+    hidden_dim=cfg['hidden_dim'], latent_dim=cfg['latent_dim'],
+    n_elem_layers=cfg['n_elem_layers'], n_post_layers=cfg['n_post_layers'],
+    n_decoder_layers=cfg['n_decoder_layers'],
+)
+model.load_state_dict(ckpt['model_state_dict'])
+model.eval()
+print(f'params: {sum(p.numel() for p in model.parameters()):,}')
+"""
+    )
+    IO_INFER_DEMO = code(
+        """# 3. Build a small synthetic chain (5 quotes).
+context_np = np.array([
+    # log_moneyness, tau (years),  observed_IV
+    [-0.10,           30/365.25,   0.22],   # ~5% ITM call, 1 month
+    [-0.05,           30/365.25,   0.20],
+    [ 0.00,           30/365.25,   0.18],   # ATM 1 month
+    [ 0.05,           30/365.25,   0.19],
+    [ 0.10,           90/365.25,   0.21],   # OTM 3 months
+], dtype=np.float32)
+context = torch.from_numpy(context_np).unsqueeze(0)        # (1, 5, 3)
+mask    = torch.ones(1, 5, dtype=torch.bool)
+
+# 4. Query grid — 6 points across two maturities.
+query_np = np.array([
+    [-0.10, 60/365.25],   [0.00, 60/365.25],   [0.10, 60/365.25],
+    [-0.10, 180/365.25],  [0.00, 180/365.25],  [0.10, 180/365.25],
+], dtype=np.float32)
+query = torch.from_numpy(query_np).unsqueeze(0)            # (1, 6, 2)
+
+# 5. Predict.
+with torch.no_grad():
+    pred = model(context, mask, query)                     # (1, 6)
+
+print(f'context shape: {tuple(context.shape)}  dtype: {context.dtype}')
+print(f'query   shape: {tuple(query.shape)}   dtype: {query.dtype}')
+print(f'pred    shape: {tuple(pred.shape)}    dtype: {pred.dtype}')
+print()
+print('Predicted IV surface (caveat: a real chain has ~1K-13K quotes, not 5):')
+for q, p in zip(query_np, pred[0].numpy()):
+    print(f'  log_moneyness={q[0]:+.2f}  tau={q[1]:.4f}y ({q[1]*365.25:.0f}d)'
+          f'  ->  iv={p:.4f}')
+"""
+    )
+    IO_SURFACE_PLOT = code(
+        """# 6. Visualize the predicted surface on a denser grid (still the same toy chain).
+k_grid   = np.linspace(-0.30, 0.30, 30, dtype=np.float32)
+tau_grid = np.array([30, 60, 90, 180, 365], dtype=np.float32) / 365.25
+
+Q = np.array([[k, t] for t in tau_grid for k in k_grid], dtype=np.float32)
+Q_t = torch.from_numpy(Q).unsqueeze(0)
+with torch.no_grad():
+    iv_pred = model(context, mask, Q_t).squeeze(0).numpy()
+iv_grid = iv_pred.reshape(len(tau_grid), len(k_grid))
+
+fig, ax = plt.subplots(figsize=(10, 4.5))
+for i, t in enumerate(tau_grid):
+    ax.plot(k_grid, iv_grid[i], lw=2, label=f'tau={t*365.25:.0f}d')
+ax.scatter(context_np[:,0], context_np[:,2], s=80, color='black', zorder=5,
+           label='observed (input chain)')
+ax.set_xlabel('log_moneyness')
+ax.set_ylabel('predicted IV')
+ax.set_title('One-day IV surface predicted by the conditional model')
+ax.legend(loc='upper right', fontsize=9)
+plt.tight_layout(); plt.show()
+"""
+    )
+
+    # -----------------------------------------------------------------
     # Imports + load
     # -----------------------------------------------------------------
     cells.append(code(
@@ -142,6 +255,12 @@ print(f'w1 splits: {sorted(w1_interp[\"split\"].unique())}')
 print(f'w2 dates per split: {w2_interp.groupby(\"split\").size().to_dict()}')
 """
     ))
+
+    # Now insert the I/O contract + demo (after numpy/matplotlib are imported above)
+    cells.append(IO_CONTRACT_MD)
+    cells.append(IO_CHECKPOINT_LOAD)
+    cells.append(IO_INFER_DEMO)
+    cells.append(IO_SURFACE_PLOT)
 
     # -----------------------------------------------------------------
     # Headline bar chart
