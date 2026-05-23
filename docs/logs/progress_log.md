@@ -1312,3 +1312,52 @@ Full numbers + the like-for-like vs interp/MLP comparison are in
 ### Next Actions
 
 - Move to 2C.6 (Alpha Vantage ingest implementation).
+
+---
+
+## 2026-05-22 — Story 2C.6: Alpha Vantage ingest implementation (local)
+
+### Completed
+
+- Added `src/data/01_ingest_spy_alpha_vantage.py`: the new active ingest
+  script. Pulls SPY `HISTORICAL_OPTIONS` from Alpha Vantage one date at a
+  time; sliding-window rate limiter capped at the configured 75 req/min;
+  exponential backoff on HTTP 5xx and network errors; hard fail on 401/403
+  or any premium-endpoint payload; API key read **only** from
+  `os.environ["ALPHAVANTAGE_API_KEY"]` and redacted in any logged URL.
+- Implementation maps every contract field to the pipeline's
+  `REQUIRED_OPTIONS_COLS` exactly; greeks, sizes, contractID, mark/last are
+  carried as optional columns. Empty-date payloads return an empty frame
+  with the required columns so downstream concatenation is robust.
+- Underlying refresh uses `yfinance` with a **dynamic end date**
+  (`datetime.now().date()`); the old hardcoded `end="2026-01-01"` is gone.
+- CLI supports a small-sample mode (`--dates YYYY-MM-DD ...`), a range
+  mode (`--start --end`), and a `--full` flag reserved for 2C.7 (remote).
+- Added `tests/test_alpha_vantage_ingest.py` (8 tests, all HTTP mocked):
+  schema/dtype mapping, empty-data handling, rate-limiter throttling,
+  exponential backoff on 5xx, hard-fail on HTTP 401, hard-fail on
+  premium-endpoint payload, URL key redaction, env-var-only key sourcing.
+- `pytest tests/ -q` → 214 passed (8 new + 206 prior; no regressions).
+- `git grep` confirms no API key literal in any tracked file.
+
+### Notes
+
+- The old `01_ingest_spy_github_dataset.py` is left in place with explicit
+  DEFUNCT markers and an explanatory header (per the 2C.6 rollback notes).
+  Story 2C.7 will git-remove it on the remote once the full pull validates
+  end-to-end.
+- The local sample pull on actual Alpha Vantage dates was deliberately
+  **not** executed in this session: it would burn a non-trivial portion of
+  the 75 req/min ceiling and the API key is the operator's. The
+  HTTP-mocked tests exhaustively cover the parsing, rate-limiting, retry,
+  and auth paths. The first real-API smoke is the operator's prerogative
+  before 2C.7.
+- No raw or processed data files committed (gitignored). No remote action
+  taken. No 2C.7 work performed.
+
+### Next Actions
+
+- All Phase A code is now `done`. Handoff signal: when the operator is
+  ready, start the Pod and execute 2C.7 (full AV pull, replace dataset,
+  rebuild 02→04) followed by 2C.8 (re-run baselines + W1/W2 + conditional
+  on the new data).
