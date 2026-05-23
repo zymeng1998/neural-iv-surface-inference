@@ -263,6 +263,207 @@ print(f'w2 dates per split: {w2_interp.groupby(\"split\").size().to_dict()}')
     cells.append(IO_SURFACE_PLOT)
 
     # -----------------------------------------------------------------
+    # Practical workflow on TODAY's real SPY chain
+    # -----------------------------------------------------------------
+    cells.append(md(
+        """## Practical workflow — predict TODAY's surface from a live chain
+
+This section runs the **full end-to-end workflow** on a real SPY option
+chain pulled from Yahoo Finance (free, no API key). Re-run the cells any
+trading day and they'll fetch the latest chain, compute features, predict,
+and produce a surface.
+
+**Misconceptions to clear first:**
+
+1. **`log_moneyness ≠ log(strike)`** — it is `ln(strike / spot_close)`.
+   ATM = 0; ITM call (low strike) = negative; OTM call (high strike) =
+   positive. You need today's SPY spot too.
+2. **`tau` is time-to-expiry**, not "how far in the future." A 90-day
+   `tau` means "options expiring 90 days from today, which are quoted
+   TODAY." The model is not a time-series forecaster.
+3. **This is inference, not forecasting.** The model takes today's
+   chain and tells you today's full surface for every existing expiry.
+   "What will the surface look like in 3 months?" is a different
+   question (different model).
+
+**Caching:** the cell below saves the fetched chain to
+`artifacts/results/live_spy_chain_<date>.csv` so re-executing the
+notebook on a different day still has reproducible numbers — unless you
+explicitly bust the cache."""
+    ))
+    cells.append(code(
+        """# Pull today's SPY chain via yfinance (cached to disk for reproducibility).
+import datetime as _dt
+CACHE = Path('../artifacts/results') / f'live_spy_chain_{_dt.date.today().isoformat()}.csv'
+
+if CACHE.exists():
+    print(f'using cached chain: {CACHE.name}')
+    chain = pd.read_csv(CACHE)
+    spot = float(chain.attrs.get('spot') or chain['_spot'].iloc[0])
+else:
+    import yfinance as yf
+    spy = yf.Ticker('SPY')
+    spot = float(spy.history(period='1d')['Close'].iloc[-1])
+    today = _dt.datetime.utcnow().date()
+    rows = []
+    for exp_str in spy.options[:8]:    # first 8 expirations (~next 2 months)
+        exp_date = _dt.datetime.strptime(exp_str, '%Y-%m-%d').date()
+        tau = (exp_date - today).days / 365.25
+        if tau <= 0:
+            continue
+        oc = spy.option_chain(exp_str)
+        for side, df in [('call', oc.calls), ('put', oc.puts)]:
+            sub = df[['strike','impliedVolatility','bid','ask','volume']].copy()
+            sub = sub[(sub['impliedVolatility'] > 0.01) & (sub['impliedVolatility'] < 3.0)]
+            sub['log_moneyness'] = np.log(sub['strike'] / spot)
+            sub['tau'] = tau
+            sub['type'] = side
+            rows.append(sub)
+    chain = pd.concat(rows, ignore_index=True)
+    chain['_spot'] = spot
+    chain.to_csv(CACHE, index=False)
+    print(f'fetched + cached: {CACHE.name}')
+
+print(f'SPY spot: ${spot:.2f}   quotes: {len(chain):,} across {chain[\"tau\"].nunique()} expirations')
+chain[['type','strike','log_moneyness','tau','impliedVolatility','volume']].head(6)
+"""
+    ))
+    cells.append(code(
+        """# Step 2: build the (N,3) context tensor exactly as the model expects.
+ctx_np = chain[['log_moneyness','tau','impliedVolatility']].values.astype(np.float32)
+N = len(ctx_np)
+live_context = torch.from_numpy(ctx_np).unsqueeze(0)        # (1, N, 3)
+live_mask    = torch.ones(1, N, dtype=torch.bool)
+print(f'context tensor: shape={tuple(live_context.shape)}  dtype={live_context.dtype}')
+print(f'                N = {N} quoted options across {chain[\"tau\"].nunique()} maturities')
+"""
+    ))
+    cells.append(code(
+        """# Step 3: predict at the SAME coordinates the market quoted - so we can
+# compare model vs market quote-by-quote.
+q_np = chain[['log_moneyness','tau']].values.astype(np.float32)
+q    = torch.from_numpy(q_np).unsqueeze(0)
+with torch.no_grad():
+    pred_live = model(live_context, live_mask, q).squeeze(0).numpy()
+
+chain['iv_model'] = pred_live
+chain['iv_diff']  = chain['impliedVolatility'] - chain['iv_model']
+
+# Overall fit quality on TODAY's chain
+print(f'Mean |market_IV - model_IV| on today chain: {chain[\"iv_diff\"].abs().mean():.4f}')
+print(f'Median |diff|:                              {chain[\"iv_diff\"].abs().median():.4f}')
+print(f'90th-pct |diff|:                            {chain[\"iv_diff\"].abs().quantile(0.9):.4f}')
+"""
+    ))
+    cells.append(code(
+        """# Where does the model disagree most with the live chain?
+liquid = chain[chain['volume'] > 0].copy()
+print(f'{len(liquid):,} liquid quotes (volume > 0)')
+
+print('\\nTop 6 chain IV > model IV  (model says \"rich\"):')
+print(liquid.nlargest(6, 'iv_diff')[
+    ['type','strike','tau','impliedVolatility','iv_model','iv_diff','volume']
+].to_string(index=False))
+
+print('\\nTop 6 chain IV < model IV  (model says \"cheap\"):')
+print(liquid.nsmallest(6, 'iv_diff')[
+    ['type','strike','tau','impliedVolatility','iv_model','iv_diff','volume']
+].to_string(index=False))
+"""
+    ))
+    cells.append(md(
+        """**Reading the disagreement table:** large `iv_diff` is most often
+caused by Yahoo's retail IV calc being unreliable in the deep wings and
+at very short tenors (≤3 days), not by genuine mispricing. For a real
+trade signal you'd want a pro EOD feed (Bloomberg, ORATS, …) feeding the
+same model. The point of the table here is to *demonstrate the workflow*:
+once the model surface is built, screening for outliers vs market is a
+one-liner."""
+    ))
+    cells.append(code(
+        """# Step 4: predict at coordinates the market did NOT quote.
+# Example: an exact-ATM 14-day option, a 5%-ITM 1-month, a 10%-OTM 6-month.
+custom = torch.tensor([
+    [ 0.000,  14/365.25],
+    [-0.05,   30/365.25],
+    [ 0.10,  180/365.25],
+], dtype=torch.float32).unsqueeze(0)
+with torch.no_grad():
+    iv_custom = model(live_context, live_mask, custom).squeeze(0).numpy()
+print(f'SPY spot used: ${spot:.2f}\\n')
+print('Predicted IV at coordinates the live chain did NOT quote:')
+for c, iv in zip(custom.squeeze(0).numpy(), iv_custom):
+    strike = spot * np.exp(c[0])
+    days = c[1] * 365.25
+    print(f'  strike ${strike:7.2f}  (log_m={c[0]:+.3f})  {days:5.1f}d to expiry  ->  IV {iv:.4f}')
+"""
+    ))
+    cells.append(code(
+        """# Step 5: build a full (k, tau) grid and visualize the predicted surface.
+k_grid   = np.linspace(-0.20, 0.20, 60, dtype=np.float32)
+# unique maturities currently listed:
+tau_unique = sorted(chain['tau'].unique())
+tau_grid   = np.array(tau_unique, dtype=np.float32)
+
+QQ = np.array([[k, t] for t in tau_grid for k in k_grid], dtype=np.float32)
+QQ_t = torch.from_numpy(QQ).unsqueeze(0)
+with torch.no_grad():
+    iv_pred = model(live_context, live_mask, QQ_t).squeeze(0).numpy()
+iv_grid = iv_pred.reshape(len(tau_grid), len(k_grid))
+
+fig, ax = plt.subplots(figsize=(11, 5.5))
+cmap = plt.cm.viridis(np.linspace(0, 0.9, len(tau_grid)))
+for i, t in enumerate(tau_grid):
+    days = int(round(t * 365.25))
+    ax.plot(k_grid, iv_grid[i], lw=2, color=cmap[i], label=f'{days}d')
+# Overlay actual chain quotes
+ax.scatter(chain['log_moneyness'], chain['impliedVolatility'],
+           s=8, alpha=0.25, color='black', label='market quotes')
+ax.set_xlabel('log_moneyness  =  ln(strike / spot)')
+ax.set_ylabel('Implied Volatility (decimal)')
+ax.set_title(f'Conditional model — TODAY\\'s SPY surface (spot=${spot:.2f}, {len(chain):,} quotes)')
+ax.legend(title='time to expiry', loc='upper center', ncol=4, fontsize=9)
+ax.set_xlim(-0.30, 0.30)
+ax.set_ylim(0, min(1.5, iv_grid.max()*1.1))
+plt.tight_layout(); plt.show()
+"""
+    ))
+    cells.append(md(
+        """### What the smile/surface plot is telling you
+
+- Each colored line is the predicted IV smile for one tenor. Shorter
+  maturities sit above longer ones (vol-of-vol term structure).
+- The black dots are the actual market quotes. Lines that hug the dots
+  closely mean the model's prediction agrees with the live chain at
+  those coords; large deviations between line and dot in deep wings are
+  the "mispricing" candidates from the table above.
+- The shape (downward slope from OTM-put side, flattening on call side)
+  is the classic SPY skew — empirically captured by the model.
+
+### What to do next with this in your workflow
+
+| Want to do this | How |
+|---|---|
+| Price a 45-day option at strike $X | `query = [[ln(X/spot), 45/365.25]]`, get IV, plug into Black-Scholes |
+| Vega/Vomma risk on a dense grid | Predict on `(k_grid × tau_grid)`, compute price derivatives by finite differences |
+| Daily mispricing scan | Run this notebook end-to-end every EOD; alert on `|iv_diff| > threshold` |
+| Compare to broker | Get your broker's IV column for the same chain; same diff calc, different opinion |
+
+### Caveats (don't skip these)
+
+- **Training distribution = EOD CLOSE.** yfinance gives live mid-quotes,
+  which have wider effective spreads than EOD. For real signals use a
+  proper EOD feed (Bloomberg/ORATS/Polygon).
+- **No uncertainty signal yet** — the model gives you a point estimate.
+  Epic 2D adds heteroscedastic/ensemble heads so you can also get a
+  prediction band around each IV.
+- **SPY only.** Don't use this checkpoint on SPX, QQQ, or single
+  names — those distributions are different. To extend you'd retrain
+  on that ticker's history.
+"""
+    ))
+
+    # -----------------------------------------------------------------
     # Headline bar chart
     # -----------------------------------------------------------------
     cells.append(md(
