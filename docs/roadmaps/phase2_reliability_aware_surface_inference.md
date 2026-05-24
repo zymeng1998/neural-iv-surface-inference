@@ -167,48 +167,40 @@ Sequencing principle: **2A before 2C** (we measure reliability before we model
 it), and **2B diagnostics before any hard structural constraints** (we quantify
 violations before penalizing them).
 
-> **Status (2026-05-22):** Epic 2A is `done` — all five stories (2A.1–2A.5)
-> complete; the W1 measurement layer runs end-to-end (interface → metrics →
-> abstention → committed artifacts). Real-data uncertainty-eval run on RunPod and
-> MLP-predictor wiring remain a documented follow-up (not blocking the epic).
+> **Status (2026-05-24):** Phase 2 is **~75% complete** — three of four epics
+> are `done`. Epic 2D (W4 + W5) is the remaining work and is still `backlog`,
+> undecomposed.
+>
+> Epic 2A (W1 — uncertainty evaluation) is `done` — all five stories
+> (2A.1–2A.5) complete; the W1 measurement layer runs end-to-end
+> (interface → metrics → abstention → committed artifacts).
 >
 > Epic 2B (W2 — sensitivity & structure diagnostics) is `done` — all five
 > stories (2B.1–2B.5) complete: masking-sensitivity harness, no-arbitrage
 > diagnostics, risk-flag synthesis + (k, tau) region heatmaps, and the
-> end-to-end diagnostics runner with report tables + synthetic smoke run +
-> committed artifacts. The real-data run on the RunPod benchmark remains a
-> documented follow-up (not blocking the epic).
+> end-to-end diagnostics runner with report tables + committed artifacts.
 >
-> Epic 2C (W3 — conditional neural surface model) is `in_progress` and has been
-> decomposed (2026-05-22 → 2026-05-22): stories 2C.1–2C.5 are `done` (local
-> Phase A code is complete: dataset + collation, set encoder + decoder,
-> training loop + config + synthetic smoke, predictor adapter wired into
-> the unchanged W1/W2 runners with artifact-shape parity verified). 2C.6
-> (Alpha Vantage ingest) is the last local Phase A story; 2C.7–2C.8 are
-> the remote-only stories.
+> Epic 2C (W3 — conditional neural surface model) is `done` — all eight
+> stories (2C.1–2C.8) complete:
+> - **Local Phase A** (2C.2–2C.6): dataset + collation, set encoder + coordinate
+>   decoder (85,057 params), training loop + config + synthetic smoke,
+>   predictor adapter wired into the W1/W2 runners with artifact-shape parity,
+>   and the Alpha Vantage `HISTORICAL_OPTIONS` ingest (paid Standard, ADR 0003).
+> - **Remote Phase B** (2C.7 + 2C.8 + 2C.4-R + 2C.5-R, executed 2026-05-23
+>   as a single autonomous chain): full AV pull (26.06 M rows, 4,623 trading
+>   days, 2008-01-02 → 2026-05-22), Dubach snapshot deleted, pipeline 02→04
+>   rebuilt, Phase 1 baselines + W1/W2 re-run on the AV data, full conditional
+>   training and eval-parity run, Pod self-terminated cleanly after ~11 h 10 m.
+> - Results notebook `notebooks/04_phase2c_results.ipynb` (50 cells) ships
+>   the executive summary, model I/O contract, live-SPY inference workflow,
+>   3D spinning surface, headline MAE / per-region / obs-unobs / risk-coverage
+>   tables, and training dynamics — all on real AV data.
 >
-> The stories are split into a **local** phase and a **remote** phase joined
-> by an operator signal:
->
-> **Local phase (Mac).** Code, tests, and synthetic smokes — no Pod time, no
-> data egress. Stories: 2C.2 date-grouped conditional dataset + collation;
-> 2C.3 set-encoder + coordinate-decoder architecture; 2C.4 conditional
-> training loop + config + synthetic smoke; 2C.5 predictor adapter +
-> synthetic-eval wiring; 2C.6 Alpha Vantage ingest implementation + sample
-> validation. Source decision is locked: Alpha Vantage `HISTORICAL_OPTIONS`
-> (paid Standard, 75 req/min, 2008→present) — see ADR 0003. The prior Dubach
-> static-Parquet source is confirmed dead.
->
-> **Remote phase (RunPod).** After all local stories are `done`, the operator
-> starts the Pod and we execute: 2C.7 full AV pull (≈40–65 GB final disk,
-> ≈1.5–2 hours) + **delete the Dubach snapshot** + rebuild 02→04; 2C.8 re-run
-> Phase 1 baselines + W1/W2 evaluation on the new dataset so the conditional
-> model's eventual comparison floor is like-for-like; then the remote
-> executions of 2C.4 (full conditional training) and 2C.5 (full conditional
-> eval parity).
->
-> W3 ships point predictions only; uncertainty signals are deferred to epic
-> 2D (W4). Epic 2D remains undecomposed (progressive decomposition).
+> Epic 2D (W4 — uncertainty-aware inference + W5 — abstention & tradability
+> decision layer) is `backlog` and **undecomposed** (progressive decomposition).
+> W3 deliberately ships point predictions only; uncertainty heads, calibration,
+> and the `surface_action ∈ {trade, hedge_only, abstain}` decision layer that
+> fuses W4 predictive intervals with W2 structure flags are all 2D work.
 
 ## 6) Acceptance Criteria
 

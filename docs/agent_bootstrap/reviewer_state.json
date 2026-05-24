@@ -4,11 +4,11 @@
   "bootstrap_completed_at": "2026-04-02T01:34:00-04:00",
   "baseline_completed": true,
   "baseline_completed_at": "2026-04-02T01:35:00-04:00",
-  "last_review_run_at": "2026-04-02T02:00:00-04:00",
+  "last_review_run_at": "2026-05-24T00:50:00-04:00",
   "last_review_run_type": "ongoing",
-  "last_processed_git_head": "bef666ddf1ae20b2a19507792fbaf917449e4b7d",
-  "last_processed_git_head_short": "bef666d",
-  "last_processed_diff_signature": "docs/data/data_lineage.md;scripts/pmr_prepush_gate.py;.pre-commit-config.yaml;docs/agent_bootstrap/project_memory_registry.md",
+  "last_processed_git_head": "dfe4e9a1a3655ab7a1deb2d0410f49379d143d8f",
+  "last_processed_git_head_short": "dfe4e9a",
+  "last_processed_diff_signature": "docs/roadmaps/phase2_reliability_aware_surface_inference.md;docs/logs/progress_log.md;docs/agent_bootstrap/reviewer_state.json;docs/agent_bootstrap/reviewer_state.md",
   "last_processed_packet_fingerprint": null,
   "known_bootstrap_files": [
     "docs/agent_bootstrap/project_memory_registry.md",
@@ -31,9 +31,10 @@
   ],
   "known_decision_ids": [
     "0001",
-    "0002"
+    "0002",
+    "0003"
   ],
-  "known_progress_log_last_entry_timestamp": "2026-04-02T02:00:00-04:00",
-  "known_experiment_journal_entry_count": 0,
-  "notes": "Updated after pre-push gate and data lineage implementation."
+  "known_progress_log_last_entry_timestamp": "2026-05-24T00:00:00-04:00",
+  "known_experiment_journal_entry_count": 11,
+  "notes": "Refreshed after Phase 2 audit (2026-05-24). Epics 2A/2B/2C are done; epic 2D is backlog/undecomposed. HEAD advanced from bef666d (2026-04-02) to dfe4e9a (2026-05-24) across the full Phase 2 implementation: W1/W2 runners, conditional model + training + adapter, Alpha Vantage data migration (ADR 0003), Phase B autonomous remote run, results notebook with 3D visualization."
 }

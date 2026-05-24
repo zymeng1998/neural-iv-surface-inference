@@ -1430,3 +1430,21 @@ Full numbers + the like-for-like vs interp/MLP comparison are in
 ### Next actions
 - Epic 2D (W4+W5: uncertainty-aware inference, abstention, decision layer) is the
   natural next phase.
+
+## 2026-05-24 — PMR evidence refresh (post-Phase-2C audit)
+
+### Completed
+- Refreshed `docs/agent_bootstrap/reviewer_state.{json,md}` — bumped
+  `last_processed_git_head` from `bef666d` (2026-04-02) to `dfe4e9a`
+  (2026-05-24), corrected `known_progress_log_last_entry_timestamp`,
+  `known_experiment_journal_entry_count` (0 → 11), and `known_decision_ids`
+  (added `0003`).
+- Updated the Phase 2 roadmap status block: Epic 2C marked `done` (was
+  `in_progress`); explicit Phase-2 progress snapshot added — 3/4 epics done,
+  Epic 2D remaining (W4 uncertainty heads + W5 abstention/decision layer),
+  still `backlog` and undecomposed.
+- Added a phase-status snapshot table to `reviewer_state.md`.
+
+### Next actions
+- Decompose Epic 2D into stories (2D.1 = decomposition story) when ready
+  to start that phase.
