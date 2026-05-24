@@ -1417,3 +1417,16 @@ Full numbers + the like-for-like vs interp/MLP comparison are in
 - (Side task) Parallelize scipy interp (joblib.Parallel across 48 CPUs)
   OR port to torch GPU before the next benchmark rerun. Would cut
   baseline rerun time from ~7h → ~10-30 min.
+
+## 2026-05-24 — Viz: slow spinning IV surface GIF
+
+### Completed
+- Slowed the 3D spinning IV surface GIF from 70 ms/frame → 105 ms/frame (50% slower),
+  giving a full 360° rotation time of ~6.3 s instead of ~4.2 s.
+- Re-rendered `artifacts/results/surface_3d_spin_2026-05-23.gif` (1,245 KB).
+- Updated `scripts/generate_phase2c_results_notebook.py` and regenerated
+  `notebooks/04_phase2c_results.ipynb` (50 cells, 0 errors).
+
+### Next actions
+- Epic 2D (W4+W5: uncertainty-aware inference, abstention, decision layer) is the
+  natural next phase.
