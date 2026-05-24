@@ -19,7 +19,12 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 
 from neural_iv_surface_inference.models.conditional_surface import (
+    DEFAULT_QUANTILES,
     ConditionalSurfaceModel,
+)
+from neural_iv_surface_inference.models.losses import (
+    gaussian_nll_loss,
+    pinball_loss,
 )
 from neural_iv_surface_inference.utils.seed import set_seed
 
@@ -41,6 +46,30 @@ def masked_query_mse(
     return sq.sum() / denom
 
 
+def compute_head_loss(
+    out: dict[str, torch.Tensor],
+    target: torch.Tensor,
+    mask: torch.Tensor,
+    head_kind: str,
+) -> torch.Tensor:
+    """Dispatch the per-head loss for the W4 conditional model (2D.2).
+
+    ``point``     → masked MSE on ``out["mu"]``.
+    ``gaussian``  → masked Gaussian NLL on ``out["mu"], out["sigma"]``.
+    ``quantile``  → masked pinball loss on ``out["quantiles"]`` with the
+                     per-decoder ``out["quantile_levels"]``.
+    """
+    if head_kind == "point":
+        return masked_query_mse(out["mu"], target, mask)
+    if head_kind == "gaussian":
+        return gaussian_nll_loss(out["mu"], out["sigma"], target, mask)
+    if head_kind == "quantile":
+        return pinball_loss(
+            out["quantiles"], target, mask, out["quantile_levels"]
+        )
+    raise ValueError(f"unsupported head_kind: {head_kind!r}")
+
+
 def _move_batch(batch: dict, device: torch.device) -> dict:
     out = {}
     for k, v in batch.items():
@@ -56,14 +85,17 @@ def train_one_epoch(
     loader: DataLoader,
     optimizer: torch.optim.Optimizer,
     device: torch.device,
+    head_kind: str = "point",
 ) -> float:
     model.train()
     total_loss = 0.0
     n_batches = 0
     for raw in loader:
         batch = _move_batch(raw, device)
-        pred = model(batch["context"], batch["context_mask"], batch["query"])
-        loss = masked_query_mse(pred, batch["target"], batch["query_mask"])
+        out = model(batch["context"], batch["context_mask"], batch["query"])
+        loss = compute_head_loss(
+            out, batch["target"], batch["query_mask"], head_kind
+        )
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
@@ -74,7 +106,10 @@ def train_one_epoch(
 
 @torch.no_grad()
 def evaluate(
-    model: nn.Module, loader: DataLoader, device: torch.device
+    model: nn.Module,
+    loader: DataLoader,
+    device: torch.device,
+    head_kind: str = "point",
 ) -> dict[str, float]:
     model.eval()
     total_loss = 0.0
@@ -85,12 +120,15 @@ def evaluate(
     n_unobs = 0
     for raw in loader:
         batch = _move_batch(raw, device)
-        pred = model(batch["context"], batch["context_mask"], batch["query"])
-        loss = masked_query_mse(pred, batch["target"], batch["query_mask"])
+        out = model(batch["context"], batch["context_mask"], batch["query"])
+        loss = compute_head_loss(
+            out, batch["target"], batch["query_mask"], head_kind
+        )
         total_loss += float(loss.detach().cpu())
         n_batches += 1
 
-        diff = (pred - batch["target"]).abs()
+        mu = out["mu"]
+        diff = (mu - batch["target"]).abs()
         qmask = batch["query_mask"]
         obs_mask = qmask & batch["query_observed"]
         unobs_mask = qmask & (~batch["query_observed"])
@@ -148,6 +186,12 @@ def train_conditional(
     seed = int(config.get("seed", 42))
     set_seed(seed)
 
+    head_cfg_in = config.get("head") or {"kind": "point"}
+    head_cfg = dict(head_cfg_in)
+    head_kind = str(head_cfg.get("kind", "point"))
+    if head_kind == "quantile" and "quantiles" not in head_cfg:
+        head_cfg["quantiles"] = list(DEFAULT_QUANTILES)
+
     model = ConditionalSurfaceModel(
         context_dim=int(config.get("context_dim", 3)),
         coord_dim=int(config.get("coord_dim", 2)),
@@ -156,6 +200,7 @@ def train_conditional(
         n_elem_layers=int(config.get("n_elem_layers", 2)),
         n_post_layers=int(config.get("n_post_layers", 1)),
         n_decoder_layers=int(config.get("n_decoder_layers", 3)),
+        head=head_cfg,
     ).to(device)
 
     optimizer = torch.optim.AdamW(
@@ -179,8 +224,12 @@ def train_conditional(
 
     for epoch in range(1, epochs + 1):
         t0 = time.time()
-        train_loss = train_one_epoch(model, train_loader, optimizer, device)
-        val_metrics = evaluate(model, val_loader, device)
+        train_loss = train_one_epoch(
+            model, train_loader, optimizer, device, head_kind=head_kind
+        )
+        val_metrics = evaluate(
+            model, val_loader, device, head_kind=head_kind
+        )
         val_loss = val_metrics["loss"]
         scheduler.step(val_loss)
         elapsed = time.time() - t0

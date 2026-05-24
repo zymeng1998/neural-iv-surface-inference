@@ -25,6 +25,26 @@ conditional:
   epochs: 50
   patience: 10
 
+  # ── Predictive head (Phase 2D / W4 — 2D.2) ────────────────────────
+  # kind: point     — 2C baseline (masked MSE on μ). Default; preserves
+  #                   byte-for-byte behavior with the original 2C recipe.
+  # kind: gaussian  — heteroscedastic Gaussian head (μ, σ); trained with
+  #                   masked Gaussian NLL. Emits raw σ; calibration is 2D.4.
+  # kind: quantile  — quantile head with the levels listed in `quantiles`;
+  #                   trained with masked pinball loss.
+  head:
+    kind: point
+    quantiles: [0.05, 0.5, 0.95]
+
+# ── Deep ensemble (Phase 2D / W4 — 2D.3) ───────────────────────────
+# Used by scripts/run_ensemble_train.py and the EnsembleConditionalPredictor
+# adapter. `size` members are trained, each with the corresponding entry from
+# `seeds`. The full K-seed AV training pass lives in story 2D.8 — locally
+# only the 2-member synthetic smoke is exercised.
+ensemble:
+  size: 5
+  seeds: [101, 202, 303, 404, 505]
+
 # ── Output paths ───────────────────────────────────────────────────
 paths:
   checkpoint_dir: artifacts/checkpoints

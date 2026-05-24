@@ -18,10 +18,13 @@ swap masked mean for attention-based pooling without rewriting the encoder.
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
 import torch
 import torch.nn as nn
+
+# Default quantile triplet used by the W4 quantile head (2D.2).
+DEFAULT_QUANTILES: tuple[float, ...] = (0.05, 0.5, 0.95)
 
 
 def _mlp_block(in_dim: int, out_dim: int) -> nn.Sequential:
@@ -188,11 +191,132 @@ class CoordinateDecoder(nn.Module):
         return nn.functional.softplus(raw)
 
 
-class ConditionalSurfaceModel(nn.Module):
-    """Thin wrapper composing ``SetEncoder`` + ``CoordinateDecoder``.
+class MultiOutputDecoder(nn.Module):
+    """Coordinate decoder with a configurable W4 head (2D.2).
 
-    Forward signature mirrors the batch contract from
-    ``collate_conditional``: ``(context, context_mask, query) -> sigma_hat``.
+    Shares the trunk MLP shape used by :class:`CoordinateDecoder` and replaces
+    the final ``Linear(hidden, 1)`` with a head-specific output layer.
+
+    Supported heads
+    ---------------
+    ``gaussian``
+        Two output channels: ``mu`` (softplus → positive IV) and a raw scalar
+        passed through softplus to give a strictly positive ``sigma``. The
+        derived ``log_sigma2 = 2 * log(sigma)`` is also returned for downstream
+        logging / NLL computation that prefers the log-variance form.
+    ``quantile``
+        ``K`` output channels (one per configured quantile level), each passed
+        through softplus to guarantee positive IV. During ``eval`` the
+        ``quantiles`` tensor is sorted along the level axis to enforce
+        monotonicity at inference; during training the raw (un-sorted) tensor
+        is returned so the pinball loss receives the per-level prediction it
+        was paired with at construction.
+
+    The point head is implemented by :class:`CoordinateDecoder` directly, which
+    :class:`ConditionalSurfaceModel` keeps untouched so ``head.kind: point``
+    runs are bit-for-bit equivalent to the 2C baseline.
+    """
+
+    def __init__(
+        self,
+        latent_dim: int,
+        coord_dim: int,
+        hidden_dim: int,
+        n_layers: int,
+        head_kind: Literal["gaussian", "quantile"],
+        quantiles: tuple[float, ...] = DEFAULT_QUANTILES,
+        sigma_eps: float = 1e-6,
+    ) -> None:
+        super().__init__()
+        if n_layers < 1:
+            raise ValueError("n_layers must be >= 1")
+        if head_kind not in {"gaussian", "quantile"}:
+            raise ValueError(f"unsupported head_kind: {head_kind!r}")
+        self.head_kind = head_kind
+        self.sigma_eps = float(sigma_eps)
+
+        trunk: list[nn.Module] = []
+        cur = latent_dim + coord_dim
+        for _ in range(n_layers):
+            trunk.append(_mlp_block(cur, hidden_dim))
+            cur = hidden_dim
+        self.trunk = nn.Sequential(*trunk)
+
+        if head_kind == "gaussian":
+            self.head = nn.Linear(cur, 2)
+            self.register_buffer(
+                "_quantiles", torch.tensor([], dtype=torch.float32), persistent=False
+            )
+        else:  # quantile
+            qs = tuple(float(q) for q in quantiles)
+            if not qs:
+                raise ValueError("quantile head requires at least one level")
+            if any(not (0.0 < q < 1.0) for q in qs):
+                raise ValueError(f"quantiles must be strictly in (0,1); got {qs}")
+            if list(qs) != sorted(qs):
+                raise ValueError(
+                    f"quantiles must be supplied in ascending order; got {qs}"
+                )
+            self.head = nn.Linear(cur, len(qs))
+            self.register_buffer(
+                "_quantiles",
+                torch.tensor(qs, dtype=torch.float32),
+                persistent=False,
+            )
+
+        _init_linear(self)
+
+    @property
+    def quantiles(self) -> tuple[float, ...]:
+        return tuple(float(q) for q in self._quantiles.tolist())
+
+    def forward(
+        self, z: torch.Tensor, query: torch.Tensor
+    ) -> dict[str, torch.Tensor]:
+        if z.dim() != 2:
+            raise ValueError(f"z must be 2D (B, latent_dim); got {tuple(z.shape)}")
+        if query.dim() != 3:
+            raise ValueError(
+                f"query must be 3D (B, N, coord_dim); got {tuple(query.shape)}"
+            )
+        n_query = query.shape[1]
+        z_exp = z.unsqueeze(1).expand(-1, n_query, -1)
+        h = self.trunk(torch.cat([z_exp, query], dim=-1))
+        raw = self.head(h)  # (B, N, out_dim)
+
+        if self.head_kind == "gaussian":
+            mu = nn.functional.softplus(raw[..., 0])
+            sigma = nn.functional.softplus(raw[..., 1]) + self.sigma_eps
+            log_sigma2 = 2.0 * torch.log(sigma)
+            return {"mu": mu, "sigma": sigma, "log_sigma2": log_sigma2}
+
+        # quantile head
+        q_raw = nn.functional.softplus(raw)  # (B, N, K), positive IVs
+        if not self.training:
+            q_out, _ = torch.sort(q_raw, dim=-1)
+        else:
+            q_out = q_raw
+        k_mid = q_out.shape[-1] // 2
+        return {
+            "mu": q_out[..., k_mid],
+            "quantiles": q_out,
+            "quantile_levels": self._quantiles,
+        }
+
+
+class ConditionalSurfaceModel(nn.Module):
+    """Thin wrapper composing ``SetEncoder`` + a head-specific decoder.
+
+    With ``head["kind"] == "point"`` (the default and the 2C baseline) the
+    decoder is exactly :class:`CoordinateDecoder` and ``forward`` returns a
+    dict ``{"mu": Tensor}``. For ``gaussian`` and ``quantile`` heads (2D.2) the
+    decoder is replaced with :class:`MultiOutputDecoder` and ``forward``
+    returns the head-specific keys (``sigma`` / ``log_sigma2`` for Gaussian,
+    ``quantiles`` / ``quantile_levels`` for quantile) alongside ``mu``.
+
+    The ``head`` config is also persisted on the module (``self.head_cfg``) so
+    downstream adapters and checkpoint loaders can rebuild it from a stored
+    config blob.
     """
 
     def __init__(
@@ -204,8 +328,17 @@ class ConditionalSurfaceModel(nn.Module):
         n_elem_layers: int = 2,
         n_post_layers: int = 1,
         n_decoder_layers: int = 3,
+        head: dict[str, Any] | None = None,
     ) -> None:
         super().__init__()
+        self.head_cfg: dict[str, Any] = dict(head or {"kind": "point"})
+        kind = str(self.head_cfg.get("kind", "point"))
+        if kind not in {"point", "gaussian", "quantile"}:
+            raise ValueError(
+                f"unsupported head.kind: {kind!r} (expected point|gaussian|quantile)"
+            )
+        self.head_kind = kind
+
         self.encoder = SetEncoder(
             in_dim=context_dim,
             hidden_dim=hidden_dim,
@@ -213,18 +346,38 @@ class ConditionalSurfaceModel(nn.Module):
             n_elem_layers=n_elem_layers,
             n_post_layers=n_post_layers,
         )
-        self.decoder = CoordinateDecoder(
-            latent_dim=latent_dim,
-            coord_dim=coord_dim,
-            hidden_dim=hidden_dim,
-            n_layers=n_decoder_layers,
-        )
+        if kind == "point":
+            self.decoder = CoordinateDecoder(
+                latent_dim=latent_dim,
+                coord_dim=coord_dim,
+                hidden_dim=hidden_dim,
+                n_layers=n_decoder_layers,
+            )
+        else:
+            quantiles = tuple(
+                self.head_cfg.get("quantiles", DEFAULT_QUANTILES)
+            ) if kind == "quantile" else DEFAULT_QUANTILES
+            self.decoder = MultiOutputDecoder(
+                latent_dim=latent_dim,
+                coord_dim=coord_dim,
+                hidden_dim=hidden_dim,
+                n_layers=n_decoder_layers,
+                head_kind=kind,
+                quantiles=quantiles,
+            )
+            # Normalise the persisted config so checkpoints carry the resolved
+            # quantile levels even when the YAML supplied the defaults.
+            if kind == "quantile":
+                self.head_cfg["quantiles"] = list(quantiles)
 
     def forward(
         self,
         context: torch.Tensor,
         context_mask: torch.Tensor,
         query: torch.Tensor,
-    ) -> torch.Tensor:
+    ) -> dict[str, torch.Tensor]:
         z = self.encoder(context, context_mask)
+        if self.head_kind == "point":
+            mu = self.decoder(z, query)
+            return {"mu": mu}
         return self.decoder(z, query)

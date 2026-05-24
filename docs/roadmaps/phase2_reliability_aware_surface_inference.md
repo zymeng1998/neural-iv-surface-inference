@@ -167,9 +167,10 @@ Sequencing principle: **2A before 2C** (we measure reliability before we model
 it), and **2B diagnostics before any hard structural constraints** (we quantify
 violations before penalizing them).
 
-> **Status (2026-05-24):** Phase 2 is **~75% complete** — three of four epics
-> are `done`. Epic 2D (W4 + W5) is the remaining work and is still `backlog`,
-> undecomposed.
+> **Status (2026-05-24):** Phase 2 is **~80% complete** — three of four epics
+> are `done`, and the local W4 model + ensemble stories (2D.2 + 2D.3) of
+> epic 2D have landed. 2D.4–2D.6 remain `backlog`; the remote stories
+> 2D.7–2D.9 also remain `backlog`.
 >
 > Epic 2A (W1 — uncertainty evaluation) is `done` — all five stories
 > (2A.1–2A.5) complete; the W1 measurement layer runs end-to-end
@@ -197,10 +198,50 @@ violations before penalizing them).
 >   tables, and training dynamics — all on real AV data.
 >
 > Epic 2D (W4 — uncertainty-aware inference + W5 — abstention & tradability
-> decision layer) is `backlog` and **undecomposed** (progressive decomposition).
-> W3 deliberately ships point predictions only; uncertainty heads, calibration,
-> and the `surface_action ∈ {trade, hedge_only, abstain}` decision layer that
-> fuses W4 predictive intervals with W2 structure flags are all 2D work.
+> decision layer) is `in_progress` and decomposed (2026-05-24). Mirrors the
+> 2C split: every story is **either local-only or remote-only** — none
+> straddle. Stories:
+>
+> **Local phase (Mac).** Code, synthetic smokes, calibration on cached
+> predictions, pure-CPU decision layer. No Pod time.
+> - **2D.1** decompose Phase 2D — `done`.
+> - **2D.2** heteroscedastic / quantile predictive head — code + 3 synthetic
+>   smokes (point / Gaussian / quantile) — `done` (2026-05-24). Default
+>   `head.kind: point` preserves 2C bit-for-bit (regression test); Gaussian
+>   NLL and quantile pinball smokes are finite and decreasing; quantiles
+>   monotone at eval.
+> - **2D.3** deep-ensemble adapter, `members.json` manifest schema,
+>   dummy-mock unit tests, 2-member synthetic-smoke train — `done`
+>   (2026-05-24). `scripts/run_ensemble_train.py` iterates seeded
+>   `train_conditional` runs and writes `members.json`;
+>   `EnsembleConditionalPredictor` emits mean prediction in `pred` and
+>   population-std disagreement (uncalibrated) in `uncertainty`.
+> - **2D.4** fuse + calibrate the 2D.7 interval, 2D.8 disagreement, and
+>   2B.2 masking-sensitivity into one `confidence_score` + `(lower,
+>   upper)`; fit calibrator on **cached val predictions pulled from the
+>   Pod**; verify coverage with the W1 metric.
+> - **2D.5** abstention + tradability + no-arb risk-flag decision layer
+>   (`abstain_flag`, `tradability_score`, `decision_reason`); config-driven
+>   thresholds; pure CPU NumPy.
+> - **2D.6** decision-layer runner skeleton + synthetic smoke against a
+>   tiny synthetic dataset + dummy predictor.
+>
+> **Remote phase (RunPod).** GPU-bound full-AV training and the closing
+> end-to-end scoring pass.
+> - **2D.7** full AV training with `head.kind ∈ {gaussian, quantile,
+>   point-control}`; pull back per-row val/test predictions + manifest.
+> - **2D.8** K = 5 deep-ensemble training on AV; pull back manifest +
+>   ensemble-aggregated val/test predictions (mean + disagreement std +
+>   per-member columns).
+> - **2D.9** end-to-end decision-layer eval on AV against all four
+>   predictors (interpolation, MLP, point conditional, calibrated
+>   conditional); commit `results/2D/` artifacts; write the closing
+>   `experiment_journal.md` entry that closes acceptance §5 and §6.
+>
+> Sequencing: local 2D.2 + 2D.3 + 2D.5 + 2D.6 ship first (independent and
+> parallelizable). Operator starts the Pod → 2D.7 + 2D.8 run in parallel.
+> Pull val predictions back, run local 2D.4 (calibrator fit). Final Pod
+> pass: 2D.9. Pull, commit, journal, gate.
 
 ## 6) Acceptance Criteria
 

@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-05-22T20:35:00-04:00
+last_updated_at: 2026-05-24T00:00:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -57,7 +57,16 @@ decomposition). The first story of any epic is always its decomposition story.
 | 2C.6 | Story | Alpha Vantage ingest implementation + sample validation (local) | `done` | `docs/tasks/specs/2C.6_remote_sync_data_refresh.md` | 2026-05-22 |
 | 2C.7 | Story | Remote: full SPY AV pull, replace old dataset, rebuild pipeline | `done` | `docs/tasks/specs/2C.7_remote_full_pull_replace_dataset.md` | 2026-05-23 |
 | 2C.8 | Story | Re-run Phase 1 baselines + 2A/2B eval on new AV data | `done` | `docs/tasks/specs/2C.8_rerun_baselines_eval_on_new_data.md` | 2026-05-23 |
-| 2D | Epic | Uncertainty-aware inference & decision layer | `backlog` | `docs/roadmaps/phase2_reliability_aware_surface_inference.md` (W4+W5 / §5) | 2026-05-22 |
+| 2D | Epic | Uncertainty-aware inference & decision layer | `in_progress` | `docs/roadmaps/phase2_reliability_aware_surface_inference.md` (W4+W5 / §5) | 2026-05-24 |
+| 2D.1 | Story | Decompose Phase 2D | `done` | `docs/tasks/specs/2D.1_decompose_phase_2d.md` | 2026-05-24 |
+| 2D.2 | Story | Local: heteroscedastic / quantile head — code + synthetic smoke | `done` | `docs/tasks/specs/2D.2_heteroscedastic_quantile_head.md` | 2026-05-24 |
+| 2D.3 | Story | Local: deep ensemble adapter — manifest + dummy tests + synthetic smoke | `done` | `docs/tasks/specs/2D.3_deep_ensemble_disagreement.md` | 2026-05-24 |
+| 2D.4 | Story | Local: calibrated confidence score + uncertainty band | `backlog` | `docs/tasks/specs/2D.4_calibrated_confidence_score.md` | 2026-05-24 |
+| 2D.5 | Story | Local: abstention + tradability + risk-flag decision layer | `backlog` | `docs/tasks/specs/2D.5_abstention_tradability_decision_layer.md` | 2026-05-24 |
+| 2D.6 | Story | Local: decision-layer runner skeleton + synthetic smoke | `backlog` | `docs/tasks/specs/2D.6_decision_layer_runner_artifacts.md` | 2026-05-24 |
+| 2D.7 | Story | Remote: full AV training — Gaussian + quantile heads (+ point control) | `backlog` | `docs/tasks/specs/2D.7_remote_train_heteroscedastic_quantile.md` | 2026-05-24 |
+| 2D.8 | Story | Remote: K-seed deep ensemble training on AV | `backlog` | `docs/tasks/specs/2D.8_remote_train_deep_ensemble.md` | 2026-05-24 |
+| 2D.9 | Story | Remote: end-to-end decision-layer eval on AV + artifacts + journal | `backlog` | `docs/tasks/specs/2D.9_remote_decision_layer_e2e.md` | 2026-05-24 |
 
 > When an epic is entered, set it to `in_progress`, add its decomposition story
 > (e.g. `2A.1`), then add the resulting stories as new rows. Do not delete or

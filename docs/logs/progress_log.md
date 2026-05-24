@@ -1448,3 +1448,164 @@ Full numbers + the like-for-like vs interp/MLP comparison are in
 ### Next actions
 - Decompose Epic 2D into stories (2D.1 = decomposition story) when ready
   to start that phase.
+
+## 2026-05-24 — Epic 2D decomposed (W4 + W5)
+
+### Completed
+- Entered epic 2D (W4 uncertainty-aware neural inference + W5 abstention &
+  tradability decision layer) and wrote phase-entry decomposition story
+  `docs/tasks/specs/2D.1_decompose_phase_2d.md`.
+- Wrote five implementation specs:
+  - `2D.2_heteroscedastic_quantile_head.md` — Gaussian NLL / quantile pinball
+    head on the W3 decoder, behind a `head.kind` config switch (default
+    `point` preserves 2C behavior bit-for-bit).
+  - `2D.3_deep_ensemble_disagreement.md` — K-seed ensemble of the W3 model +
+    `EnsembleConditionalPredictor` adapter emitting mean prediction +
+    per-point disagreement std. Independent of 2D.2.
+  - `2D.4_calibrated_confidence_score.md` — fuse 2D.2 interval + 2D.3
+    disagreement + 2B.2 masking sensitivity into a per-point
+    `confidence_score` + calibrated `(lower, upper)`; calibrate on val
+    (temperature for Gaussian, split-conformal for quantile); verify with
+    the W1 coverage metric.
+  - `2D.5_abstention_tradability_decision_layer.md` — config-driven
+    `apply_decision_layer` emitting `abstain_flag`, `tradability_score`,
+    `decision_reason`; consumes 2D.4 reliability signals + 2B.4 risk flags.
+  - `2D.6_decision_layer_runner_artifacts.md` — end-to-end runner producing
+    `results/2D/` artifacts and the experiment-journal entry that closes
+    Phase 2 acceptance §5 (decision-grade outputs) and §6 (calibration
+    demonstrated).
+- Updated `docs/tasks/BOARD.md`: epic 2D row flipped to `in_progress`; added
+  six rows 2D.1–2D.6 (2D.1 `done`; 2D.2–2D.6 `backlog`).
+- Updated the Phase 2 roadmap status block in
+  `docs/roadmaps/phase2_reliability_aware_surface_inference.md` with the W4
+  + W5 decomposition + sequencing notes (2D.2 and 2D.3 parallelizable; 2D.4
+  fuses them; 2D.5 consumes 2D.4 + 2B.4; 2D.6 is the evidence closer).
+- Ran the PMR pre-push gate dry-run.
+
+### Next actions
+- Human review of specs 2D.2–2D.6; promote ready ones to `todo`.
+- Start with 2D.2 or 2D.3 in Implement mode (they are independent and can
+  proceed in parallel).
+- Annotated each 2D spec with a "Where this runs (local vs remote)" block
+  mirroring the 2C local/remote split. Pod-bound work is restricted to
+  2D.2-R (full Gaussian / quantile training on AV), 2D.3-R (K-seed
+  ensemble train), and 2D.6-R (end-to-end AV scoring pass + artifact
+  commit). 2D.4 and 2D.5 are fully local. Summary table added to 2D.1 and
+  to the Phase 2 roadmap status block.
+
+## 2026-05-24 — Epic 2D split into local/remote stories (8-story decomposition)
+
+### Completed
+- Per project policy (no story straddles local + remote), split the three
+  hybrid 2D stories into dedicated local-only and remote-only specs:
+  - 2D.2 → 2D.2 (local: code + synthetic smoke) + 2D.7 (remote: full AV
+    training with Gaussian + quantile heads + point-control).
+  - 2D.3 → 2D.3 (local: adapter + dummy tests + 2-member synthetic smoke)
+    + 2D.8 (remote: K = 5 ensemble training on AV).
+  - 2D.6 → 2D.6 (local: runner skeleton + synthetic smoke; no committed
+    `results/2D/` artifacts) + 2D.9 (remote: end-to-end AV scoring pass,
+    commit `results/2D/`, closing experiment-journal entry, reviewer-state
+    bump, live PMR gate).
+- Created `docs/tasks/specs/2D.7_remote_train_heteroscedastic_quantile.md`,
+  `docs/tasks/specs/2D.8_remote_train_deep_ensemble.md`, and
+  `docs/tasks/specs/2D.9_remote_decision_layer_e2e.md`. Each one has a
+  "Where this runs" block declaring it remote-only and explicit
+  non-goals forbidding straddle.
+- Tightened 2D.2 / 2D.3 / 2D.6 to local-only: renamed titles with
+  `(Local)` prefix, replaced the dual-paragraph local/remote block with a
+  single local-only block, added non-goals pointing to the matching
+  remote stories.
+- Updated 2D.1 story-breakdown: now two sub-tables ("Local stories",
+  "Remote stories") + an explicit five-phase sequencing block (local A →
+  local B → remote A → local C [calibrator fit] → remote B [2D.9]).
+- Updated `docs/tasks/BOARD.md`: added rows 2D.7–2D.9, retitled 2D.2,
+  2D.3, 2D.6 with `Local:` / `Remote:` prefixes, bumped epic-2D row date.
+- Updated the Phase 2 roadmap status block: replaced the 5-story listing
+  with the 8-story local/remote phase split and the sequencing summary.
+- Ran the PMR pre-push gate dry-run.
+
+### Next actions
+- Human review of specs 2D.2–2D.9; promote ready local ones to `todo`.
+- Begin with local stories (2D.2 or 2D.3, parallelizable). Pod work
+  (2D.7/2D.8) is gated on those landing green; 2D.9 is gated on
+  2D.4 + 2D.5 + 2D.6 + 2D.7 + 2D.8.
+
+## 2026-05-24 — 2D.2 + 2D.3 landed (local W4 model + ensemble adapter)
+
+### Completed
+
+- **2D.2 — heteroscedastic / quantile predictive head.** Added a config
+  switch `conditional.head.{kind, quantiles}` (default `kind: point`,
+  bit-for-bit equivalent to the 2C recipe). New `MultiOutputDecoder`
+  class extends the trunk MLP with a per-head output layer:
+  - `gaussian`: 2 channels → `(mu, sigma)` via softplus, plus the derived
+    `log_sigma2` for logging.
+  - `quantile`: K channels → softplus, sorted along the level axis at
+    eval time so monotonicity is enforced at inference; raw outputs are
+    used at train time so the pinball loss is paired correctly.
+  Added masked `gaussian_nll_loss` and `pinball_loss` in
+  `models/losses.py`; `train_conditional.compute_head_loss` dispatches
+  per head kind. `ConditionalSurfacePredictor` updated to read `mu` from
+  the new dict-shaped forward output (back-compatible with legacy
+  checkpoints that lack a `head` field).
+- **2D.3 — deep-ensemble adapter, manifest, smoke.** New
+  `scripts/run_ensemble_train.py` iterates over `ensemble.seeds[:size]`
+  and re-invokes `train_conditional` per seed, writing
+  `{checkpoint_dir}/ensemble/seed_<s>/best_conditional.pt` and a
+  `members.json` manifest (version, ensemble_size, config_hash, per-member
+  seed + val_loss + relative checkpoint path). New
+  `EnsembleConditionalPredictor` in `eval/adapters.py`:
+  `from_manifest(path, device)` eager-loads members; `predict(df)`
+  returns mean over members in `pred`, population std (ddof=0) in
+  `uncertainty`, `lower/upper` left None. Missing checkpoints raise
+  `FileNotFoundError` with a clear message.
+- **Tests.** `tests/test_conditional_surface.py` extended with head
+  shape, monotonicity, and loss-algebra coverage (pinball-zero-on-perfect,
+  pinball-known-value, gaussian-nll closed-form). Added
+  `tests/test_train_conditional.py` cases proving point-head bit-for-bit
+  regression vs the legacy code path, Gaussian NLL decreasing,
+  quantile pinball decreasing + monotone at eval. New
+  `tests/test_ensemble_adapter.py` covers aggregation algebra (mean +
+  population std), df-length alignment, empty-members rejection,
+  missing-checkpoint error, and an end-to-end manifest roundtrip with
+  two real (untrained) member checkpoints.
+
+### Results
+
+- Synthetic smoke (12 epochs, hidden=16, latent=8, lr=5e-3):
+  - `point`    : first_train=0.4192, final_train=9.37e-4, final_val=6.35e-4
+  - `gaussian` : first_train=-0.520, final_train=-2.992,  final_val=-3.065
+  - `quantile` : first_train=0.169 , final_train=5.60e-3, final_val=6.00e-3
+- Two-member ensemble smoke (6 epochs each): seed=101 best_val=0.001256,
+  seed=202 best_val=0.000863. Adapter on a 12-point held-out frame:
+  mean disagreement = 0.0089, max = 0.0119 — non-zero, confirming the
+  std signal is live.
+- pytest:
+  `tests/test_conditional_surface.py tests/test_train_conditional.py
+   tests/test_conditional_adapter.py tests/test_ensemble_adapter.py`
+  → 26 passed.
+
+### Files changed
+- `src/neural_iv_surface_inference/models/conditional_surface.py`
+- `src/neural_iv_surface_inference/models/losses.py`
+- `src/neural_iv_surface_inference/training/train_conditional.py`
+- `src/neural_iv_surface_inference/eval/adapters.py`
+- `configs/conditional.yaml`
+- `scripts/run_ensemble_train.py` (new)
+- `tests/test_conditional_surface.py` (extended)
+- `tests/test_train_conditional.py` (extended)
+- `tests/test_ensemble_adapter.py` (new)
+- `docs/tasks/BOARD.md`, `docs/tasks/specs/2D.2_*.md`,
+  `docs/tasks/specs/2D.3_*.md`,
+  `docs/roadmaps/phase2_reliability_aware_surface_inference.md`
+
+### Open items
+- 2D.4 (calibrated confidence + interval), 2D.5 (decision layer), 2D.6
+  (runner skeleton) remain `backlog` for local work.
+- Remote stories 2D.7 (Gaussian + quantile + point-control on AV), 2D.8
+  (K=5 ensemble on AV), and 2D.9 (end-to-end decision-layer eval) remain
+  `backlog` and are unblocked by this commit.
+
+### Next actions
+- Promote 2D.4 to `todo` and implement it locally (it consumes the 2D.2
+  head sigma, the 2D.3 disagreement, and the 2B.2 masking signal).
