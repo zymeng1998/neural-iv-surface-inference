@@ -576,7 +576,7 @@ print('rendering 60 frames @ 6° each ...')
 frames = [render_frame(a) for a in np.linspace(0, 354, 60)]
 frames[0].save(
     GIF_PATH, save_all=True, append_images=frames[1:],
-    duration=70, loop=0, optimize=True, disposal=2,
+    duration=105, loop=0, optimize=True, disposal=2,
 )
 print(f'wrote {GIF_PATH}  ({GIF_PATH.stat().st_size/1024:.0f} KB)')
 display(IPyImage(filename=str(GIF_PATH)))
