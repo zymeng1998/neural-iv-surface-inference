@@ -1609,3 +1609,114 @@ Full numbers + the like-for-like vs interp/MLP comparison are in
 ### Next actions
 - Promote 2D.4 to `todo` and implement it locally (it consumes the 2D.2
   head sigma, the 2D.3 disagreement, and the 2B.2 masking signal).
+
+## 2026-05-25 — 2D.7 + 2D.8 remote AV trainings complete
+
+### What landed
+- `configs/conditional_2D7_{point_control,gaussian,quantile}.yaml` —
+  three new configs derived from `configs/conditional.yaml` with
+  identical seed/data/hparams, varying `conditional.head.kind`.
+- `configs/conditional_2D8_ensemble.yaml` — K=5 ensemble config
+  (seeds 101/202/303/404/505, `head.kind: point`).
+- `scripts/run_2d7_single.py` — train + score val/test + emit manifest +
+  per-row CSV + training_curve runner (wraps `train_conditional`; does
+  not modify the 2D.2 model/loss/training-loop code).
+- `scripts/run_2d8_ensemble.py` — K-member train + ensemble score
+  + per-row mean/disagreement/per-member CSV + manifest.
+- `scripts/run_conditional_2D7.sh`, `scripts/run_conditional_2D8.sh` —
+  thin bash orchestrators.
+- `artifacts/runs/2D7/{point,gaussian,quantile}/manifest.json`,
+  `artifacts/runs/2D8/manifest.json`, `artifacts/runs/2D8/checkpoints/
+  ensemble/members.json` — pulled back from Pod.
+- `.gitignore` — new entries: `artifacts/runs/**/*.csv`, `*.log`, and
+  `checkpoints/` (CSVs are ~700 MB each; not committable).
+- `docs/experiments/experiment_journal.md` — full run entry.
+- `docs/tasks/BOARD.md` — 2D.7 and 2D.8 → `done`.
+- `docs/tasks/specs/2D.{7,8}_*.md` — frontmatter `status: done`.
+- `docs/roadmaps/phase2_reliability_aware_surface_inference.md` — Phase 2
+  progress updated to ~88 %.
+
+### Headline numbers (test MAE on `spy_phase1_random40_noiselow`)
+
+| Run                  | test_MAE_mu | vs 2C.5-R point (0.0753) |
+|----------------------|-------------|--------------------------|
+| 2D.7 point           | 0.075577    | +0.4 % (regression PASS) |
+| 2D.7 gaussian        | 0.078735    | +4.6 %                   |
+| 2D.7 quantile        | 0.071876    | **−4.6 %**               |
+| 2D.8 ensemble (K=5)  | 0.074767    | −0.7 %                   |
+
+Mean disagreement_std on test (2D.8): 9.4e-3, range
+[2.4e-4, 0.319], no negatives.
+
+### Open items
+- 2D.4 (calibrated confidence + interval) → ready to promote to `todo`; it
+  now has σ (Gaussian), quantiles, and disagreement_std all on disk.
+- 2D.5 (decision layer) + 2D.6 (runner skeleton) remain `backlog`.
+- 2D.9 (end-to-end decision-layer eval) remains `backlog` — unblocked by
+  this commit.
+
+### Next actions
+- Promote 2D.4 to `todo` and implement against the new
+  `artifacts/runs/2D7/{gaussian,quantile}/val_predictions.csv` +
+  `artifacts/runs/2D8/val_predictions.csv` (do NOT touch 2D.7/2D.8
+  artifacts as ground truth; treat them as a closed evidence layer).
+
+---
+
+## 2026-05-25 — 2D.4 calibrated confidence score + uncertainty band (LOCAL)
+
+### Completed
+
+- Implemented `src/neural_iv_surface_inference/eval/calibration.py`:
+  - `fit_temperature_gaussian` — bisection on the monotone coverage(T) curve
+  - `fit_conformal_quantile` — split-conformal δ adjustment of `(q_lo, q_hi)`
+  - `fit_monotone_scaling` — non-negative-slope LS map for auxiliary signals
+    (deep-ensemble disagreement, 2B.2 masking-sensitivity std → σ-units)
+  - `fuse_uncertainty` — quadrature sum of σ-unit signals (monotone in each)
+  - `Calibrator` dataclass + JSON serialisation
+- Added `CalibratedConditionalPredictor` to `eval/adapters.py`. Wraps a base
+  Gaussian/quantile head + optional ensemble + optional masking callable and
+  emits a `PredictionResult` with all four slots filled plus
+  `meta["confidence_score"]`.
+- Extended `ConditionalSurfacePredictor.predict` to surface raw `sigma`
+  (Gaussian head) and `q_lo / q_hi` (quantile head) without changing the
+  `head.kind: point` path — verified by existing
+  `tests/test_conditional_adapter.py` (unchanged, still passes).
+- Added `scripts/run_calibration_fit.py` + `configs/calibration.yaml`. Fits
+  on cached val CSVs (no model load, no AV egress), persists JSON, and
+  prints the W1 coverage / correlation report on test.
+- Added 15 unit tests in `tests/test_calibration.py`: temperature recovery,
+  conformal coverage (tighten + widen + asymmetric), monotone scaling,
+  fusion monotonicity, Calibrator JSON roundtrip, end-to-end predictor
+  wiring, and the missing-signal error path.
+
+### Headline numbers (AV test fold, nominal α = 0.9)
+
+| Run                                          | test_coverage | mean_width | corr_pearson | within ±0.02? |
+|----------------------------------------------|---------------|------------|--------------|---------------|
+| 2D.7 gaussian + 2D.8 disagreement (primary)  | **0.8955**    | 0.3030     | 0.7381       | ✅            |
+| 2D.7 quantile + 2D.8 disagreement            | 0.8570        | 0.2148     | 0.5560       | ❌ (−4.3 pp)  |
+
+Fitted Gaussian temperature T = 1.087 (raw σ already close to calibrated),
+ensemble scale 5.59. Quantile conformal δ = +7.8e-3.
+
+### Notes
+
+- The Gaussian head **meets** the 2D.4 acceptance bar (±2 pp at α=0.9).
+- The quantile head **undercovers** on the test fold by ~4.3 pp despite
+  hitting α exactly on val by construction — expected: split-conformal
+  assumes exchangeability, which a strictly chronological val/test split
+  violates (regime shift between 2020-11 → 2023-08). Recorded as a known
+  limitation; not a blocker for 2D.4 since Gaussian satisfies the AC.
+
+### Open items
+
+- 2D.5 (decision layer) + 2D.6 (runner skeleton) still `backlog`.
+- Possible follow-up: time-weighted or sliding-window conformalisation to
+  recover quantile coverage under regime shift. Out of scope for 2D.4.
+
+### Next actions
+
+- Promote 2D.5 to `todo` — calibrated confidence and interval are now on
+  disk; the decision layer can consume `confidence_score` and `[lower, upper]`
+  directly from `CalibratedConditionalPredictor`.

@@ -415,3 +415,180 @@ abstention, decision layer). Also: a small retrospective on the scipy CPU
 bottleneck (joblib parallelization across 48 CPUs would have cut Phase B
 wall time from ~11h to ~1h; worth pre-baking before the next benchmark
 rerun).
+
+---
+
+## 2026-05-25 — 2D.7 + 2D.8 remote AV trainings (RTX 4090)
+
+**Stories:** 2D.7 (Gaussian + quantile + point-control on AV), 2D.8 (K=5
+deep ensemble on AV). Both ran sequentially on a single RunPod RTX 4090
+Community Cloud Pod.
+
+**Benchmark:** `data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet`
+(22,512,040 rows; train 11,112,617 / val 5,593,759 / test 5,805,664).
+
+### 2D.7 — three heads, identical seed / data / hyperparameters
+
+| head      | epochs | best_val_loss | val_MAE_mu | **test_MAE_mu** | qmono | wall-clock |
+|-----------|--------|---------------|------------|-----------------|-------|------------|
+| point     | 50     |  0.010035     | 0.05766    | **0.075577**    |  ✅   | 102.2 s    |
+| gaussian  | 45     | -2.5635 (NLL) | 0.06062    |  0.078735       |  ✅   |  92.9 s    |
+| quantile  | 50     |  0.013265     | 0.05300    |  **0.071876**   |  ✅   | 103.5 s    |
+
+**Regression guard (point vs 2C.5-R baseline):**
+`test_MAE_mu = 0.075577` vs 2C.5-R `0.0753` → **delta +0.0003 (≈+0.4 %)**.
+Tolerance budget for 2D.2 regression is ≤2 %; PASS.
+
+**Quantile monotonicity:** `q_lo ≤ q_med ≤ q_hi` holds on the full test
+split for all heads that emit quantiles (the inference-time sort in 2D.2's
+`CoordinateDecoder.forward` enforces this).
+
+**Surprise finding:** the quantile head's median (`q_med`) actually beats
+the point head's μ on test MAE by ~5 % (0.0719 vs 0.0756). Treated as a
+tentative signal; will revisit in 2D.4 once calibrated.
+
+### 2D.8 — K = 5 deep ensemble (head.kind = point)
+
+Seeds `[101, 202, 303, 404, 505]`. Each member is a full independent 50-epoch
+training; total training wall-clock 508.1 s (~102 s / member), scoring
+8.3 s.
+
+| seed | best_val_loss | epochs |
+|------|---------------|--------|
+| 101  | 0.010051      | 50     |
+| 202  | 0.010430      | 50     |
+| 303  | 0.009922      | 50     |
+| 404  | 0.010291      | 50     |
+| 505  | 0.010167      | 50     |
+
+**Ensemble headline:**
+- `ensemble_test_MAE = 0.074767` → beats single-seed point baseline (0.0756)
+  by ≈1.1 %; meets the "ensembling typically helps but should not regress
+  beyond a documented tolerance" acceptance criterion.
+- `ensemble_val_MAE  = 0.057498`.
+- `disagreement_std` on test: min 2.4e-4, **mean 9.4e-3**, max 0.319, no
+  negatives. Finite, non-negative, non-degenerate — passes 2D.8 acceptance.
+
+### Wall-clock + cost
+
+Total Pod wall-clock end-to-end (sync + 8 trainings + scoring + rsync) ≈
+**18 min** on a single RTX 4090 (~$0.30 at Community Cloud spot pricing).
+The original estimate budgeted 30–40 min; the 4090 came in ≈ 2× faster
+than the A4500 baseline (3.7 min/training → ≈100 s/training).
+
+### Artifacts (committed evidence)
+
+- `configs/conditional_2D7_{point_control,gaussian,quantile}.yaml`
+- `configs/conditional_2D8_ensemble.yaml`
+- `scripts/run_2d7_single.py`, `scripts/run_2d8_ensemble.py`
+- `scripts/run_conditional_2D7.sh`, `scripts/run_conditional_2D8.sh`
+- `artifacts/runs/2D7/{point,gaussian,quantile}/manifest.json`
+- `artifacts/runs/2D8/manifest.json`
+- `artifacts/runs/2D8/checkpoints/ensemble/members.json`
+
+Per-row `val_predictions.csv` / `test_predictions.csv` and
+`training_curve.csv` / `training_curves.csv` are emitted Pod-side and
+mirrored to laptop under `artifacts/runs/2D{7,8}/.../` but **not** committed
+— each pair is ~700 MB (5.7 M val + 5.8 M test rows in text CSV). They are
+covered by the new `.gitignore` entry `artifacts/runs/**/*.csv` so 2D.4 /
+2D.9 can read them locally without bloating git history.
+
+### Decision impact
+
+Stories 2D.7 + 2D.8 are `done`. Downstream stories 2D.4 (calibration),
+2D.5 (decision layer) and 2D.9 (end-to-end eval) are unblocked: 2D.4 now
+has the raw σ (Gaussian), the quantile triplet, and the per-row
+disagreement std all on disk; 2D.5/2D.9 inherit the cached val/test
+prediction CSVs as their evaluation surface.
+
+### Operational notes
+
+- Pod was a fresh RunPod Community Cloud RTX 4090 with `/workspace` on a
+  network volume. Standard `apt-get install rsync` + `pip install pandas
+  pyarrow scipy PyYAML` was required (image ships torch only). Captured in
+  the data-lineage open-questions section so the next Pod spin-up doesn't
+  re-discover this.
+- Pod git HEAD remained at `7e99efd1a034f23ca69643f4b0c34ac6c44bbdc0`
+  (the last commit pushed to GitHub from the laptop); newer code was
+  rsynced in. Consequence: the `git_sha` field in every manifest reads
+  `7e99efd...`, **not** the laptop's working-tree SHA. The behavioral
+  identity is captured by `config_hash` instead — sufficient for
+  reproducibility but worth noting for forensic traceability.
+- Pod-side disk usage at end of run: 26 GB of 90 GB allocation (29 %).
+  Phase 2 final projection: ~29 GB. Allocation is ~3 × what Phase 2
+  needs; 50 GB would be sufficient.
+
+---
+
+## 2026-05-25T18:00:00-04:00 — Experiment: 2D.4 calibrated confidence + interval on AV test fold
+
+**Purpose:** Fit and verify the W4 calibrator (story 2D.4) that fuses the
+2D.7 Gaussian / quantile head with the 2D.8 deep-ensemble disagreement into
+a single calibrated `(lower, upper)` band + `confidence_score`.
+
+**Changed variables:** New `eval/calibration.py`, new
+`CalibratedConditionalPredictor`, new `scripts/run_calibration_fit.py`,
+fit on `artifacts/runs/2D7/{gaussian,quantile}/val_predictions.csv` joined
+positionally with `artifacts/runs/2D8/val_predictions.csv`. Evaluation
+target: `iv_true` (matches 2D.7 / 2D.8 reporting convention).
+
+### Setup
+
+- Calibrator primitives:
+  - **Gaussian head:** temperature scaling — bisection on monotone coverage(T).
+  - **Quantile head:** split-conformal δ (`scores = max(q_lo−y, y−q_hi)`,
+    δ = quantile at level `ceil((n+1)·α)/n`).
+  - **Auxiliary signals:** non-negative-slope LS map of disagreement_std
+    onto |error| → σ-units, fused by quadrature.
+  - **Confidence score:** `sigmoid(−(u − u0)/s)` with `(u0, s)` from val
+    median/MAD of fused u.
+- Nominal `α = 0.9`, tolerance ±0.02.
+- Verification: `eval/uncertainty_metrics.interval_coverage` and
+  `error_uncertainty_correlation` on the full AV test fold.
+
+### Results (test fold, 5,805,664 rows)
+
+| Head                           | T       | δ          | ens scale | u0     | u_scale | test_coverage | mean_width | corr_pearson | corr_spearman |
+|--------------------------------|---------|------------|-----------|--------|---------|---------------|------------|--------------|---------------|
+| 2D.7 gaussian + 2D.8 ensemble  | 1.0872  | —          | 5.587     | 0.0655 | 0.0391  | **0.8955**    | 0.3030     | **0.7381**   | 0.7343        |
+| 2D.7 quantile + 2D.8 ensemble  | —       | +7.78e-3   | 3.415     | 0.0757 | 0.0388  | 0.8570        | 0.2148     | 0.5560       | 0.5971        |
+
+### Interpretation
+
+- **Gaussian path meets the 2D.4 acceptance bar:** coverage 0.8955 sits
+  inside the documented ±2-pp tolerance of nominal 0.9. The fitted
+  temperature ≈ 1.09 confirms the 2D.7 raw σ was nearly well-scaled out of
+  training; the calibrator's main contribution is the disagreement fusion
+  (ensemble_scale ≈ 5.59), which lifts the error-uncertainty Pearson to
+  0.74. The 90 % band is meaningful and sharp (mean width 0.303 IV-units,
+  i.e. ±0.15 σ).
+- **Quantile path undercovers** by ~4.3 pp despite hitting α exactly on
+  val by construction. Split-conformal assumes exchangeability between val
+  and test; the strictly chronological val (2020-11→…) / test (…→2023-08)
+  split violates that. Recorded as a known limitation — a sliding-window
+  or time-weighted conformaliser would be the natural mitigation but is
+  out of 2D.4's scope.
+- The fused **`confidence_score`** is monotone-decreasing in the fused σ
+  and bounded in [0, 1]; downstream abstention (2D.5) can use it
+  directly. Per-bucket calibration of confidence vs realised MAE is left
+  to the 2D.6 / 2D.9 end-to-end runner.
+
+### Decision impact
+
+- 2D.4 → `done`. Calibrator JSON committed-by-reference under
+  `artifacts/calibration/` (gitignored); regenerable in <1 minute from
+  the cached 2D.7 / 2D.8 CSVs via
+  `python3 scripts/run_calibration_fit.py --config configs/calibration.yaml`.
+- 2D.5 (decision layer) and 2D.6 (runner skeleton) are unblocked: the
+  decision layer can consume `CalibratedConditionalPredictor.predict(df)`
+  directly and read `confidence_score` from `result.meta`.
+
+### Operational notes
+
+- Pure-CPU fit: 5.6 M val rows fit in ~30 s on the laptop. No model load
+  required because the 2D.7 / 2D.8 CSVs already carry per-row μ / σ /
+  quantiles / disagreement_std.
+- Positional join between the gaussian/quantile and ensemble CSVs is
+  used in lieu of a key-based merge — both pipelines iterate the same
+  dataset in the same order, and the script asserts row-count equality
+  plus a 50-sample key spot-check before alignment.

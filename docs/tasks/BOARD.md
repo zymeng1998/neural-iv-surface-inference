@@ -61,7 +61,7 @@ decomposition). The first story of any epic is always its decomposition story.
 | 2D.1 | Story | Decompose Phase 2D | `done` | `docs/tasks/specs/2D.1_decompose_phase_2d.md` | 2026-05-24 |
 | 2D.2 | Story | Local: heteroscedastic / quantile head — code + synthetic smoke | `done` | `docs/tasks/specs/2D.2_heteroscedastic_quantile_head.md` | 2026-05-24 |
 | 2D.3 | Story | Local: deep ensemble adapter — manifest + dummy tests + synthetic smoke | `done` | `docs/tasks/specs/2D.3_deep_ensemble_disagreement.md` | 2026-05-24 |
-| 2D.4 | Story | Local: calibrated confidence score + uncertainty band | `backlog` | `docs/tasks/specs/2D.4_calibrated_confidence_score.md` | 2026-05-24 |
+| 2D.4 | Story | Local: calibrated confidence score + uncertainty band | `done` | `docs/tasks/specs/2D.4_calibrated_confidence_score.md` | 2026-05-25 |
 | 2D.5 | Story | Local: abstention + tradability + risk-flag decision layer | `backlog` | `docs/tasks/specs/2D.5_abstention_tradability_decision_layer.md` | 2026-05-24 |
 | 2D.6 | Story | Local: decision-layer runner skeleton + synthetic smoke | `backlog` | `docs/tasks/specs/2D.6_decision_layer_runner_artifacts.md` | 2026-05-24 |
 | 2D.7 | Story | Remote: full AV training — Gaussian + quantile heads (+ point control) | `done` | `docs/tasks/specs/2D.7_remote_train_heteroscedastic_quantile.md` | 2026-05-25 |

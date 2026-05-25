@@ -167,12 +167,12 @@ Sequencing principle: **2A before 2C** (we measure reliability before we model
 it), and **2B diagnostics before any hard structural constraints** (we quantify
 violations before penalizing them).
 
-> **Status (2026-05-25):** Phase 2 is **~88% complete** — three of four epics
-> are `done`, and the local W4 model + ensemble stories (2D.2 + 2D.3) plus
-> the remote AV trainings (2D.7 + 2D.8) of epic 2D have landed. 2D.4–2D.6
-> remain `backlog`; 2D.9 (end-to-end decision-layer eval) also remains
-> `backlog` and is unblocked now that the 2D.7 + 2D.8 prediction artifacts
-> are committed.
+> **Status (2026-05-25):** Phase 2 is **~91% complete** — three of four epics
+> are `done`, and the local W4 model + ensemble + calibrator stories (2D.2 +
+> 2D.3 + 2D.4) plus the remote AV trainings (2D.7 + 2D.8) of epic 2D have
+> landed. 2D.5–2D.6 remain `backlog`; 2D.9 (end-to-end decision-layer eval)
+> also remains `backlog` and is unblocked now that the calibrator + 2D.7/2D.8
+> prediction artifacts are in place.
 >
 > Epic 2A (W1 — uncertainty evaluation) is `done` — all five stories
 > (2A.1–2A.5) complete; the W1 measurement layer runs end-to-end
@@ -220,8 +220,12 @@ violations before penalizing them).
 >   population-std disagreement (uncalibrated) in `uncertainty`.
 > - **2D.4** fuse + calibrate the 2D.7 interval, 2D.8 disagreement, and
 >   2B.2 masking-sensitivity into one `confidence_score` + `(lower,
->   upper)`; fit calibrator on **cached val predictions pulled from the
->   Pod**; verify coverage with the W1 metric.
+>   upper)` — `done` (2026-05-25). Gaussian + ensemble fusion on the AV
+>   test fold lands at coverage 0.8955 (within ±0.02 of α=0.9), mean width
+>   0.303, Pearson(|err|, u) 0.738. Quantile + conformal under-covers by
+>   ~4.3 pp under the chronological val/test split (exchangeability
+>   violation); documented as a known limitation in
+>   `experiment_journal.md`.
 > - **2D.5** abstention + tradability + no-arb risk-flag decision layer
 >   (`abstain_flag`, `tradability_score`, `decision_reason`); config-driven
 >   thresholds; pure CPU NumPy.

@@ -29,7 +29,8 @@ from neural_iv_surface_inference.models.interpolation import (
 )
 from neural_iv_surface_inference.training.train import predict_mlp
 
-from neural_iv_surface_inference.eval.predictor import PredictionResult
+from neural_iv_surface_inference.eval.calibration import Calibrator
+from neural_iv_surface_inference.eval.predictor import PredictionResult, Predictor
 
 
 class InterpolationPredictor:
@@ -142,7 +143,16 @@ class ConditionalSurfacePredictor:
                 f"ConditionalSurfacePredictor.predict: missing columns {sorted(missing)}"
             )
 
-        out = np.zeros(len(df), dtype=np.float32)
+        n = len(df)
+        out = np.zeros(n, dtype=np.float32)
+        head_kind = getattr(self.model, "head_kind", "point")
+        sigma_out = np.full(n, np.nan, dtype=np.float32) if head_kind == "gaussian" else None
+        q_lo_out = q_hi_out = None
+        quantile_levels: tuple[float, ...] | None = None
+        if head_kind == "quantile":
+            q_lo_out = np.full(n, np.nan, dtype=np.float32)
+            q_hi_out = np.full(n, np.nan, dtype=np.float32)
+
         # Use the original row index to scatter predictions back in order.
         df_indexed = df.reset_index(drop=False).rename(columns={"index": "_orig_idx"})
 
@@ -167,13 +177,30 @@ class ConditionalSurfacePredictor:
 
             forward_out = self.model(ctx_t, ctx_mask_t, q_t)
             mu = forward_out["mu"] if isinstance(forward_out, dict) else forward_out
-            pred = mu.squeeze(0).cpu().numpy()
-            out[group["_orig_idx"].values] = pred
+            idx = group["_orig_idx"].values
+            out[idx] = mu.squeeze(0).cpu().numpy()
+            if head_kind == "gaussian" and isinstance(forward_out, dict) and "sigma" in forward_out:
+                sigma_out[idx] = forward_out["sigma"].squeeze(0).cpu().numpy()
+            elif head_kind == "quantile" and isinstance(forward_out, dict) and "quantiles" in forward_out:
+                q = forward_out["quantiles"].squeeze(0).cpu().numpy()  # (N, K)
+                # `quantiles` is sorted at inference inside MultiOutputDecoder
+                q_lo_out[idx] = q[:, 0]
+                q_hi_out[idx] = q[:, -1]
+                if quantile_levels is None and "quantile_levels" in forward_out:
+                    quantile_levels = tuple(
+                        float(x)
+                        for x in forward_out["quantile_levels"].detach().cpu().numpy().tolist()
+                    )
 
+        meta: dict = {"model": "conditional_surface", "head_kind": head_kind}
+        if quantile_levels is not None:
+            meta["quantile_levels"] = list(quantile_levels)
         return PredictionResult(
             pred=out,
-            uncertainty=None,
-            meta={"model": "conditional_surface"},
+            uncertainty=sigma_out,
+            lower=q_lo_out,
+            upper=q_hi_out,
+            meta=meta,
         )
 
 
@@ -306,5 +333,93 @@ class EnsembleConditionalPredictor:
             uncertainty=disagreement,
             lower=None,
             upper=None,
+            meta=meta,
+        )
+
+
+# ── Calibrated conditional predictor (W4 / 2D.4) ─────────────────────────
+
+
+class CalibratedConditionalPredictor:
+    """Fuse and calibrate the W4 uncertainty sources into one Predictor.
+
+    Wraps a *base* :class:`Predictor` (typically a Gaussian- or quantile-head
+    :class:`ConditionalSurfacePredictor`) plus a fitted
+    :class:`~neural_iv_surface_inference.eval.calibration.Calibrator`, and
+    optionally an *ensemble* :class:`Predictor`
+    (:class:`EnsembleConditionalPredictor`) whose ``uncertainty`` carries
+    per-member disagreement std, and a *masking* callable that returns the 2B.2
+    per-point masking-sensitivity std for a frame.
+
+    The emitted :class:`PredictionResult` fills all four slots:
+
+    * ``pred``       — point prediction ``mu`` from the base predictor.
+    * ``uncertainty``— fused sigma-unit uncertainty (quadrature of the
+      calibrated primary head's sigma plus the calibrated auxiliary signals).
+    * ``lower``, ``upper`` — calibrated nominal-``alpha`` interval from the
+      primary head (temperature-scaled Gaussian or split-conformal quantile).
+
+    The dict ``meta`` carries ``confidence_score`` so consumers can plug the
+    per-point score into 2A.4 abstention curves without re-fusing.
+    """
+
+    def __init__(
+        self,
+        base: Predictor,
+        calibrator: Calibrator,
+        ensemble: Predictor | None = None,
+        masking_fn=None,
+    ) -> None:
+        self.base = base
+        self.calibrator = calibrator
+        self.ensemble = ensemble
+        self.masking_fn = masking_fn
+
+    def predict(self, df: pd.DataFrame) -> PredictionResult:
+        head_kind = self.calibrator.fit_params.head_kind
+        base_res = self.base.predict(df)
+        mu = np.asarray(base_res.pred, dtype=float)
+        kwargs: dict = {"mu": mu}
+
+        if head_kind == "gaussian":
+            if base_res.uncertainty is None:
+                raise ValueError(
+                    "CalibratedConditionalPredictor: base predictor must emit "
+                    "sigma in PredictionResult.uncertainty for a gaussian head"
+                )
+            kwargs["sigma"] = np.asarray(base_res.uncertainty, dtype=float)
+        else:  # quantile
+            if base_res.lower is None or base_res.upper is None:
+                raise ValueError(
+                    "CalibratedConditionalPredictor: base predictor must emit "
+                    "q_lo/q_hi in PredictionResult.lower/upper for a quantile head"
+                )
+            kwargs["q_lo"] = np.asarray(base_res.lower, dtype=float)
+            kwargs["q_hi"] = np.asarray(base_res.upper, dtype=float)
+
+        if self.ensemble is not None:
+            ens_res = self.ensemble.predict(df)
+            if ens_res.uncertainty is None:
+                raise ValueError(
+                    "ensemble Predictor must populate uncertainty (disagreement std)"
+                )
+            kwargs["disagreement"] = np.asarray(ens_res.uncertainty, dtype=float)
+
+        if self.masking_fn is not None:
+            kwargs["masking_std"] = np.asarray(self.masking_fn(df), dtype=float)
+
+        out = self.calibrator.apply(**kwargs)
+        meta = {
+            "model": "calibrated_conditional",
+            "head_kind": head_kind,
+            "nominal_alpha": self.calibrator.fit_params.nominal_alpha,
+            "confidence_score": out["confidence_score"],
+            "base_meta": dict(base_res.meta),
+        }
+        return PredictionResult(
+            pred=out["pred"],
+            uncertainty=out["uncertainty"],
+            lower=out["lower"],
+            upper=out["upper"],
             meta=meta,
         )

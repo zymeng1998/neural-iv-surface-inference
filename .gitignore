@@ -55,6 +55,9 @@ artifacts/runs/**/*.csv
 artifacts/runs/**/*.log
 artifacts/runs/**/checkpoints/
 
+# Phase 2D.4 fitted calibrators (per-run, regenerable from cached val CSVs)
+artifacts/calibration/
+
 # Generated plots and reports (regenerable from pipeline)
 /plots/
 /reports/

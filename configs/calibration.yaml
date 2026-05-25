@@ -1,0 +1,36 @@
+# Calibration fit configuration (Phase 2D / W4 — story 2D.4).
+#
+# Fits a single Calibrator on cached val predictions from a 2D.7 single-head
+# run (Gaussian or quantile), optionally fused with the 2D.8 deep-ensemble
+# disagreement signal joined on (date, log_moneyness, tau, observed). Reports
+# empirical coverage and error-uncertainty correlation on the held-out test
+# fold using the W1 metrics from `eval/uncertainty_metrics`.
+
+# Either "gaussian" or "quantile". Selects which 2D.7 CSV pair to consume and
+# which calibration primitive (temperature scaling vs split-conformal).
+head_kind: gaussian
+
+# Source CSVs. Paths are repo-relative.
+sources:
+  gaussian:
+    val:  artifacts/runs/2D7/gaussian/val_predictions.csv
+    test: artifacts/runs/2D7/gaussian/test_predictions.csv
+  quantile:
+    val:  artifacts/runs/2D7/quantile/val_predictions.csv
+    test: artifacts/runs/2D7/quantile/test_predictions.csv
+
+# Optional ensemble disagreement signal (2D.8). Set to null to skip fusion.
+ensemble:
+  val:  artifacts/runs/2D8/val_predictions.csv
+  test: artifacts/runs/2D8/test_predictions.csv
+
+# Ground-truth column to score against. `iv_true` matches the 2D.7 / 2D.8
+# evaluator convention; `iv_clean` would target the de-noised surface.
+target_col: iv_true
+
+# Nominal interval level — verified to within ±tol on test.
+nominal_alpha: 0.9
+tolerance: 0.02
+
+# Output JSON for the fitted calibrator.
+output_path: artifacts/calibration/2d4_calibrator.json
