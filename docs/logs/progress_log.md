@@ -1720,3 +1720,44 @@ ensemble scale 5.59. Quantile conformal δ = +7.8e-3.
 - Promote 2D.5 to `todo` — calibrated confidence and interval are now on
   disk; the decision layer can consume `confidence_score` and `[lower, upper]`
   directly from `CalibratedConditionalPredictor`.
+
+## 2026-05-25 — 2D.5: abstention + tradability + risk-flag decision layer (local)
+
+### What landed
+
+- Added `src/neural_iv_surface_inference/eval/decision_layer.py`. Pure
+  NumPy stateless transform. Exposes `DecisionConfig`,
+  `TradabilityWeights`, `DecisionResult`, and
+  `apply_decision_layer(prediction_result, no_arb_risk_flags, config)`.
+  Consumes the calibrated `PredictionResult` from 2D.4
+  (`meta['confidence_score']`, `lower`, `upper`, `uncertainty`) plus a
+  per-flag bool dict from 2B.4. Emits `abstain_flag`,
+  `tradability_score ∈ [0, 1]`, and `decision_reason` ∈ {`ok`,
+  `low_confidence`, `wide_interval`, `no_arb_violation`} with documented
+  priority order (no_arb > low_confidence > wide_interval > ok).
+- Abstain rule = OR of `(confidence < threshold)`,
+  `(relative_width > max)`, and `any flag in forbid_flags`. Relative
+  width = `(upper - lower) / max(uncertainty, eps)`. Tradability score
+  is a clipped weighted sum of confidence, inverse-normalised width,
+  and structural indicator. Formula documented in the module docstring.
+- Added `configs/decision_layer.yaml` (threshold 0.5, max relative
+  width 0.5, forbid `calendar_violation` + `convexity_violation`,
+  tradability weights 0.6 / 0.3 / 0.1) and `DecisionConfig.from_yaml`.
+- Added `tests/test_decision_layer.py` — 11 unit tests: threshold flip
+  (confidence + wide), monotonicity in confidence and relative width,
+  forbidden-flag propagation (with unlisted-flag ignored),
+  unknown-name-in-forbid silently ignored, reason prioritisation, shape
+  + range contract, YAML round-trip, and the missing-signal error paths.
+- `pytest tests/test_decision_layer.py -q` -> 11 passed.
+
+### Notes
+
+- Pure additions; no edits to `eval/abstention.py`, no model state,
+  no AV data dependency, zero predictor mutation. 2A.4 abstention
+  curves remain the tuning source for the threshold values.
+- Decision layer is now ready to be wired into the 2D.6 runner.
+
+### Next actions
+
+- 2D.6: build the decision-layer runner skeleton with a synthetic smoke
+  scaffold around `apply_decision_layer`.

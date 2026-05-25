@@ -1,0 +1,32 @@
+# Decision-layer operating point (Phase 2D / W4 — story 2D.5).
+#
+# Consumed by `neural_iv_surface_inference.eval.decision_layer.DecisionConfig`.
+# Pure stateless rules: tune these by reading the 2A.4 abstention curves on a
+# held-out fold, not by re-training. See
+# `docs/tasks/specs/2D.5_abstention_tradability_decision_layer.md`.
+
+# Per-point `confidence_score` (from 2D.4 calibrator) strictly below this
+# triggers `abstain_flag = True` with reason `low_confidence`.
+confidence_threshold: 0.5
+
+# Relative band width `(upper - lower) / uncertainty` strictly above this
+# triggers `abstain_flag = True` with reason `wide_interval`. Use `.inf` to
+# disable the rule.
+max_relative_width: 0.5
+
+# Names of structural-risk flags (per-point boolean arrays from 2B.4) whose
+# presence forces `abstain_flag = True` with reason `no_arb_violation`. Flags
+# not listed here are ignored even if supplied.
+forbid_flags:
+  - calendar_violation
+  - convexity_violation
+
+# Weights for the continuous tradability score (need not sum to 1; the final
+# score is clipped to [0, 1]).
+tradability_weights:
+  confidence: 0.6
+  width: 0.3
+  structure: 0.1
+
+# Lower clamp on `uncertainty` when computing relative width.
+epsilon: 1.0e-9
