@@ -4,11 +4,11 @@
   "bootstrap_completed_at": "2026-04-02T01:34:00-04:00",
   "baseline_completed": true,
   "baseline_completed_at": "2026-04-02T01:35:00-04:00",
-  "last_review_run_at": "2026-05-24T00:50:00-04:00",
+  "last_review_run_at": "2026-05-25T11:00:00-04:00",
   "last_review_run_type": "ongoing",
-  "last_processed_git_head": "dfe4e9a1a3655ab7a1deb2d0410f49379d143d8f",
-  "last_processed_git_head_short": "dfe4e9a",
-  "last_processed_diff_signature": "docs/roadmaps/phase2_reliability_aware_surface_inference.md;docs/logs/progress_log.md;docs/agent_bootstrap/reviewer_state.json;docs/agent_bootstrap/reviewer_state.md",
+  "last_processed_git_head": "345dffb76b4881d1c804abb568fc4dde975207c5",
+  "last_processed_git_head_short": "345dffb",
+  "last_processed_diff_signature": "results/2D/comparison_summary.csv;results/2D/spy_phase1_random40_noiselow/{interpolation,masked_mlp,conditional_point,conditional_calibrated}/{metrics_summary.csv,region_tradability.csv,abstention_curve.png,calibration_plot.png};configs/decision_layer_eval_av.yaml;scripts/run_decision_layer_eval.py;docs/experiments/experiment_journal.md;docs/logs/progress_log.md;docs/roadmaps/phase2_reliability_aware_surface_inference.md;docs/tasks/BOARD.md;docs/tasks/specs/2D.9_remote_decision_layer_e2e.md",
   "last_processed_packet_fingerprint": null,
   "known_bootstrap_files": [
     "docs/agent_bootstrap/project_memory_registry.md",
@@ -34,7 +34,7 @@
     "0002",
     "0003"
   ],
-  "known_progress_log_last_entry_timestamp": "2026-05-24T00:00:00-04:00",
-  "known_experiment_journal_entry_count": 11,
-  "notes": "Refreshed after Phase 2 audit (2026-05-24). Epics 2A/2B/2C are done; epic 2D is backlog/undecomposed. HEAD advanced from bef666d (2026-04-02) to dfe4e9a (2026-05-24) across the full Phase 2 implementation: W1/W2 runners, conditional model + training + adapter, Alpha Vantage data migration (ADR 0003), Phase B autonomous remote run, results notebook with 3D visualization."
+  "known_progress_log_last_entry_timestamp": "2026-05-25T11:00:00-04:00",
+  "known_experiment_journal_entry_count": 13,
+  "notes": "Refreshed 2026-05-25 after 2D.9 close-out: epic 2D done (4/4 epics done). HEAD advanced from dfe4e9a to 345dffb across the full 2D build: heteroscedastic / quantile head (2D.2), deep-ensemble adapter (2D.3), calibrated confidence + interval (2D.4), abstention + tradability decision layer (2D.5), decision-layer runner skeleton (2D.6), remote AV trainings (2D.7 + 2D.8), end-to-end decision-layer eval on AV (2D.9). Calibrated test coverage 0.9184 at nominal 0.90, high-confidence MAE 0.0606 < test MAE 0.0855."
 }
