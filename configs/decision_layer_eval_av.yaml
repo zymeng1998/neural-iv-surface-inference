@@ -1,0 +1,48 @@
+# Decision-layer eval runner — real AV configuration (story 2D.9).
+#
+# Drives `scripts/run_decision_layer_eval.py` against the AV benchmark used by
+# the 2D.7 / 2D.8 training runs. Four predictor entries cover the closing
+# evidence lineup for epic 2D acceptance §5 + §6:
+#
+#   1. interpolation          — per-date RBF baseline (no checkpoint).
+#   2. masked_mlp             — Phase-1 BaselineMLP from 2C.8.
+#   3. conditional_point      — 2C / 2D.7 point-head conditional surface.
+#   4. conditional_calibrated — 2D.4 calibrated predictor (Gaussian head
+#                               + saved calibrator + 2D.8 ensemble manifest).
+
+results_root: results/2D
+decision_config: configs/decision_layer.yaml
+
+diagnostics:
+  keep_fraction: 0.8
+  n_draws: 5
+  seed: 0
+  max_dates_per_split: 10
+
+nominal_coverage: 0.90
+
+pairs:
+  - dataset: spy_phase1_random40_noiselow
+    benchmark_path: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+    predictor: interpolation
+    method: rbf
+
+  - dataset: spy_phase1_random40_noiselow
+    benchmark_path: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+    predictor: masked_mlp
+    checkpoint: artifacts/checkpoints/best_mlp.pt
+    device: cpu
+
+  - dataset: spy_phase1_random40_noiselow
+    benchmark_path: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+    predictor: conditional_point
+    checkpoint: artifacts/runs/2D7/point/checkpoints/best_conditional.pt
+    device: cpu
+
+  - dataset: spy_phase1_random40_noiselow
+    benchmark_path: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+    predictor: conditional_calibrated
+    checkpoint: artifacts/runs/2D7/gaussian/checkpoints/best_conditional.pt
+    calibrator_path: artifacts/calibration/2d4_calibrator.json
+    ensemble_manifest: artifacts/runs/2D8/checkpoints/ensemble/members.json
+    device: cpu

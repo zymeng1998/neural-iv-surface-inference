@@ -1806,3 +1806,65 @@ ensemble scale 5.59. Quantile conformal δ = +7.8e-3.
 - 2D.9 (remote): wire the real AV benchmarks + calibrated checkpoints
   into `configs/decision_layer_eval.yaml`, run on the Pod, commit the
   produced `results/2D/...` artifacts and the experiment-journal entry.
+
+## 2026-05-25 — 2D.9: end-to-end decision-layer eval on AV — epic 2D closing
+
+### What landed
+
+- New `configs/decision_layer_eval_av.yaml` listing four
+  `(spy_phase1_random40_noiselow, predictor)` pairs: interpolation
+  (RBF), masked MLP (`artifacts/checkpoints/best_mlp.pt`), 2C / 2D.7
+  point conditional (`artifacts/runs/2D7/point/checkpoints/`), and the
+  2D.4 calibrated conditional (Gaussian-head 2D.7 checkpoint +
+  `artifacts/calibration/2d4_calibrator.json` + 2D.8 ensemble
+  manifest). `device: cpu` per pair — the pod's Blackwell GPU is not
+  supported by the installed `torch 2.4.1+cu124` kernels.
+- `scripts/run_decision_layer_eval.py` gained a `default_predictor_factory`
+  (originally promised by 2D.6 but the script raised on the CLI path
+  because no factory was wired into `main()`). The factory loads the
+  benchmark parquet, splits by `split` column, and constructs the
+  predictor from the pair spec. Baselines without a calibrated
+  confidence are wrapped in a thin `_ConfidenceInjectingPredictor` so
+  the 2D.5 decision layer accepts them with degenerate
+  `confidence_score = 1.0` and a zero-width band.
+- Calibrator fit (Gaussian head + 2D.8 disagreement) executed on the
+  pod via `scripts/run_calibration_fit.py --config
+  configs/calibration.yaml`: test coverage 0.8955, error-uncertainty
+  Pearson 0.74; written to `artifacts/calibration/2d4_calibrator.json`
+  (gitignored — regenerable in < 30 s from the cached 2D.7 / 2D.8
+  CSVs).
+- End-to-end run on the pod produced `results/2D/comparison_summary.csv`
+  + per-pair `metrics_summary.csv`, `region_tradability.csv`,
+  `abstention_curve.png`, `calibration_plot.png`. The 45 MB per-pair
+  `predictions_decisions.csv` files are gitignored
+  (`results/2D/**/predictions_decisions.csv`) — regenerable from the
+  same config + checkpoints + calibrator.
+- `pytest tests/test_decision_layer_runner.py -q` — 3 passed after the
+  factory + shim additions.
+
+### Acceptance numbers (test fold, calibrated conditional)
+
+- Empirical coverage at nominal 90 %: **0.9184** (|Δ| = 1.84 pp ≤ 2 pp
+  tolerance — PASS).
+- High-confidence MAE (`keep_fraction = 0.8`) **0.0606** strictly less
+  than the no-abstention test MAE **0.0855** — PASS.
+
+### Notes
+
+- `abstain_rate = 1.0` for the calibrated predictor on test is a
+  decision-layer operating-point artifact, not a quality signal:
+  `configs/decision_layer.yaml` sets `max_relative_width = 0.5`, which
+  is tighter than the calibrated Gaussian band's relative width
+  (≈ 2·z_{0.9} ≈ 3.29). The two acceptance numbers above (coverage,
+  hi-conf MAE) are the W4 evidence; re-tuning the decision rule is a
+  follow-up beyond 2D.9 scope.
+- Pod env recovery: `pip3.11 install pandas scipy scikit-learn
+  matplotlib pyarrow` re-installed the site-packages lost between the
+  2D.7 / 2D.8 chain and this run.
+
+### Next actions
+
+- Epic 2D done; no immediate follow-up required. Optional follow-ups
+  recorded in the journal: re-tune the decision-layer operating point
+  on more AV folds; revisit GPU support for Blackwell once a torch
+  nightly with the relevant kernels is available.

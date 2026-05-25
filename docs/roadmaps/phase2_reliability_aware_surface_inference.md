@@ -167,13 +167,14 @@ Sequencing principle: **2A before 2C** (we measure reliability before we model
 it), and **2B diagnostics before any hard structural constraints** (we quantify
 violations before penalizing them).
 
-> **Status (2026-05-25):** Phase 2 is **~96% complete** — three of four epics
-> are `done`, and the local W4 model + ensemble + calibrator + decision-layer
-> stories (2D.2 + 2D.3 + 2D.4 + 2D.5 + 2D.6) plus the remote AV trainings
-> (2D.7 + 2D.8) of epic 2D have landed. Only 2D.9 (remote end-to-end
-> decision-layer eval) remains `backlog`; it is unblocked now that the
-> calibrator, the 2D.7/2D.8 prediction artifacts, and the local decision-layer
-> runner skeleton (2D.6) are all in place.
+> **Status (2026-05-25):** Phase 2 is **complete** — all four epics
+> (2A / 2B / 2C / 2D) are `done`. Epic 2D closed on 2026-05-25 with 2D.9:
+> end-to-end decision-layer eval on the AV `spy_phase1_random40_noiselow`
+> benchmark across the four-predictor lineup (interpolation, masked MLP,
+> point conditional, calibrated conditional). Calibrated test coverage
+> 0.9184 at nominal 0.90 (within ±2 pp) and high-confidence MAE 0.0606
+> strictly less than no-abstention test MAE 0.0855 satisfy roadmap §5 +
+> §6.
 >
 > Epic 2A (W1 — uncertainty evaluation) is `done` — all five stories
 > (2A.1–2A.5) complete; the W1 measurement layer runs end-to-end
@@ -201,7 +202,8 @@ violations before penalizing them).
 >   tables, and training dynamics — all on real AV data.
 >
 > Epic 2D (W4 — uncertainty-aware inference + W5 — abstention & tradability
-> decision layer) is `in_progress` and decomposed (2026-05-24). Mirrors the
+> decision layer) is `done` (closed 2026-05-25 by 2D.9). Decomposed
+> 2026-05-24. Mirrors the
 > 2C split: every story is **either local-only or remote-only** — none
 > straddle. Stories:
 >

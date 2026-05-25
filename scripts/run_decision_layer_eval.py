@@ -611,6 +611,153 @@ def run_from_config(
     return pair_results
 
 
+class _ConfidenceInjectingPredictor:
+    """Wrap a Predictor whose results lack ``meta['confidence_score']``.
+
+    Baselines (interpolation, masked MLP, point conditional) carry no genuine
+    uncertainty signal, but the 2D.5 decision layer mandates a per-point
+    confidence. We inject a uniform ``confidence_score = 1.0`` so that
+    decisions reduce to the structural-flag rules: no abstention for
+    ``low_confidence`` / ``wide_interval``, abstention only when forbidden
+    flags fire. The W1 coverage and width columns therefore stay ``NaN`` for
+    these predictors — they have no calibrated band by construction.
+    """
+
+    def __init__(self, inner: Predictor) -> None:
+        self._inner = inner
+
+    def predict(self, df: pd.DataFrame) -> PredictionResult:
+        res = self._inner.predict(df)
+        pred_arr = np.asarray(res.pred, dtype=np.float32)
+        n = len(pred_arr)
+        meta = dict(res.meta)
+        if "confidence_score" not in meta:
+            meta["confidence_score"] = np.ones(n, dtype=np.float32)
+        uncertainty = (
+            res.uncertainty
+            if res.uncertainty is not None
+            else np.zeros(n, dtype=np.float32)
+        )
+        lower = res.lower if res.lower is not None else pred_arr.copy()
+        upper = res.upper if res.upper is not None else pred_arr.copy()
+        return PredictionResult(
+            pred=res.pred,
+            uncertainty=uncertainty,
+            lower=lower,
+            upper=upper,
+            meta=meta,
+        )
+
+
+def default_predictor_factory(
+    spec: PairSpec,
+) -> tuple[Predictor, dict[str, pd.DataFrame]]:
+    """Build (predictor, df_splits) from a real PairSpec on a benchmark parquet.
+
+    Supported ``predictor`` names (story 2D.9 lineup):
+
+    * ``interpolation``        — per-date interpolation baseline. ``extra``
+                                  may carry ``method`` (default: ``rbf``).
+    * ``masked_mlp``           — Phase-1 BaselineMLP loaded from
+                                  ``spec.checkpoint``.
+    * ``conditional_point``    — 2C point conditional model.
+    * ``conditional_calibrated`` — 2D.4 calibrated predictor: Gaussian-head
+                                   conditional (``spec.checkpoint``) + saved
+                                   calibrator (``spec.calibrator_path``) +
+                                   optional ensemble manifest
+                                   (``extra.ensemble_manifest``).
+    """
+    import torch
+    from neural_iv_surface_inference.eval.adapters import (
+        InterpolationPredictor,
+        MLPPredictor,
+        ConditionalSurfacePredictor,
+        EnsembleConditionalPredictor,
+        CalibratedConditionalPredictor,
+    )
+    from neural_iv_surface_inference.eval.calibration import Calibrator
+    from neural_iv_surface_inference.models.baseline_mlp import BaselineMLP
+
+    if not spec.benchmark_path:
+        raise ValueError(
+            f"pair {spec.dataset}/{spec.predictor} requires benchmark_path"
+        )
+    df = pd.read_parquet(spec.benchmark_path)
+    df_splits = split_frames(df)
+
+    name = spec.predictor
+    # CUDA can be force-disabled per pair via extra.device='cpu' — the AV pod's
+    # Blackwell GPU is not supported by the installed torch 2.4.1+cu124 kernels.
+    device_str = str(spec.extra.get("device", "cuda" if torch.cuda.is_available() else "cpu"))
+    device = torch.device(device_str)
+
+    if name == "interpolation":
+        method = str(spec.extra.get("method", "rbf"))
+        return (
+            _ConfidenceInjectingPredictor(InterpolationPredictor(method=method)),
+            df_splits,
+        )
+
+    if name == "masked_mlp":
+        if not spec.checkpoint:
+            raise ValueError("masked_mlp requires checkpoint")
+        ckpt = torch.load(spec.checkpoint, map_location=device, weights_only=False)
+        mlp_cfg = ckpt.get("config") or {}
+        model = BaselineMLP(
+            input_dim=int(mlp_cfg.get("input_dim", 2)),
+            hidden_dim=int(mlp_cfg.get("hidden_dim", 128)),
+            n_layers=int(mlp_cfg.get("n_layers", 3)),
+            dropout=float(mlp_cfg.get("dropout", 0.0)),
+        ).to(device)
+        model.load_state_dict(ckpt["model_state_dict"])
+        model.eval()
+        return (
+            _ConfidenceInjectingPredictor(
+                MLPPredictor(
+                    model=model, device=device,
+                    batch_size=int(spec.extra.get("batch_size", 16384)),
+                )
+            ),
+            df_splits,
+        )
+
+    if name == "conditional_point":
+        if not spec.checkpoint:
+            raise ValueError("conditional_point requires checkpoint")
+        return (
+            _ConfidenceInjectingPredictor(
+                ConditionalSurfacePredictor.from_checkpoint(
+                    spec.checkpoint, device=device,
+                )
+            ),
+            df_splits,
+        )
+
+    if name == "conditional_calibrated":
+        if not spec.checkpoint:
+            raise ValueError("conditional_calibrated requires checkpoint (gaussian head)")
+        if not spec.calibrator_path:
+            raise ValueError("conditional_calibrated requires calibrator_path")
+        base = ConditionalSurfacePredictor.from_checkpoint(
+            spec.checkpoint, device=device,
+        )
+        calibrator = Calibrator.load(spec.calibrator_path)
+        ensemble: Predictor | None = None
+        ens_manifest = spec.extra.get("ensemble_manifest")
+        if ens_manifest:
+            ensemble = EnsembleConditionalPredictor.from_manifest(
+                ens_manifest, device=device,
+            )
+        return CalibratedConditionalPredictor(
+            base=base, calibrator=calibrator, ensemble=ensemble,
+        ), df_splits
+
+    raise ValueError(
+        f"unsupported predictor '{name}' — expected one of: "
+        "interpolation, masked_mlp, conditional_point, conditional_calibrated"
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Run decision-layer evaluation (W1 + W2 + 2D.5)"
@@ -629,8 +776,11 @@ def main() -> None:
         print("[config] No pairs configured — nothing to do. "
               "Fill `pairs:` in the config (story 2D.9).")
         return
-    run_from_config(eval_config, results_root=Path(args.results_root)
-                    if args.results_root else None)
+    run_from_config(
+        eval_config,
+        results_root=Path(args.results_root) if args.results_root else None,
+        predictor_factory=default_predictor_factory,
+    )
 
 
 if __name__ == "__main__":

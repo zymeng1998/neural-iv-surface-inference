@@ -58,6 +58,12 @@ artifacts/runs/**/checkpoints/
 # Phase 2D.4 fitted calibrators (per-run, regenerable from cached val CSVs)
 artifacts/calibration/
 
+# Phase 2D.9 per-row prediction+decision CSVs (~45 MB each; regenerable from
+# scripts/run_decision_layer_eval.py + checkpoints + calibrator). The
+# top-level comparison summary, per-pair metrics_summary.csv,
+# region_tradability.csv, and PNG figures under results/2D/ stay committed.
+results/2D/**/predictions_decisions.csv
+
 # Generated plots and reports (regenerable from pipeline)
 /plots/
 /reports/
