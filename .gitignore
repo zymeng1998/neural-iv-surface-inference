@@ -50,6 +50,11 @@ artifacts/checkpoints/*
 !artifacts/tables/.gitkeep
 !artifacts/checkpoints/.gitkeep
 
+# Phase 2D run artifacts: keep small JSON manifests, drop big prediction CSVs
+artifacts/runs/**/*.csv
+artifacts/runs/**/*.log
+artifacts/runs/**/checkpoints/
+
 # Generated plots and reports (regenerable from pipeline)
 /plots/
 /reports/

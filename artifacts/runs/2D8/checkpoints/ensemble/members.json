@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "ensemble_size": 5,
+  "config_hash": "0f3038fcfcfd1737",
+  "members": [
+    {
+      "seed": 101,
+      "val_loss": 0.010050784415480766,
+      "checkpoint": "seed_101/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 102.01231288909912
+    },
+    {
+      "seed": 202,
+      "val_loss": 0.010430040599947626,
+      "checkpoint": "seed_202/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 101.49751543998718
+    },
+    {
+      "seed": 303,
+      "val_loss": 0.009921900398859923,
+      "checkpoint": "seed_303/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 101.81140685081482
+    },
+    {
+      "seed": 404,
+      "val_loss": 0.010291407519782131,
+      "checkpoint": "seed_404/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 101.23069763183594
+    },
+    {
+      "seed": 505,
+      "val_loss": 0.010167463851923292,
+      "checkpoint": "seed_505/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 101.56070566177368
+    }
+  ]
+}

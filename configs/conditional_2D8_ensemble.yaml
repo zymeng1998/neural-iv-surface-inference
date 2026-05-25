@@ -1,0 +1,37 @@
+# 2D.8 — K=5 deep-ensemble training on AV (head.kind=point per spec).
+# Disagreement is a *separate* uncertainty source from the 2D.7 head;
+# 2D.4 combines them.
+
+seed: 42
+
+data:
+  benchmark_file: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+  batch_size: 32
+  num_workers: 0
+
+conditional:
+  context_dim: 3
+  coord_dim: 2
+  hidden_dim: 128
+  latent_dim: 64
+  n_elem_layers: 2
+  n_post_layers: 1
+  n_decoder_layers: 3
+
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  epochs: 50
+  patience: 10
+
+  head:
+    kind: point
+    quantiles: [0.05, 0.5, 0.95]
+
+ensemble:
+  size: 5
+  seeds: [101, 202, 303, 404, 505]
+
+paths:
+  checkpoint_dir: artifacts/runs/2D8/checkpoints
+  log_dir: artifacts/runs/2D8/logs
+  results_dir: artifacts/runs/2D8

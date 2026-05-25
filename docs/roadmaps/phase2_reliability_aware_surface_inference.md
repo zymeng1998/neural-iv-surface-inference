@@ -167,10 +167,12 @@ Sequencing principle: **2A before 2C** (we measure reliability before we model
 it), and **2B diagnostics before any hard structural constraints** (we quantify
 violations before penalizing them).
 
-> **Status (2026-05-24):** Phase 2 is **~80% complete** — three of four epics
-> are `done`, and the local W4 model + ensemble stories (2D.2 + 2D.3) of
-> epic 2D have landed. 2D.4–2D.6 remain `backlog`; the remote stories
-> 2D.7–2D.9 also remain `backlog`.
+> **Status (2026-05-25):** Phase 2 is **~88% complete** — three of four epics
+> are `done`, and the local W4 model + ensemble stories (2D.2 + 2D.3) plus
+> the remote AV trainings (2D.7 + 2D.8) of epic 2D have landed. 2D.4–2D.6
+> remain `backlog`; 2D.9 (end-to-end decision-layer eval) also remains
+> `backlog` and is unblocked now that the 2D.7 + 2D.8 prediction artifacts
+> are committed.
 >
 > Epic 2A (W1 — uncertainty evaluation) is `done` — all five stories
 > (2A.1–2A.5) complete; the W1 measurement layer runs end-to-end

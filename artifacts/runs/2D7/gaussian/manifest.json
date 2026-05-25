@@ -1,0 +1,28 @@
+{
+  "story": "2D.7",
+  "head_kind": "gaussian",
+  "git_sha": "7e99efd1a034f23ca69643f4b0c34ac6c44bbdc0",
+  "config_hash": "1bc86d5e16e00057",
+  "benchmark_file": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet",
+  "splits": {
+    "train_rows": 11112617,
+    "val_rows": 5593759,
+    "test_rows": 5805664
+  },
+  "epochs_completed": 45,
+  "final_train_loss": -2.686817725499471,
+  "final_val_loss": -2.5634631351991133,
+  "best_val_loss": -2.563500615683469,
+  "val_mae_mu": 0.06061740592122078,
+  "test_mae_mu": 0.07873494178056717,
+  "quantile_monotonicity_ok": true,
+  "train_wall_clock_s": 92.90551686286926,
+  "score_wall_clock_s": 1.8091247081756592,
+  "device": "cuda",
+  "outputs": {
+    "checkpoint": "artifacts/runs/2D7/gaussian/checkpoints/best_conditional.pt",
+    "val_predictions": "artifacts/runs/2D7/gaussian/val_predictions.csv",
+    "test_predictions": "artifacts/runs/2D7/gaussian/test_predictions.csv",
+    "training_curve": "artifacts/runs/2D7/gaussian/training_curve.csv"
+  }
+}

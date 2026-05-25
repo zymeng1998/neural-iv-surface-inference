@@ -1,0 +1,28 @@
+{
+  "story": "2D.7",
+  "head_kind": "point",
+  "git_sha": "7e99efd1a034f23ca69643f4b0c34ac6c44bbdc0",
+  "config_hash": "0f3038fcfcfd1737",
+  "benchmark_file": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet",
+  "splits": {
+    "train_rows": 11112617,
+    "val_rows": 5593759,
+    "test_rows": 5805664
+  },
+  "epochs_completed": 50,
+  "final_train_loss": 0.008798358290839721,
+  "final_val_loss": 0.010586311045864766,
+  "best_val_loss": 0.010034784314815293,
+  "val_mae_mu": 0.05766171216964722,
+  "test_mae_mu": 0.07557652145624161,
+  "quantile_monotonicity_ok": true,
+  "train_wall_clock_s": 102.18273878097534,
+  "score_wall_clock_s": 1.7345857620239258,
+  "device": "cuda",
+  "outputs": {
+    "checkpoint": "artifacts/runs/2D7/point/checkpoints/best_conditional.pt",
+    "val_predictions": "artifacts/runs/2D7/point/val_predictions.csv",
+    "test_predictions": "artifacts/runs/2D7/point/test_predictions.csv",
+    "training_curve": "artifacts/runs/2D7/point/training_curve.csv"
+  }
+}

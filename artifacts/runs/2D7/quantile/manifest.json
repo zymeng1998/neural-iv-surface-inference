@@ -1,0 +1,28 @@
+{
+  "story": "2D.7",
+  "head_kind": "quantile",
+  "git_sha": "7e99efd1a034f23ca69643f4b0c34ac6c44bbdc0",
+  "config_hash": "31aabfcb61d0ed06",
+  "benchmark_file": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet",
+  "splits": {
+    "train_rows": 11112617,
+    "val_rows": 5593759,
+    "test_rows": 5805664
+  },
+  "epochs_completed": 50,
+  "final_train_loss": 0.01208326616781015,
+  "final_val_loss": 0.013631344476545399,
+  "best_val_loss": 0.013264951169152151,
+  "val_mae_mu": 0.05300027132034302,
+  "test_mae_mu": 0.07187634706497192,
+  "quantile_monotonicity_ok": true,
+  "train_wall_clock_s": 103.543874502182,
+  "score_wall_clock_s": 1.8704783916473389,
+  "device": "cuda",
+  "outputs": {
+    "checkpoint": "artifacts/runs/2D7/quantile/checkpoints/best_conditional.pt",
+    "val_predictions": "artifacts/runs/2D7/quantile/val_predictions.csv",
+    "test_predictions": "artifacts/runs/2D7/quantile/test_predictions.csv",
+    "training_curve": "artifacts/runs/2D7/quantile/training_curve.csv"
+  }
+}

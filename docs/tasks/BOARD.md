@@ -64,8 +64,8 @@ decomposition). The first story of any epic is always its decomposition story.
 | 2D.4 | Story | Local: calibrated confidence score + uncertainty band | `backlog` | `docs/tasks/specs/2D.4_calibrated_confidence_score.md` | 2026-05-24 |
 | 2D.5 | Story | Local: abstention + tradability + risk-flag decision layer | `backlog` | `docs/tasks/specs/2D.5_abstention_tradability_decision_layer.md` | 2026-05-24 |
 | 2D.6 | Story | Local: decision-layer runner skeleton + synthetic smoke | `backlog` | `docs/tasks/specs/2D.6_decision_layer_runner_artifacts.md` | 2026-05-24 |
-| 2D.7 | Story | Remote: full AV training — Gaussian + quantile heads (+ point control) | `backlog` | `docs/tasks/specs/2D.7_remote_train_heteroscedastic_quantile.md` | 2026-05-24 |
-| 2D.8 | Story | Remote: K-seed deep ensemble training on AV | `backlog` | `docs/tasks/specs/2D.8_remote_train_deep_ensemble.md` | 2026-05-24 |
+| 2D.7 | Story | Remote: full AV training — Gaussian + quantile heads (+ point control) | `done` | `docs/tasks/specs/2D.7_remote_train_heteroscedastic_quantile.md` | 2026-05-25 |
+| 2D.8 | Story | Remote: K-seed deep ensemble training on AV | `done` | `docs/tasks/specs/2D.8_remote_train_deep_ensemble.md` | 2026-05-25 |
 | 2D.9 | Story | Remote: end-to-end decision-layer eval on AV + artifacts + journal | `backlog` | `docs/tasks/specs/2D.9_remote_decision_layer_e2e.md` | 2026-05-24 |
 
 > When an epic is entered, set it to `in_progress`, add its decomposition story

@@ -1,0 +1,74 @@
+{
+  "story": "2D.8",
+  "git_sha": "7e99efd1a034f23ca69643f4b0c34ac6c44bbdc0",
+  "config_hash": "0f3038fcfcfd1737",
+  "benchmark_file": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet",
+  "splits": {
+    "train_rows": 11112617,
+    "val_rows": 5593759,
+    "test_rows": 5805664
+  },
+  "ensemble_size": 5,
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "members": [
+    {
+      "seed": 101,
+      "val_loss": 0.010050784415480766,
+      "checkpoint": "seed_101/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 102.01231288909912
+    },
+    {
+      "seed": 202,
+      "val_loss": 0.010430040599947626,
+      "checkpoint": "seed_202/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 101.49751543998718
+    },
+    {
+      "seed": 303,
+      "val_loss": 0.009921900398859923,
+      "checkpoint": "seed_303/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 101.81140685081482
+    },
+    {
+      "seed": 404,
+      "val_loss": 0.010291407519782131,
+      "checkpoint": "seed_404/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 101.23069763183594
+    },
+    {
+      "seed": 505,
+      "val_loss": 0.010167463851923292,
+      "checkpoint": "seed_505/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 101.56070566177368
+    }
+  ],
+  "ensemble_val_mae": 0.057498008012771606,
+  "ensemble_test_mae": 0.07476689666509628,
+  "disagreement_test_stats": {
+    "min": 0.0002421328390482813,
+    "mean": 0.009395559318363667,
+    "max": 0.31867948174476624,
+    "any_positive": true,
+    "any_negative": false
+  },
+  "train_total_wall_clock_s": 508.11263847351074,
+  "score_wall_clock_s": 8.328553438186646,
+  "device": "cuda",
+  "outputs": {
+    "members_json": "artifacts/runs/2D8/checkpoints/ensemble/members.json",
+    "val_predictions": "artifacts/runs/2D8/val_predictions.csv",
+    "test_predictions": "artifacts/runs/2D8/test_predictions.csv",
+    "training_curves": "artifacts/runs/2D8/training_curves.csv"
+  }
+}
