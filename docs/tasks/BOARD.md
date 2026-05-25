@@ -67,6 +67,7 @@ decomposition). The first story of any epic is always its decomposition story.
 | 2D.7 | Story | Remote: full AV training — Gaussian + quantile heads (+ point control) | `done` | `docs/tasks/specs/2D.7_remote_train_heteroscedastic_quantile.md` | 2026-05-25 |
 | 2D.8 | Story | Remote: K-seed deep ensemble training on AV | `done` | `docs/tasks/specs/2D.8_remote_train_deep_ensemble.md` | 2026-05-25 |
 | 2D.9 | Story | Remote: end-to-end decision-layer eval on AV + artifacts + journal | `done` | `docs/tasks/specs/2D.9_remote_decision_layer_e2e.md` | 2026-05-25 |
+| 2D.10 | Story | Local: Phase 2 results memo + notebook | `done` | `docs/tasks/specs/2D.10_phase2_results_memo_notebook.md` | 2026-05-25 |
 
 > When an epic is entered, set it to `in_progress`, add its decomposition story
 > (e.g. `2A.1`), then add the resulting stories as new rows. Do not delete or

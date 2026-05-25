@@ -167,14 +167,14 @@ Sequencing principle: **2A before 2C** (we measure reliability before we model
 it), and **2B diagnostics before any hard structural constraints** (we quantify
 violations before penalizing them).
 
-> **Status (2026-05-25):** Phase 2 is **complete** — all four epics
-> (2A / 2B / 2C / 2D) are `done`. Epic 2D closed on 2026-05-25 with 2D.9:
-> end-to-end decision-layer eval on the AV `spy_phase1_random40_noiselow`
-> benchmark across the four-predictor lineup (interpolation, masked MLP,
-> point conditional, calibrated conditional). Calibrated test coverage
-> 0.9184 at nominal 0.90 (within ±2 pp) and high-confidence MAE 0.0606
-> strictly less than no-abstention test MAE 0.0855 satisfy roadmap §5 +
-> §6.
+> **Status (2026-05-25):** Phase 2 is **complete**. Epic 2D was reopened
+> on 2026-05-25 for the closing-synthesis story 2D.10 and closed back to
+> `done` the same day. The five mandatory acceptance numbers were
+> produced by 2D.9 (calibrated test coverage 0.9184 within ±2 pp;
+> high-confidence MAE 0.0606 < no-abstention test MAE 0.0855) and are
+> now synthesized in `docs/phase2_result_memo.md` and
+> `notebooks/05_phase2_results.ipynb`, paralleling
+> `docs/phase1_result_memo.md` and `notebooks/04_phase2c_results.ipynb`.
 >
 > Epic 2A (W1 — uncertainty evaluation) is `done` — all five stories
 > (2A.1–2A.5) complete; the W1 measurement layer runs end-to-end
@@ -202,9 +202,10 @@ violations before penalizing them).
 >   tables, and training dynamics — all on real AV data.
 >
 > Epic 2D (W4 — uncertainty-aware inference + W5 — abstention & tradability
-> decision layer) is `done` (closed 2026-05-25 by 2D.9). Decomposed
-> 2026-05-24. Mirrors the
-> 2C split: every story is **either local-only or remote-only** — none
+> decision layer) is `done` as of 2026-05-25 — closing synthesis story
+> 2D.10 landed the executive memo + notebook on the same day.
+> Decomposed 2026-05-24, extended 2026-05-25 with 2D.10. Mirrors the 2C
+> split: every story is **either local-only or remote-only** — none
 > straddle. Stories:
 >
 > **Local phase (Mac).** Code, synthetic smokes, calibration on cached
@@ -247,10 +248,19 @@ violations before penalizing them).
 >   conditional); commit `results/2D/` artifacts; write the closing
 >   `experiment_journal.md` entry that closes acceptance §5 and §6.
 >
+> **Closing synthesis (local, added 2026-05-25).**
+> - **2D.10** Phase 2 results memo + notebook —
+>   `docs/phase2_result_memo.md` + `notebooks/05_phase2_results.ipynb` +
+>   `scripts/generate_phase2_results_notebook.py`. Pure synthesis over
+>   committed `results/2D/` artifacts + 2D.7 / 2D.8 training summaries;
+>   no new training, no new eval runs. Paralleling Phase 1's memo and
+>   Phase 2C's notebook precedents.
+>
 > Sequencing: local 2D.2 + 2D.3 + 2D.5 + 2D.6 ship first (independent and
 > parallelizable). Operator starts the Pod → 2D.7 + 2D.8 run in parallel.
 > Pull val predictions back, run local 2D.4 (calibrator fit). Final Pod
-> pass: 2D.9. Pull, commit, journal, gate.
+> pass: 2D.9. Pull, commit, journal, gate. Then 2D.10 produces the Phase
+> 2 closing memo + notebook from committed artifacts.
 
 ## 6) Acceptance Criteria
 
