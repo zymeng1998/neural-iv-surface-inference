@@ -1761,3 +1761,48 @@ ensemble scale 5.59. Quantile conformal δ = +7.8e-3.
 
 - 2D.6: build the decision-layer runner skeleton with a synthetic smoke
   scaffold around `apply_decision_layer`.
+
+## 2026-05-25 — 2D.6: decision-layer runner skeleton + synthetic smoke (local)
+
+### What landed
+
+- Added `scripts/run_decision_layer_eval.py`. Importable runner that
+  wires the W1 uncertainty eval (2A.5), the W2 structure diagnostics
+  (2B.5), and the 2D.5 decision layer for each `(dataset, predictor)`
+  pair. Public surface: `load_eval_config`, `EvalConfig`, `PairSpec`,
+  `DiagnosticsBudget`, `evaluate_pair`, `compute_no_arb_flags` (default
+  W2-based flag source — tests inject a stub), `write_comparison_summary`,
+  and `run_from_config`. Per-pair artifacts under
+  `<results_root>/<dataset>/<predictor>/`: `predictions_decisions.csv`,
+  `metrics_summary.csv`, `region_tradability.csv`,
+  `abstention_curve.png`, `calibration_plot.png`. Top-level
+  `comparison_summary.csv` carries the documented columns
+  (`dataset, predictor, test_mae, hi_conf_mae, coverage_90, mean_width,
+  abstain_rate, mean_tradability, n_forbidden_flag_violations`).
+- Added `configs/decision_layer_eval.yaml` (runner schema: `results_root`,
+  `decision_config`, `diagnostics` budget, `nominal_coverage`,
+  `pairs[]`). Pairs intentionally empty — story 2D.9 fills them with
+  the real AV benchmarks and calibrated checkpoints.
+- `--results-root` CLI flag overrides the config value so the synthetic
+  smoke writes to a tmp dir and never touches `results/2D/`.
+- Added `tests/test_decision_layer_runner.py` — 3 tests: full per-pair
+  artifact set is written and per-row CSV is shape-aligned with the
+  input; two-pair `comparison_summary.csv` parses with the documented
+  columns; `results_root` is honoured (no writes outside the tmp dir).
+- `pytest tests/test_decision_layer_runner.py -q` -> 3 passed.
+
+### Notes
+
+- Pure additions; no edits to `eval/decision_layer.py`,
+  `eval/report.py`, or the W1/W2 runners. Existing report helpers from
+  2A.5 / 2B.5 already cover the per-split summary tables — no new
+  helpers in `eval/report.py` were needed.
+- No `results/2D/...` artifacts committed: synthetic-smoke output is
+  written to `tmp_path` only. The `results/2D/` directory is reserved
+  for the real-run artifacts produced by story 2D.9.
+
+### Next actions
+
+- 2D.9 (remote): wire the real AV benchmarks + calibrated checkpoints
+  into `configs/decision_layer_eval.yaml`, run on the Pod, commit the
+  produced `results/2D/...` artifacts and the experiment-journal entry.

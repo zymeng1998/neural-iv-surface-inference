@@ -1,0 +1,35 @@
+# Decision-layer eval runner config (Phase 2D / W4+W5 — story 2D.6 schema).
+#
+# Consumed by `scripts/run_decision_layer_eval.py`. Each entry under `pairs`
+# describes one (dataset, predictor) combination to score end-to-end:
+# W1 uncertainty eval (2A.5) + W2 structure diagnostics (2B.5) + 2D.5 decision
+# layer. The synthetic smoke (`tests/test_decision_layer_runner.py`) bypasses
+# this file and drives the runner with in-process objects.
+#
+# Real-run wiring is finalized in story 2D.9 — this schema is the contract.
+
+# Where per-pair artifacts and the top-level comparison summary land.
+# The runner ALWAYS honours --results-root from the CLI, which takes precedence.
+results_root: results/2D
+
+# Path to the 2D.5 decision-layer operating-point config.
+decision_config: configs/decision_layer.yaml
+
+# Per-date diagnostic budget for the W2 stack. Lower for cheap runs.
+diagnostics:
+  keep_fraction: 0.8
+  n_draws: 10
+  seed: 0
+  max_dates_per_split: 20
+
+# Nominal coverage level reported in the comparison summary.
+nominal_coverage: 0.90
+
+# (dataset, predictor) pairs. Real benchmarks + calibrators are filled in by
+# story 2D.9; the schema below is illustrative.
+pairs: []
+#  - dataset: spy_phase1_random40_noiselow
+#    benchmark_path: artifacts/benchmarks/spy_phase1_random40_noiselow.parquet
+#    predictor: conditional_calibrated
+#    checkpoint: artifacts/models/best_conditional.pt
+#    calibrator_path: artifacts/calibrators/conditional_calibrator.json
