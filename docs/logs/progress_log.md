@@ -1945,3 +1945,40 @@ ensemble scale 5.59. Quantile conformal δ = +7.8e-3.
 - Epic 2D closed. Phase 3 framing is a separate decision; open
   questions enumerated in `docs/phase2_result_memo.md` §"Open Questions"
   are the inputs to that scoping conversation.
+
+## 2026-05-25 — Phase 2 closure audit + README refresh
+
+### Completed
+- Audited Phase 2 completion against the evidence layer:
+  - All 10 stories `done` on `docs/tasks/BOARD.md` (2D.1–2D.10), epic 2D
+    `done`; all 2D spec files carry `status: done`.
+  - `docs/phase2_result_memo.md`, `notebooks/05_phase2_results.ipynb`,
+    `results/2D/comparison_summary.csv`, `results/2D/spy_phase1_random40_noiselow/`
+    per-pair artifacts, and `artifacts/runs/2D7/` + `artifacts/runs/2D8/`
+    all present.
+  - `docs/agent_bootstrap/reviewer_state.{json,md}` last bumped
+    2026-05-25T11:00 at HEAD `345dffb` (post-2D.9).
+  - Roadmap status block declares Phase 2 complete with the 2D.9
+    acceptance numbers cited (0.9184 coverage, 0.0606 hi-conf MAE).
+- Refreshed the **README** to reflect Phase 2 closure:
+  - "Current Phase" line updated from "2A & 2B done, 2C in progress"
+    to all-four-epics `done` with a per-epic status table.
+  - Data-source migration block updated: 2C.7 / 2C.8 are now `done`
+    (no longer "pending"); cited full pull stats (26.06 M rows, 4,623
+    days, 2008-01-02 → 2026-05-22).
+  - Added a "Phase 2 — reliability-aware inference (complete,
+    2026-05-25)" section summarizing W1–W5 deliverables, the six
+    decision-grade outputs, and the §5 / §6 acceptance numbers.
+  - Documentation Map expanded: added phase2 memo + notebook, Phase 2C
+    notebook, experiment journal, ADRs 0002 / 0003. Existing entries
+    converted to clickable relative links.
+  - Repository Structure block expanded to mention `results/` and the
+    eval / diagnostics submodules.
+  - "Immediate Next Steps" replaced from "build W1 / W2 / W3" (all
+    done) with the four open-question follow-ups from the 2D.10 memo
+    and 2D.9 handoff.
+- No code, no spec, no artifact mutated. Pure README + log refresh.
+
+### Next actions
+- None blocking. Open questions remain in `docs/phase2_result_memo.md`
+  §"Open Questions" for the eventual Phase 3 scoping conversation.
