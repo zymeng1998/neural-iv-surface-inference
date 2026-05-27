@@ -213,3 +213,52 @@ jupyter nbconvert --to notebook --execute \
   notebooks/05_phase2_results.ipynb \
   --output /tmp/_2D10_check.ipynb
 ```
+
+---
+
+## Follow-up addendum: latent capacity (2E.2) — 2026-05-27
+
+Story 2E.2 captured `z_t` from the production 2D.7 gaussian checkpoint
+over a 300-date random sample of the val split and ran a paired
+spectral + causal-ablation diagnostic (full report:
+[`docs/experiments/experiment_journal.md`](experiments/experiment_journal.md),
+artifacts under `artifacts/diagnostics/2E2/prod_2d7_gaussian/`).
+
+**Headline:** the 64-dim latent is dramatically over-parameterized.
+
+- Effective rank (entropy form) ≈ **3.97 / 64**; stable rank **1.97**.
+- **52 / 64 PCs are dead** (variance ratio < 1e-4).
+- **k95 = 5 PCs, k99 = 7 PCs** explain ≥ 95 % / 99 % of the latent
+  variance.
+- Top-k PC reconstruction recovers val Gaussian NLL to within **0.2 %**
+  of baseline at **k = 8**, within ~3 % at k = 3, and is essentially
+  bit-equal for k ≥ 16.
+- Per-PC ablation agrees with the spectrum: removing PC 0 or PC 1
+  individually each costs ~25 % of baseline NLL; PC 2 costs another
+  4 %; PCs 3–7 each contribute single-digit %; PCs 8+ are noise.
+- Per-dim ablation is uniformly small (|ΔNLL| ≤ 0.04), confirming the
+  information lives along *learned* PC directions, not raw axes.
+
+**Recommendation for [2E.3](tasks/specs/2E.3_latent_dim_sweep.md):
+shrink sweep with widths `{2, 4, 8, 16, 32, 64}`.**
+
+Rationale for the grid:
+
+- 64 is the production anchor for parity with 2D.7.
+- 8 is the inferred "sufficient" width — top-8 PCs recover val NLL to
+  within 0.2 %.
+- 2 and 4 stress-test the spectral finding: PCs 0+1 alone hold 78 %
+  of variance and 51 % of prediction quality, so 2 should already
+  degrade visibly; 4 should be close to 8.
+- 16 and 32 bracket the "no harm" zone so we can see the val-NLL plateau
+  shape, not just two endpoints.
+
+If the sweep confirms the diagnostic — i.e. val NLL is flat from
+latent_dim 8 → 64 and degrades steeply at 4 / 2 — the Phase 3 default
+should drop to `latent_dim = 8` (with 16 as the conservative fallback
+if 8 sits at the visible knee). No expansion is justified.
+
+The diagnostic does **not** rule out the possibility that a wider
+encoder with deeper post-pool layers would learn to spread information
+across more directions. Pooling- and depth-variant studies belong in
+the W7 placeholder workstream, not in 2E.3.

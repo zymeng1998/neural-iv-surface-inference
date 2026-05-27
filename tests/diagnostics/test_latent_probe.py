@@ -112,6 +112,35 @@ def test_extract_latents_raises_on_empty_loader() -> None:
         extract_latents(model, iter([]), device=torch.device("cpu"))
 
 
+def test_extract_latents_pads_variable_query_widths_across_batches() -> None:
+    # Regression: collate_conditional pads each batch to its own max Q, so the
+    # captured per-batch tensors can disagree on dim=1. The hook must pad to
+    # the global max before concatenating.
+    model = ConditionalSurfaceModel(
+        context_dim=3, coord_dim=2,
+        hidden_dim=8, latent_dim=4,
+        head={"kind": "point"},
+    ).double()
+    loader = [
+        _make_loader(n_batches=1, batch_size=2, n_query=5)[0],
+        _make_loader(n_batches=1, batch_size=2, n_query=9)[0],
+        _make_loader(n_batches=1, batch_size=2, n_query=7)[0],
+    ]
+
+    cache = extract_latents(model, loader, device=torch.device("cpu"))
+
+    assert cache.Z.shape == (6, 4)
+    assert cache.query.shape == (6, 9, 2)
+    assert cache.target.shape == (6, 9)
+    assert cache.query_mask.shape == (6, 9)
+    # Real rows from the n_query=5 batch keep their original mask True; the
+    # extra 4 padded positions must be False so per-row loss ignores them.
+    first_batch_real_mask = cache.query_mask[:2, :5]
+    first_batch_pad_mask = cache.query_mask[:2, 5:]
+    assert first_batch_real_mask.all()
+    assert not first_batch_pad_mask.any()
+
+
 def test_extract_latents_requires_encoder_attribute() -> None:
     class Bare(torch.nn.Module):
         def forward(self, *args, **kwargs):

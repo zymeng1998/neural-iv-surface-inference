@@ -58,6 +58,11 @@ artifacts/runs/**/checkpoints/
 # Phase 2D.4 fitted calibrators (per-run, regenerable from cached val CSVs)
 artifacts/calibration/
 
+# Phase 2E.2 latent-capacity diagnostics: keep summary CSVs / JSON / PNGs +
+# pc_loadings.npy; drop raw captured latents and run logs (regenerable).
+artifacts/diagnostics/**/latents.npy
+artifacts/diagnostics/**/run.log
+
 # Phase 2D.9 per-row prediction+decision CSVs (~45 MB each; regenerable from
 # scripts/run_decision_layer_eval.py + checkpoints + calibrator). The
 # top-level comparison summary, per-pair metrics_summary.csv,

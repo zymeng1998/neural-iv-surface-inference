@@ -119,9 +119,32 @@ def extract_latents(
         raise RuntimeError("loader yielded no batches; latent cache is empty")
 
     Z = torch.cat(captured, dim=0)
-    query = torch.cat(queries, dim=0)
-    target = torch.cat(targets, dim=0)
-    query_mask = torch.cat(masks, dim=0)
+    # ``collate_conditional`` pads each batch to its OWN max query count, so
+    # per-batch query / target / mask tensors have different widths along
+    # dim=1. Pad every batch out to the global max before concatenating.
+    coord_dim = queries[0].shape[-1]
+    max_q = max(q.shape[1] for q in queries)
+
+    def _pad(t: torch.Tensor, width: int, value: float = 0.0) -> torch.Tensor:
+        cur = t.shape[1]
+        if cur == width:
+            return t
+        pad_shape = list(t.shape)
+        pad_shape[1] = width - cur
+        pad = torch.full(pad_shape, value, dtype=t.dtype)
+        return torch.cat([t, pad], dim=1)
+
+    query = torch.cat([_pad(q, max_q) for q in queries], dim=0)
+    target = torch.cat([_pad(t, max_q) for t in targets], dim=0)
+    # Mask padding must be False so the per-row loss aggregation ignores
+    # synthetic padded positions; padded mask cells are False by default.
+    query_mask = torch.cat(
+        [_pad(m, max_q, value=False) for m in masks], dim=0
+    )
+    if coord_dim != query.shape[-1]:  # defensive — coord_dim is preserved
+        raise RuntimeError(
+            f"coord_dim drift after padding: {coord_dim} -> {query.shape[-1]}"
+        )
 
     if not (Z.shape[0] == query.shape[0] == target.shape[0] == query_mask.shape[0]):
         raise RuntimeError(

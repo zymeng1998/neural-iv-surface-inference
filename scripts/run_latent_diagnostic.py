@@ -86,7 +86,11 @@ def _configure_logging(log_path: Path) -> None:
 
 
 def _build_split_loader(
-    config: dict, split: str, batch_size: int
+    config: dict,
+    split: str,
+    batch_size: int,
+    max_dates: int | None = None,
+    sample_seed: int = 42,
 ) -> DataLoader:
     bench_file = config.get("data", {}).get("benchmark_file")
     if not bench_file or not Path(bench_file).exists():
@@ -94,20 +98,45 @@ def _build_split_loader(
             f"benchmark file not found: {bench_file!r} "
             "(local trees do not carry the AV parquet; run on the Pod)"
         )
-    df = pd.read_parquet(bench_file)
     if split not in {"val", "test"}:
         raise ValueError(f"split must be 'val' or 'test'; got {split!r}")
-    sub = df[df["split"] == split].reset_index(drop=True)
+    # Filter at parquet read time. The benchmark parquets are ~1 GB on disk
+    # and balloon to several GB in pandas memory; loading only the target
+    # split keeps the runner within the Pod's 8 GB container limit.
+    sub = pd.read_parquet(bench_file, filters=[("split", "=", split)]).reset_index(
+        drop=True
+    )
     if sub.empty:
         raise RuntimeError(f"split {split!r} is empty in {bench_file}")
+
+    # On Pods with a tight memory limit (8 GB container), the full val split
+    # of the AV benchmark (~2.8 GB pandas + dataset duplication) OOMs during
+    # dataset construction. ``--max-dates`` samples a deterministic subset
+    # of dates so the diagnostic still produces a representative SVD spectrum
+    # and ablation grid (N >> latent_dim=64 is the only constraint).
+    if max_dates is not None and max_dates > 0:
+        all_dates = np.array(sorted(sub["date"].unique()))
+        if max_dates < len(all_dates):
+            rng = np.random.default_rng(sample_seed)
+            picked = np.sort(rng.choice(all_dates, size=max_dates, replace=False))
+            sub = sub[sub["date"].isin(picked)].reset_index(drop=True)
+            _LOG.info(
+                "sampled %d / %d dates (seed=%d) -> %d rows",
+                len(picked), len(all_dates), sample_seed, len(sub),
+            )
+
     ds = ConditionalIVSurfaceDataset(sub)
-    return DataLoader(
+    loader = DataLoader(
         ds,
         batch_size=batch_size,
         shuffle=False,
         collate_fn=collate_conditional,
         num_workers=0,
     )
+    # Drop the intermediate dataframe — the dataset has internalized what it
+    # needs and ``sub`` is the biggest single allocation. Saves ~2-3 GB.
+    del sub
+    return loader
 
 
 def _build_loss_fn(
@@ -297,6 +326,18 @@ def main() -> int:
         "--device", default=None,
         help="torch device override (defaults to cuda if available, else cpu)",
     )
+    parser.add_argument(
+        "--max-dates", type=int, default=None,
+        help=(
+            "Cap the number of distinct dates loaded from the split (deterministic"
+            " random sample, seed=--sample-seed). Use on memory-constrained Pods"
+            " where the full val/test split OOMs during dataset construction."
+        ),
+    )
+    parser.add_argument(
+        "--sample-seed", type=int, default=42,
+        help="Seed for --max-dates sampling. Has no effect when --max-dates is unset.",
+    )
     args = parser.parse_args()
 
     out_dir: Path = args.out
@@ -311,7 +352,13 @@ def main() -> int:
     _LOG.info("device=%s", device)
 
     config = load_config(args.config)
-    loader = _build_split_loader(config, split=args.split, batch_size=args.batch_size)
+    loader = _build_split_loader(
+        config,
+        split=args.split,
+        batch_size=args.batch_size,
+        max_dates=args.max_dates,
+        sample_seed=args.sample_seed,
+    )
     _LOG.info("built %s loader: %d batches", args.split, len(loader))
 
     predictor = ConditionalSurfacePredictor.from_checkpoint(
@@ -325,6 +372,8 @@ def main() -> int:
     t0 = time.time()
     cache = extract_latents(model, loader, device=device)
     _LOG.info("extracted Z shape=%s in %.1fs", tuple(cache.Z.shape), time.time() - t0)
+    # Free the dataset + loader; ablation steps work entirely from the cache.
+    del loader
 
     Z_np = cache.Z.numpy().astype(np.float64)
     report = analyze(Z_np)

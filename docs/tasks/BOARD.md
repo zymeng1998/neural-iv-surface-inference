@@ -70,7 +70,7 @@ decomposition). The first story of any epic is always its decomposition story.
 | 2D.10 | Story | Local: Phase 2 results memo + notebook | `done` | `docs/tasks/specs/2D.10_phase2_results_memo_notebook.md` | 2026-05-25 |
 | 2E | Epic | Phase 2 follow-ups | `in_progress` | `docs/roadmaps/phase2_followups.md` | 2026-05-26 |
 | 2E.1 | Story | Decompose Phase 2E | `done` | `docs/tasks/specs/2E.1_decompose_phase_2e.md` | 2026-05-26 |
-| 2E.2 | Story | Latent capacity diagnostic — effective rank + PCA + contribution analysis on the 2D.7 checkpoint | `in_progress` | `docs/tasks/specs/2E.2_latent_capacity_diagnostic.md` | 2026-05-26 |
+| 2E.2 | Story | Latent capacity diagnostic — effective rank + PCA + contribution analysis on the 2D.7 checkpoint | `done` | `docs/tasks/specs/2E.2_latent_capacity_diagnostic.md` | 2026-05-27 |
 | 2E.3 | Story | `latent_dim` sweep (scope set by 2E.2 findings) | `backlog` | `docs/tasks/specs/2E.3_latent_dim_sweep.md` | 2026-05-26 |
 
 > When an epic is entered, set it to `in_progress`, add its decomposition story

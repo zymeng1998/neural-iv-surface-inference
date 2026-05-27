@@ -695,3 +695,126 @@ Calibrated row source:
   scipy scikit-learn matplotlib pyarrow` was needed to rehydrate. Numpy
   upgraded to 2.x as a side effect — torch 2.4.1 still imports and runs
   on CPU.
+
+---
+
+## 2026-05-27T01:21:00-04:00 — Experiment: 2E.2 latent capacity diagnostic on the 2D.7 gaussian checkpoint
+
+event_at: 2026-05-27T03:21:00+00:00
+recorded_at: 2026-05-27T00:15:00-04:00
+
+**Purpose:** Quantify how much of `ConditionalSurfaceModel`'s
+`latent_dim=64` the production 2D.7 gaussian checkpoint actually uses, on
+two complementary lenses — (1) the SVD spectrum of the captured per-date
+latent ``z_t`` over val (how `Z` is *distributed*) and (2) per-dim and
+per-PC mean-substitution ablations measured by ΔNLL on val (how the
+decoder actually *uses* each direction). Story 2E.2.
+
+**Changed variables:** Reads only — no retraining. Loaded
+`artifacts/runs/2D7/gaussian/checkpoints/best_conditional.pt` and
+captured `z_t` via a forward hook on `model.encoder` over the val split
+of `data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet`.
+Pod container memory cap (8 GB) forced `--max-dates 300` (random sample
+of 693 val dates, seed=42); N=300 >> latent_dim=64 so the SVD spectrum
+and ablation grid remain statistically meaningful.
+
+**Result summary** (artifacts under
+`artifacts/diagnostics/2E2/prod_2d7_gaussian/`):
+
+| Metric | Value |
+|---|---|
+| `eff_rank_entropy` (exp Shannon entropy over variance distribution) | **3.97 / 64** |
+| `stable_rank` (Frobenius² / spectral²) | **1.97** |
+| `k95` (PCs to reach 95% variance) | **5** |
+| `k99` (PCs to reach 99% variance) | **7** |
+| `dead_pcs` (variance ratio < 1e-4) | **52 / 64** |
+| Baseline val Gaussian NLL | **−2.5851** |
+
+Top-PC variance share: `PC0 = 50.7%`, `PC1 = 27.2%`, `PC2 = 8.4%`,
+`PC3 = 5.4%`, `PC4 = 3.8%`, `PC5 = 2.8%` — cumulative 0.778 / 0.863 /
+0.917 / 0.955 / 0.983 across k=2..6.
+
+Per-PC ablation ΔNLL (val) for the leading PCs — read against the
+baseline magnitude 2.585:
+
+| PC | ΔNLL | % of baseline | variance ratio |
+|---|---|---|---|
+| 1 | +0.676 | 26.1 % | 0.272 |
+| 0 | +0.658 | 25.4 % | 0.507 |
+| 2 | +0.111 |  4.3 % | 0.085 |
+| 5 | +0.049 |  1.9 % | 0.028 |
+| 3 | +0.028 |  1.1 % | 0.054 |
+| 4 | +0.006 |  0.2 % | 0.038 |
+| 6 | −0.006 | −0.2 % | 0.010 |
+
+Top-k PC reconstruction ΔNLL (keep only top-k PCs, project back, decode):
+
+| k | ΔNLL | % of baseline |
+|---|---|---|
+| 1 | +1.023 | 39.6 % |
+| 2 | +0.195 |  7.5 % |
+| 3 | +0.081 |  3.1 % |
+| 5 | +0.051 |  2.0 % |
+| 8 | +0.006 |  0.2 % |
+| 16 | −2e-4 | ~0 |
+| 32 | +3e-5 | ~0 |
+| 64 | +3e-8 | ~0 (numerical) |
+
+Per-dim ablation ΔNLL (raw basis): top deltas span dims
+`{57, 41, 7, 5, 59, 37, 27, 6, 17, 34}` but their magnitudes (max ≈
+0.039) are an order of magnitude smaller than per-PC deltas — the model
+encodes information along PC directions that don't align with raw axes,
+so no single raw coordinate is irreplaceable.
+
+**Interpretation:**
+
+- The trained 64-dim latent is **dramatically over-parameterized**. The
+  encoder pushes essentially all signal into ≤ 7 directions; 52 of 64
+  dims sit at the SVD-floor.
+- Spectral and causal lenses agree: PCs 0 and 1 alone account for ~52 %
+  of the prediction (their ablations each cost roughly a quarter of the
+  baseline NLL); PC 0–2 cover 56 % of prediction quality; the top 8
+  PCs cover 99.8 %.
+- The mismatch between large per-PC deltas and small per-dim deltas
+  confirms the leverage lives in *learned axes*, not raw coordinates —
+  any single raw dim is replaceable, but specific *combinations* are not.
+- This is consistent with the modest 2D.7 dataset width (~3,300
+  observed context points per date, but only ~700 train dates) and the
+  shallow `n_post_layers=1` encoder MLP.
+
+**Decision impact:**
+
+- 2E.2 acceptance criteria are met for the diagnostic-only scope of
+  this story. The runner ships, the artifact bundle is committed (raw
+  `latents.npy` and `run.log` deliberately gitignored).
+- Triggers 2E.3 with an explicit **shrink** recommendation rather than
+  expand or close-without-running. See the "Follow-up addendum: latent
+  capacity (2E.2)" section in
+  [`docs/phase2_result_memo.md`](../phase2_result_memo.md).
+
+**Next step:**
+
+Promote 2E.3 to `todo` with sweep grid
+`conditional.latent_dim ∈ {2, 4, 8, 16, 32, 64}`. Hypothesis: val/test
+NLL is flat or improves down to ~8, then degrades steeply. If 8 ≈ 64 on
+val NLL we propose `latent_dim=8` for Phase 3; if there's a knee at 16
+or 32 we pick at the knee. The 64-baseline is included to anchor
+parity with the 2D.7 production run.
+
+### Operational notes
+
+- Pod (RunPod CPU pod, 8 GB container): val sampling 300 / 693 dates →
+  `Z` shape (300, 64) captured in 15.6 s. Per-dim ablation grid 450 s;
+  per-PC grid 534 s; top-k grid 56.8 s. Total wall-clock ≈ 18 min
+  end-to-end.
+- One bug surfaced during the Pod run and was fixed before re-launch:
+  `collate_conditional` pads each batch to its own max query count, so
+  the per-batch query / target / mask tensors have different widths and
+  the original `torch.cat(dim=0)` failed. `latent_probe.extract_latents`
+  now pads to the global max query width before concatenation;
+  regression test `test_extract_latents_pads_variable_query_widths_across_batches`
+  added.
+- The diagnostic runner also gained `--max-dates` and `--sample-seed`
+  flags to support memory-constrained Pods; the same code path runs
+  unchanged on full val when memory permits.
+

@@ -2173,3 +2173,67 @@ ensemble scale 5.59. Quantile conformal δ = +7.8e-3.
   "what to do about 2E.3" recommendation
   (close-without-running / shrink with widths / expand with widths).
 - Flip `2E.2` to `done` after the memo addendum lands.
+
+---
+
+## 2026-05-27 — 2E.2 closed; Pod diagnostic on 2D.7 gaussian shipped + journal + memo addendum
+
+### Completed
+- Ran `scripts/run_latent_diagnostic.py` on the RunPod CPU pod against
+  the production 2D.7 gaussian checkpoint
+  (`artifacts/runs/2D7/gaussian/checkpoints/best_conditional.pt`),
+  val split, 300 / 693 dates random-sampled (seed=42). N=300 >> 64
+  keeps the SVD spectrum and ablation grid statistically meaningful
+  while staying under the 8 GB Pod container memory limit.
+- Pod-side wall clock: extract 15.6 s; per-dim ablation 450 s; per-PC
+  ablation 534 s; top-k recon 56.8 s — ~18 min end-to-end on CPU.
+- **Headline finding: the 64-dim latent is dramatically
+  over-parameterized.** `eff_rank_entropy = 3.97`, `stable_rank = 1.97`,
+  `dead_pcs = 52 / 64`, `k95 = 5`, `k99 = 7`. Top-2 PCs hold 78 % of
+  latent variance and 51 % of prediction quality (per-PC ΔNLL); top-8
+  PC reconstruction recovers val NLL to within 0.2 % of baseline.
+  Per-dim ablation magnitudes are an order of magnitude smaller than
+  per-PC, confirming the leverage lives in learned axes, not raw dims.
+- Pulled the 12-file summary artifact bundle to
+  `artifacts/diagnostics/2E2/prod_2d7_gaussian/` via rsync (excluding
+  `latents.npy` and `run.log`, which stay on the Pod per spec).
+- **Two bugs surfaced + fixed during the Pod run:**
+  1. `--max-dates N` / `--sample-seed` flags added to the runner with
+     deterministic date sampling; full val (~2.8 GB pandas + dataset
+     duplication) OOMs on the 8 GB Pod container.
+  2. `latent_probe.extract_latents` now pads each batch's
+     query / target / mask to the global max query width before
+     `torch.cat` — `collate_conditional` pads per-batch to that
+     batch's own max, so widths differ across batches. Regression test
+     `test_extract_latents_pads_variable_query_widths_across_batches`
+     added; 19 / 19 unit tests pass.
+  Both fixes hot-patched to the Pod via scp before re-launch; the
+  committed runner ships the same content.
+- **`docs/experiments/experiment_journal.md`** entry added (2026-05-27
+  03:21 UTC) with full result tables (spectrum, per-PC ΔNLL,
+  top-k reconstruction curve) and interpretation.
+- **`docs/phase2_result_memo.md`** addendum added titled
+  *"Follow-up addendum: latent capacity (2E.2) — 2026-05-27"*. Ends
+  with the explicit **shrink-sweep recommendation** with widths
+  `{2, 4, 8, 16, 32, 64}` for 2E.3.
+- `2E.2` flipped `in_progress → done` on BOARD and in the spec
+  frontmatter (`last_updated_at = 2026-05-27T00:30`).
+
+### Notes
+- The Pod's stale uncommitted working tree (56 files modified vs
+  origin) was stashed cleanly before `git pull --ff-only`. The stash
+  is preserved on the Pod (`stash@{0}: pre-2E.2-pull 2026-05-26`) in
+  case any of it turns out to be ungraduated work; based on the diffs
+  inspected (BOARD.md, progress_log.md), it is intermediate state from
+  prior remote sessions whose finished work is already in origin.
+- `2E.3` stays `backlog` until the human reviews the 2E.2 addendum
+  and promotes it.
+
+### Next actions
+- Human reviews the journal entry + memo addendum and promotes
+  `2E.3` `backlog → todo` if the shrink-sweep recommendation is
+  accepted. Per the 2E.3 spec, that promotion is the gate that opens
+  Phase B work (full latent_dim sweep on the Pod).
+- Pod cleanup at end of follow-up sweep: drop the `pre-2E.2-pull`
+  stash if not used and clean up the temporary `/workspace/venv-2e2`
+  Python environment.
