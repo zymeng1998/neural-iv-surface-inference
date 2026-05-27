@@ -4,11 +4,11 @@
   "bootstrap_completed_at": "2026-04-02T01:34:00-04:00",
   "baseline_completed": true,
   "baseline_completed_at": "2026-04-02T01:35:00-04:00",
-  "last_review_run_at": "2026-05-25T11:00:00-04:00",
+  "last_review_run_at": "2026-05-27T00:45:00-04:00",
   "last_review_run_type": "ongoing",
-  "last_processed_git_head": "345dffb76b4881d1c804abb568fc4dde975207c5",
-  "last_processed_git_head_short": "345dffb",
-  "last_processed_diff_signature": "results/2D/comparison_summary.csv;results/2D/spy_phase1_random40_noiselow/{interpolation,masked_mlp,conditional_point,conditional_calibrated}/{metrics_summary.csv,region_tradability.csv,abstention_curve.png,calibration_plot.png};configs/decision_layer_eval_av.yaml;scripts/run_decision_layer_eval.py;docs/experiments/experiment_journal.md;docs/logs/progress_log.md;docs/roadmaps/phase2_reliability_aware_surface_inference.md;docs/tasks/BOARD.md;docs/tasks/specs/2D.9_remote_decision_layer_e2e.md",
+  "last_processed_git_head": "90c46fa137f9d4a2950b0e6ca0ef0f641fd49c53",
+  "last_processed_git_head_short": "90c46fa",
+  "last_processed_diff_signature": "scripts/run_latent_diagnostic.py;src/neural_iv_surface_inference/diagnostics/{__init__,effective_rank,contribution,latent_probe}.py;tests/diagnostics/{__init__,test_effective_rank,test_contribution,test_latent_probe}.py;artifacts/diagnostics/2E2/prod_2d7_gaussian/{rank_report.json,singular_values.csv,pc_loadings.csv,pc_loadings.npy,per_dim_ablation.csv,per_pc_ablation.csv,topk_pc_reconstruction.csv,singular_spectrum.png,cumulative_variance.png,per_dim_ablation.png,per_pc_ablation.png,topk_pc_reconstruction.png};docs/tasks/specs/{2E.1_decompose_phase_2e,2E.2_latent_capacity_diagnostic,2E.3_latent_dim_sweep}.md;docs/roadmaps/phase2_followups.md;docs/tasks/BOARD.md;docs/experiments/experiment_journal.md;docs/phase2_result_memo.md;docs/logs/progress_log.md;.gitignore",
   "last_processed_packet_fingerprint": null,
   "known_bootstrap_files": [
     "docs/agent_bootstrap/project_memory_registry.md",
@@ -34,7 +34,7 @@
     "0002",
     "0003"
   ],
-  "known_progress_log_last_entry_timestamp": "2026-05-25T11:00:00-04:00",
-  "known_experiment_journal_entry_count": 13,
-  "notes": "Refreshed 2026-05-25 after 2D.9 close-out: epic 2D done (4/4 epics done). HEAD advanced from dfe4e9a to 345dffb across the full 2D build: heteroscedastic / quantile head (2D.2), deep-ensemble adapter (2D.3), calibrated confidence + interval (2D.4), abstention + tradability decision layer (2D.5), decision-layer runner skeleton (2D.6), remote AV trainings (2D.7 + 2D.8), end-to-end decision-layer eval on AV (2D.9). Calibrated test coverage 0.9184 at nominal 0.90, high-confidence MAE 0.0606 < test MAE 0.0855."
+  "known_progress_log_last_entry_timestamp": "2026-05-27T00:30:00-04:00",
+  "known_experiment_journal_entry_count": 14,
+  "notes": "Refreshed 2026-05-27 after 2E.2 close-out: epic 2E opened (Phase 2 follow-ups, open-ended) and first follow-up story 2E.2 closed. HEAD advanced 345dffb -> 90c46fa across two 2E.2 commits (e5022de local modules + CLI + tests; 90c46fa Pod run on the 2D.7 gaussian checkpoint + journal + memo addendum + bug-fix backports). Latent-capacity diagnostic on the 2D.7 gaussian checkpoint (val, 300/693 dates) found the 64-dim latent dramatically over-parameterized: eff_rank_entropy=3.97, stable_rank=1.97, dead_pcs=52/64, k95=5, k99=7. Top-2 PCs hold 78% of variance and 51% of prediction quality; top-8 PC reconstruction recovers val NLL to within 0.2%. Memo addendum recommends 2E.3 SHRINK sweep latent_dim ∈ {2,4,8,16,32,64}. 2E.3 stays backlog awaiting human review."
 }
