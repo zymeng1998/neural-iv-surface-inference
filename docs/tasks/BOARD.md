@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-05-25T00:00:00-04:00
+last_updated_at: 2026-05-26T00:00:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -68,6 +68,10 @@ decomposition). The first story of any epic is always its decomposition story.
 | 2D.8 | Story | Remote: K-seed deep ensemble training on AV | `done` | `docs/tasks/specs/2D.8_remote_train_deep_ensemble.md` | 2026-05-25 |
 | 2D.9 | Story | Remote: end-to-end decision-layer eval on AV + artifacts + journal | `done` | `docs/tasks/specs/2D.9_remote_decision_layer_e2e.md` | 2026-05-25 |
 | 2D.10 | Story | Local: Phase 2 results memo + notebook | `done` | `docs/tasks/specs/2D.10_phase2_results_memo_notebook.md` | 2026-05-25 |
+| 2E | Epic | Phase 2 follow-ups | `in_progress` | `docs/roadmaps/phase2_followups.md` | 2026-05-26 |
+| 2E.1 | Story | Decompose Phase 2E | `done` | `docs/tasks/specs/2E.1_decompose_phase_2e.md` | 2026-05-26 |
+| 2E.2 | Story | Latent capacity diagnostic — effective rank + PCA + contribution analysis on the 2D.7 checkpoint | `in_progress` | `docs/tasks/specs/2E.2_latent_capacity_diagnostic.md` | 2026-05-26 |
+| 2E.3 | Story | `latent_dim` sweep (scope set by 2E.2 findings) | `backlog` | `docs/tasks/specs/2E.3_latent_dim_sweep.md` | 2026-05-26 |
 
 > When an epic is entered, set it to `in_progress`, add its decomposition story
 > (e.g. `2A.1`), then add the resulting stories as new rows. Do not delete or

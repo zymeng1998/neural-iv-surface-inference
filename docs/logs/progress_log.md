@@ -1982,3 +1982,194 @@ ensemble scale 5.59. Quantile conformal δ = +7.8e-3.
 ### Next actions
 - None blocking. Open questions remain in `docs/phase2_result_memo.md`
   §"Open Questions" for the eventual Phase 3 scoping conversation.
+
+## 2026-05-26 — Epic 2E opened (Phase 2 follow-ups)
+
+### Completed
+- Opened **epic 2E — Phase 2 follow-ups** to collect post-closure
+  diagnostics and small-scope sweeps that test assumptions baked into
+  the production `ConditionalSurfaceModel` / decision layer but do not
+  belong in Phase 3 scoping.
+- Wrote epic-level roadmap stub
+  `docs/roadmaps/phase2_followups.md`. Initial active workstream:
+  **W6 — capacity & representation diagnostics**. W7 (pooling
+  variants), W8 (calibration drift), W9 (threshold sensitivity)
+  listed as candidates, *not* committed.
+- Decomposition story `2E.1` written and marked `done`
+  (`docs/tasks/specs/2E.1_decompose_phase_2e.md`), modelled on the
+  2D.1 precedent.
+- First follow-up story specified at `backlog`:
+  **`2E.2` — latent capacity diagnostic** (effective rank + PCA on
+  the production 2D.7 gaussian checkpoint, plus a
+  `latent_dim ∈ {8, 16, 32, 64, 96, 128}` sweep). Spec captures the
+  technical design — new `diagnostics/latent_probe.py` +
+  `diagnostics/effective_rank.py` modules, two runner scripts, sweep
+  config, unit tests — so a future session can pick it up cold.
+  Phase A (analysis on existing checkpoint) and Phase B (sweep) both
+  run remote on the Pod because the AV benchmark parquet is empty
+  locally.
+- Updated `docs/tasks/BOARD.md`: added 2E epic row (`in_progress`),
+  2E.1 (`done`), 2E.2 (`backlog`). Bumped board `last_updated_at` to
+  2026-05-26.
+- Trigger: operator question "how many of our 64 latent dimensions are
+  actively contributing?" — a representation-capacity diagnostic that
+  Phase 2 closure did not answer.
+
+### Notes
+- Epic 2E is **open-ended**: more stories will be added by progressive
+  decomposition as follow-ups surface, not enumerated up front.
+- No source code, config, or model artifact mutated in this session.
+  Docs-only change set.
+
+### Next actions
+- Human reviews `2E.2` spec and promotes from `backlog → todo` when
+  ready to run the diagnostic. Phase A is the cheap first half (a
+  single forward pass over the val loader on the Pod) and can ship
+  before committing to Phase B (six full trainings).
+
+---
+
+## 2026-05-26 (later) — 2E.2 narrowed; 2E.3 carved out (atomic-story rule)
+
+### Completed
+- Operator pushed back on the original `2E.2` for two reasons:
+  1. Phase A needed more than effective rank alone — explicit per-PC
+     and per-dim *contribution to prediction* analysis, not just a
+     variance-share spectrum, so we can say e.g. "top-2 PCs recover 90%
+     of val NLL" vs "all 64 dims contribute roughly uniformly".
+  2. Phase B's sweep scope depends on Phase A's outcome. If effective
+     rank is ~60 the right move is to *expand* `latent_dim`, not run a
+     shrink sweep down to 8 / 16. Bundling locked us into a 6-width
+     sweep before the diagnostic justified it.
+- **Rewrote `docs/tasks/specs/2E.2_latent_capacity_diagnostic.md`** as
+  Phase A only: SVD spectrum (effective rank entropy, stable rank,
+  k95 / k99, variance ratios, PC loadings) **plus** a causal-contribution
+  layer — per-dim mean-substitution ablation, per-PC ablation, and a
+  top-k PC reconstruction curve. New diagnostic module
+  `src/neural_iv_surface_inference/diagnostics/contribution.py` added
+  to the file list; new test file `tests/diagnostics/test_contribution.py`
+  added; expected artifacts now include `per_dim_ablation.csv`,
+  `per_pc_ablation.csv`, `topk_pc_reconstruction.csv` and matching PNGs.
+  Memo-addendum acceptance criterion now demands an explicit "what to do
+  about 2E.3" recommendation (close-without-running / shrink with widths
+  / expand with widths).
+- **Carved Phase B out as `2E.3`** at `docs/tasks/specs/2E.3_latent_dim_sweep.md`.
+  Status `backlog`. Widths grid is intentionally empty until 2E.2's
+  addendum names the sweep direction. Pre-condition section makes the
+  dependency explicit: this story may not be promoted to `todo` until
+  2E.2 is `done` and the memo names the widths to put in
+  `configs/sweeps/latent_dim_sweep.yaml`. "Close-without-running" is
+  a first-class acceptance path with reduced criteria.
+- Updated `docs/tasks/BOARD.md` (retitled 2E.2; added 2E.3 row).
+- Updated `docs/roadmaps/phase2_followups.md` W6 entry to list both
+  stories and explain the dependency.
+- Saved global feedback memory **`feedback_atomic_stories`** capturing
+  the rule that surfaced this rework: decomposed stories must be atomic
+  (one question, one artifact bundle, one acceptance check). Linked from
+  `MEMORY.md` index.
+
+### Notes
+- No source code, config, model, or training artifact mutated. Docs +
+  memory only.
+- The contribution-analysis design (mean-substitution rather than hard
+  zero, separate per-dim vs per-PC sweeps, top-k PC reconstruction
+  curve) is chosen so a high-variance / low-leverage dim and a
+  low-variance / high-leverage dim are both visible — spectrum alone
+  would miss the second case.
+
+### Next actions
+- Human reviews the rewritten `2E.2` and the new `2E.3`. Promote
+  `2E.2` `backlog → todo` when ready; leave `2E.3` `backlog` until
+  2E.2's memo addendum names the sweep direction.
+
+---
+
+## 2026-05-26 (evening) — 2E.2 local diagnostic modules + CLI runner landed
+
+### Completed
+- Promoted `2E.2` `backlog → in_progress` on BOARD and in the spec
+  frontmatter.
+- **`src/neural_iv_surface_inference/diagnostics/effective_rank.py`** —
+  pure-numpy SVD spectrum module. Frozen `RankReport` dataclass with
+  `singular_values`, `variance_ratio`, `cumulative_variance`,
+  `eff_rank_entropy` (exp-of-Shannon-entropy over the variance
+  distribution), `stable_rank` (Frobenius² / spectral²), `k95`, `k99`,
+  `dead_pcs`, `pc_loadings`. `analyze(Z)` mean-centres `Z`, runs SVD,
+  populates the dataclass. Type-annotated, PEP-8, `logging` instead of
+  `print()`.
+- **`src/neural_iv_surface_inference/diagnostics/contribution.py`** —
+  decoder-agnostic ablation utilities. `LossFn` contract is
+  `(Z_batch, row_indices) -> per-row losses`, so the same primitives
+  serve unit-tests (synthetic linear decoder) and the production runner
+  (real decoder, cached per-row queries / targets). Exports:
+  `baseline_loss`, `ablate_dim` (mean-substitution, not hard-zero —
+  documented rationale), `project_to_pc_basis`,
+  `reconstruct_from_pc_basis`, `ablate_pc`, `topk_pc_reconstruction`.
+- **`src/neural_iv_surface_inference/diagnostics/latent_probe.py`** —
+  `extract_latents(model, loader, device) -> LatentCache`. Registers a
+  forward hook on `model.encoder` (the SetEncoder's forward already
+  returns `z_t`, so hooking the module output is equivalent to and less
+  brittle than hooking the inner `post_mlp[-1]`). Returns a frozen
+  `LatentCache` with `Z`, `query`, `target`, `query_mask` so the runner
+  iterates the loader once and feeds the ablation utilities from cache.
+- **`scripts/run_latent_diagnostic.py`** — end-to-end CLI:
+  `--config`, `--checkpoint`, `--split`, `--out`, `--batch-size`,
+  `--device`. Loads config + benchmark parquet, builds the chosen
+  split's loader (val|test), loads the model via
+  `ConditionalSurfacePredictor.from_checkpoint`, captures latents,
+  computes the spectrum, runs per-dim mean-substitution ablation,
+  per-PC ablation, and top-k PC reconstruction over
+  `k ∈ {1, 2, 3, 5, 8, 16, 32, 64}` (capped at `latent_dim`). Writes
+  the full artifact bundle (`rank_report.json`, three CSVs,
+  `pc_loadings.csv` long-format + `pc_loadings.npy`, four PNGs,
+  `latents.npy`, `run.log`); only summary scalars print to stdout
+  per `~/.claude/CLAUDE.md` §2.1. `head_kind ∈ {point, gaussian}`
+  supported; `quantile` is rejected early (would need pinball
+  aggregation; deferred to a follow-up if needed).
+- **`src/neural_iv_surface_inference/diagnostics/__init__.py`** —
+  registered the new modules' public surface alongside the existing
+  W2 exports.
+- **Unit tests** under `tests/diagnostics/` (new directory):
+  - `test_effective_rank.py` — rank-1 collapse, isotropic-Gaussian
+    full-rank, monotonicity, dead-PC counting, PC-loading direction
+    recovery, input validation. 7 tests.
+  - `test_contribution.py` — baseline matches direct loss, ablate_dim
+    ranking matches `|w_i| * std(Z[:, i])` (Spearman ≥ 0.95), zero-
+    weight dims have zero ΔNLL, project/reconstruct round-trips,
+    top-k(d) equals baseline, top-k loss monotone non-decreasing as k
+    drops, zero-variance PC ablation has zero effect. 7 tests.
+  - `test_latent_probe.py` — hook produces aligned cache, matches a
+    direct encoder call to 1e-10, raises on empty loader and missing
+    `encoder` attribute. 4 tests.
+  - Total: **18 / 18 pass** locally.
+- **Local end-to-end smoke** (off-tree under `/tmp/2e2_smoke`): trained
+  an 8-dim-latent gaussian model on a 28-date synthetic benchmark,
+  saved a checkpoint, ran the CLI runner against it. All 15 expected
+  artifacts produced; baseline NLL in stdout matched what training
+  reported (−0.7623); rank report correctly identified the rank-3
+  effective span and 3 dead PCs (8 dates is far below 8 dims, as
+  expected). Confirms the pipeline wires up before pushing to the Pod.
+
+### Notes
+- BOARD: `2E.2` is `in_progress` (local code + tests done; the Pod run
+  on the 2D.7 gaussian checkpoint is the remaining acceptance gate).
+- `2E.3` stays `backlog` until 2E.2's memo addendum names the sweep
+  direction, per the atomic-story split.
+- No production checkpoint, config, model, or training artifact mutated.
+
+### Next actions
+- Sync the new modules + runner to the Pod and execute:
+  ```
+  python3 scripts/run_latent_diagnostic.py \
+    --config configs/conditional_2D7_gaussian.yaml \
+    --checkpoint artifacts/runs/2D7/gaussian/checkpoints/best_conditional.pt \
+    --split val \
+    --out artifacts/diagnostics/2E2/prod_2d7_gaussian/
+  ```
+  Rsync the summary CSVs + PNGs + `rank_report.json` back (leave
+  `latents.npy` and `run.log` on the Pod).
+- Write the journal entry + `phase2_result_memo.md` follow-up addendum
+  from the Pod's outputs; the addendum must end with the explicit
+  "what to do about 2E.3" recommendation
+  (close-without-running / shrink with widths / expand with widths).
+- Flip `2E.2` to `done` after the memo addendum lands.

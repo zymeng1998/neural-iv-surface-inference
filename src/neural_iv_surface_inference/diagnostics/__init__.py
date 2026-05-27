@@ -1,14 +1,34 @@
-"""Phase 2 W2 diagnostics subpackage.
+"""Diagnostics subpackage.
 
-Sensitivity- and structure-based reliability signals computed on top of the
-model-agnostic ``Predictor`` interface (W1, story 2A.2). Currently exposes the
-masking-sensitivity harness (story 2B.2), the no-arbitrage diagnostics
-(story 2B.3), and the risk-flag synthesis + region binning (story 2B.4); the
-diagnostics runner (2B.5) lands later.
+Phase 2 W2 exports (sensitivity- and structure-based reliability signals on
+top of the W1 ``Predictor`` interface): masking-sensitivity (2B.2), no-
+arbitrage (2B.3), risk-flag synthesis + region binning (2B.4).
+
+Phase 2 W6 exports (latent-capacity diagnostics for the conditional surface
+model, story 2E.2): SVD spectrum (:mod:`effective_rank`), per-dim / per-PC
+ablation utilities (:mod:`contribution`), and the encoder forward-hook
+latent extractor (:mod:`latent_probe`).
 """
 
 from __future__ import annotations
 
+from neural_iv_surface_inference.diagnostics.contribution import (
+    LossFn,
+    ablate_dim,
+    ablate_pc,
+    baseline_loss,
+    project_to_pc_basis,
+    reconstruct_from_pc_basis,
+    topk_pc_reconstruction,
+)
+from neural_iv_surface_inference.diagnostics.effective_rank import (
+    RankReport,
+    analyze,
+)
+from neural_iv_surface_inference.diagnostics.latent_probe import (
+    LatentCache,
+    extract_latents,
+)
 from neural_iv_surface_inference.diagnostics.masking_sensitivity import (
     MaskingSensitivityResult,
     instability_summary,
@@ -43,4 +63,15 @@ __all__ = [
     "RiskFlagResult",
     "bin_to_regions",
     "derive_risk_flags",
+    "RankReport",
+    "analyze",
+    "LossFn",
+    "ablate_dim",
+    "ablate_pc",
+    "baseline_loss",
+    "project_to_pc_basis",
+    "reconstruct_from_pc_basis",
+    "topk_pc_reconstruction",
+    "LatentCache",
+    "extract_latents",
 ]
