@@ -1,0 +1,42 @@
+# 3A.3 — decoder-only retrain on the frozen 2D.7 Gaussian encoder.
+# coord_encoding.kind: fourier. Everything else identical to
+# configs/conditional_2D7_gaussian.yaml.
+
+seed: 42
+
+data:
+  benchmark_file: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+  batch_size: 32
+  num_workers: 0
+
+conditional:
+  context_dim: 3
+  coord_dim: 2
+  hidden_dim: 128
+  latent_dim: 64
+  n_elem_layers: 2
+  n_post_layers: 1
+  n_decoder_layers: 3
+
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  epochs: 50
+  patience: 10
+
+  head:
+    kind: gaussian
+    quantiles: [0.05, 0.5, 0.95]
+
+  coord_encoding:
+    kind: fourier
+    num_bands: 8
+    max_freq: 10.0
+    include_input: true
+
+  freeze_encoder: true
+  encoder_init_from: artifacts/runs/2D7/gaussian/checkpoints/best_conditional.pt
+
+paths:
+  checkpoint_dir: artifacts/runs/3A/fourier/checkpoints
+  log_dir: artifacts/runs/3A/fourier/logs
+  results_dir: artifacts/runs/3A/fourier

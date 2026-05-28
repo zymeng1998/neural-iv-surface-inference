@@ -54,6 +54,9 @@ artifacts/checkpoints/*
 artifacts/runs/**/*.csv
 artifacts/runs/**/*.log
 artifacts/runs/**/checkpoints/
+# Phase 3A run artifacts: predictions are emitted as parquet; same convention —
+# keep small JSON manifests, drop the big prediction files (regenerable on Pod).
+artifacts/runs/**/*.parquet
 
 # Phase 2D.4 fitted calibrators (per-run, regenerable from cached val CSVs)
 artifacts/calibration/

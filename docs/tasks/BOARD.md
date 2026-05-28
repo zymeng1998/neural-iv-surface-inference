@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-05-28T00:30:00-04:00
+last_updated_at: 2026-05-28T11:10:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -76,7 +76,7 @@ decomposition). The first story of any epic is always its decomposition story.
 | 3A | Epic | Phase 3 — Coordinate-representation ablation (Fourier vs raw `(k, τ)`, decoder-only) | `in_progress` | `docs/roadmaps/phase3_accuracy_push.md` (W10 / §4) | 2026-05-28 |
 | 3A.1 | Story | Decompose Phase 3A | `in_review` | `docs/tasks/specs/3A.1_decompose_phase_3a.md` | 2026-05-28 |
 | 3A.2 | Story | Local: Fourier-feature module + `coord_encoding` flag + unit tests + synthetic smoke | `in_review` | `docs/tasks/specs/3A.2_local_fourier_feature_module.md` | 2026-05-28 |
-| 3A.3 | Story | Remote: decoder-only retrain on frozen 2D.7 encoder — Fourier vs raw variants | `backlog` | `docs/tasks/specs/3A.3_remote_decoder_only_retrain.md` | 2026-05-28 |
+| 3A.3 | Story | Remote: decoder-only retrain on frozen 2D.7 encoder — Fourier vs raw variants | `in_review` | `docs/tasks/specs/3A.3_remote_decoder_only_retrain.md` | 2026-05-28 |
 | 3A.4 | Story | Local: W1 evaluation of both variants vs 2D.9 baselines + journal + roadmap addendum | `backlog` | `docs/tasks/specs/3A.4_local_eval_and_addendum.md` | 2026-05-28 |
 | 3B | Epic | Phase 3 — Cross-attention decoder (ANP / Set Transformer / TNP) | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W11 / §4) | 2026-05-27 |
 | 3B.1 | Story | Decompose Phase 3B | `backlog` | `docs/tasks/specs/3B.1_decompose_phase_3b.md` | 2026-05-27 |

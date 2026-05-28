@@ -818,3 +818,64 @@ parity with the 2D.7 production run.
   flags to support memory-constrained Pods; the same code path runs
   unchanged on full val when memory permits.
 
+
+---
+
+## 2026-05-28T15:05:00+00:00 — 3A.3: decoder-only retrain on frozen 2D.7 encoder — Fourier vs raw — runs shipped
+
+**Purpose:** Execute the single controlled training experiment that
+Phase 3A exists to answer — with the 2D.7 Gaussian encoder frozen
+and only the decoder retrained, does Fourier-encoded `(k, τ)` close
+any of the gap to RBF compared with raw `(k, τ)`?
+
+**Changed variables vs 2D.7 Gaussian baseline:**
+
+- Encoder weights loaded from
+  `artifacts/runs/2D7/gaussian/checkpoints/best_conditional.pt`
+  (SHA-256 `6003006a00e9f6e9f3a18d00bcca857568315f330716a5724985c428622da41e`)
+  and frozen (`requires_grad=False`; excluded from the AdamW
+  parameter group).
+- Decoder retrained from a fresh seed-42 init; everything else
+  (data, batch_size=32, LR=1e-3, weight_decay=1e-4, epochs=50,
+  patience=10, head=gaussian, ReduceLROnPlateau) identical to 2D.7.
+- Two variants, run sequentially on the same Pod:
+  `coord_encoding.kind: fourier` (num_bands=8, max_freq=10.0,
+  include_input=true) and `coord_encoding.kind: raw` (matched
+  control, decoder trunk in-dim widens only for Fourier).
+
+**Result summary (bundles, not the eval report):**
+
+- Both bundles landed at `artifacts/runs/3A/{fourier,raw}/` with
+  `manifest.json` (committed), parquet `predictions_val.parquet`
+  + `predictions_test.parquet`, and `training_curves.csv`
+  (predictions and curves stay local per existing 2D.* gitignore
+  convention; new line: `artifacts/runs/**/*.parquet`).
+- Manifests record `encoder_weights_equal_source: true` for both
+  runs, `freeze_encoder: true`, identical source-checkpoint
+  SHA-256, identical benchmark and split-row counts as 2D.7.
+- Headline test MAE (gaussian mu): Fourier 0.07940
+  (early-stopped epoch 19), Raw 0.07641 (epoch 40). 2D.7 Gaussian
+  baseline (full retrain, not frozen) reference: 0.07873.
+
+**Interpretation:** Held for 3A.4 — that story owns the paired
+comparison against 2D.9 baselines, MAE/NLL/coverage triple, and the
+W10 closing addendum. This entry only confirms the two artifact
+bundles are on disk with the required manifest fields.
+
+**Decision impact:** None at this stage. 3A.4 will read these
+manifests + predictions and answer the Phase 3A question.
+
+**Next step:** Promote 3A.4 from `backlog → todo`.
+
+**Pod compute notes:** Single-GPU sequential. The Pod's GPU
+(RTX PRO 4000 Blackwell, sm_120) required upgrading `venv-2e2`
+from `torch 2.4.1+cu124` (no sm_120 kernels — crashed at
+LayerNorm with "no kernel image is available for execution on the
+device") to `torch 2.11.0+cu128`. With cu128, Fourier training ran
+~75 s wall (19 epochs × ~4 s/epoch), raw ran ~128 s wall (40
+epochs); scoring ~6 s each; combined Pod wall well under 5 min —
+far faster than the spec's ~30 min/variant estimate (RTX 4090
+reference) because the model is small (89k params) and the Pod
+disk + I/O are fast. Total billable Pod time end-to-end (smoke +
+both full runs + artifact transfer) ≈ 10 min.
+

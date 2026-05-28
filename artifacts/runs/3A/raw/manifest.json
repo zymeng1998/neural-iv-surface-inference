@@ -1,0 +1,34 @@
+{
+  "story": "3A.3",
+  "head_kind": "gaussian",
+  "coord_encoding": {
+    "kind": "raw"
+  },
+  "freeze_encoder": true,
+  "encoder_init_from": "artifacts/runs/2D7/gaussian/checkpoints/best_conditional.pt",
+  "encoder_init_sha256": "6003006a00e9f6e9f3a18d00bcca857568315f330716a5724985c428622da41e",
+  "encoder_weights_equal_source": true,
+  "git_sha": "e5022dec6ad641ad18febd818a03e66848299bcb",
+  "config_hash": "96cd7396bb3ceb73",
+  "benchmark_file": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet",
+  "splits": {
+    "train_rows": 11112617,
+    "val_rows": 5593759,
+    "test_rows": 5805664
+  },
+  "epochs_completed": 40,
+  "final_train_loss": -2.734334821794547,
+  "final_val_loss": -2.607914545319297,
+  "best_val_loss": -2.6698396747762505,
+  "val_mae_mu": 0.05753815919160843,
+  "test_mae_mu": 0.0764145776629448,
+  "train_wall_clock_s": 127.65458178520203,
+  "score_wall_clock_s": 5.999963045120239,
+  "device": "cuda",
+  "outputs": {
+    "checkpoint": "artifacts/runs/3A/raw/checkpoints/best_conditional.pt",
+    "predictions_val": "artifacts/runs/3A/raw/predictions_val.parquet",
+    "predictions_test": "artifacts/runs/3A/raw/predictions_test.parquet",
+    "training_curves": "artifacts/runs/3A/raw/training_curves.csv"
+  }
+}

@@ -2493,3 +2493,79 @@ ensemble scale 5.59. Quantile conformal δ = +7.8e-3.
   the artifact 3A.3 consumes; the encoder is frozen on the
   Pod-side run, only the decoder + the new `coord_encoding`
   flag vary.
+
+---
+
+## 2026-05-28 — Story 3A.3 shipped: decoder-only retrain (Fourier vs raw) on frozen 2D.7 encoder
+
+### Completed
+
+- Extended `src/neural_iv_surface_inference/training/train_conditional.py`
+  with three optional, backward-compatible config keys:
+  `coord_encoding` (forwarded to `ConditionalSurfaceModel`),
+  `encoder_init_from` (loads only `encoder.*` keys from a saved
+  `ConditionalSurfaceModel` checkpoint), and `freeze_encoder`
+  (sets `requires_grad=False` on encoder params and removes them
+  from the optimizer). All defaults preserve prior behaviour.
+- Authored matched YAML configs cloned from
+  `configs/conditional_2D7_gaussian.yaml`:
+  `configs/conditional_3A3_fourier.yaml` (coord_encoding.kind=fourier,
+  num_bands=8, max_freq=10.0, include_input=true) and
+  `configs/conditional_3A3_raw.yaml` (coord_encoding.kind=raw —
+  matched control). Both pin `freeze_encoder: true` and
+  `encoder_init_from` to the committed 2D.7 Gaussian checkpoint
+  path; seed / optimizer / schedule / loss / data identical to 2D.7.
+- Wrote `scripts/run_3a_decoder_only.py` (mirrors
+  `scripts/run_2d7_single.py` but emits parquet predictions +
+  `training_curves.csv`; manifest carries `freeze_encoder`,
+  `encoder_init_from`, the source-checkpoint SHA-256, and a
+  post-train `encoder_weights_equal_source` assertion result) and
+  `scripts/run_3a_decoder_only.sh` (sequential Pod launcher with
+  per-variant `run.log` redirect).
+- Added integration test
+  `tests/integration/test_3a_decoder_only_wiring.py` — 5 cases:
+  freeze_encoder actually freezes; decoder updates while encoder
+  frozen; encoder_init_from loads weights; raw + Fourier kinds
+  both train end-to-end on synthetic data. All green locally and
+  on the Pod.
+- Pod execution: synced changed files via tar+scp (rsync absent on
+  Pod); upgraded `venv-2e2` from `torch 2.4.1+cu124` (CPU-only and
+  missing Blackwell sm_120 kernels) to `torch 2.11.0+cu128`
+  (arch list includes sm_120 for the Pod's RTX PRO 4000 Blackwell);
+  ran smoke (epochs=2, fourier) end-to-end; then sequential full
+  runs Fourier→raw under a single combined log.
+- Pulled the committed-shape artifacts back to local:
+  `artifacts/runs/3A/{fourier,raw}/manifest.json`. Predictions
+  parquet + training curves CSV stay local-only per the existing
+  2D.* convention; added one `.gitignore` line —
+  `artifacts/runs/**/*.parquet` — alongside the existing
+  CSV/log/checkpoint ignores, so the new parquet predictions
+  follow the same convention as 2D.7's CSV predictions.
+
+### Results (numbers reported in 3A.4, NOT here — included only for
+the gate completeness check)
+
+- Fourier:  test_MAE_mu = 0.07940 (epochs_completed=19, early-stopped)
+- Raw:      test_MAE_mu = 0.07641 (epochs_completed=40)
+- Both manifests record `encoder_weights_equal_source: true`,
+  `freeze_encoder: true`, identical source-checkpoint SHA-256
+  (`6003006a…`), and benchmark-row counts identical to 2D.7.
+
+### Notes
+
+- `gitignore` was the one out-of-`file_scope` path touched; added
+  a single-line `*.parquet` ignore under `artifacts/runs/**`
+  to keep parquet predictions out of git under the same
+  convention 2D.7 used for CSV predictions. No other path
+  outside `file_scope` modified.
+- Headline finding (raw < Fourier on test MAE under frozen
+  encoder + decoder-only retrain) is informative but
+  interpretation, paired comparison, and the W10 addendum are
+  3A.4's atomic scope, not this story.
+
+### Next actions
+
+- Human reviews the 3A.3 diff and promotes 3A.4 (local eval +
+  W10 addendum) from `backlog → todo`. Pod can be terminated;
+  3A.4 is local-only and reads the pulled manifests.
+

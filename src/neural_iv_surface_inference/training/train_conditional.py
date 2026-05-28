@@ -192,6 +192,8 @@ def train_conditional(
     if head_kind == "quantile" and "quantiles" not in head_cfg:
         head_cfg["quantiles"] = list(DEFAULT_QUANTILES)
 
+    coord_encoding_cfg = config.get("coord_encoding")
+
     model = ConditionalSurfaceModel(
         context_dim=int(config.get("context_dim", 3)),
         coord_dim=int(config.get("coord_dim", 2)),
@@ -201,10 +203,50 @@ def train_conditional(
         n_post_layers=int(config.get("n_post_layers", 1)),
         n_decoder_layers=int(config.get("n_decoder_layers", 3)),
         head=head_cfg,
+        coord_encoding=coord_encoding_cfg,
     ).to(device)
 
+    # 3A.3: optionally seed the encoder from a saved checkpoint
+    # (loads only ``encoder.*`` keys from a ConditionalSurfaceModel state dict).
+    encoder_init_from = config.get("encoder_init_from")
+    if encoder_init_from:
+        src_path = Path(encoder_init_from)
+        if not src_path.exists():
+            raise FileNotFoundError(
+                f"encoder_init_from checkpoint not found: {src_path}"
+            )
+        payload = torch.load(str(src_path), map_location=device, weights_only=False)
+        src_state = payload.get("model_state_dict", payload)
+        enc_state = {
+            k[len("encoder.") :]: v
+            for k, v in src_state.items()
+            if k.startswith("encoder.")
+        }
+        if not enc_state:
+            raise ValueError(
+                f"no encoder.* keys found in {src_path}"
+            )
+        missing, unexpected = model.encoder.load_state_dict(enc_state, strict=True)
+        print(
+            f"  Encoder seeded from {src_path} "
+            f"(missing={len(missing)}, unexpected={len(unexpected)})"
+        )
+
+    # 3A.3: optionally freeze encoder parameters (decoder-only retrain).
+    freeze_encoder = bool(config.get("freeze_encoder", False))
+    if freeze_encoder:
+        for p in model.encoder.parameters():
+            p.requires_grad = False
+        trainable = [p for p in model.parameters() if p.requires_grad]
+        print(
+            f"  Encoder frozen — training {sum(p.numel() for p in trainable):,} "
+            f"of {sum(p.numel() for p in model.parameters()):,} parameters"
+        )
+    else:
+        trainable = list(model.parameters())
+
     optimizer = torch.optim.AdamW(
-        model.parameters(),
+        trainable,
         lr=float(config.get("learning_rate", 1e-3)),
         weight_decay=float(config.get("weight_decay", 1e-4)),
     )

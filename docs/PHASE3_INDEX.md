@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-05-28T00:30:00-04:00
+last_updated_at: 2026-05-28T11:10:00-04:00
 ---
 
 > **Read this first if you are picking up Phase 3 work cold.** It mirrors
@@ -41,7 +41,7 @@ last_updated_at: 2026-05-28T00:30:00-04:00
 | 3A | Epic | Coordinate-representation ablation (Fourier vs raw `(k, τ)`, decoder-only) | `in_progress` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W10 | 2026-05-28 |
 | 3A.1 | Story | Decompose Phase 3A | `in_review` | [`3A.1`](tasks/specs/3A.1_decompose_phase_3a.md) | 2026-05-28 |
 | 3A.2 | Story | Local: Fourier-feature module + `coord_encoding` flag + unit / wiring tests | `in_review` | [`3A.2`](tasks/specs/3A.2_local_fourier_feature_module.md) | 2026-05-28 |
-| 3A.3 | Story | Remote: decoder-only retrain on frozen 2D.7 encoder (Fourier vs raw) | `backlog` | [`3A.3`](tasks/specs/3A.3_remote_decoder_only_retrain.md) | 2026-05-28 |
+| 3A.3 | Story | Remote: decoder-only retrain on frozen 2D.7 encoder (Fourier vs raw) | `in_review` | [`3A.3`](tasks/specs/3A.3_remote_decoder_only_retrain.md) | 2026-05-28 |
 | 3A.4 | Story | Local: eval of both variants vs 2D.9 baselines + journal + roadmap addendum | `backlog` | [`3A.4`](tasks/specs/3A.4_local_eval_and_addendum.md) | 2026-05-28 |
 | 3B | Epic | Cross-attention decoder (ANP / Set Transformer / TNP) | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W11 | 2026-05-27 |
 | 3B.1 | Story | Decompose Phase 3B | `backlog` | [`3B.1`](tasks/specs/3B.1_decompose_phase_3b.md) | 2026-05-27 |
@@ -116,13 +116,23 @@ only if neither writes to a path in the other's `file_scope`.
 
 ### 3A.3 — Remote: decoder-only retrain on frozen 2D.7 encoder
 
-- **2026-05-28** registered via 3A.1 decomposition (not yet
-  executed). Scope: two YAML configs + thin runner + Pod launcher;
-  adds `freeze_encoder` + `encoder_init_from` to
-  `train_conditional`; produces `artifacts/runs/3A/{fourier,raw}/`.
-- **Next concrete action:** 3A.2 must close first; then human
-  promotes `3A.3` and a remote-capable session executes per spec.
-- **Open blocker:** 3A.2.
+- **2026-05-28 (executed)** both runs shipped on RunPod. Bundles:
+  `artifacts/runs/3A/{fourier,raw}/` — `manifest.json` (committed),
+  `training_curves.csv`, `predictions_val.parquet`,
+  `predictions_test.parquet`, `checkpoints/best_conditional.pt`
+  (last three local-only, gitignored). Manifests record
+  `encoder_weights_equal_source: true` and source SHA-256
+  `6003006a00e9f6e9f3a18d00bcca857568315f330716a5724985c428622da41e`.
+- **Headline test MAE (held for 3A.4 to write up):** Fourier
+  0.07940 (epochs_completed=19), Raw 0.07641 (epochs_completed=40).
+  2D.7 Gaussian baseline reference (full retrain): 0.07873.
+- **Code shipped:** `train_conditional` gained `coord_encoding`
+  passthrough + `freeze_encoder` + `encoder_init_from`;
+  `scripts/run_3a_decoder_only.{py,sh}` + two YAML configs +
+  `tests/integration/test_3a_decoder_only_wiring.py`.
+- **Next concrete action:** human reviews diff; promotes 3A.4
+  (local eval + W10 addendum). Pod can be terminated.
+- **Open blocker:** none.
 
 ### 3A.4 — Local: eval + journal + roadmap addendum
 
