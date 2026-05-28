@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-05-22T00:00:00-04:00
+last_updated_at: 2026-05-27T00:00:00-04:00
 ---
 
 The concrete checklist an AI agent (e.g. Claude Code) follows at the start and
@@ -40,6 +40,45 @@ See `docs/workflows/ai_human_collaboration.md` for the broader operating model
 - Redirect verbose command output to files; bring only summaries into context.
 - Do not run expensive training runs or large downloads unless the task spec
   explicitly authorizes it.
+
+---
+
+## Parallel sessions and worktrees (recommended, not enforced)
+
+Adopted 2026-05-27 for Phase 3. Applies to any phase that uses the
+`file_scope` / `parallel_safe_with` story-spec fields.
+
+When you want to actually run two Implement-mode sessions concurrently:
+
+1. Pick two stories whose specs list each other in `parallel_safe_with`
+   and whose `file_scope` lists do not overlap.
+2. From the project root, create one git worktree per active story on
+   its own feature branch:
+   ```bash
+   git worktree add ../niv-3A-2 -b story/3A.2
+   git worktree add ../niv-3B-2 -b story/3B.2
+   ```
+3. Run each session inside its own worktree. The start-of-session
+   ritual above (orient → find active story → restate → confirm mode
+   → propose plan) applies inside each worktree independently. The
+   single-entry-point doc for the current phase
+   (e.g. [`../PHASE3_INDEX.md`](../PHASE3_INDEX.md)) is still read in
+   both.
+4. On story close (`done`), fast-forward the feature branch into
+   `main` and prune the worktree:
+   ```bash
+   git checkout main && git merge --ff-only story/3A.2
+   git worktree remove ../niv-3A-2
+   git branch -d story/3A.2
+   ```
+
+Solo single-session work does **not** need a worktree. The convention
+exists to make concurrent work safe, not to add friction when
+unnecessary.
+
+When in doubt, serialize. The cost of running two stories sequentially
+is small; the cost of recovering from a tangled merge across
+overlapping `file_scope` is large.
 
 ---
 

@@ -10,8 +10,33 @@ predictions are trustworthy and abstains where they are not.
 
 ## Current Phase
 
-**Phase 1 baseline foundation complete. Phase 2 — Reliability-Aware Implied
-Volatility Surface Inference — complete (closed 2026-05-25).**
+**Phase 3 — Accuracy Push: Beat RBF Without Losing Reliability — opening
+2026-05-27.** Phase 2 (Reliability-Aware Surface Inference) closed on
+2026-05-25 with both mandatory acceptance numbers green; Phase 3 attacks
+the remaining accuracy gap versus the per-date RBF interpolation baseline.
+
+### Phase 3 (current — opening)
+
+| Epic | Workstream | Status |
+|---|---|---|
+| 3A | W10 — Coordinate-representation ablation (Fourier vs raw `(k, τ)`, decoder-only) | `backlog` |
+| 3B | W11 — Cross-attention decoder (ANP / Set Transformer / TNP) — runs in parallel with 3A | `backlog` |
+| 3C | W12 — Feature & inductive-bias expansion (microstructure features, optional SVI head) | `backlog` |
+| 3D | W13 — Phase 3 closing memo + re-evaluation versus RBF | `backlog` |
+
+Acceptance bar: **test MAE ≤ 0.95 × RBF** on both the 2D.9 slice
+(≤ 0.0693) and the full 2D.4 fold (≤ 0.0629), with no reliability
+regression. The conditional neural model must beat RBF **on its own**
+— RBF-as-prior / RBF-residual hybrids are explicitly out of scope for
+Phase 3 and reserved as a Phase 4 production fallback. See
+[`docs/roadmaps/phase3_accuracy_push.md`](docs/roadmaps/phase3_accuracy_push.md)
+and [ADR 0004](docs/decisions/0004_phase3_accuracy_push_framing.md).
+
+The single fresh-session entry point for Phase 3 is
+[`docs/PHASE3_INDEX.md`](docs/PHASE3_INDEX.md) — read it first if you
+are picking up Phase 3 work cold.
+
+### Phase 2 (complete, 2026-05-25)
 
 All four Phase 2 epics are `done`:
 
@@ -21,6 +46,9 @@ All four Phase 2 epics are `done`:
 | 2B | W2 — Masking sensitivity + no-arbitrage diagnostics | `done` (5/5 stories) |
 | 2C | W3 — Conditional neural surface model (Set Encoder + Coordinate Decoder) | `done` (8/8 stories) |
 | 2D | W4 + W5 — Uncertainty-aware inference + abstention / tradability decision layer | `done` (10/10 stories) |
+
+Phase 2E (follow-ups) remains open for capacity-sweep diagnostics that
+validate but do not gate Phase 3.
 
 > **Data-source migration (2026-05-22, completed):** the upstream Philipp
 > Dubach SPY Parquet that powered the original Phase 1 work is defunct (HTTP
@@ -94,6 +122,9 @@ Evidence:
 
 - [`docs/roadmaps/phase1_structural_roadmap.md`](docs/roadmaps/phase1_structural_roadmap.md) — Phase 1 task decomposition and subtask matrix
 - [`docs/roadmaps/phase2_reliability_aware_surface_inference.md`](docs/roadmaps/phase2_reliability_aware_surface_inference.md) — Phase 2 plan: workstreams, acceptance criteria, closing-status block
+- [`docs/roadmaps/phase2_followups.md`](docs/roadmaps/phase2_followups.md) — Phase 2E follow-ups (capacity diagnostics, calibration drift placeholders)
+- [`docs/roadmaps/phase3_accuracy_push.md`](docs/roadmaps/phase3_accuracy_push.md) — Phase 3 plan: workstreams W10–W13, acceptance bar versus RBF
+- [`docs/PHASE3_INDEX.md`](docs/PHASE3_INDEX.md) — Phase 3 fresh-session entry point (per-story checkpoints, conflict matrix)
 - [`docs/phase1_result_memo.md`](docs/phase1_result_memo.md) — Phase 1 baseline results and analysis
 - [`docs/phase2_result_memo.md`](docs/phase2_result_memo.md) — Phase 2 closing memo (acceptance map, vs Phase 1 / 2C deltas, open questions)
 - [`notebooks/04_phase2c_results.ipynb`](notebooks/04_phase2c_results.ipynb) — Phase 2C interactive results notebook
@@ -115,6 +146,7 @@ Evidence:
 - [`docs/decisions/0001_remote_dev_stack.md`](docs/decisions/0001_remote_dev_stack.md) — remote dev stack ADR
 - [`docs/decisions/0002_phase1_scope_freeze.md`](docs/decisions/0002_phase1_scope_freeze.md) — Phase 1 scope-freeze ADR
 - [`docs/decisions/0003_spy_options_data_source_migration.md`](docs/decisions/0003_spy_options_data_source_migration.md) — Dubach → Alpha Vantage migration ADR
+- [`docs/decisions/0004_phase3_accuracy_push_framing.md`](docs/decisions/0004_phase3_accuracy_push_framing.md) — Phase 3 framing ADR: locality + inductive bias, not capacity
 
 ## Repository Structure
 
@@ -132,22 +164,31 @@ docs/                              Project documentation (roadmaps, memos, tasks
 
 ## Immediate Next Steps
 
-Phase 2 is closed. Concrete follow-ups recorded in
-[`docs/phase2_result_memo.md`](docs/phase2_result_memo.md) (open-questions
-section) and the 2D.9 / 2D.10 handoffs:
+Phase 3 is **opening**. The active next steps are the four
+decomposition stories (one per epic). Each runs in **Plan mode**, writes
+the breakdown of its epic into atomic stories, and waits for human
+review before any implementation. See
+[`docs/PHASE3_INDEX.md`](docs/PHASE3_INDEX.md) for the full live
+status.
 
-- Re-tune `configs/decision_layer.yaml` operating point (the current
-  `max_relative_width = 0.5` is tighter than the calibrated Gaussian band's
-  relative width ≈ 3.29, which forces 100 %-abstention on test).
+| Story | Mode | Trigger condition |
+|---|---|---|
+| `3A.1` Decompose Phase 3A | Plan | Human promotes from `backlog → todo`, then runs |
+| `3B.1` Decompose Phase 3B | Plan | After 3A produces positional-feature decision |
+| `3C.1` Decompose Phase 3C | Plan | After 3B picks a cross-attention architecture |
+| `3D.1` Decompose Phase 3D | Plan | After 3C lands (or earlier, if 3D is purely synthesis) |
+
+Carried Phase 2 / 2E follow-ups (lower priority, do not gate Phase 3):
+
+- Re-tune `configs/decision_layer.yaml` operating point (current
+  `max_relative_width = 0.5` is tighter than the calibrated Gaussian
+  band; forces 100 %-abstention on test).
 - Re-run the decision-layer eval across additional AV masking strategies
   and noise regimes (current evidence is `random40_noiselow` only).
 - Conformal calibration under the chronological split under-covers by
   ≈ 4.3 pp due to exchangeability violation — document or address.
-- Revisit GPU support for Blackwell once a PyTorch nightly with the
-  relevant kernels is available (affects the Pod-side scoring path).
-
-Phase 3 framing is a separate decision and is intentionally not pre-scoped
-here.
+- Story 2E.3 `latent_dim` sweep (validates the 2E.2 finding; not on
+  Phase 3 critical path).
 
 ## Security Note
 

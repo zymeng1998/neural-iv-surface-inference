@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-05-26T00:00:00-04:00
+last_updated_at: 2026-05-28T00:30:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -22,6 +22,7 @@ See `docs/workflows/ai_human_collaboration.md` for the operating model and
 | `in_review` | Implementation done; awaiting diff review + tests. |
 | `blocked` | Cannot proceed; blocker noted in the story's spec. |
 | `done` | Reviewed, tests pass, results committed. Never removed from the board. |
+| `cancelled` | Deliberately abandoned — superseded, no longer informative, or scope-killed by upstream findings. Row stays on the board with a one-line rationale in the linked spec. Never removed. |
 
 ## Hierarchy
 
@@ -71,8 +72,26 @@ decomposition). The first story of any epic is always its decomposition story.
 | 2E | Epic | Phase 2 follow-ups | `in_progress` | `docs/roadmaps/phase2_followups.md` | 2026-05-26 |
 | 2E.1 | Story | Decompose Phase 2E | `done` | `docs/tasks/specs/2E.1_decompose_phase_2e.md` | 2026-05-26 |
 | 2E.2 | Story | Latent capacity diagnostic — effective rank + PCA + contribution analysis on the 2D.7 checkpoint | `done` | `docs/tasks/specs/2E.2_latent_capacity_diagnostic.md` | 2026-05-27 |
-| 2E.3 | Story | `latent_dim` sweep (scope set by 2E.2 findings) | `backlog` | `docs/tasks/specs/2E.3_latent_dim_sweep.md` | 2026-05-26 |
+| 2E.3 | Story | `latent_dim` sweep (scope set by 2E.2 findings) | `cancelled` | `docs/tasks/specs/2E.3_latent_dim_sweep.md` | 2026-05-28 |
+| 3A | Epic | Phase 3 — Coordinate-representation ablation (Fourier vs raw `(k, τ)`, decoder-only) | `in_progress` | `docs/roadmaps/phase3_accuracy_push.md` (W10 / §4) | 2026-05-28 |
+| 3A.1 | Story | Decompose Phase 3A | `in_review` | `docs/tasks/specs/3A.1_decompose_phase_3a.md` | 2026-05-28 |
+| 3A.2 | Story | Local: Fourier-feature module + `coord_encoding` flag + unit tests + synthetic smoke | `in_review` | `docs/tasks/specs/3A.2_local_fourier_feature_module.md` | 2026-05-28 |
+| 3A.3 | Story | Remote: decoder-only retrain on frozen 2D.7 encoder — Fourier vs raw variants | `backlog` | `docs/tasks/specs/3A.3_remote_decoder_only_retrain.md` | 2026-05-28 |
+| 3A.4 | Story | Local: W1 evaluation of both variants vs 2D.9 baselines + journal + roadmap addendum | `backlog` | `docs/tasks/specs/3A.4_local_eval_and_addendum.md` | 2026-05-28 |
+| 3B | Epic | Phase 3 — Cross-attention decoder (ANP / Set Transformer / TNP) | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W11 / §4) | 2026-05-27 |
+| 3B.1 | Story | Decompose Phase 3B | `backlog` | `docs/tasks/specs/3B.1_decompose_phase_3b.md` | 2026-05-27 |
+| 3C | Epic | Phase 3 — Feature & inductive-bias expansion (microstructure, optional SVI head) | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W12 / §4) | 2026-05-27 |
+| 3C.1 | Story | Decompose Phase 3C | `backlog` | `docs/tasks/specs/3C.1_decompose_phase_3c.md` | 2026-05-27 |
+| 3D | Epic | Phase 3 — Closing memo + re-evaluation versus RBF | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W13 / §4) | 2026-05-27 |
+| 3D.1 | Story | Decompose Phase 3D | `backlog` | `docs/tasks/specs/3D.1_decompose_phase_3d.md` | 2026-05-27 |
 
 > When an epic is entered, set it to `in_progress`, add its decomposition story
 > (e.g. `2A.1`), then add the resulting stories as new rows. Do not delete or
 > renumber existing rows.
+
+## Phase 3 entry point
+
+For Phase 3 work specifically, read [`docs/PHASE3_INDEX.md`](../PHASE3_INDEX.md)
+first. It mirrors the relevant subset of this board plus per-story
+"last checkpoint" snippets, so a fresh session does not need to load
+the entire repo to know the exact next action.

@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-26T00:00:00-04:00
-last_updated_at: 2026-05-26T00:00:00-04:00
+last_updated_at: 2026-05-27T00:00:00-04:00
 ---
 
 ## Why this phase exists
@@ -47,22 +47,22 @@ Stories (atomic — each one decision, one artifact bundle):
   close-without-running). Sweep grid intentionally deferred until 2E.2
   is done.
 
-### Future workstreams (placeholders, not yet committed)
+### Future workstreams (placeholders)
 
-These are *candidates* — they will only be added to the board as stories once
-the human has confirmed they are worth the cycles.
-
-- **W7 — Pooling / encoder architecture variants.** Swap `SetEncoder`'s
-  masked-mean pool for attention-based pooling; compare on the same Phase 2
-  evaluation harness. The pooling argument is already factored as a
-  constructor switch (see [conditional_surface.py](../../src/neural_iv_surface_inference/models/conditional_surface.py))
-  so the swap is local.
+- **W7 — Pooling / encoder architecture variants.** **Folded into Phase 3
+  (epic 3B, workstream W11)** on 2026-05-27. The cross-attention-decoder
+  bet covers the same surface (encoder/decoder swap that fixes the
+  spatial-locality bottleneck identified in 2E.2) and supersedes a W7-only
+  effort. See [`phase3_accuracy_push.md`](phase3_accuracy_push.md) and
+  [ADR 0004](../decisions/0004_phase3_accuracy_push_framing.md).
 - **W8 — Calibration drift.** Re-fit the temperature / split-conformal
   calibrator on a held-out window further from the training cutoff to test
   whether confidence calibration drifts under realistic operational gaps.
+  Still a placeholder; orthogonal to Phase 3.
 - **W9 — Decision-layer threshold sensitivity.** Sweep the abstention and
   tradability thresholds in [`configs/decision_layer.yaml`](../../configs/decision_layer.yaml)
-  to surface the operating-point Pareto frontier.
+  to surface the operating-point Pareto frontier. Still a placeholder;
+  orthogonal to Phase 3.
 
 ## Operating model
 
@@ -76,7 +76,7 @@ the human has confirmed they are worth the cycles.
 
 | Workstream | Status | Story trigger |
 |---|---|---|
-| W6 Capacity & representation diagnostics | `backlog` | 2E.2 (diagnostic), 2E.3 (sweep, scope set by 2E.2) |
-| W7 Pooling / encoder variants | `not yet committed` | — |
+| W6 Capacity & representation diagnostics | `in_progress` | 2E.2 (diagnostic) `done`; 2E.3 (sweep) `backlog` |
+| W7 Pooling / encoder variants | `folded into Phase 3 (epic 3B / W11)` | — |
 | W8 Calibration drift | `not yet committed` | — |
 | W9 Decision-layer threshold sensitivity | `not yet committed` | — |

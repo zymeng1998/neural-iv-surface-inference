@@ -23,6 +23,10 @@ from typing import Any, Literal
 import torch
 import torch.nn as nn
 
+from neural_iv_surface_inference.features.coord_encoding import (
+    build_coord_encoding,
+)
+
 # Default quantile triplet used by the W4 quantile head (2D.2).
 DEFAULT_QUANTILES: tuple[float, ...] = (0.05, 0.5, 0.95)
 
@@ -329,6 +333,7 @@ class ConditionalSurfaceModel(nn.Module):
         n_post_layers: int = 1,
         n_decoder_layers: int = 3,
         head: dict[str, Any] | None = None,
+        coord_encoding: dict[str, Any] | None = None,
     ) -> None:
         super().__init__()
         self.head_cfg: dict[str, Any] = dict(head or {"kind": "point"})
@@ -338,6 +343,14 @@ class ConditionalSurfaceModel(nn.Module):
                 f"unsupported head.kind: {kind!r} (expected point|gaussian|quantile)"
             )
         self.head_kind = kind
+
+        self.coord_encoding_cfg: dict[str, Any] = dict(
+            coord_encoding or {"kind": "raw"}
+        )
+        self.coord_encoding = build_coord_encoding(
+            self.coord_encoding_cfg, coord_dim=coord_dim
+        )
+        decoder_coord_dim = int(self.coord_encoding.encoded_dim)
 
         self.encoder = SetEncoder(
             in_dim=context_dim,
@@ -349,7 +362,7 @@ class ConditionalSurfaceModel(nn.Module):
         if kind == "point":
             self.decoder = CoordinateDecoder(
                 latent_dim=latent_dim,
-                coord_dim=coord_dim,
+                coord_dim=decoder_coord_dim,
                 hidden_dim=hidden_dim,
                 n_layers=n_decoder_layers,
             )
@@ -359,7 +372,7 @@ class ConditionalSurfaceModel(nn.Module):
             ) if kind == "quantile" else DEFAULT_QUANTILES
             self.decoder = MultiOutputDecoder(
                 latent_dim=latent_dim,
-                coord_dim=coord_dim,
+                coord_dim=decoder_coord_dim,
                 hidden_dim=hidden_dim,
                 n_layers=n_decoder_layers,
                 head_kind=kind,
@@ -377,7 +390,8 @@ class ConditionalSurfaceModel(nn.Module):
         query: torch.Tensor,
     ) -> dict[str, torch.Tensor]:
         z = self.encoder(context, context_mask)
+        encoded_query = self.coord_encoding(query)
         if self.head_kind == "point":
-            mu = self.decoder(z, query)
+            mu = self.decoder(z, encoded_query)
             return {"mu": mu}
-        return self.decoder(z, query)
+        return self.decoder(z, encoded_query)

@@ -2237,3 +2237,259 @@ ensemble scale 5.59. Quantile conformal δ = +7.8e-3.
 - Pod cleanup at end of follow-up sweep: drop the `pre-2E.2-pull`
   stash if not used and clean up the temporary `/workspace/venv-2e2`
   Python environment.
+
+---
+
+## 2026-05-27 (Phase 3 opening — scaffolding pass)
+
+### Completed
+
+- **Phase 3 framing locked.** New ADR
+  `docs/decisions/0004_phase3_accuracy_push_framing.md` (Accepted)
+  records that Phase 3 = **accuracy push grounded in spatial locality
+  and inductive bias, not capacity expansion**. Reads 2E.2's
+  effective-rank-4 finding against the IV-surface literature (Cont &
+  da Fonseca 2002; Gatheral 2006; Gatheral & Jacquier 2014) and
+  concludes the bottleneck is the mean-pool decoder's inability to
+  exploit query-local context, not summary capacity. Acceptance bar:
+  **test MAE ≤ 0.95 × RBF** on both the 2D.9 slice (≤ 0.0693) and
+  the full 2D.4 fold (≤ 0.0629), with no reliability regression.
+- **Phase 3 roadmap added.**
+  `docs/roadmaps/phase3_accuracy_push.md` lays out four workstreams
+  W10 (cheap-win scaffolding: Fourier features + RBF-residual hybrid)
+  → W11 (cross-attention decoder: ANP / Set Transformer / TNP) → W12
+  (microstructure features + optional SVI head) → W13 (closing memo).
+  Mirrors the structure of `phase2_reliability_aware_surface_inference.md`.
+- **Four epics opened on the board** (`docs/tasks/BOARD.md`): `3A`,
+  `3B`, `3C`, `3D`, all `backlog`. Four phase-entry decomposition
+  stories registered at `backlog`: `3A.1`, `3B.1`, `3C.1`, `3D.1`.
+  Per the progressive-decomposition rule, no implementation stories
+  are written up front; each epic decomposes when entered.
+- **Decomposition specs written** for `3A.1`, `3B.1`, `3C.1`, `3D.1`
+  in `docs/tasks/specs/`. Each is fully populated against the
+  upgraded `_template.md` (new fields: `parallel_safe_with`,
+  `file_scope`, "Last checkpoint" block) and lists the ADRs each
+  decomposition will write (0005 cross-attention architecture, 0006
+  microstructure feature set, 0007 SVI head, 0008 production
+  predictor selection).
+- **New fresh-session / parallel-session infrastructure:**
+  - `docs/PHASE3_INDEX.md` — single entry point for Phase 3 work;
+    mirrors BOARD subset + per-story "last checkpoint" snippets +
+    parallel-safety matrix + copy-pasteable resume snippet.
+  - `docs/tasks/_template.md` upgraded with `parallel_safe_with`,
+    `file_scope`, and a "Last checkpoint" block for mid-story
+    state-of-the-world snapshots.
+  - `docs/workflows/session_protocol.md` adds a worktree convention
+    (recommend-not-enforce) for running two Implement-mode sessions
+    concurrently on disjoint `file_scope` stories.
+- **`docs/roadmaps/phase2_followups.md` updated** to mark W7
+  (pooling / encoder variants) as `folded into Phase 3 (epic 3B /
+  W11)`, so we do not carry two parallel architectural plans. W8
+  (calibration drift) and W9 (decision-layer threshold sensitivity)
+  remain Phase 2E placeholders, orthogonal to Phase 3.
+- **`README.md` updated** with a "Phase 3 (current — opening)"
+  section, the four epic statuses, the acceptance bar, and links to
+  the new roadmap / ADR / PHASE3_INDEX. "Immediate Next Steps"
+  rewritten around the four decomposition stories.
+
+### Notes
+
+- This is a **docs-only scaffolding pass**. No source code, configs,
+  data, model artifacts, or training runs touched. All four
+  decomposition stories are themselves Plan-mode docs-only stories;
+  they will write the atomic 3A.* / 3B.* / 3C.* / 3D.* stories.
+- The four decomposition stories are mutually `parallel_safe_with`
+  but all touch BOARD / PHASE3_INDEX / roadmap / progress_log. Those
+  shared files are written to in disjoint sections; if two sessions
+  actually race them, expect a trivial merge.
+- The TaskCreate harness tool was deliberately not used. The repo's
+  durable task tracker is `docs/tasks/BOARD.md`; the harness tracker
+  would duplicate state.
+
+### Next actions
+
+- Human reviews this scaffolding pass and, when ready, promotes
+  `3A.1` `backlog → todo` to start Phase 3 in earnest. A fresh
+  Plan-mode session then executes the decomposition.
+- `3B.1`, `3C.1`, `3D.1` stay `backlog` and gate on their respective
+  prior-epic closes (per each spec's "Open blocker" line).
+- PMR pre-push gate dry-run should be run before commit:
+  `python3 scripts/pmr_prepush_gate.py --verbose --dry-run`.
+
+---
+
+## 2026-05-27 (Phase 3 opening — scope tightening pass)
+
+### Completed
+
+- **3A scope tightened.** Per planning-discussion feedback, the
+  previously-proposed neural-residual-on-RBF hybrid is **dropped from
+  Phase 3** and reserved as a Phase 4 production-engineering fallback.
+  Rationale: the central hypothesis under test in Phase 3 is whether a
+  well-designed conditional neural model can re-derive RBF-equivalent
+  local-weighting behavior *from data*; an RBF-prior scaffolding would
+  answer a strictly weaker question and obscure the experimental
+  signal. SIREN is also dropped (inductive bias mismatch — periodic
+  representations vs non-periodic IV surface). 3A is now strictly a
+  **Fourier-vs-raw coordinate-representation ablation** on the frozen
+  2D.7 encoder, decoder-only retrain.
+- **3A and 3B decoupled.** Previously the scaffold drew 3B as gated on
+  3A close. Restructured to parallel execution: 3A and 3B compare
+  independently against the same 2D.9 baseline; 3B's coordinate-
+  encoding default is Fourier-on per ADR 0004 if 3A has not yet
+  measured the delta. This roughly halves the critical-path duration
+  to the cross-attention answer without losing the clean-attribution
+  property from 3A's ablation.
+- **ADR 0004 updated** with the no-RBF-scaffolding rule, the SIREN
+  rejection rationale, and the Phase 4 fallback reservation. New
+  open-trade-off bullet records 3B's coordinate-encoding default.
+- **Roadmap, BOARD, README, PHASE3_INDEX, 3A.1 spec, 3B.1 spec** all
+  refreshed in lockstep to reflect the new scope. 3A's epic title is
+  now "Coordinate-representation ablation (Fourier vs raw `(k, τ)`,
+  decoder-only)". 3B's spec drops the 3A-gate language and adds the
+  no-RBF non-goal.
+- New dependency graph documented in the roadmap §4:
+  ```
+  3A (Fourier ablation)  ──┐
+                           ├──→ 3C ──→ 3D
+  3B (cross-attention)   ──┘
+  ```
+
+### Notes
+
+- The "scope tightening pass" sits on top of the same uncommitted
+  scaffolding diff from earlier today — it does not introduce new
+  files, only edits the ones already created in this session.
+- 3C and 3D specs were not touched in this pass; both already reflect
+  the correct dependency on 3B and on 3A/3B/3C respectively.
+- Phase 4 is not opened in any tracker yet. It exists only as a named
+  fallback in ADR 0004 — to be created as a real epic only if Phase 3
+  closes without meeting the acceptance bar.
+
+### Next actions
+
+- Human gives final green light to commit the combined Phase 3
+  scaffold + scope-tightening pass.
+- After commit: promote `3A.1` and `3B.1` from `backlog → todo`
+  whenever ready. They can be started in parallel in separate
+  worktrees per the new `session_protocol.md` §4 convention.
+
+---
+
+## 2026-05-28
+
+### Completed
+
+- **2E.3 cancelled.** `latent_dim` sweep is no longer informative —
+  2E.2's effective-rank ≈ 3.97 and top-8-PC NLL-within-0.2 % finding
+  closed the capacity question without needing a six-width retrain.
+  Added a `cancelled` status to the BOARD legend (rows are still
+  never deleted) and flipped 2E.3 to it with a one-paragraph
+  rationale at the top of the spec. The same engineering budget is
+  redirected to Phase 3, which attacks the actual bottleneck
+  (decoder locality, not encoder capacity).
+- **Epic 3A opened.** Status `backlog → in_progress` on BOARD and
+  on `docs/PHASE3_INDEX.md`. Decomposition story `3A.1` moved
+  `backlog → in_review`.
+- **3A decomposed into three atomic stories.** Each is one question,
+  one artifact bundle, one acceptance check, and **none span local +
+  remote** (the explicit operator constraint):
+  - `3A.2` — **local**: `features/coord_encoding.py` module (raw +
+    Fourier variants, builder) plus a `coord_encoding=…` kwarg on
+    `ConditionalSurfaceModel` plus unit / wiring tests. No training,
+    no Pod time.
+  - `3A.3` — **remote**: two decoder-only retrains on the frozen
+    2D.7 encoder (`coord_encoding.kind = fourier` and `= raw`),
+    identical seed / optimizer / schedule to 2D.7. Adds
+    `freeze_encoder` + `encoder_init_from` to `train_conditional`.
+    Produces `artifacts/runs/3A/{fourier,raw}/`. Single Pod session
+    target ≈ 30 min wall per variant.
+  - `3A.4` — **local**: read-only eval over the 3A.3 artifact
+    bundles via the existing W1 evaluator; produces
+    `results/3/<dataset>/3a_{fourier,raw,compare}/`, a journal
+    entry, and the "3A closing addendum" under § W10 of the Phase
+    3 roadmap (which fills the recommended coordinate-encoding
+    default for 3B).
+- **BOARD, PHASE3_INDEX, roadmap (§ W10)** refreshed in lockstep
+  with the new rows, the parallel-safety matrix (3A.2 → 3A.3 →
+  3A.4 must serialize within 3A; the chain remains parallel-safe
+  with 3B.1 / 3C.1 / 3D.1), and per-story `Last checkpoint` blocks.
+- **No source code, no config, no data, no model, no training
+  artifact touched.** This is a docs-only decomposition pass.
+
+### Notes
+
+- The dependency chain inside 3A is sequential by necessity (3A.2
+  ships the module 3A.3 consumes; 3A.4 reads 3A.3's bundles), but
+  every story stays atomic — each can be picked up cold and
+  completed in one session.
+- Phase 3 sequencing is unchanged at the epic level: 3A and 3B run
+  in parallel as independent diagnostics; 3C depends on 3B; 3D
+  synthesizes. The intra-3A chain does not affect this.
+- The `cancelled` BOARD status is new. Convention: row stays on
+  the board with a one-line rationale in the linked spec; never
+  deleted.
+
+### Next actions
+
+- Human reviews 3A.2 / 3A.3 / 3A.4 specs.
+- Human promotes `3A.2` from `backlog → todo` to start the local
+  module + tests. `3A.3` and `3A.4` stay `backlog` until their
+  upstream story closes.
+
+---
+
+## 2026-05-28 — Story 3A.2 closed to `in_review`
+
+### Completed
+
+- Landed the local **coordinate-encoding module** at
+  `src/neural_iv_surface_inference/features/coord_encoding.py`:
+  `RawCoordEncoding` (pass-through), `FourierCoordEncoding`
+  (log-spaced sinusoidal bands per Tancik et al., NeurIPS 2020;
+  bands registered as a non-persistent buffer so `.to(device)`
+  moves them), and a `build_coord_encoding(cfg, coord_dim)`
+  builder that resolves `{"kind": "raw"}` / `{"kind": "fourier", …}`.
+  Defaults locked here: `num_bands=8`, `max_freq=10.0`,
+  `include_input=True`.
+- Wired a single `coord_encoding: dict | None = None` kwarg into
+  `ConditionalSurfaceModel.__init__`; default `None` resolves to
+  `{"kind": "raw"}` and is **bit-for-bit equivalent** to the
+  pre-change model on a fixed manual seed (verified by integration
+  test). The decoder's `coord_dim` is sourced from
+  `self.coord_encoding.encoded_dim`. Persisted the resolved config
+  on `self.coord_encoding_cfg` analogous to `self.head_cfg` so
+  checkpoint loaders can rebuild it.
+- Re-exported the new module symbols from `features/__init__.py`.
+- Tests: 12 unit cases in `tests/unit/test_coord_encoding.py`
+  (shape, determinism, gradient flow, builder round-trip,
+  unknown-kind error, value check at x=0) and 6 integration cases
+  in `tests/integration/test_conditional_coord_encoding_wiring.py`
+  (Gaussian-head shape / sigma>0, default-vs-raw equivalence,
+  param-count delta `= (34-2)*hidden_dim`, persisted
+  `coord_encoding_cfg`, point-head + Fourier smoke). All 18 green.
+- Regression: ran existing conditional suite via
+  `pytest -k "conditional and not coord_encoding"` — 26 passed, 0
+  regression on the raw default code path.
+- **No training, no AV data touched, no checkpoint mutated, no
+  YAML added.** Wiring the flag through training config is part of
+  3A.3's scope, not this story.
+
+### Notes
+
+- The story stayed within `file_scope` exactly. No predictor
+  adapter, no `SetEncoder` touch, no head-logic change in
+  `MultiOutputDecoder` (only the trunk-input dim widens when
+  Fourier is on).
+- `coord_encoding_cfg` mirrors the persistence pattern of
+  `head_cfg`. Checkpoint loaders that don't yet pass
+  `coord_encoding` will silently get the raw path, which is
+  bit-for-bit equivalent — backward compatible.
+
+### Next actions
+
+- Human reviews the 3A.2 diff and promotes 3A.3 (remote
+  decoder-only retrain) from `backlog → todo`. 3A.2's module is
+  the artifact 3A.3 consumes; the encoder is frozen on the
+  Pod-side run, only the decoder + the new `coord_encoding`
+  flag vary.

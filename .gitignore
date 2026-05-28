@@ -123,6 +123,12 @@ docs/**/*infra*private*.md
 docs/agent_bootstrap/repo_tree.txt
 docs/agent_bootstrap/repo_tree_summary.md
 
+# Operator's personal working notes — tracked in working tree, never pushed.
+# Claude is aware of these files and may read / update them on request,
+# but they must stay out of git history.
+docs/neural_iv_surface_project_personal_notes.md
+docs/neural_iv_surface_research_methodology_narrative.md
+
 # Project-memory review packets / local reports
 reports/project_memory/**
 
