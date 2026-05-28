@@ -986,3 +986,73 @@ todo` and run it as a local decomposition session per the standard
   3A.4 (it would conflate decoder-only retrain with re-
   calibration).
 
+
+---
+
+## 2026-05-28 — 3B.4 — runs shipped (ANP cross-attention × 3 heads)
+
+**Spec:** [`3B.4`](../tasks/specs/3B.4_remote_full_av_training.md)
+**Bundles:** `artifacts/runs/3B4/{point_control,gaussian,quantile}/`
+(manifests committed; per-row predictions + checkpoints stay
+local / Pod per the existing 2D.7 / 3A.3 convention.)
+
+**Hardware:** RunPod RTX A4500 (20 GB VRAM), torch 2.11.0+cu128,
+benchmark `spy_phase1_random40_noiselow.parquet`.
+
+**Headline metrics (full AV fold, end-to-end ANP training, 50 epochs, seed 42):**
+
+| Head | val_MAE_mu | test_MAE_mu | best_val_loss | qmono_ok | wall |
+|---|---:|---:|---:|---|---:|
+| `point_control` | 0.04862 | 0.06837 | 0.00784 (MSE) | n/a | 44.1 min |
+| `gaussian`      | 0.05333 | 0.07256 | -2.7351 (NLL) | n/a | 43.8 min |
+| `quantile`      | 0.04852 | 0.06809 | 0.01167 (pinball) | True | 43.8 min |
+
+All three completed 50/50 epochs (no early stop); per-row val/test
+predictions written; manifests record `decoder_kind=anp`,
+`coord_encoding.kind=raw`, `freeze_encoder=False`, `seed=42`,
+matching 2D.7 optimizer / schedule (AdamW lr=1e-3 wd=1e-4,
+ReduceLROnPlateau, patience 10).
+
+**Point-control delta vs 3A.3 raw baseline (informational, no hard threshold).**
+
+The natural 3A.3 reference is `artifacts/runs/3A/raw/manifest.json`:
+
+| Quantity | 3A.3 raw (DeepSets + frozen 2D.7 encoder + gaussian) | 3B.4 gaussian (ANP + end-to-end) | Δ |
+|---|---:|---:|---:|
+| val_MAE_mu  | 0.05754 | 0.05333 | **−0.00421** |
+| test_MAE_mu | 0.07641 | 0.07256 | **−0.00386** |
+
+Head-kind-matched comparison (gaussian↔gaussian) so the `mu`
+column is apples-to-apples. End-to-end ANP improves test MAE by
+≈ 5 % over the frozen-encoder DeepSets baseline at the same
+coordinate encoding and same dataset.
+
+The 3B.4 point and quantile heads also beat the 3A.3 gaussian
+baseline on test MAE (0.0684 / 0.0681 vs 0.0764), but those
+heads optimize different losses so the relevant numbers there
+will land in 3B.7's calibrator+decision evaluation rather than
+this journal entry.
+
+**Caveats / open questions journaled for 3B.7:**
+
+- Calibration is not applied here. 3B.4 NLL / coverage numbers
+  are pre-calibration; 3B.6 will re-fit the calibrator on these
+  val predictions and 3B.7 will report the post-calibration
+  decision-layer numbers vs 2D.9.
+- Ensemble is not applied here. 3B.5 will produce K=5 deep
+  ensembles of the ANP point head, parallel to 2D.8.
+- The 3A.3 reference is gaussian-headed and uses a frozen
+  encoder. The ANP gain in the table above conflates "ANP
+  decoder" and "end-to-end training" — those two contributions
+  are not separable from this one experiment. A clean ablation
+  (ANP + frozen 2D.7 encoder) would isolate the decoder
+  contribution but is a follow-up, not blocking.
+
+**Files inspected on completion:** all three manifests, all three
+training_curve.csvs (loss monotonically decreasing, no NaN, no
+divergence at any epoch).
+
+**Tests run:** Pod smoke (gaussian, epochs=2) validated the
+manifest schema + ANP path activation; the integration test
+`test_train_conditional_forwards_decoder_kind_and_anp_cfg` added
+in the 3B.2 amendment guards against regression of the wiring fix.

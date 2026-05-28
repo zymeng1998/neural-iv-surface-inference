@@ -2923,3 +2923,45 @@ executed locally per the 3B.1 spec. No code, no training.
 - Rsync `artifacts/runs/3B4/{gaussian,quantile,point_control}/`
   (manifest + curves + per-row predictions; checkpoints stay Pod-side).
 - Journal entry + 3B.4 → `in_review`.
+
+---
+
+## 2026-05-28 — 3B.4 full sweep complete (in_review)
+
+### What landed
+
+- Three ANP cross-attention conditional trainings on RunPod RTX
+  A4500, end-to-end, 50 epochs each, seed 42, matched-2D.7
+  hparams:
+  - `point_control`: test_MAE_mu = 0.06837 (val 0.04862)
+  - `gaussian`:      test_MAE_mu = 0.07256 (val 0.05333)
+  - `quantile`:      test_MAE_mu = 0.06809 (val 0.04852), monotonicity OK
+- Bundles pulled back to `artifacts/runs/3B4/{point_control,gaussian,quantile}/`;
+  manifests committed, per-row predictions + checkpoints stay
+  local/Pod per the existing 2D.7 / 3A.3 convention.
+- vs 3A.3 raw gaussian baseline: end-to-end ANP gaussian improves
+  test MAE 0.0764 → 0.0726 (≈ 5 %). Apples-to-apples on head_kind
+  but conflates "ANP decoder" with "end-to-end retrain".
+- Sweep wall: 2 h 20 min total on a single GPU.
+
+### Tests run
+
+- Pod smoke (gaussian, epochs=2, freshly cloned config) — manifest
+  fields correct, ANP path activated. Smoke artifact deleted.
+- Pre-flight: `pytest tests/test_anp_decoder.py
+  tests/test_anp_predictor_adapter.py
+  tests/integration/test_anp_wiring.py` — 29 passed.
+
+### Unresolved
+
+- None for 3B.4. The point-control vs 3A.3 delta is informational,
+  not a hard pass-fail.
+- Calibration + decision-layer scoring are 3B.6 / 3B.7.
+- Deep ensemble is 3B.5.
+
+### Next actions
+
+- Human reviews 3B.4 → `done`.
+- On approval, promote 3B.5 (K=5 ensemble of ANP point head) from
+  `backlog → todo`. 3B.5 is the next Pod-rented story (5 × point
+  trainings, expected ~3–4 h on the same hardware).
