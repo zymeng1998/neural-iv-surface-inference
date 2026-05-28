@@ -121,6 +121,11 @@ class ConditionalSurfacePredictor:
         )
         cfg = ckpt.get("config", {})
         head_cfg = cfg.get("head") or {"kind": "point"}
+        # 3A.2 / 3B.2 fields are optional — defaults preserve pre-Phase-3
+        # checkpoint behavior (raw coord encoding, deepsets decoder).
+        coord_encoding_cfg = cfg.get("coord_encoding")
+        decoder_kind = str(cfg.get("decoder_kind", "deepsets"))
+        anp_cfg = cfg.get("anp") or {}
         model = ConditionalSurfaceModel(
             context_dim=int(cfg.get("context_dim", 3)),
             coord_dim=int(cfg.get("coord_dim", 2)),
@@ -130,6 +135,9 @@ class ConditionalSurfacePredictor:
             n_post_layers=int(cfg.get("n_post_layers", 1)),
             n_decoder_layers=int(cfg.get("n_decoder_layers", 3)),
             head=dict(head_cfg),
+            coord_encoding=coord_encoding_cfg,
+            decoder_kind=decoder_kind,  # type: ignore[arg-type]
+            anp=dict(anp_cfg),
         )
         model.load_state_dict(ckpt["model_state_dict"])
         return cls(model=model, device=device)

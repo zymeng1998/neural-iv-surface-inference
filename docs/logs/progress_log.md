@@ -2810,3 +2810,74 @@ executed locally per the 3B.1 spec. No code, no training.
 - Human reviews 3B.2 → `done`.
 - On approval, promote `3B.3` from `backlog → todo`
   (predictor-adapter parity, local-only, no Pod time).
+
+---
+
+## 2026-05-28 — Story 3B.3 shipped: ANP predictor-adapter parity
+
+### Completed
+
+- **Patch:** 13-line minimal addition to
+  `ConditionalSurfacePredictor.from_checkpoint` in
+  `src/neural_iv_surface_inference/eval/adapters.py`. It now reads
+  three additional fields from the persisted checkpoint config
+  (`decoder_kind`, `coord_encoding`, `anp`) and forwards them into
+  `ConditionalSurfaceModel(...)`. Defaults preserve pre-Phase-3
+  checkpoint behavior: missing `decoder_kind` → `"deepsets"`,
+  missing `coord_encoding` → `None` (raw), missing `anp` → `{}`.
+  `EnsembleConditionalPredictor` and
+  `CalibratedConditionalPredictor` inherit the change for free
+  because they wrap `ConditionalSurfacePredictor` and don't
+  hand-roll model construction.
+- **Parity test:** `tests/test_anp_predictor_adapter.py`. Saves an
+  in-memory checkpoint for each `decoder_kind ∈ {deepsets, anp}` ×
+  `head.kind ∈ {gaussian, quantile, point}` and re-loads through
+  `from_checkpoint`. Asserts:
+  - `PredictionResult` row count == `len(df)` for both kinds.
+  - Population pattern (`uncertainty / lower / upper` populated vs
+    `None`) is identical across kinds for each head kind.
+  - Dtypes and shapes match across kinds.
+  - For Gaussian head on ANP: `uncertainty > 0`, `pred` finite,
+    `uncertainty` finite.
+  - For quantile head: `lower <= upper` componentwise.
+  - Row-order alignment: shuffling input rows shuffles outputs
+    accordingly (the 2C.5 non-shuffled contract).
+  - Legacy back-compat: a 2D-era checkpoint with no `decoder_kind`
+    key still loads, defaults to `deepsets`, and produces
+    finite predictions.
+
+### Results
+
+- New tests: **6 added; all pass on CPU.**
+- Regression: `pytest tests/ -v -k "predictor or adapter"` = 31
+  passed (no regressions); full `pytest tests/` = 328 passed
+  (+6 over the 3B.2 baseline of 322).
+- PMR pre-push gate dry-run: green.
+
+### Notes / observations
+
+- The pre-3B.3 adapter was already silently broken for Phase 3A
+  Fourier-encoded checkpoints — `coord_encoding` was never threaded
+  through `from_checkpoint` and the model rebuilt with default
+  raw encoding would have `load_state_dict`-mismatched the
+  decoder's input layer if the source used `kind: fourier`. 3A.4
+  worked around this by using a separate eval script
+  (`scripts/run_3a_decoder_only.py` constructs the model directly).
+  The 3B.3 patch fixes that incidental bug too, so future Fourier
+  / ANP checkpoints can flow through the standard
+  `from_checkpoint` path.
+- The patch is the bare minimum the spec asked for: no `from_checkpoint`
+  refactor, no new `Predictor` subclass, no signature change.
+
+### Unresolved
+
+- None for 3B.3.
+- 3B.4 (remote, Pod) trains the three head-kind sweeps end-to-end
+  on AV data using these adapters in the eval step.
+
+### Next actions
+
+- Human reviews 3B.3 → `done`.
+- On approval, promote `3B.4` from `backlog → todo`. 3B.4 is the
+  first 3B story that needs a Pod rental window (~2.5–3 h wall,
+  sequential sweep).

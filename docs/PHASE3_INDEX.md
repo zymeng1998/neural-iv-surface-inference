@@ -221,8 +221,22 @@ only if neither writes to a path in the other's `file_scope`.
   + minimal patch (≤ 20 lines) if needed so the existing
   `ConditionalSurfacePredictor` round-trips `decoder_kind` through
   its checkpoint config.
-- **Next concrete action:** gate on 3B.2 close.
-- **Open blocker:** 3B.2.
+- **2026-05-28 (executed)** minimal 13-line patch landed on
+  `ConditionalSurfacePredictor.from_checkpoint`: now reads
+  `decoder_kind` (default `deepsets`), `coord_encoding` (default
+  `None` → raw), and `anp` block from the persisted checkpoint
+  config and forwards them into `ConditionalSurfaceModel(...)`.
+  Legacy 2D-era checkpoints without those keys still load (default
+  behavior preserved). `EnsembleConditionalPredictor` and
+  `CalibratedConditionalPredictor` inherit the change for free.
+  Parity test `tests/test_anp_predictor_adapter.py` covers
+  `{deepsets, anp} × {gaussian, quantile, point}` + row-order
+  alignment + legacy back-compat. 6 tests added; full regression
+  328 passed. Story → `in_review`.
+- **Next concrete action:** human reviews 3B.3 → `done`. Then the
+  next Pod rental window opens for 3B.4 (full AV training, three
+  head kinds).
+- **Open blocker:** none.
 
 ### 3B.4 — Remote: full AV training, three head kinds
 
