@@ -2965,3 +2965,39 @@ executed locally per the 3B.1 spec. No code, no training.
 - On approval, promote 3B.5 (K=5 ensemble of ANP point head) from
   `backlog → todo`. 3B.5 is the next Pod-rented story (5 × point
   trainings, expected ~3–4 h on the same hardware).
+
+---
+
+## 2026-05-28 — 3B.5 local prep (in_progress)
+
+### What landed
+
+- Config `configs/conditional_3B5_anp_ensemble.yaml` (clone of
+  3B.4 point_control + ensemble block, K=5, seeds [101,202,303,404,505]).
+- Runner `scripts/run_3b5_ensemble.py` — clone of
+  `scripts/run_2d8_ensemble.py`, with manifest provenance fields
+  (`story=3B.5`, `decoder_kind`, `anp`, `coord_encoding`,
+  `freeze_encoder`, `head_kind`) so 3B.6 / 3B.7 can verify they
+  consumed the ANP ensemble.
+- Sweep launcher `scripts/run_conditional_3B5.sh`.
+- Expanded 3B.5 file_scope to include `scripts/run_3b5_ensemble.py`.
+- 3B.4 flipped `in_review → done`; 3B.5 `backlog → in_progress`.
+
+### Tests run
+
+- Config loads; ANP decoder_kind / point head verified.
+- No new pytests — 3B.5 reuses the model + adapter + training paths
+  already covered by 3B.2 / 3B.3 integration tests.
+
+### Unresolved
+
+- Pod execution: K=5 sequential trainings × ~44 min each ≈ 3.7 h,
+  plus ~5–10 min ensemble scoring → expected ~4 h Pod wall.
+
+### Next actions
+
+- Push 3B.5 prep.
+- SSH to Pod, `git pull`, launch `scripts/run_conditional_3B5.sh`
+  in nohup background, monitor.
+- Pull back manifest + members.json + training_curves.csv +
+  val/test predictions; journal entry; PMR; flip to in_review.

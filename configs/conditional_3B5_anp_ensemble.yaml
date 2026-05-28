@@ -1,0 +1,48 @@
+# 3B.5 — K=5 deep ensemble of the ANP cross-attention conditional model on AV.
+# Clones configs/conditional_3B4_anp_point_control.yaml; adds ensemble block.
+# Disagreement is a *separate* uncertainty source from the 3B.4 gaussian / quantile
+# heads; 3B.6 fuses the two.
+
+seed: 42
+
+data:
+  benchmark_file: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+  batch_size: 32
+  num_workers: 0
+
+conditional:
+  context_dim: 3
+  coord_dim: 2
+  hidden_dim: 128
+  latent_dim: 64
+  n_elem_layers: 2
+  n_post_layers: 1
+  n_decoder_layers: 3
+
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  epochs: 50
+  patience: 10
+
+  decoder_kind: anp
+  anp:
+    n_heads: 4
+    d_head: null
+    mlp_hidden: 128
+    include_z_in_decoder: true
+  coord_encoding:
+    kind: raw
+  freeze_encoder: false
+
+  head:
+    kind: point
+    quantiles: [0.05, 0.5, 0.95]
+
+ensemble:
+  size: 5
+  seeds: [101, 202, 303, 404, 505]
+
+paths:
+  checkpoint_dir: artifacts/runs/3B5/checkpoints
+  log_dir: artifacts/runs/3B5/logs
+  results_dir: artifacts/runs/3B5
