@@ -163,3 +163,80 @@ def test_anp_decoder_kind_routes_through_anp_module():
 def test_invalid_decoder_kind_raises():
     with pytest.raises(ValueError):
         ConditionalSurfaceModel(decoder_kind="bogus")  # type: ignore[arg-type]
+
+
+@pytest.mark.integration
+def test_train_conditional_forwards_decoder_kind_and_anp_cfg():
+    """train_conditional must thread decoder_kind / anp from config to the model.
+
+    Regression guard: the 3B.2 plumbing originally stopped at
+    ConditionalSurfaceModel; train_conditional silently used the default
+    DeepSets decoder regardless of YAML. 3B.4 relies on this forwarding.
+    """
+    from torch.utils.data import DataLoader
+
+    import pandas as pd
+
+    from neural_iv_surface_inference.data.conditional_loaders import (
+        ConditionalIVSurfaceDataset,
+        collate_conditional,
+    )
+    from neural_iv_surface_inference.models.anp_decoder import ANPDecoder
+    from neural_iv_surface_inference.training.train_conditional import (
+        train_conditional,
+    )
+
+    g = torch.Generator().manual_seed(0)
+    n_days = 4
+    rows = []
+    for d in range(n_days):
+        for i in range(8):
+            rows.append(
+                {
+                    "date": pd.Timestamp("2020-01-01") + pd.Timedelta(days=d),
+                    "log_moneyness": float(torch.randn(1, generator=g).item()),
+                    "tau": float(0.1 + 0.5 * torch.rand(1, generator=g).item()),
+                    "implied_volatility": float(
+                        0.2 + 0.05 * torch.rand(1, generator=g).item()
+                    ),
+                    "iv_clean": float(
+                        0.2 + 0.05 * torch.rand(1, generator=g).item()
+                    ),
+                    "observed": True,
+                    "split": "train",
+                }
+            )
+    df = pd.DataFrame(rows)
+    loader = DataLoader(
+        ConditionalIVSurfaceDataset(df),
+        batch_size=2,
+        shuffle=False,
+        collate_fn=collate_conditional,
+        num_workers=0,
+    )
+
+    cfg = {
+        "seed": 42,
+        "context_dim": 3,
+        "coord_dim": 2,
+        "hidden_dim": 32,
+        "latent_dim": 16,
+        "n_elem_layers": 1,
+        "n_post_layers": 1,
+        "n_decoder_layers": 2,
+        "epochs": 1,
+        "patience": 1,
+        "head": {"kind": "gaussian"},
+        "decoder_kind": "anp",
+        "anp": {"n_heads": 2, "mlp_hidden": 32},
+    }
+    model, history = train_conditional(
+        train_loader=loader,
+        val_loader=loader,
+        config=cfg,
+        device=torch.device("cpu"),
+        checkpoint_dir=None,
+    )
+    assert model.decoder_kind == "anp"
+    assert isinstance(model.decoder, ANPDecoder)
+    assert len(history) >= 1

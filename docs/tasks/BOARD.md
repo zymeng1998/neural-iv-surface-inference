@@ -80,9 +80,9 @@ decomposition). The first story of any epic is always its decomposition story.
 | 3A.4 | Story | Local: W1 evaluation of both variants vs 2D.9 baselines + journal + roadmap addendum | `done` | `docs/tasks/specs/3A.4_local_eval_and_addendum.md` | 2026-05-28 |
 | 3B | Epic | Phase 3 — Cross-attention decoder (ANP picked per ADR 0005; end-to-end DeepSets+ANP, raw `(k, τ)`) | `in_progress` | `docs/roadmaps/phase3_accuracy_push.md` (W11 / §4) | 2026-05-28 |
 | 3B.1 | Story | Decompose Phase 3B (ADR 0005 + 3B.2–3B.7 specs) | `in_review` | `docs/tasks/specs/3B.1_decompose_phase_3b.md` | 2026-05-28 |
-| 3B.2 | Story | Local: ANP cross-attention decoder module + `decoder_kind` flag + unit / smoke / integration tests | `in_review` | `docs/tasks/specs/3B.2_local_anp_cross_attention_decoder.md` | 2026-05-28 |
-| 3B.3 | Story | Local: ANP predictor-adapter wiring (evaluator parity test, ≤ minimal patch) | `in_review` | `docs/tasks/specs/3B.3_local_predictor_adapter.md` | 2026-05-28 |
-| 3B.4 | Story | Remote: full AV training of ANP across `head.kind ∈ {gaussian, quantile, point}` | `backlog` | `docs/tasks/specs/3B.4_remote_full_av_training.md` | 2026-05-28 |
+| 3B.2 | Story | Local: ANP cross-attention decoder module + `decoder_kind` flag + unit / smoke / integration tests | `done` | `docs/tasks/specs/3B.2_local_anp_cross_attention_decoder.md` | 2026-05-28 |
+| 3B.3 | Story | Local: ANP predictor-adapter wiring (evaluator parity test, ≤ minimal patch) | `done` | `docs/tasks/specs/3B.3_local_predictor_adapter.md` | 2026-05-28 |
+| 3B.4 | Story | Remote: full AV training of ANP across `head.kind ∈ {gaussian, quantile, point}` | `in_progress` | `docs/tasks/specs/3B.4_remote_full_av_training.md` | 2026-05-28 |
 | 3B.5 | Story | Remote: K=5 deep ensemble of ANP point head on AV (mirrors 2D.8) | `backlog` | `docs/tasks/specs/3B.5_remote_deep_ensemble.md` | 2026-05-28 |
 | 3B.6 | Story | Local: calibrator re-fit on ANP val predictions (mirrors 2D.4) | `backlog` | `docs/tasks/specs/3B.6_local_calibrator_refit.md` | 2026-05-28 |
 | 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + journal + roadmap closing addendum | `backlog` | `docs/tasks/specs/3B.7_local_decision_layer_eval.md` | 2026-05-28 |

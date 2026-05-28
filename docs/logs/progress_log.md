@@ -2881,3 +2881,45 @@ executed locally per the 3B.1 spec. No code, no training.
 - On approval, promote `3B.4` from `backlog → todo`. 3B.4 is the
   first 3B story that needs a Pod rental window (~2.5–3 h wall,
   sequential sweep).
+
+---
+
+## 2026-05-28 — 3B.2 amendment + 3B.4 local prep
+
+### What landed
+
+- **3B.2 amendment.** `train_conditional` was reading `decoder_kind` and
+  `anp` from config *only* via the model class — the training-time
+  builder silently dropped them, so any YAML with `decoder_kind: anp`
+  would have trained DeepSets. Fixed with a 4-line patch
+  (`src/neural_iv_surface_inference/training/train_conditional.py`
+  L195–211) plus a new regression test
+  (`tests/integration/test_anp_wiring.py::test_train_conditional_forwards_decoder_kind_and_anp_cfg`).
+  Expanded 3B.2 `file_scope` to include `train_conditional.py`.
+  3B.2 + 3B.3 closed `done`.
+- **3B.4 local prep.** Authored the three YAMLs
+  (`configs/conditional_3B4_anp_{gaussian,quantile,point_control}.yaml`),
+  the runner (`scripts/run_3b4_single.py` — clone of `run_2d7_single.py`
+  with `_build_model_from_cfg` extended to forward
+  `decoder_kind` / `anp` / `coord_encoding`), and the sequential
+  sweep launcher (`scripts/run_conditional_3B4.sh`).
+- 3B.4 promoted `backlog → in_progress`. Pod execution next.
+
+### Tests run
+
+- `pytest tests/test_anp_decoder.py tests/test_anp_predictor_adapter.py tests/integration/test_anp_wiring.py` — 29 passed.
+
+### Unresolved
+
+- 3B.4 Pod smoke + full sweep (3 heads × ~50 epochs). Next concrete
+  action is `ssh pod 'cd repo && git pull && bash scripts/run_conditional_3B4.sh'`
+  after this commit lands on `origin/main`.
+
+### Next actions
+
+- Push 3B.2 amendment + 3B.4 configs + runner.
+- SSH to Pod, smoke run gaussian variant with `epochs: 2` override
+  (manifest sanity), then full sweep.
+- Rsync `artifacts/runs/3B4/{gaussian,quantile,point_control}/`
+  (manifest + curves + per-row predictions; checkpoints stay Pod-side).
+- Journal entry + 3B.4 → `in_review`.

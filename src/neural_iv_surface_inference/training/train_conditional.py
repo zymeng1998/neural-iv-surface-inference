@@ -193,6 +193,8 @@ def train_conditional(
         head_cfg["quantiles"] = list(DEFAULT_QUANTILES)
 
     coord_encoding_cfg = config.get("coord_encoding")
+    decoder_kind = str(config.get("decoder_kind", "deepsets"))
+    anp_cfg = config.get("anp")
 
     model = ConditionalSurfaceModel(
         context_dim=int(config.get("context_dim", 3)),
@@ -204,6 +206,8 @@ def train_conditional(
         n_decoder_layers=int(config.get("n_decoder_layers", 3)),
         head=head_cfg,
         coord_encoding=coord_encoding_cfg,
+        decoder_kind=decoder_kind,  # type: ignore[arg-type]
+        anp=anp_cfg,
     ).to(device)
 
     # 3A.3: optionally seed the encoder from a saved checkpoint
