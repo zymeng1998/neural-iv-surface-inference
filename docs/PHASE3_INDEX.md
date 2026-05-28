@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-05-28T11:10:00-04:00
+last_updated_at: 2026-05-28T14:00:00-04:00
 ---
 
 > **Read this first if you are picking up Phase 3 work cold.** It mirrors
@@ -22,11 +22,16 @@ last_updated_at: 2026-05-28T11:10:00-04:00
 - **Why the gap exists:** mean-pool DeepSets decoder cannot exploit
   spatial locality (story 2E.2 confirmed latent capacity is not the
   bottleneck).
-- **How we close it:** 3A (coordinate-representation ablation:
-  Fourier vs raw `(k, τ)`) and 3B (cross-attention decoder) run in
-  **parallel** as independent diagnostics; 3C (feature & inductive-
-  bias expansion) builds on 3B's winning architecture; 3D synthesizes.
-  See [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md).
+- **How we close it:** 3A closed `done` — raw `(k, τ)` won the
+  coordinate-encoding ablation on the frozen 2D.7 encoder but did
+  not close the gap to RBF (the bottleneck is architectural, not
+  positional). 3B is the architectural bet: end-to-end **Attentive
+  Neural Process (ANP)** cross-attention decoder + the existing
+  DeepSets encoder, raw `(k, τ)`. See
+  [ADR 0005](decisions/0005_cross_attention_architecture_choice.md).
+  3C (feature & inductive-bias expansion) builds on 3B's measured
+  outcome; 3D synthesizes. See
+  [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md).
 - **Bar:** test MAE ≤ 0.0693 on 2D.9 slice, ≤ 0.0629 on full 2D.4
   fold; coverage stays within ±2 pp of 0.90; hi-conf MAE strictly
   below no-abstention MAE.
@@ -38,13 +43,19 @@ last_updated_at: 2026-05-28T11:10:00-04:00
 
 | ID | Type | Title | Status | Spec | Updated |
 |---|---|---|---|---|---|
-| 3A | Epic | Coordinate-representation ablation (Fourier vs raw `(k, τ)`, decoder-only) | `in_progress` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W10 | 2026-05-28 |
-| 3A.1 | Story | Decompose Phase 3A | `in_review` | [`3A.1`](tasks/specs/3A.1_decompose_phase_3a.md) | 2026-05-28 |
-| 3A.2 | Story | Local: Fourier-feature module + `coord_encoding` flag + unit / wiring tests | `in_review` | [`3A.2`](tasks/specs/3A.2_local_fourier_feature_module.md) | 2026-05-28 |
-| 3A.3 | Story | Remote: decoder-only retrain on frozen 2D.7 encoder (Fourier vs raw) | `in_review` | [`3A.3`](tasks/specs/3A.3_remote_decoder_only_retrain.md) | 2026-05-28 |
-| 3A.4 | Story | Local: eval of both variants vs 2D.9 baselines + journal + roadmap addendum | `backlog` | [`3A.4`](tasks/specs/3A.4_local_eval_and_addendum.md) | 2026-05-28 |
-| 3B | Epic | Cross-attention decoder (ANP / Set Transformer / TNP) | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W11 | 2026-05-27 |
-| 3B.1 | Story | Decompose Phase 3B | `backlog` | [`3B.1`](tasks/specs/3B.1_decompose_phase_3b.md) | 2026-05-27 |
+| 3A | Epic | Coordinate-representation ablation (Fourier vs raw `(k, τ)`, decoder-only) — → raw beats Fourier on full-fold test MAE (0.0760 vs 0.0790); gap-to-RBF unclosed; recommend 3B default = raw | `done` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W10 | 2026-05-28 |
+| 3A.1 | Story | Decompose Phase 3A | `done` | [`3A.1`](tasks/specs/3A.1_decompose_phase_3a.md) | 2026-05-28 |
+| 3A.2 | Story | Local: Fourier-feature module + `coord_encoding` flag + unit / wiring tests | `done` | [`3A.2`](tasks/specs/3A.2_local_fourier_feature_module.md) | 2026-05-28 |
+| 3A.3 | Story | Remote: decoder-only retrain on frozen 2D.7 encoder (Fourier vs raw) | `done` | [`3A.3`](tasks/specs/3A.3_remote_decoder_only_retrain.md) | 2026-05-28 |
+| 3A.4 | Story | Local: eval of both variants vs 2D.9 baselines + journal + roadmap addendum | `done` | [`3A.4`](tasks/specs/3A.4_local_eval_and_addendum.md) | 2026-05-28 |
+| 3B | Epic | Cross-attention decoder (ANP picked per [ADR 0005](decisions/0005_cross_attention_architecture_choice.md); end-to-end DeepSets+ANP, raw `(k, τ)`) | `in_progress` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W11 | 2026-05-28 |
+| 3B.1 | Story | Decompose Phase 3B (ADR 0005 + 3B.2–3B.7 specs) | `in_review` | [`3B.1`](tasks/specs/3B.1_decompose_phase_3b.md) | 2026-05-28 |
+| 3B.2 | Story | Local: ANP decoder module + `decoder_kind` flag + unit / smoke / integration tests | `backlog` | [`3B.2`](tasks/specs/3B.2_local_anp_cross_attention_decoder.md) | 2026-05-28 |
+| 3B.3 | Story | Local: ANP predictor-adapter wiring (evaluator parity test) | `backlog` | [`3B.3`](tasks/specs/3B.3_local_predictor_adapter.md) | 2026-05-28 |
+| 3B.4 | Story | Remote: full AV training of ANP across `head.kind ∈ {gaussian, quantile, point}` | `backlog` | [`3B.4`](tasks/specs/3B.4_remote_full_av_training.md) | 2026-05-28 |
+| 3B.5 | Story | Remote: K=5 deep ensemble of ANP point head on AV (parallels 2D.8) | `backlog` | [`3B.5`](tasks/specs/3B.5_remote_deep_ensemble.md) | 2026-05-28 |
+| 3B.6 | Story | Local: calibrator re-fit on ANP val predictions (parallels 2D.4) | `backlog` | [`3B.6`](tasks/specs/3B.6_local_calibrator_refit.md) | 2026-05-28 |
+| 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + closing addendum | `backlog` | [`3B.7`](tasks/specs/3B.7_local_decision_layer_eval.md) | 2026-05-28 |
 | 3C | Epic | Feature & inductive-bias expansion (microstructure, optional SVI) | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W12 | 2026-05-27 |
 | 3C.1 | Story | Decompose Phase 3C | `backlog` | [`3C.1`](tasks/specs/3C.1_decompose_phase_3c.md) | 2026-05-27 |
 | 3D | Epic | Closing memo + re-evaluation vs RBF | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W13 | 2026-05-27 |
@@ -63,6 +74,12 @@ only if neither writes to a path in the other's `file_scope`.
 | 3A.3 | 3B.1, 3C.1, 3D.1 | 3A.2 (must be `done` first), 3A.4 (chains through 3A.3) |
 | 3A.4 | 3B.1, 3C.1, 3D.1 | 3A.3 (must be `done` first; reads its artifact bundles) |
 | 3B.1 | 3A.1, 3A.2, 3A.3, 3A.4, 3C.1, 3D.1 | none |
+| 3B.2 | 3A.*, 3C.1, 3D.1 | 3B.3 / 3B.4 (consume the module 3B.2 ships); 3B.5 / 3B.6 / 3B.7 (chain downstream) |
+| 3B.3 | 3A.*, 3C.1, 3D.1 | 3B.2 (must be `done` first); 3B.4 / 3B.5 (consume the adapter parity guarantee) |
+| 3B.4 | 3A.*, 3C.1, 3D.1 | 3B.2, 3B.3 (must be `done`); 3B.5 / 3B.6 / 3B.7 (chain downstream) |
+| 3B.5 | 3A.*, 3C.1, 3D.1 | 3B.4 (must be `done`; reuses point config + Pod); 3B.6 / 3B.7 (chain downstream) |
+| 3B.6 | 3A.*, 3C.1, 3D.1 | 3B.4 + 3B.5 (must be `done`; reads their val predictions); 3B.7 (chains through 3B.6 calibrator) |
+| 3B.7 | 3A.*, 3C.1, 3D.1 | 3B.4 + 3B.5 + 3B.6 (must all be `done`; reads predictions + calibrator) |
 | 3C.1 | 3A.*, 3B.1, 3D.1 | none |
 | 3D.1 | 3A.*, 3B.1, 3C.1 | none |
 
@@ -136,23 +153,115 @@ only if neither writes to a path in the other's `file_scope`.
 
 ### 3A.4 — Local: eval + journal + roadmap addendum
 
-- **2026-05-28** registered via 3A.1 decomposition (not yet
-  executed). Scope: `scripts/run_3a_eval.py` (read-only on 3A.3
-  bundles), three result CSVs per variant + paired comparison,
-  experiment-journal entry, "3A closing addendum" under § W10 of
-  the Phase 3 roadmap.
-- **Next concrete action:** 3A.3 must close first; then human
-  promotes `3A.4` and a fresh local session executes per spec.
-- **Open blocker:** 3A.3.
+- **2026-05-28 (executed)** `scripts/run_3a_eval.py` shipped; three
+  result CSVs per variant + paired `3a_compare/comparison.csv`
+  committed under `results/3/spy_phase1_random40_noiselow/`.
+  Full-fold test MAE: **raw 0.07604 vs Fourier 0.07905** (Δ
+  +0.00300, raw better). Raw also wins on val MAE, Gaussian NLL
+  on both splits, hi-conf MAE@0.8, and mean band width. Fourier
+  carries marginally better uncalibrated test coverage (0.9012
+  vs 0.8720) only because its σ is wider; neither variant closes
+  the gap to RBF. Roadmap addendum + journal close-out entry
+  appended; epic 3A marked `done`.
+- **Headline number:** Fourier-vs-raw delta = +0.00300 test MAE
+  (raw wins). Gap-to-RBF fraction closed: **0%**. Recommended
+  3B coordinate-encoding default: **raw `(k, τ)`**.
+- **Next concrete action:** promote `3B.1` (decompose epic 3B)
+  from `backlog → todo`.
+- **Open blocker:** none.
 
 ### 3B.1 — Decompose Phase 3B
 
 - **2026-05-27 (rev. 2)** decoupled from 3A. 3B runs in parallel
   with 3A; coordinate-encoding default is Fourier-on per ADR 0004
   if 3A has not measured the delta yet.
-- **Next concrete action:** human promotes `3B.1` from `backlog →
-  todo` whenever ready.
-- **Open blocker:** none (parallel-safe with 3A).
+- **2026-05-28 (executed)** decomposition shipped. ADR 0005 written:
+  pick is **Attentive Neural Process (ANP)** end-to-end with the
+  DeepSets encoder, raw `(k, τ)` per 3A's measured result; Set
+  Transformer / TNP / Perceiver IO rejected with rationale. Six
+  atomic stories registered: **3B.2** (local ANP module +
+  `decoder_kind` flag + tests), **3B.3** (local predictor-adapter
+  parity), **3B.4** (remote AV training, 3 head kinds), **3B.5**
+  (remote K=5 ensemble of point head), **3B.6** (local calibrator
+  re-fit), **3B.7** (local decision-layer eval + closing addendum).
+  Epic 3B → `in_progress`; 3B.1 → `in_review`.
+- **Next concrete action:** human reviews ADR 0005 + the six new
+  specs; promotes `3B.2` from `backlog → todo` to start
+  implementation. 3B.2 / 3B.3 are local-only, no Pod time yet.
+- **Open blocker:** none. 3B implementation can begin in parallel
+  with any in-flight 3A / 3C / 3D work.
+
+### 3B.2 — Local: ANP decoder module + `decoder_kind` flag
+
+- **2026-05-28** registered via 3B.1 decomposition (not yet
+  executed). Scope: `models/anp_decoder.py` + `decoder_kind` flag on
+  `ConditionalSurfaceModel` + unit/smoke/integration tests; no
+  training; CPU-only.
+- **2026-05-28 (executed)** module + wiring + tests shipped.
+  `ANPDecoder` (multi-head cross-attention, key-padding mask,
+  shared 3-head dispatch) lives in
+  `src/neural_iv_surface_inference/models/anp_decoder.py`;
+  `ConditionalSurfaceModel.__init__` now accepts
+  `decoder_kind ∈ {"deepsets","anp"}` (default `deepsets`,
+  bit-for-bit identical Phase 2 path); `SetEncoder.forward` gained a
+  keyword-only `return_elements=True` branch that exposes the
+  pre-pool per-element tensor `H` for cross-attention; configs/
+  schema extended with the `anp:` sub-block. Tests: 13 unit
+  (`tests/test_anp_decoder.py`) + 9 integration
+  (`tests/integration/test_anp_wiring.py`) — all pass on CPU, and
+  the regression sweep (`pytest tests/` = 322 tests) is green.
+  Story → `in_review`.
+- **Next concrete action:** human reviews 3B.2; promote to `done`
+  and start 3B.3 (predictor-adapter parity).
+- **Open blocker:** none.
+
+### 3B.3 — Local: ANP predictor-adapter wiring
+
+- **2026-05-28** registered (not yet executed). Scope: parity test
+  + minimal patch (≤ 20 lines) if needed so the existing
+  `ConditionalSurfacePredictor` round-trips `decoder_kind` through
+  its checkpoint config.
+- **Next concrete action:** gate on 3B.2 close.
+- **Open blocker:** 3B.2.
+
+### 3B.4 — Remote: full AV training, three head kinds
+
+- **2026-05-28** registered (not yet executed). Scope: three configs
+  (gaussian / quantile / point-control) cloning 2D.7 with
+  `decoder_kind: anp`, `coord_encoding.kind: raw`,
+  `freeze_encoder: false`; sequential Pod sweep ~2.5–3 h wall;
+  manifests + curves + per-row predictions pulled back.
+- **Next concrete action:** gate on 3B.2 + 3B.3 close.
+- **Open blocker:** 3B.2, 3B.3.
+
+### 3B.5 — Remote: K=5 deep ensemble of ANP point head
+
+- **2026-05-28** registered (not yet executed). Scope: clone 3B.4
+  point-control config + ensemble block (K=5, seeds
+  [101,202,303,404,505]); sequential Pod sweep ~4–5 h wall;
+  aggregated predictions pulled back per 2D.8 schema.
+- **Next concrete action:** gate on 3B.4 close.
+- **Open blocker:** 3B.4.
+
+### 3B.6 — Local: calibrator re-fit on ANP val predictions
+
+- **2026-05-28** registered (not yet executed). Scope: clone 2D.4
+  calibration config, re-point inputs at 3B.4 / 3B.5 val
+  predictions; ship `artifacts/calibration/3B6_anp.json`. CPU-only,
+  ~5–10 min wall.
+- **Next concrete action:** gate on 3B.4 + 3B.5 close.
+- **Open blocker:** 3B.4, 3B.5.
+
+### 3B.7 — Local: end-to-end decision-layer eval + closing addendum
+
+- **2026-05-28** registered (not yet executed). Scope: run
+  `scripts/run_decision_layer_eval.py` on a 3B-specific config; ship
+  `results/3/spy_phase1_random40_noiselow/3b_anp/` + `3b_compare/
+  comparison.csv`; write closing journal entry + roadmap § W11
+  closing addendum with ANP-vs-RBF verdict and 3C-scope
+  implication.
+- **Next concrete action:** gate on 3B.6 close.
+- **Open blocker:** 3B.4, 3B.5, 3B.6.
 
 ### 3C.1 — Decompose Phase 3C
 

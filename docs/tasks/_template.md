@@ -59,8 +59,9 @@ multiple compute phases (e.g. local test + Pod train), list each phase.]
 - **Hardware class:** CPU-only | single GPU (e.g. RTX 4090 / A40 / A100-40GB / A100-80GB / H100) | multi-GPU
 - **Approx. VRAM:** e.g. ~6 GB, ~24 GB, n/a
 - **Approx. wall time:** e.g. ~5 min local, ~30 min Pod, ~3 h Pod
-- **Disk footprint (new artifacts):** e.g. ~50 MB committed + ~1 GB checkpoints (gitignored)
-- **Notes:** anything operator-facing about budgeting (sequential vs parallel runs, idle cost while waiting, recommended Pod tier, etc.)
+- **Disk footprint — local committed artifacts:** e.g. ~50 MB committed (manifests + curves + small CSVs)
+- **Disk footprint — remote working set (Pod volume sizing):** e.g. ~1 GB checkpoints + ~3 GB intermediate tensors + ~500 MB logs → **allocate ≥ 8 GB free on the Pod volume**. Always state the total *and* the recommended free-space floor so the operator knows whether to provision a larger Pod volume. If the story re-uses an existing Pod's data (e.g. AV benchmark already on disk), say so explicitly and exclude it from this number.
+- **Notes:** anything operator-facing about budgeting (sequential vs parallel runs, idle cost while waiting, recommended Pod tier, whether the default Pod volume size is enough or needs bumping at rental time, etc.)
 
 ## Implementation steps
 

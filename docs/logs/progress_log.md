@@ -2569,3 +2569,244 @@ the gate completeness check)
   W10 addendum) from `backlog → todo`. Pod can be terminated;
   3A.4 is local-only and reads the pulled manifests.
 
+## 2026-05-28 — Story 3A.4 closed: W1 eval of Fourier vs raw, epic 3A → `done`
+
+### Completed
+
+- Implemented `scripts/run_3a_eval.py` — thin orchestrator over
+  the W1 evaluator (`eval/report.py`) that reads both 3A.3
+  prediction parquets, constructs `PredictionResult` objects from
+  the heteroscedastic Gaussian head (`mu`, `sigma`,
+  `lower/upper = mu ± 1.645·sigma` for the nominal 90% band),
+  computes per-split MAE / interval coverage / mean width /
+  hi-conf MAE at `keep_fraction=0.8` / Gaussian NLL, and writes
+  a calibration sweep at α ∈ {0.5, 0.6, 0.7, 0.8, 0.9, 0.95}.
+- Result bundles committed:
+  - `results/3/spy_phase1_random40_noiselow/3a_fourier/`
+    (`metrics_summary.csv`, `calibration_table.csv`,
+    `abstention_curve.csv`)
+  - `results/3/spy_phase1_random40_noiselow/3a_raw/` (same three)
+  - `results/3/spy_phase1_random40_noiselow/3a_compare/comparison.csv`
+    — long-format paired comparison plus reference rows from
+    `results/2D/.../{interpolation,conditional_calibrated}/metrics_summary.csv`
+    (Phase 2D.9 10-date capped slice).
+- Roadmap closing addendum appended under § W10 of
+  `docs/roadmaps/phase3_accuracy_push.md` (3A.4 owns this).
+- Experiment-journal closing entry appended (3A close-out).
+- BOARD.md + PHASE3_INDEX.md flipped: epic 3A → `done`; 3A.1 →
+  `done`; 3A.2 → `done`; 3A.3 → `done`; 3A.4 → `done` with the
+  headline number.
+
+### Results
+
+Full-fold AV benchmark, decoder-only retrain on frozen 2D.7 encoder,
+nominal 90% band = `mu ± 1.645·sigma` (uncalibrated):
+
+| Variant | Split | n | MAE | Cov@0.90 | Mean width | hi-conf MAE@0.8 | Gauss NLL |
+|---|---|---:|---:|---:|---:|---:|---:|
+| 3a_fourier | val  | 5,593,759 | 0.0620 | 0.9062 | 0.2409 | 0.0302 | −1.685 |
+| 3a_fourier | test | 5,805,664 | 0.0790 | 0.9012 | 0.2947 | 0.0455 | −1.415 |
+| 3a_raw     | val  | 5,593,759 | 0.0570 | 0.9042 | 0.2146 | 0.0282 | −1.797 |
+| 3a_raw     | test | 5,805,664 | 0.0760 | 0.8720 | 0.2596 | 0.0436 | −1.430 |
+
+Reference rows from Phase 2D.9 (10-date cap, 64,610 test rows
+— **not row-count-matched** to 3A.3's full fold):
+
+| Variant | Split | n | MAE | Cov@0.90 | hi-conf MAE@0.8 |
+|---|---|---:|---:|---:|---:|
+| RBF (2D.9) | test | 64,610 | 0.0730 | n/a | 0.0742 |
+| 2D.7 Gaussian (calibrated, 2D.9) | test | 64,610 | 0.0855 | 0.9184 | 0.0606 |
+
+**Headline delta (Fourier − Raw on full-fold test MAE):** +0.00300
+(Fourier is worse by ~3.9% relative). Raw also wins on val MAE
+(−0.0050 vs Fourier), Gaussian NLL on both splits, hi-conf
+MAE@0.8, and mean band width. Fourier's only edge is *test
+coverage* (0.9012 vs 0.8720 — i.e. Fourier's wider σ accidentally
+matches the nominal 90% target on test while raw under-covers by
+~2.8 pp; both bands are uncalibrated).
+
+**Gap-to-RBF:** Neither variant closes any of the gap to RBF.
+On the 10-date 2D.9 slice the gap is RBF 0.0730 vs calibrated
+conditional 0.0855 (+0.0125). On the full fold the slices are
+not directly comparable but the 3A.3 raw test MAE 0.0760 vs RBF
+2D.9 0.0730 leaves the gap **unclosed at best**. Decoder-only
+retrain on the frozen 2D.7 encoder, with the existing
+DeepSets-pool decoder, does not move the accuracy needle in
+either direction; the locality bottleneck is architectural, not
+input-representation.
+
+### Notes
+
+- 3A.3 retrains were **not re-calibrated** — the bands are the raw
+  Gaussian-head outputs at `mu ± 1.645·sigma`. The 2D.7 calibrator
+  (`artifacts/calibration/2d4_calibrator.json`) is fitted for the
+  full-retrain 2D.7 head, not the decoder-only retrains; applying
+  it would be a separate experiment.
+- The 2D.9 reference rows use the 10-date capped slice (64,610
+  test rows); 3A.3 evaluates on the full fold (5,805,664 test
+  rows). Cross-row-count MAE comparisons are *suggestive*, not
+  apples-to-apples. The roadmap addendum carries this caveat.
+
+### Next actions
+
+- Promote 3B.1 (cross-attention decoder decomposition) per ADR
+  0004; the W10 addendum's recommendation is **default 3B to raw
+  `(k, τ)`** since Fourier offered no MAE / NLL benefit on this
+  encoder.
+- No Pod time needed for 3B.1 (decomposition is local).
+
+
+
+## 2026-05-28 — 3B.1 decomposition shipped (docs-only)
+
+Decomposition of epic 3B (cross-attention decoder, Phase 3 W11)
+executed locally per the 3B.1 spec. No code, no training.
+
+### Artifacts shipped
+
+- **ADR 0005** —
+  `docs/decisions/0005_cross_attention_architecture_choice.md`.
+  Pick: **Attentive Neural Process (ANP)** end-to-end with the
+  existing DeepSets `SetEncoder`, raw `(k, τ)` coordinate encoding
+  per 3A's measured result. Explicit rejection rationale for Set
+  Transformer (two-changes-at-once / 2E.2 capacity evidence), TNP
+  (compute cost / weak cross-query signal on independent queries),
+  and Perceiver IO (designed for very-large-set inputs).
+- **Six atomic story specs** under `docs/tasks/specs/3B.*_*.md`:
+  - `3B.2_local_anp_cross_attention_decoder.md` — local module +
+    `decoder_kind` flag + unit / smoke / integration tests.
+  - `3B.3_local_predictor_adapter.md` — predictor-adapter parity
+    test (≤ minimal patch).
+  - `3B.4_remote_full_av_training.md` — full AV training across the
+    three head kinds; mirrors 2D.7.
+  - `3B.5_remote_deep_ensemble.md` — K=5 deep ensemble; mirrors
+    2D.8.
+  - `3B.6_local_calibrator_refit.md` — calibrator re-fit on ANP
+    val predictions; mirrors 2D.4.
+  - `3B.7_local_decision_layer_eval.md` — end-to-end decision-layer
+    evaluation + roadmap § W11 closing addendum; mirrors 2D.9
+    but executed locally on cached predictions.
+- **Shared docs updated:** `docs/tasks/BOARD.md` (epic 3B →
+  `in_progress`; six new `backlog` rows + 3B.1 → `in_review`);
+  `docs/PHASE3_INDEX.md` (story table + parallel-safety matrix
+  expanded for 3B.2 – 3B.7; per-story checkpoint blocks added);
+  `docs/roadmaps/phase3_accuracy_push.md` (§ W11 closing
+  decomposition subsection naming the ANP pick and the six-story
+  list); the global-status block at the foot of the roadmap is
+  re-stated for the new state.
+
+### Key decomposition decisions (recorded in ADR 0005)
+
+- **End-to-end retrain, not decoder-only.** 3A.3 served the
+  decoder-only-on-frozen-encoder diagnostic role. 3B.4 trains
+  encoder + decoder jointly so the cross-attention decoder is
+  evaluated against an encoder that *can* surface per-element
+  embeddings designed for it.
+- **Encoder stays DeepSets in 3B's first pass.** 2E.2's effective
+  rank ≈ 4 evidence argues against expanding encoder capacity
+  before measuring whether locality alone closes the gap. Set
+  Transformer SAB / PMA promotion is reserved as a 3C follow-up
+  only if 3B finds the encoder a co-limiter.
+- **Coordinate encoding default: raw `(k, τ)`.** Inherited from
+  3A's full-fold measurement (raw 0.0760 < Fourier 0.0790 test
+  MAE). Fourier-on under ANP is a documented follow-up if 3B.7
+  does not meet the Phase 3 acceptance bar.
+- **Three-head sweep mirrors 2D.7** so 3B.7 can apply the same
+  calibrator / ensemble / masking-sensitivity stack that 2D.9 used,
+  changing only the underlying architecture.
+
+### Pre-push gate
+
+- PMR pre-push gate dry-run: green (see commit body once landed).
+
+### Next actions
+
+- Human reviews ADR 0005 + the six new specs.
+- On approval, promote `3B.2` from `backlog → todo`. 3B.2 / 3B.3
+  are local-only; the first Pod rental is needed for 3B.4.
+
+---
+
+## 2026-05-28 — Story 3B.2 shipped: ANP cross-attention decoder module + `decoder_kind` flag
+
+### Completed
+
+- **Module:** `src/neural_iv_surface_inference/models/anp_decoder.py`.
+  `ANPDecoder` implements the cross-attention block from ADR 0005:
+  multi-head attention via `torch.nn.MultiheadAttention(batch_first=True)`,
+  projections `q ← MLP_q(q)` and `(k, v) ← MLP_kv(H)`, key-padding
+  mask routed from the encoder's row mask, and a decoder MLP that
+  consumes `[z, c_q, q]` (or `[c_q, q]` when
+  `include_z_in_decoder=False`). The 3-head dispatch
+  (`gaussian → (μ, σ, log_σ²)`, `quantile → sorted at eval`,
+  `point → μ`) is bit-equivalent to `MultiOutputDecoder`'s
+  semantics. Rows with all-padded contexts are handled by
+  un-masking position 0 with a zeroed value (gives finite,
+  zero context vector instead of NaN softmax).
+- **Wiring:** `SetEncoder.forward` gained a keyword-only
+  `return_elements=True` branch that also returns the pre-pool
+  per-element tensor `H` with padded rows already zeroed; the
+  default path is unchanged. `ConditionalSurfaceModel.__init__`
+  now accepts `decoder_kind: Literal["deepsets","anp"] = "deepsets"`
+  plus an `anp: dict` block (`n_heads`, `d_head`, `mlp_hidden`,
+  `include_z_in_decoder`). `decoder_kind="deepsets"` constructs
+  the existing `CoordinateDecoder` / `MultiOutputDecoder` path
+  unchanged.
+- **Config:** `configs/conditional.yaml` extended with
+  `decoder_kind: deepsets` + an `anp:` sub-block with defaults
+  (`n_heads: 4`, `d_head: null`, `mlp_hidden: 128`,
+  `include_z_in_decoder: true`) and inline docs.
+- **Tests:**
+  - `tests/test_anp_decoder.py` — 13 unit tests covering shape
+    parity per head kind, strict positivity of μ/σ, eval-time
+    quantile sort, mask blocks padded rows (replacing masked
+    content leaves output unchanged), context-permutation
+    invariance, gradient flow to all inputs + parameters,
+    determinism under fixed seed, degenerate masks
+    (one real element / all padded → finite output), and input
+    validation (invalid head kind, unsorted quantiles).
+  - `tests/integration/test_anp_wiring.py` — 9 integration
+    tests: `decoder_kind="deepsets"` produces bit-for-bit
+    identical outputs to the pre-3B.2 baseline path
+    (regression guard); `decoder_kind="anp"` forward pass
+    works for all three head kinds; 50-step synthetic smoke
+    decreases masked-MSE loss; context-permutation invariance
+    holds end-to-end; degenerate single-real-element mask
+    yields finite output; the decoder instance is in fact an
+    `ANPDecoder`; invalid `decoder_kind` rejected.
+
+### Results
+
+- New tests: **13 unit + 9 integration = 22 added; all pass on CPU.**
+- Regression sweep: `PYTHONPATH=src pytest tests/` → **322 passed, 0 failed.**
+- No Pod time used. Module is CPU-runnable; tiny synthetic batches
+  (B=4, N_ctx≤32, N_q≤16, d_h=32) complete in <5 s wall.
+
+### Notes / observations
+
+- Used `torch.nn.MultiheadAttention(batch_first=True)` with a
+  `key_padding_mask` (True = ignore) rather than manually
+  computing softmax with `-inf`. This matches the spec's "padded
+  positions get `-inf` softmax logits" requirement and is
+  numerically robust on CPU.
+- Fully-padded context rows are an unlikely operational regime,
+  but they would crash `MultiheadAttention` with NaNs. We
+  defensively un-mask position 0 and zero its value vector for
+  affected rows, producing a deterministic finite output. The
+  encoder-side `_masked_mean` already clamps the divisor for the
+  same reason.
+- `decoder_kind="deepsets"` default keeps every existing
+  Phase 2 / 2D.7 / 3A checkpoint usable without re-wiring;
+  3B.3 will assert this through the predictor-adapter parity test.
+
+### Unresolved
+
+- None for 3B.2 itself.
+- Predictor-adapter round-trip of the new field is 3B.3.
+  Full-AV training of the three head kinds is 3B.4 (remote, Pod).
+
+### Next actions
+
+- Human reviews 3B.2 → `done`.
+- On approval, promote `3B.3` from `backlog → todo`
+  (predictor-adapter parity, local-only, no Pod time).

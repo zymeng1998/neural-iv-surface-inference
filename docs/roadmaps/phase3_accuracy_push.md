@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-05-28T00:30:00-04:00
+last_updated_at: 2026-05-28T13:00:00-04:00
 ---
 
 ## 1) Why Phase 3 exists
@@ -124,11 +124,53 @@ the bottleneck is purely architectural and 3B has to do all the work.
 Each story is atomic: one question, one artifact bundle, one
 acceptance check, and no story spans local + remote.
 
-> **3A closing addendum (filled by 3A.4 on completion).**
-> *Reserved.* 3A.4 appends the measured Fourier-vs-raw delta, the
-> fraction of the gap to RBF closed (if any) on both the 2D.9 slice
-> and the full 2D.4 fold, and the resulting recommended default
-> coordinate encoding for 3B.
+#### 3A closing addendum (filled by 3A.4 — 2026-05-28)
+
+Both decoder-only retrains (Fourier vs raw `(k, τ)`) were scored
+end-to-end on the full AV benchmark fold via
+`scripts/run_3a_eval.py`. Result bundles:
+
+- `results/3/spy_phase1_random40_noiselow/3a_fourier/`
+- `results/3/spy_phase1_random40_noiselow/3a_raw/`
+- `results/3/spy_phase1_random40_noiselow/3a_compare/comparison.csv`
+
+**Headline (full-fold AV, n_test = 5,805,664):**
+
+| Variant | test MAE | val MAE | test Cov@0.90 (uncal) | test hi-conf MAE@0.8 | test Gauss NLL |
+|---|---:|---:|---:|---:|---:|
+| 3a_fourier | 0.07905 | 0.06202 | 0.9012 | 0.04551 | −1.4150 |
+| 3a_raw     | 0.07604 | 0.05705 | 0.8720 | 0.04362 | −1.4301 |
+| Δ (Fourier − Raw) | **+0.00300** | +0.00498 | +0.0292 | +0.00189 | +0.0151 |
+
+**Measured Fourier-vs-raw delta:** Fourier is **+0.00300** worse
+on test MAE (~3.9% relative) and **+0.00498** worse on val MAE
+(~8.7% relative). Gaussian NLL also prefers raw on both splits.
+Fourier's only edge is *test coverage at the nominal 0.90 band*
+(0.9012 vs raw's 0.8720), which is an artefact of Fourier's
+wider σ — not an accuracy gain. Both bands are uncalibrated; the
+2D.7 calibrator was fitted for the full-retrain head, not the
+decoder-only retrains.
+
+**Fraction of the gap to RBF closed:** **zero, in either
+direction.** The 2D.9-slice gap was RBF 0.0730 vs calibrated
+conditional 0.0855 (+0.0125). Neither 3A.3 variant gets below
+the RBF slice number on the full fold (raw 0.0760, Fourier
+0.0790), and the row counts differ by ~90× so a strict apples-
+to-apples comparison would need RBF re-run on the full fold or
+3A.3 rescored on the 10-date cap. Conservative read: the
+locality bottleneck identified in 2E.2 + ADR 0004 is
+**architectural, not input-representation**.
+
+**Recommended 3B coordinate-encoding default: raw `(k, τ)`.**
+Fourier positional features add parameter count and decoder
+in-dim with no measurable MAE / NLL benefit on this encoder.
+3B's central architecture comparison (cross-attention decoder vs
+DeepSets-pool) should default to raw `(k, τ)` to keep the
+comparison clean; Fourier-on can be a secondary ablation under
+the cross-attention decoder if 3B alone does not close the gap.
+
+Epic 3A closes `done`. Phase 3 acceptance bar unchanged; the
+full RBF gap is now carried by 3B.
 
 ### W11 — Cross-attention decoder (epic 3B)
 
@@ -157,6 +199,32 @@ bottleneck, lowest incremental compute, well-known training behavior.
 The encoder backbone may stay DeepSets (per-element MLP + masked mean)
 under ANP, or be promoted to attention-based pooling (Set Transformer
 SAB / PMA blocks) if 3B.1 finds encoder expressiveness is a co-limiter.
+
+#### W11 — 3B.1 decomposition outcome (2026-05-28)
+
+3B.1 picked **Attentive Neural Process (ANP)** as the cross-attention
+variant, composed end-to-end with the existing DeepSets `SetEncoder`,
+on raw `(k, τ)` (per 3A's measured result). Set Transformer / TNP /
+Perceiver IO are explicitly rejected for 3B's first pass; rationale
+in [ADR 0005](../decisions/0005_cross_attention_architecture_choice.md).
+
+The encoder is **not** promoted to attention-based pooling in 3B's
+first pass — 2E.2's effective-rank ≈ 4 evidence argues against
+expanding encoder capacity before measuring whether a locality-aware
+decoder alone closes the gap. Set Transformer SAB / PMA promotion is
+a documented follow-up under 3C only if 3B's ANP run finds the
+encoder is a co-limiter.
+
+Concrete story list under W11:
+
+| ID | Where | Title |
+|---|---|---|
+| [3B.2](../tasks/specs/3B.2_local_anp_cross_attention_decoder.md) | local | ANP cross-attention decoder module + `decoder_kind` flag on `ConditionalSurfaceModel` + unit / smoke / integration tests (no training) |
+| [3B.3](../tasks/specs/3B.3_local_predictor_adapter.md) | local | Predictor-adapter wiring so the existing `ConditionalSurfacePredictor` round-trips `decoder_kind` (evaluator parity test) |
+| [3B.4](../tasks/specs/3B.4_remote_full_av_training.md) | remote | Full AV training of end-to-end DeepSets+ANP across `head.kind ∈ {gaussian, quantile, point}` — mirrors 2D.7's three-head sweep |
+| [3B.5](../tasks/specs/3B.5_remote_deep_ensemble.md) | remote | K=5 deep ensemble of the ANP point head on AV — mirrors 2D.8 |
+| [3B.6](../tasks/specs/3B.6_local_calibrator_refit.md) | local | Calibrator re-fit on the ANP val predictions — mirrors 2D.4 |
+| [3B.7](../tasks/specs/3B.7_local_decision_layer_eval.md) | local | End-to-end decision-layer eval of ANP vs Phase 2D baselines on the `spy_phase1_random40_noiselow` slice; ships `results/3/.../3b_anp/` + closing comparison CSV + closing addendum on this section |
 
 ### W12 — Feature & inductive-bias expansion (epic 3C)
 
@@ -219,13 +287,16 @@ If Phase 3 closes without meeting the acceptance bar after 3D, the
 neural-residual hybrid as a deployment answer (explicitly *not* a
 research substitute). See ADR 0004.
 
-> **Status (2026-05-28):** Phase 3 is **open**. Epic **3A** is
-> `in_progress`; its decomposition story `3A.1` is `in_review`; the
-> three resulting atomic stories `3A.2` (local), `3A.3` (remote),
-> `3A.4` (local) are registered at `backlog`. Epics **3B / 3C / 3D**
-> remain `backlog` with their decomposition stories `3B.1 / 3C.1 /
-> 3D.1` still at `backlog`. No source code, no training runs yet for
-> any Phase 3 epic.
+> **Status (2026-05-28, post-3B.1):** Phase 3 is **open**. Epic
+> **3A** is `done` (raw beats Fourier on the frozen 2D.7 encoder by
+> Δ +0.00300 full-fold test MAE; gap-to-RBF unclosed). Epic **3B**
+> is `in_progress`; ADR 0005 picks **ANP** end-to-end with DeepSets,
+> raw `(k, τ)`; decomposition story `3B.1` is `in_review`; six
+> atomic stories `3B.2 … 3B.7` are registered at `backlog`. Epics
+> **3C / 3D** remain `backlog` with decomposition stories `3C.1 /
+> 3D.1` still at `backlog`. Phase 3 source code touched so far:
+> 3A's `features/coord_encoding.py` + `freeze_encoder` /
+> `encoder_init_from` flags on `train_conditional`; no 3B code yet.
 >
 > Scope was tightened on 2026-05-27 after a planning discussion: the
 > originally-proposed neural-residual-on-RBF hybrid was dropped from

@@ -879,3 +879,110 @@ reference) because the model is small (89k params) and the Pod
 disk + I/O are fast. Total billable Pod time end-to-end (smoke +
 both full runs + artifact transfer) ≈ 10 min.
 
+---
+
+## 2026-05-28T13:00:00-04:00 — 3A.4 / epic 3A close-out: Fourier vs raw `(k, τ)`, paired W1 evaluation
+
+**Purpose:** Convert the two 3A.3 prediction bundles into the single
+piece of evidence epic 3A exists to produce — a side-by-side
+Fourier-vs-raw evaluation with paired W1 metrics (MAE, interval
+coverage at the nominal 0.90 target, mean band width, hi-conf
+MAE@0.8, Gaussian NLL) — and decide the 3B coordinate-encoding
+default.
+
+**Changed variables:** None at training time (read-only on
+`artifacts/runs/3A/{fourier,raw}/`). The eval orchestrator
+`scripts/run_3a_eval.py` constructs `PredictionResult` objects from
+the heteroscedastic Gaussian head (`mu`, `sigma`,
+`lower/upper = mu ± 1.645·sigma`) and runs the existing W1 evaluator
+(`eval/report.py::metrics_row` + `risk_coverage_table`); Gaussian
+NLL is added on top with the full `log(2π)` constant.
+
+**Result summary (headline table, full-fold AV benchmark
+`spy_phase1_random40_noiselow`):**
+
+| Variant | Split | n | MAE | Cov@0.90 (uncal) | Mean width | hi-conf MAE@0.8 | Gauss NLL |
+|---|---|---:|---:|---:|---:|---:|---:|
+| 3a_fourier | val  | 5,593,759 | 0.06202 | 0.9062 | 0.2409 | 0.03022 | −1.6847 |
+| 3a_fourier | test | 5,805,664 | 0.07905 | 0.9012 | 0.2947 | 0.04551 | −1.4150 |
+| 3a_raw     | val  | 5,593,759 | 0.05705 | 0.9042 | 0.2146 | 0.02823 | −1.7969 |
+| 3a_raw     | test | 5,805,664 | 0.07604 | 0.8720 | 0.2596 | 0.04362 | −1.4301 |
+
+Phase 2D.9 reference rows (10-date capped slice, 64,610 test rows —
+**not row-count-matched** to 3A.3's full fold; reproduced read-only
+from `results/2D/spy_phase1_random40_noiselow/...`):
+
+| Variant | Split | n | MAE | Cov@0.90 | hi-conf MAE@0.8 |
+|---|---|---:|---:|---:|---:|
+| RBF interpolation (2D.9) | test | 64,610 | 0.0730 | n/a | 0.0742 |
+| 2D.7 Gaussian calibrated (2D.9) | test | 64,610 | 0.0855 | 0.9184 | 0.0606 |
+
+Artifacts:
+- `results/3/spy_phase1_random40_noiselow/3a_fourier/metrics_summary.csv`
+- `results/3/spy_phase1_random40_noiselow/3a_fourier/calibration_table.csv`
+- `results/3/spy_phase1_random40_noiselow/3a_fourier/abstention_curve.csv`
+- `results/3/spy_phase1_random40_noiselow/3a_raw/...` (same three)
+- `results/3/spy_phase1_random40_noiselow/3a_compare/comparison.csv`
+
+**Interpretation:**
+
+1. **Raw beats Fourier on every accuracy metric.** Test MAE delta
+   = +0.00300 in favor of raw (~3.9% relative); val MAE delta =
+   +0.00498 in favor of raw (~8.7% relative); Gaussian NLL is
+   lower (better) for raw on both splits; hi-conf MAE@0.8 is
+   lower for raw on both splits. There is no MAE / NLL benefit to
+   adding Fourier positional features on this encoder.
+2. **Fourier's only edge is accidental calibration on test.**
+   Fourier test coverage (0.9012) sits inside the ±2 pp tolerance
+   of the nominal 0.90 target; raw test coverage (0.8720) under-
+   covers by ~2.8 pp. Both bands are uncalibrated — the 2D.7
+   calibrator (`artifacts/calibration/2d4_calibrator.json`) is
+   fitted for the full-retrain 2D.7 head, not the decoder-only
+   retrains. Fourier's mean width is wider on every split, which
+   is what flatters its coverage; raw's tighter σ is closer to
+   the residual variance on val but under-shoots on the
+   chronological test fold.
+3. **No fraction of the gap to RBF is closed.** RBF on the 2D.9
+   slice carries test MAE 0.0730; the calibrated conditional
+   carries 0.0855 (gap = +0.0125). Neither 3A.3 variant on the
+   full fold gets below the RBF slice number (raw 0.0760 vs RBF
+   0.0730 — and the row counts differ by ~90×, so the comparison
+   is suggestive at best). Decoder-only retrain on the frozen
+   2D.7 encoder cannot close the accuracy gap regardless of
+   coordinate encoding.
+4. **This is the clean attribution 3A was designed to produce.**
+   The gap-to-RBF on the existing DeepSets-pool architecture is
+   **not** an input-representation problem; it is the
+   architectural locality bottleneck identified in 2E.2 and ADR
+   0004. 3B (cross-attention decoder) is now the load-bearing
+   workstream.
+
+**Decision impact:**
+
+- **3B coordinate-encoding default = raw `(k, τ)`** (per the
+  closing addendum in `docs/roadmaps/phase3_accuracy_push.md` §
+  W10). Fourier offered no measurable MAE / NLL benefit on this
+  encoder and adds parameter count + decoder in-dim. 3B can still
+  ablate Fourier-on as a secondary experiment under a different
+  decoder; the *default* for the central architecture comparison
+  is raw.
+- Epic 3A closes `done`. The Phase 3 acceptance bar is unchanged;
+  3B inherits the full gap and is the load-bearing arm.
+
+**Next step:** Promote 3B.1 (decompose epic 3B) from `backlog →
+todo` and run it as a local decomposition session per the standard
+3X.1 pattern. No Pod time needed for 3B.1.
+
+**Caveats:**
+
+- The 2D.9 reference rows are on a 10-date capped slice (64,610
+  test rows) whereas 3A.3 evaluates on the full fold (5,805,664
+  test rows). Cross-row-count MAE comparisons inherit the slice
+  bias; an apples-to-apples RBF vs 3A.3 comparison would require
+  re-running RBF on the full fold or rescoring 3A.3 on the 10-
+  date cap. Either is a separable follow-up, not blocking.
+- 3A.3 bands are uncalibrated. A separate "apply 2D.7 calibrator
+  to 3A.3 outputs" experiment is plausible but out of scope for
+  3A.4 (it would conflate decoder-only retrain with re-
+  calibration).
+

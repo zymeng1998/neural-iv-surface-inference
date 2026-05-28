@@ -26,6 +26,7 @@ import torch.nn as nn
 from neural_iv_surface_inference.features.coord_encoding import (
     build_coord_encoding,
 )
+from neural_iv_surface_inference.models.anp_decoder import ANPDecoder
 
 # Default quantile triplet used by the W4 quantile head (2D.2).
 DEFAULT_QUANTILES: tuple[float, ...] = (0.05, 0.5, 0.95)
@@ -124,23 +125,35 @@ class SetEncoder(nn.Module):
         _init_linear(self)
 
     def forward(
-        self, context: torch.Tensor, mask: torch.Tensor
-    ) -> torch.Tensor:
+        self,
+        context: torch.Tensor,
+        mask: torch.Tensor,
+        *,
+        return_elements: bool = False,
+    ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
         """
         Parameters
         ----------
         context : (B, N, in_dim) float tensor — observed points, padded.
         mask    : (B, N) bool tensor — True for real rows, False for padded.
+        return_elements : bool
+            If True, also return the pre-pool per-element embeddings ``H``
+            (shape ``(B, N, hidden_dim)``) for downstream cross-attention.
+            Padded rows are already zeroed in ``H``.
 
         Returns
         -------
-        (B, latent_dim) tensor — ``z_t``.
+        (B, latent_dim) ``z_t`` — or, if ``return_elements`` is True,
+        a tuple ``(z_t, H)`` where ``H`` has shape ``(B, N, hidden_dim)``.
         """
         h = self.elem_mlp(context)
         # Force padded outputs to zero so they cannot leak into the pool.
         h = h * mask.unsqueeze(-1).to(h.dtype)
         pooled = _masked_mean(h, mask)
-        return self.post_mlp(pooled)
+        z = self.post_mlp(pooled)
+        if return_elements:
+            return z, h
+        return z
 
 
 class CoordinateDecoder(nn.Module):
@@ -334,6 +347,8 @@ class ConditionalSurfaceModel(nn.Module):
         n_decoder_layers: int = 3,
         head: dict[str, Any] | None = None,
         coord_encoding: dict[str, Any] | None = None,
+        decoder_kind: Literal["deepsets", "anp"] = "deepsets",
+        anp: dict[str, Any] | None = None,
     ) -> None:
         super().__init__()
         self.head_cfg: dict[str, Any] = dict(head or {"kind": "point"})
@@ -343,6 +358,13 @@ class ConditionalSurfaceModel(nn.Module):
                 f"unsupported head.kind: {kind!r} (expected point|gaussian|quantile)"
             )
         self.head_kind = kind
+
+        if decoder_kind not in {"deepsets", "anp"}:
+            raise ValueError(
+                f"unsupported decoder_kind: {decoder_kind!r} (expected deepsets|anp)"
+            )
+        self.decoder_kind = decoder_kind
+        self.anp_cfg: dict[str, Any] = dict(anp or {})
 
         self.coord_encoding_cfg: dict[str, Any] = dict(
             coord_encoding or {"kind": "raw"}
@@ -359,7 +381,29 @@ class ConditionalSurfaceModel(nn.Module):
             n_elem_layers=n_elem_layers,
             n_post_layers=n_post_layers,
         )
-        if kind == "point":
+
+        if decoder_kind == "anp":
+            quantiles_anp = tuple(
+                self.head_cfg.get("quantiles", DEFAULT_QUANTILES)
+            ) if kind == "quantile" else DEFAULT_QUANTILES
+            n_heads = int(self.anp_cfg.get("n_heads", 4))
+            d_head = self.anp_cfg.get("d_head", None)
+            mlp_hidden = int(self.anp_cfg.get("mlp_hidden", max(128, hidden_dim)))
+            include_z = bool(self.anp_cfg.get("include_z_in_decoder", True))
+            self.decoder = ANPDecoder(
+                d_h=hidden_dim,
+                d_z=latent_dim,
+                d_query=decoder_coord_dim,
+                n_heads=n_heads,
+                d_head=int(d_head) if d_head is not None else None,
+                mlp_hidden=mlp_hidden,
+                head_kind=kind,
+                quantiles=quantiles_anp,
+                include_z_in_decoder=include_z,
+            )
+            if kind == "quantile":
+                self.head_cfg["quantiles"] = list(quantiles_anp)
+        elif kind == "point":
             self.decoder = CoordinateDecoder(
                 latent_dim=latent_dim,
                 coord_dim=decoder_coord_dim,
@@ -389,8 +433,11 @@ class ConditionalSurfaceModel(nn.Module):
         context_mask: torch.Tensor,
         query: torch.Tensor,
     ) -> dict[str, torch.Tensor]:
-        z = self.encoder(context, context_mask)
         encoded_query = self.coord_encoding(query)
+        if self.decoder_kind == "anp":
+            z, H = self.encoder(context, context_mask, return_elements=True)
+            return self.decoder(H=H, mask=context_mask, z=z, q=encoded_query)
+        z = self.encoder(context, context_mask)
         if self.head_kind == "point":
             mu = self.decoder(z, encoded_query)
             return {"mu": mu}

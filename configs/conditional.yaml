@@ -25,6 +25,23 @@ conditional:
   epochs: 50
   patience: 10
 
+  # ── Decoder architecture (Phase 3B / W11 — 3B.2) ──────────────────
+  # decoder_kind: deepsets — Phase 2 baseline: mean-pool DeepSets latent
+  #                          z_t fed to a coordinate MLP. Bit-for-bit
+  #                          equivalent to the 2C / 2D.2 path.
+  # decoder_kind: anp      — ANP cross-attention decoder (3B.2). Encoder
+  #                          exposes pre-pool per-element embeddings H;
+  #                          decoder cross-attends each query into H,
+  #                          forms a query-specific context vector c_q,
+  #                          and routes [z, c_q, q] through the same
+  #                          gaussian / quantile / point head dispatch.
+  decoder_kind: deepsets
+  anp:
+    n_heads: 4
+    d_head: null            # null → d_h // n_heads
+    mlp_hidden: 128
+    include_z_in_decoder: true
+
   # ── Predictive head (Phase 2D / W4 — 2D.2) ────────────────────────
   # kind: point     — 2C baseline (masked MSE on μ). Default; preserves
   #                   byte-for-byte behavior with the original 2C recipe.
