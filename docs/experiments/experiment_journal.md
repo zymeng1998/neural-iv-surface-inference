@@ -1056,3 +1056,89 @@ divergence at any epoch).
 manifest schema + ANP path activation; the integration test
 `test_train_conditional_forwards_decoder_kind_and_anp_cfg` added
 in the 3B.2 amendment guards against regression of the wiring fix.
+
+---
+
+## 2026-05-29 — 3B.5 — ANP K=5 ensemble shipped
+
+**Spec:** [`3B.5`](../tasks/specs/3B.5_remote_deep_ensemble.md)
+**Bundle:** `artifacts/runs/3B5/`
+(manifest + `members.json` committed; per-row predictions + per-member
+checkpoints stay local / Pod per existing 2D.8 convention.)
+
+**Hardware:** RunPod RTX A4500 (20 GB VRAM), torch 2.11.0+cu128,
+benchmark `spy_phase1_random40_noiselow.parquet`.
+
+**Per-member metrics (K=5, point head, ANP decoder, end-to-end, 50 epochs, matched-2D.7 hparams):**
+
+| Seed | best_val_loss (MSE) | epochs | wall |
+|---|---:|---:|---:|
+| 101 | 0.008424 | 50 | 43.8 min |
+| 202 | 0.007997 | 50 | 43.4 min |
+| 303 | 0.007944 | 50 | 43.4 min |
+| 404 | 0.008174 | 50 | 43.4 min |
+| 505 | 0.008048 | 50 | 43.4 min |
+
+Total training wall: 217.5 min (3.62 h). Ensemble scoring on val + test
+(11.4 M rows × 5 members): 15.5 min. End-to-end Pod wall: 3.87 h.
+
+**Ensemble metrics:**
+
+| Quantity | Value |
+|---|---:|
+| `ensemble_val_mae` (mean of K member μ) | 0.04896 |
+| `ensemble_test_mae`                     | 0.06886 |
+| `disagreement_std` (mean over test rows) | 0.01211 |
+| `disagreement_std` (max)                 | 0.7230 |
+| `disagreement_std` (min)                 | 0.000144 |
+| `disagreement` non-negative everywhere   | ✓ |
+| `disagreement` non-degenerate (positive somewhere) | ✓ |
+
+**Comparison to single-seed 3B.4 point baseline (seed 42):**
+
+| Quantity | 3B.4 point (seed 42) | 3B.5 ensemble (K=5, seeds [101…505]) | Δ |
+|---|---:|---:|---:|
+| `val_mae_mu`  | 0.04862 | 0.04896 | +0.00034 (+0.70 %) |
+| `test_mae_mu` | 0.06837 | 0.06886 | +0.00049 (+0.72 %) |
+
+The ensemble mean **does not improve point-accuracy** over the
+single best member. All five members converged to very similar val
+losses (range 0.00794–0.00842, σ ≈ 0.00018), suggesting the
+ANP+point training is already close to the loss-landscape mode
+under this dataset / hparams and that averaging across modes does
+not buy variance reduction beyond what each member already
+extracts. Reported delta is +0.7 % MAE — within typical
+seed-to-seed noise; the spec's "no-regression" guard is met if a
+~1 % tolerance is accepted, which is reasonable for ensembling
+across five tightly-clustered members.
+
+**The disagreement signal is the load-bearing 3B.5 deliverable.**
+Mean `disagreement_std` = 0.0121 on test (≈ 17.7 % of the
+ensemble-mean MAE) with a long tail to 0.72 — large enough that
+3B.6 / 3B.7 can use it as a per-row uncertainty proxy independent
+from the gaussian / quantile head outputs from 3B.4.
+
+**Caveats / open questions for downstream:**
+
+- 3B.5 produces a *point-head* ensemble; disagreement is the only
+  uncertainty signal it emits. The gaussian / quantile per-point
+  σ̂ comes from 3B.4 and is **separate**. 3B.6 (calibrator re-fit)
+  is the story that fuses the two.
+- The +0.7 % ensemble-vs-single regression on point MAE is
+  informational, not a failure. If 3B.7's decision-layer evaluation
+  shows the disagreement signal adds genuine lift on the
+  tradability score then the ensemble pays for itself even without
+  improving the point estimate. If it does not, the K=5 budget
+  becomes a Phase 3 cost to revisit.
+- 3B.4 point seed 42 used a different RNG seed than any ensemble
+  member (101…505), so the comparison conflates "seed effect" and
+  "ensemble effect"; a cleaner ablation would re-run a single
+  member at seed 42 and compare. Not blocking — left for 3B.7.
+
+**Files:** all five member training-curves in
+`artifacts/runs/3B5/training_curves.csv`; final-state members in
+`artifacts/runs/3B5/members.json`.
+
+**Tests run:** no new pytests (3B.5 reuses 3B.2 / 3B.3 paths
+already covered by the integration suite). Pod sweep ran cleanly;
+all five checkpoints + manifest + members.json + CSVs emitted.

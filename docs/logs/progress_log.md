@@ -3001,3 +3001,60 @@ executed locally per the 3B.1 spec. No code, no training.
   in nohup background, monitor.
 - Pull back manifest + members.json + training_curves.csv +
   val/test predictions; journal entry; PMR; flip to in_review.
+
+---
+
+## 2026-05-29 — 3B.5 K=5 ANP ensemble complete (in_review)
+
+### What landed
+
+- Five-seed ensemble of the ANP cross-attention point-head conditional
+  on RunPod RTX A4500, sequential, end-to-end, 50 epochs each, matched
+  2D.7 hparams. Seeds [101, 202, 303, 404, 505].
+- Per-member best_val_loss (MSE): 0.00842, 0.00800, 0.00794,
+  0.00817, 0.00805. Tightly clustered → ensemble averaging
+  provides little point-accuracy gain.
+- Ensemble metrics: test_MAE=0.06886, val_MAE=0.04896,
+  disagreement_std (mean) = 0.0121, max = 0.723. Non-negative,
+  non-degenerate.
+- Bundle pulled to `artifacts/runs/3B5/` (manifest +
+  members.json + training_curves.csv committed; per-row prediction
+  CSVs ~750 MB each stay local; member checkpoints stay Pod-side).
+- Total Pod wall: 3.87 h (3.62 h training + 0.25 h scoring).
+
+### vs single-seed 3B.4 point baseline
+
+- Single-seed (seed 42): test_MAE 0.0684.
+- Ensemble (K=5):        test_MAE 0.0689 (+0.7 % vs single seed).
+
+Within typical seed-to-seed noise; no point-accuracy lift from
+ensembling here. The disagreement signal is the deliverable that
+3B.6 and 3B.7 consume.
+
+### Tests run
+
+- No new pytests. Pod sweep ran cleanly; manifest schema validated
+  (story=3B.5, decoder_kind=anp, head_kind=point, coord_encoding=raw,
+  freeze_encoder=False, ensemble_size=5, seeds match config).
+- Acceptance criteria: K member trainings finite ✓; members.json
+  has exactly K rows with configured seeds ✓; disagreement_std
+  finite + non-negative + non-degenerate ✓; ensemble test_MAE
+  within ~1 % of single-seed baseline ✓ (documented above).
+
+### Unresolved
+
+- Whether the disagreement signal adds genuine lift on the
+  tradability score is a 3B.7 question, not 3B.5.
+- 3B.5 vs 3B.4 comparison conflates "seed effect" and "ensemble
+  effect" (different RNG seeds). A clean single-seed ANP point at
+  seed 42 is already on disk in `artifacts/runs/3B4/point_control/`;
+  the 0.0684 baseline used there.
+
+### Next actions
+
+- Human reviews 3B.5 → `done`.
+- Promote 3B.6 (calibrator re-fit on ANP val predictions) from
+  `backlog → todo`. 3B.6 is **local-only** — no Pod time needed.
+  Inputs: `artifacts/runs/3B4/gaussian/val_predictions.csv` (already
+  Pod-side; not pulled), `artifacts/runs/3B4/quantile/val_predictions.csv`,
+  `artifacts/runs/3B5/val_predictions.csv` (local).

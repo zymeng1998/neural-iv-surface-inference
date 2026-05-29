@@ -1,0 +1,86 @@
+{
+  "story": "3B.5",
+  "head_kind": "point",
+  "decoder_kind": "anp",
+  "anp": {
+    "n_heads": 4,
+    "d_head": null,
+    "mlp_hidden": 128,
+    "include_z_in_decoder": true
+  },
+  "coord_encoding": {
+    "kind": "raw"
+  },
+  "freeze_encoder": false,
+  "git_sha": "789a56a4dbbab7a9f0e3de5e2caea0ec9a6c2240",
+  "config_hash": "3161e6f551a8722e",
+  "benchmark_file": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet",
+  "splits": {
+    "train_rows": 11112617,
+    "val_rows": 5593759,
+    "test_rows": 5805664
+  },
+  "ensemble_size": 5,
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "members": [
+    {
+      "seed": 101,
+      "val_loss": 0.008424453013999895,
+      "checkpoint": "seed_101/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 2629.59717464447
+    },
+    {
+      "seed": 202,
+      "val_loss": 0.007997270102020015,
+      "checkpoint": "seed_202/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 2603.7593157291412
+    },
+    {
+      "seed": 303,
+      "val_loss": 0.00794395328160714,
+      "checkpoint": "seed_303/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 2602.958802461624
+    },
+    {
+      "seed": 404,
+      "val_loss": 0.008173913821916689,
+      "checkpoint": "seed_404/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 2606.2421855926514
+    },
+    {
+      "seed": 505,
+      "val_loss": 0.008047596001150932,
+      "checkpoint": "seed_505/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 2605.8760755062103
+    }
+  ],
+  "ensemble_val_mae": 0.04895734414458275,
+  "ensemble_test_mae": 0.06886028498411179,
+  "disagreement_test_stats": {
+    "min": 0.0001441595668438822,
+    "mean": 0.012108923867344856,
+    "max": 0.7230373024940491,
+    "any_positive": true,
+    "any_negative": false
+  },
+  "train_total_wall_clock_s": 13048.433553934097,
+  "score_wall_clock_s": 55.58913707733154,
+  "device": "cuda",
+  "outputs": {
+    "members_json": "artifacts/runs/3B5/checkpoints/ensemble/members.json",
+    "val_predictions": "artifacts/runs/3B5/val_predictions.csv",
+    "test_predictions": "artifacts/runs/3B5/test_predictions.csv",
+    "training_curves": "artifacts/runs/3B5/training_curves.csv"
+  }
+}
