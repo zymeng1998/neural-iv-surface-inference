@@ -10,18 +10,19 @@ predictions are trustworthy and abstains where they are not.
 
 ## Current Phase
 
-**Phase 3 — Accuracy Push: Beat RBF Without Losing Reliability — opening
-2026-05-27.** Phase 2 (Reliability-Aware Surface Inference) closed on
-2026-05-25 with both mandatory acceptance numbers green; Phase 3 attacks
-the remaining accuracy gap versus the per-date RBF interpolation baseline.
+**Phase 3 — Accuracy Push: Beat RBF Without Losing Reliability — in
+progress (3A + 3B closed, 3C next).** Phase 2 (Reliability-Aware Surface
+Inference) closed on 2026-05-25 with both mandatory acceptance numbers
+green; Phase 3 attacks the remaining accuracy gap versus the per-date RBF
+interpolation baseline.
 
-### Phase 3 (current — opening)
+### Phase 3 (current)
 
 | Epic | Workstream | Status |
 |---|---|---|
-| 3A | W10 — Coordinate-representation ablation (Fourier vs raw `(k, τ)`, decoder-only) | `backlog` |
-| 3B | W11 — Cross-attention decoder (ANP / Set Transformer / TNP) — runs in parallel with 3A | `backlog` |
-| 3C | W12 — Feature & inductive-bias expansion (microstructure features, optional SVI head) | `backlog` |
+| 3A | W10 — Coordinate-representation ablation (Fourier vs raw `(k, τ)`, decoder-only) | `done` — raw beats Fourier (0.0760 vs 0.0790 full-fold test MAE); gap-to-RBF unclosed |
+| 3B | W11 — Cross-attention decoder (end-to-end DeepSets + ANP, raw `(k, τ)`) | `done` (in_review) — **bar NOT met**: ANP best-case +2.7 % vs RBF; reliability holds |
+| 3C | W12 — Feature & inductive-bias expansion (microstructure features, optional SVI head) | `backlog` (next) |
 | 3D | W13 — Phase 3 closing memo + re-evaluation versus RBF | `backlog` |
 
 Acceptance bar: **test MAE ≤ 0.95 × RBF** on both the 2D.9 slice
@@ -31,6 +32,19 @@ regression. The conditional neural model must beat RBF **on its own**
 Phase 3 and reserved as a Phase 4 production fallback. See
 [`docs/roadmaps/phase3_accuracy_push.md`](docs/roadmaps/phase3_accuracy_push.md)
 and [ADR 0004](docs/decisions/0004_phase3_accuracy_push_framing.md).
+
+**3B closing result (epic 3B, 2026-05-28).** The end-to-end ANP
+cross-attention decoder is the strongest conditional model produced so
+far — it beats the 3A decoder-only raw variant (~10 %) and the Phase 2D
+DeepSets-decoder family (~5 %), narrowing the gap-to-RBF from ~29 % to
+**~2.7 %** (full-fold point head 0.0680 vs RBF 0.0662). But it does not
+clear the ≥ 5 % bar on any view (slice 0.0813, full-fold gaussian
+0.0722, full-fold point 0.0680). Reliability holds (coverage 0.9149
+within ±2 pp; hi-conf MAE 0.0542 < no-abstention 0.0813). Evidence:
+[`results/3/spy_phase1_random40_noiselow/3b_compare/comparison.csv`](results/3/spy_phase1_random40_noiselow/3b_compare/comparison.csv)
+and the §W11 closing addendum in the roadmap. Implication: pure
+decoder-architecture iteration has plateaued; 3C should prioritise
+feature / inductive-bias expansion.
 
 The single fresh-session entry point for Phase 3 is
 [`docs/PHASE3_INDEX.md`](docs/PHASE3_INDEX.md) — read it first if you

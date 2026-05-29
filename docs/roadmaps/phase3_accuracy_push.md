@@ -331,16 +331,25 @@ If Phase 3 closes without meeting the acceptance bar after 3D, the
 neural-residual hybrid as a deployment answer (explicitly *not* a
 research substitute). See ADR 0004.
 
-> **Status (2026-05-28, post-3B.1):** Phase 3 is **open**. Epic
-> **3A** is `done` (raw beats Fourier on the frozen 2D.7 encoder by
-> Δ +0.00300 full-fold test MAE; gap-to-RBF unclosed). Epic **3B**
-> is `in_progress`; ADR 0005 picks **ANP** end-to-end with DeepSets,
-> raw `(k, τ)`; decomposition story `3B.1` is `in_review`; six
-> atomic stories `3B.2 … 3B.7` are registered at `backlog`. Epics
-> **3C / 3D** remain `backlog` with decomposition stories `3C.1 /
-> 3D.1` still at `backlog`. Phase 3 source code touched so far:
-> 3A's `features/coord_encoding.py` + `freeze_encoder` /
-> `encoder_init_from` flags on `train_conditional`; no 3B code yet.
+> **Status (2026-05-28, post-3B.7):** Phase 3 is **open**, but both
+> diagnostic epics have closed. Epic **3A** is `done` (raw beats
+> Fourier on the frozen 2D.7 encoder by Δ +0.00300 full-fold test MAE;
+> gap-to-RBF unclosed). Epic **3B** is `done` (in_review): ADR 0005
+> picked **ANP** end-to-end with DeepSets, raw `(k, τ)`; stories
+> `3B.2 … 3B.7` all shipped. **3B verdict: accuracy bar NOT met** —
+> ANP best-case is +2.7 % vs RBF (full-fold point head 0.0680 vs
+> 0.0662); the calibrated gaussian production predictor runs +9–11 %;
+> reliability holds (coverage 0.9149 ±2 pp; hi-conf MAE 0.0542 <
+> 0.0813). See the §W11 closing addendum + `3b_compare/comparison.csv`.
+> ANP is the strongest conditional model to date and narrows the gap
+> from ~29 % to ~2.7 %, but pure decoder-architecture iteration has
+> plateaued. Epics **3C / 3D** remain `backlog` with decomposition
+> stories `3C.1 / 3D.1` at `backlog`; 3C is the next epic and should
+> prioritise feature / inductive-bias expansion per the §W11 addendum.
+> Phase 3 source code touched so far: 3A's
+> `features/coord_encoding.py` + `freeze_encoder` / `encoder_init_from`
+> flags on `train_conditional`; 3B's `models/anp_decoder.py` +
+> `decoder_kind` flag on `ConditionalSurfaceModel`.
 >
 > Scope was tightened on 2026-05-27 after a planning discussion: the
 > originally-proposed neural-residual-on-RBF hybrid was dropped from
