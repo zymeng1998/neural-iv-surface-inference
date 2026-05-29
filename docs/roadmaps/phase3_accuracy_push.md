@@ -270,6 +270,15 @@ Phase 4 RBF-prior production fallback as the alternative if 3C also
 stalls. This addendum *informs* 3C.1 but does not pre-empt its
 decomposition.
 
+> **Open research direction (proposed, not yet run):** the aggregate bar
+> masks *where* each model wins. RBF is a local interpolator and should
+> degrade in sparse-context regions (deep wings, extreme maturities)
+> where ANP's global learned prior may hold up — a sparse-region win
+> would reframe the conclusion as a density-routed RBF/ANP hybrid (a
+> Phase 4 production angle). Scientific design + feasibility evidence
+> (held-out labels survive masking, so the comparison is valid) in
+> [`docs/research/sparse_region_anp_vs_rbf_design.md`](../research/sparse_region_anp_vs_rbf_design.md).
+
 ### W12 — Feature & inductive-bias expansion (epic 3C)
 
 Two orthogonal directions; 3C.1 decides whether to ship one or both.
