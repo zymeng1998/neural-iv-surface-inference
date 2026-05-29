@@ -1,0 +1,55 @@
+# Decision-layer eval runner — ANP closing evidence (story 3B.7).
+#
+# Drives `scripts/run_decision_layer_eval.py` against the ANP cross-attention
+# architecture's calibrated predictor, on the same `spy_phase1_random40_noiselow`
+# slice + same decision config + same diagnostics budget as the 2D.9 closing
+# evidence (configs/decision_layer_eval_av.yaml). This is the direct,
+# apples-to-apples comparison for epic 3B acceptance.
+#
+# ONE pair: the ANP calibrated conditional predictor —
+#   * base       — 3B.4 full-AV ANP gaussian head (decoder_kind auto-detected
+#                  from the checkpoint config by ConditionalSurfacePredictor.
+#                  from_checkpoint; 3B.3 wired this).
+#   * calibrator — 3B.6 re-fit calibrator (artifacts/calibration/3B6_anp.json;
+#                  gitignored, regenerated on the Pod from
+#                  configs/calibration_3B6_anp.yaml + the cached 3B.4/3B.5 CSVs).
+#   * ensemble   — 3B.5 K=5 ANP point-head deep ensemble (disagreement std),
+#                  manifest at artifacts/runs/3B5/checkpoints/ensemble/members.json.
+#
+# The four Phase 2D baselines (RBF interpolation, masked MLP, point conditional,
+# 2D.4 calibrated) are NOT re-run here: they were already scored on this exact
+# slice with this exact runner + decision config in 2D.9. Their numbers are
+# cited from results/2D/comparison_summary.csv when the long-format
+# 3b_compare/comparison.csv is assembled (mirrors how 3A.4 cited 2D.9 baseline
+# rows). Re-running them would only reproduce identical deterministic numbers.
+#
+# Execution (Pod, RTX A4500 — CUDA works here, unlike the Blackwell 2D.9 pod):
+#   python3 scripts/run_decision_layer_eval.py \
+#     --config configs/decision_layer_eval_3B7_anp.yaml \
+#     --results-root <stage_dir>
+# then curate <stage_dir>/spy_phase1_random40_noiselow/conditional_calibrated/
+# into results/3/spy_phase1_random40_noiselow/3b_anp/ (the runner keys output
+# dirs on predictor_name, which must be `conditional_calibrated` for dispatch).
+
+results_root: results/3
+decision_config: configs/decision_layer.yaml
+
+# Identical diagnostics budget to 2D.9 (configs/decision_layer_eval_av.yaml) so
+# the ANP reliability / tradability numbers are directly comparable: same
+# 10-dates-per-split cap, same perturbation draws, same seed.
+diagnostics:
+  keep_fraction: 0.8
+  n_draws: 5
+  seed: 0
+  max_dates_per_split: 10
+
+nominal_coverage: 0.90
+
+pairs:
+  - dataset: spy_phase1_random40_noiselow
+    benchmark_path: data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet
+    predictor: conditional_calibrated
+    checkpoint: artifacts/runs/3B4/gaussian/checkpoints/best_conditional.pt
+    calibrator_path: artifacts/calibration/3B6_anp.json
+    ensemble_manifest: artifacts/runs/3B5/checkpoints/ensemble/members.json
+    device: cuda

@@ -38,6 +38,82 @@ recorded_at: YYYY-MM-DDTHH:MM:SS-TZ
 
 ## Entries
 
+## 2026-05-28T23:55:00-04:00 — Experiment: 3B.7 closing decision-layer eval — ANP vs RBF + Phase 2D baselines (epic 3B close)
+
+**Purpose:** Closing evidence for epic 3B. Score the ANP calibrated
+conditional predictor (3B.4 gaussian head + 3B.6 calibrator + 3B.5 K=5
+ensemble disagreement) through the 2D.6 decision-layer runner on the
+`spy_phase1_random40_noiselow` slice, and compare against the RBF
+baseline + Phase 2D conditional family + 3A coordinate-ablation rows.
+Answers the Phase 3 question: does the cross-attention architectural bet
+beat RBF on test MAE by ≥ 5 % while holding the reliability floor?
+
+**Execution:** Pod (RTX A4500, CUDA), not local — the decision-layer
+runner needs checkpoints + the 1 GB benchmark parquet, neither of which
+is local (no local checkpoints for 2D or 3B; raw/processed data is
+Pod-only). 3B.6 calibrator regenerated on the Pod (bit-identical to the
+local fit: `T=1.1241`, `ensemble_scale=3.1750`). Same runner, same
+`configs/decision_layer.yaml`, same 10-dates-per-split diagnostics cap,
+same seed as 2D.9 — so the ANP row is apples-to-apples with the 2D.9
+baselines. Per-row `predictions_decisions.csv` (44 MB) not committed
+(mirrors the 2D.9 `.gitignore` convention); metrics CSV + region table
++ PNGs committed under `results/3/.../3b_anp/`.
+
+**Result summary — headline test MAE (committed long-format table at
+`results/3/spy_phase1_random40_noiselow/3b_compare/comparison.csv`):**
+
+| Predictor | Test MAE | n | View |
+|---|---|---|---|
+| RBF interpolation | 0.0730 | 64,610 | 10-date slice |
+| **ANP calibrated (gaussian)** | **0.0813** | 64,610 | 10-date slice |
+| 2D.4 calibrated (gaussian) | 0.0855 | 64,610 | 10-date slice |
+| conditional point (2C/2D.7) | 0.0841 | 64,610 | 10-date slice |
+| masked MLP (Phase 1) | 0.0905 | 64,610 | 10-date slice |
+| RBF interpolation (full fold) | 0.0662 | 5,805,664 | full fold |
+| **ANP gaussian (full fold)** | **0.0722** | 5,805,664 | full fold |
+| **ANP point (full fold)** | **0.0680** | 5,805,664 | full fold |
+| 3A raw (decoder-only, full fold) | 0.0760 | 5,805,664 | full fold |
+| 3A fourier (decoder-only, full fold) | 0.0790 | 5,805,664 | full fold |
+
+**ANP reliability (10-date slice, test):** coverage@0.90 = **0.9149**
+(within ±2 pp ✓); hi-conf MAE (keep 0.8) = **0.0542** < no-abstention
+test MAE 0.0813 (✓); mean interval width 0.3038; abstain_rate 1.0
+(same wide-interval abstention regime as the 2D.4 calibrated baseline).
+
+**Interpretation:**
+
+- **ANP does NOT beat RBF by ≥ 5 % on any view.** Slice:
+  0.0813 vs 0.0730 → 11.4 % *worse*. Full fold (gaussian):
+  0.0722 vs 0.0662 → 9.0 % worse. Full fold (point head, the most
+  favourable ANP number): 0.0680 vs 0.0662 → 2.7 % worse. The Phase 3
+  accuracy bar (≤ 0.0693 on slice; ≤ 0.0629 on full fold) is **not
+  met**.
+- **But the architecture ladder is monotone and nearly closes the gap.**
+  Best ANP point (0.0680, full fold) beats 3A raw decoder-only (0.0760)
+  by ~10 % and the 2D DeepSets-decoder family (2D.4 calibrated 0.0855 on
+  slice) by ~5 %. The end-to-end cross-attention decoder is the strongest
+  conditional model to date and sits only ~2.7 % above full-fold RBF —
+  versus the ~29 % gap epic 3A's framing started from (2D.4 calibrated
+  0.0855 vs RBF 0.0662).
+- **The 10-date decision-layer slice is pessimistic / non-representative.**
+  ANP gaussian is 0.0813 on the slice but 0.0722 on the full fold; the
+  capped slice over-states the gap. The reliability numbers, however,
+  are comparable and pass.
+
+**Decision impact:** Closes epic 3B. The architectural bet alone does not
+clear the 5 % bar — the residual gap to RBF is now small (~2.7 % at the
+point head) but real and architecture-saturated. This is the input to
+3C scope: pure decoder-architecture iteration has plateaued; the
+remaining gap should be attacked with feature / inductive-bias expansion
+(microstructure features, no-arb / SVI priors) rather than more
+attention-decoder variants, or accepted via the Phase 4 RBF-prior
+production fallback.
+
+**Next step:** roadmap § W11 closing addendum (written this story);
+3C.1 decomposition picks the feature direction.
+
+---
+
 ## 2026-05-28T19:30:00-04:00 — Experiment: 3B.6 calibrator re-fit on ANP val predictions
 
 **Purpose:** Re-fit the 2D.4 W4 calibrator on the ANP cross-attention

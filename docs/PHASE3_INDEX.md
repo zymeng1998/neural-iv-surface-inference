@@ -55,7 +55,7 @@ last_updated_at: 2026-05-28T14:00:00-04:00
 | 3B.4 | Story | Remote: full AV training of ANP across `head.kind ∈ {gaussian, quantile, point}` | `done` | [`3B.4`](tasks/specs/3B.4_remote_full_av_training.md) | 2026-05-28 |
 | 3B.5 | Story | Remote: K=5 deep ensemble of ANP point head on AV (parallels 2D.8) | `done` | [`3B.5`](tasks/specs/3B.5_remote_deep_ensemble.md) | 2026-05-29 |
 | 3B.6 | Story | Local: calibrator re-fit on ANP val predictions (parallels 2D.4) | `in_review` | [`3B.6`](tasks/specs/3B.6_local_calibrator_refit.md) | 2026-05-28 |
-| 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + closing addendum | `backlog` | [`3B.7`](tasks/specs/3B.7_local_decision_layer_eval.md) | 2026-05-28 |
+| 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + closing addendum (ANP +2.7% vs RBF best-case; bar NOT met) | `in_review` | [`3B.7`](tasks/specs/3B.7_local_decision_layer_eval.md) | 2026-05-28 |
 | 3C | Epic | Feature & inductive-bias expansion (microstructure, optional SVI) | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W12 | 2026-05-27 |
 | 3C.1 | Story | Decompose Phase 3C | `backlog` | [`3C.1`](tasks/specs/3C.1_decompose_phase_3c.md) | 2026-05-27 |
 | 3D | Epic | Closing memo + re-evaluation vs RBF | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W13 | 2026-05-27 |
@@ -285,8 +285,23 @@ only if neither writes to a path in the other's `file_scope`.
   comparison.csv`; write closing journal entry + roadmap § W11
   closing addendum with ANP-vs-RBF verdict and 3C-scope
   implication.
-- **Next concrete action:** gate on 3B.6 close.
-- **Open blocker:** 3B.4, 3B.5, 3B.6.
+- **2026-05-28 (executed)** decision-layer eval shipped. Ran the 2D.6
+  runner **on the Pod** (RTX A4500) — the runner needs checkpoints +
+  the 1 GB benchmark parquet, neither of which is local; 3B.6
+  calibrator regenerated Pod-side (bit-identical). Same decision
+  config + 10-date cap + seed as 2D.9 (apples-to-apples).
+  `configs/decision_layer_eval_3B7_anp.yaml` + bundle
+  `results/3/spy_phase1_random40_noiselow/{3b_anp,3b_compare}/`.
+  **Verdict: Phase 3 bar NOT met** — ANP test MAE 0.0813 (slice) /
+  0.0722 full-fold gaussian / 0.0680 full-fold point vs RBF 0.0730 /
+  0.0662; ANP does not beat RBF by ≥5% on any view (best gap +2.7%).
+  Reliability holds (coverage 0.9149 ±2pp ✓; hi-conf MAE 0.0542 <
+  0.0813 ✓). ANP is the strongest conditional model so far (beats 3A
+  raw ~10%, 2D family ~5%). Story → `in_review`.
+- **Next concrete action:** human reviews 3B.7 → `done`; epic 3B →
+  `done`; 3C.1 picks the feature direction per the §W11 addendum.
+  Pod can be terminated.
+- **Open blocker:** none.
 
 ### 3C.1 — Decompose Phase 3C
 

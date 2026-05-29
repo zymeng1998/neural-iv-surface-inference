@@ -226,6 +226,50 @@ Concrete story list under W11:
 | [3B.6](../tasks/specs/3B.6_local_calibrator_refit.md) | local | Calibrator re-fit on the ANP val predictions — mirrors 2D.4 |
 | [3B.7](../tasks/specs/3B.7_local_decision_layer_eval.md) | local | End-to-end decision-layer eval of ANP vs Phase 2D baselines on the `spy_phase1_random40_noiselow` slice; ships `results/3/.../3b_anp/` + closing comparison CSV + closing addendum on this section |
 
+#### W11 — 3B closing addendum (filled by 3B.7 — 2026-05-28)
+
+End-to-end decision-layer evaluation of the ANP calibrated predictor
+(3B.4 gaussian head + 3B.6 calibrator + 3B.5 K=5 ensemble) on the
+`spy_phase1_random40_noiselow` slice, scored on the Pod (RTX A4500) with
+the 2D.6 runner under the *same* decision config + 10-date diagnostics
+cap + seed as 2D.9. Long-format evidence:
+`results/3/spy_phase1_random40_noiselow/3b_compare/comparison.csv`;
+ANP bundle: `results/3/spy_phase1_random40_noiselow/3b_anp/`.
+
+**Measured ANP test MAE:**
+
+| View | ANP | RBF | ANP/RBF | Bar (0.95×RBF) | Met? |
+|---|---|---|---|---|---|
+| 10-date slice (calibrated gaussian) | 0.0813 | 0.0730 | +11.4 % | ≤ 0.0693 | ✗ |
+| Full fold (gaussian) | 0.0722 | 0.0662 | +9.0 % | ≤ 0.0629 | ✗ |
+| Full fold (point head) | 0.0680 | 0.0662 | +2.7 % | ≤ 0.0629 | ✗ |
+
+**ANP-vs-RBF gap:** +2.7 % at best (full-fold point head); the
+calibrated gaussian production predictor runs +9–11 %. The 10-date
+decision-layer slice is pessimistic (ANP gaussian 0.0813 on the slice vs
+0.0722 on the full fold).
+
+**Reliability (10-date slice, test):** coverage@0.90 = 0.9149 (within
+±2 pp ✓); hi-conf MAE 0.0542 < no-abstention 0.0813 (✓). The Phase 3
+reliability floor holds.
+
+**Verdict against the Phase 3 acceptance bar: NOT MET.** ANP does not
+beat RBF by ≥ 5 % on the slice or the full fold. It is, however, the
+strongest conditional model produced so far: full-fold point head 0.0680
+beats 3A raw decoder-only (0.0760) by ~10 % and the 2D DeepSets-decoder
+family (2D.4 calibrated 0.0855 on slice) by ~5 %, narrowing the
+gap-to-RBF from the ~29 % Phase-3 starting point to ~2.7 %.
+
+**Implication for 3C scope:** the architecture ladder
+(DeepSets-pool → decoder-only raw/Fourier → end-to-end cross-attention)
+has plateaued ~2.7 % short of RBF. Further pure decoder-architecture
+iteration is unlikely to clear the last few percent. 3C should
+prioritise **feature / inductive-bias expansion** — microstructure
+features and no-arb / SVI priors — to extract the residual gap, with the
+Phase 4 RBF-prior production fallback as the alternative if 3C also
+stalls. This addendum *informs* 3C.1 but does not pre-empt its
+decomposition.
+
 ### W12 — Feature & inductive-bias expansion (epic 3C)
 
 Two orthogonal directions; 3C.1 decides whether to ship one or both.

@@ -3101,3 +3101,55 @@ ensembling here. The disagreement signal is the deliverable that
 - Human reviews 3B.6 → `done`.
 - 3B.7 (decision-layer eval of ANP vs Phase 2D baselines) consumes
   `artifacts/calibration/3B6_anp.json`. Local-only.
+
+## 2026-05-28 — 3B.7 closing decision-layer eval — epic 3B closes (in_review)
+
+### What landed
+
+- `configs/decision_layer_eval_3B7_anp.yaml` — single ANP calibrated
+  pair (3B.4 gaussian ckpt + 3B.6 calibrator + 3B.5 ensemble manifest)
+  on the `spy_phase1_random40_noiselow` slice, same decision config +
+  10-date cap + seed as 2D.9. Baselines cited from 2D.9 (not re-run).
+- Ran the 2D.6 decision-layer runner **on the Pod** (RTX A4500, CUDA) —
+  not local: the runner needs checkpoints + the 1 GB benchmark parquet,
+  neither of which is local. 3B.6 calibrator regenerated on the Pod
+  (bit-identical to local). Bundle pulled to
+  `results/3/spy_phase1_random40_noiselow/3b_anp/` (metrics_summary,
+  region_tradability, abstention_curve.png, calibration_plot.png; the
+  44 MB per-row `predictions_decisions.csv` left uncommitted per the
+  2D.9 `.gitignore` convention).
+- `results/3/spy_phase1_random40_noiselow/3b_compare/comparison.csv` —
+  59-row long-format table (variant, split, metric, value, source, n):
+  ANP slice + ANP full-fold (gaussian/point) + 4 Phase 2D baselines +
+  RBF full-fold + 3A raw/Fourier. No NaN.
+
+### Headline result
+
+| View | ANP test MAE | RBF | Bar | Met? |
+|---|---|---|---|---|
+| 10-date slice (calibrated gaussian) | 0.0813 | 0.0730 | ≤0.0693 | ✗ (+11.4%) |
+| Full fold (gaussian) | 0.0722 | 0.0662 | ≤0.0629 | ✗ (+9.0%) |
+| Full fold (point head) | 0.0680 | 0.0662 | ≤0.0629 | ✗ (+2.7%) |
+
+- **Verdict: Phase 3 accuracy bar NOT met** — ANP does not beat RBF by
+  ≥5% on any view. But ANP is the strongest conditional model so far:
+  full-fold point 0.0680 beats 3A raw (0.0760) ~10% and the 2D DeepSets
+  family (2D.4 calibrated 0.0855) ~5%; gap-to-RBF narrowed from ~29%
+  (Phase-3 start) to ~2.7%.
+- **Reliability floor holds:** ANP slice coverage@0.90 = 0.9149 (±2pp ✓);
+  hi-conf MAE 0.0542 < no-abstention 0.0813 (✓).
+
+### Notes
+
+- 10-date decision-layer slice is pessimistic (gaussian 0.0813 slice vs
+  0.0722 full fold); reliability numbers are comparable and pass.
+- Closing addendum (roadmap §W11) records the verdict + 3C-scope
+  implication: decoder-architecture iteration has plateaued; 3C should
+  prioritise feature / inductive-bias expansion (microstructure, no-arb /
+  SVI priors), Phase 4 RBF-prior fallback otherwise.
+
+### Next actions
+
+- Human reviews 3B.7 → `done`; epic 3B → `done`.
+- 3C.1 decomposition picks the feature direction informed by the
+  addendum. **Pod can be terminated** — 3B.7 was the last 3B Pod step.
