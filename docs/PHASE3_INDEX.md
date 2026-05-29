@@ -54,7 +54,7 @@ last_updated_at: 2026-05-28T14:00:00-04:00
 | 3B.3 | Story | Local: ANP predictor-adapter wiring (evaluator parity test) | `done` | [`3B.3`](tasks/specs/3B.3_local_predictor_adapter.md) | 2026-05-28 |
 | 3B.4 | Story | Remote: full AV training of ANP across `head.kind ∈ {gaussian, quantile, point}` | `done` | [`3B.4`](tasks/specs/3B.4_remote_full_av_training.md) | 2026-05-28 |
 | 3B.5 | Story | Remote: K=5 deep ensemble of ANP point head on AV (parallels 2D.8) | `done` | [`3B.5`](tasks/specs/3B.5_remote_deep_ensemble.md) | 2026-05-29 |
-| 3B.6 | Story | Local: calibrator re-fit on ANP val predictions (parallels 2D.4) | `backlog` | [`3B.6`](tasks/specs/3B.6_local_calibrator_refit.md) | 2026-05-28 |
+| 3B.6 | Story | Local: calibrator re-fit on ANP val predictions (parallels 2D.4) | `in_review` | [`3B.6`](tasks/specs/3B.6_local_calibrator_refit.md) | 2026-05-28 |
 | 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + closing addendum | `backlog` | [`3B.7`](tasks/specs/3B.7_local_decision_layer_eval.md) | 2026-05-28 |
 | 3C | Epic | Feature & inductive-bias expansion (microstructure, optional SVI) | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W12 | 2026-05-27 |
 | 3C.1 | Story | Decompose Phase 3C | `backlog` | [`3C.1`](tasks/specs/3C.1_decompose_phase_3c.md) | 2026-05-27 |
@@ -263,8 +263,19 @@ only if neither writes to a path in the other's `file_scope`.
   calibration config, re-point inputs at 3B.4 / 3B.5 val
   predictions; ship `artifacts/calibration/3B6_anp.json`. CPU-only,
   ~5–10 min wall.
-- **Next concrete action:** gate on 3B.4 + 3B.5 close.
-- **Open blocker:** 3B.4, 3B.5.
+- **2026-05-28 (executed)** calibrator re-fit shipped.
+  `configs/calibration_3B6_anp.yaml` (clone of the 2D.4 gaussian
+  recipe, inputs re-pointed at 3B.4 gaussian/quantile + 3B.5
+  ensemble) → `artifacts/calibration/3B6_anp.json` (gitignored,
+  regenerable). No script change needed. Fit `T=1.124`,
+  `ensemble_scale=3.175`, `has_masking=false` (mirrors 2D.4).
+  Val coverage @0.90 = 0.9000 (±2 pp ✓); val hi-conf MAE
+  (conf≥0.5) 0.01445 ≪ no-abstention 0.05333 ✓.
+  `tests/test_calibration_anp.py` = 6 tests, all pass.
+  Story → `in_review`.
+- **Next concrete action:** human reviews 3B.6 → `done`; 3B.7
+  consumes the calibrator.
+- **Open blocker:** none.
 
 ### 3B.7 — Local: end-to-end decision-layer eval + closing addendum
 

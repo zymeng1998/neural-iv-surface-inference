@@ -38,6 +38,56 @@ recorded_at: YYYY-MM-DDTHH:MM:SS-TZ
 
 ## Entries
 
+## 2026-05-28T19:30:00-04:00 — Experiment: 3B.6 calibrator re-fit on ANP val predictions
+
+**Purpose:** Re-fit the 2D.4 W4 calibrator on the ANP cross-attention
+architecture's cached val predictions, producing the calibrator JSON
+that the 3B.7 decision-layer runner consumes. Direct parallel to 2D.4 —
+same fusion formula, same temperature-scaling path, same `Calibrator`
+class; only the input bundle changes (3B.4 gaussian val/test + 3B.5 K=5
+ensemble disagreement).
+
+**Changed variables:** Input paths only. Primary head ← `artifacts/runs/3B4/gaussian/{val,test}_predictions.csv`;
+ensemble disagreement ← `artifacts/runs/3B5/{val,test}_predictions.csv`
+(joined positionally on `(date, log_moneyness, tau, observed)`; row
+counts match: val 5,593,759 / test 5,805,664). All numerical
+hyperparameters (nominal α=0.90, tolerance ±2 pp, monotone
+disagreement→σ mapping, sigmoid confidence scale) inherited unchanged
+from `configs/calibration.yaml`. Masking-sensitivity source not supplied
+(`has_masking=false`), exactly mirroring the committed 2D.4 calibrator.
+
+**Result summary (fit recipe →** `configs/calibration_3B6_anp.yaml`**;
+calibrator →** `artifacts/calibration/3B6_anp.json`**):**
+
+- Fit params: `temperature = 1.1241`, `ensemble_scale = 3.1750`,
+  `ensemble_bias = 0.01801`, `has_ensemble = true`, `has_masking = false`,
+  `u0 = 0.05273`, `u_scale = 0.02776`, `n_fit = 5,593,759`.
+- **Val coverage @0.90 = 0.9000** (within ±2 pp ✓ — temperature scaling
+  matches val coverage to the nominal level by construction).
+- **Val MAE (no abstention) = 0.053334**; **val hi-confidence MAE
+  (confidence ≥ 0.5, the 2D.5 decision-layer threshold) = 0.014452**
+  on the top 50 % of rows → hi-conf MAE strictly below no-abstention MAE
+  (Δ = −0.038882) ✓.
+- For reference vs 2D.4 (NCDE-family): ANP `T=1.124` (2D.4 `T=1.087`);
+  ANP `ensemble_scale=3.175` (2D.4 `5.587`) — the ANP point ensemble
+  disagreement is in larger raw units, so the fitted scale is smaller.
+
+**Interpretation:** The 2D.4 calibration machinery transfers cleanly to
+the ANP architecture with no code change — the path keys were already
+configurable. Coverage hits nominal exactly on val (expected) and the
+fused confidence score ranks error well enough that the top-half-confidence
+MAE is ~3.7× lower than the unconditional MAE, confirming the fusion
+produces a usable abstention signal on the ANP predictions.
+
+**Decision impact:** Unblocks 3B.7. The calibrator JSON + config are the
+hand-off artifacts; 3B.7 will load this calibrator and run the
+out-of-sample decision-layer comparison against the Phase 2D baselines.
+
+**Next step:** 3B.7 — end-to-end decision-layer eval (test-fold coverage
+and tradability lives there, not here).
+
+---
+
 ## 2026-04-03T12:35:00-04:00 — Experiment: baseline run on verified benchmark
 
 **Purpose:** Obtain first real-data baseline metrics after confirming benchmark row-count integrity on RunPod.

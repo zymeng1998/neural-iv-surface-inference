@@ -1,0 +1,44 @@
+# Calibration fit configuration — Phase 3B / story 3B.6 (ANP re-fit).
+#
+# Direct clone of the Phase 2D / W4 (2D.4) gaussian calibration recipe, with
+# the input paths re-pointed at the ANP cross-attention architecture's cached
+# predictions:
+#   * primary head      <- 3B.4 full-AV ANP gaussian run
+#   * ensemble disagreement <- 3B.5 K=5 ANP point-head deep ensemble
+#
+# Fusion formula, temperature-scaling / split-conformal paths, monotone
+# disagreement->sigma mapping, and all numerical hyperparameters are inherited
+# unchanged from 2D.4 (see configs/calibration.yaml). Only the input bundle
+# changes. Pure CPU; no torch, no model load, no AV data dependency at fit time.
+
+# Either "gaussian" or "quantile". Mirrors 2D.4's primary (gaussian) fit; the
+# quantile pair is wired for parity but the committed 3B.6 calibrator is the
+# gaussian one (matches the 2d4_calibrator.json precedent).
+head_kind: gaussian
+
+# Source CSVs (3B.4 full-AV ANP runs). Paths are repo-relative.
+sources:
+  gaussian:
+    val:  artifacts/runs/3B4/gaussian/val_predictions.csv
+    test: artifacts/runs/3B4/gaussian/test_predictions.csv
+  quantile:
+    val:  artifacts/runs/3B4/quantile/val_predictions.csv
+    test: artifacts/runs/3B4/quantile/test_predictions.csv
+
+# Deep-ensemble disagreement signal (3B.5). Joined positionally on
+# (date, log_moneyness, tau, observed); row counts match the 3B.4 bundle.
+ensemble:
+  val:  artifacts/runs/3B5/val_predictions.csv
+  test: artifacts/runs/3B5/test_predictions.csv
+
+# Ground-truth column to score against — `iv_true` matches the 3B.4 / 3B.5
+# evaluator convention (same as 2D.7 / 2D.8).
+target_col: iv_true
+
+# Nominal interval level.
+nominal_alpha: 0.9
+tolerance: 0.02
+
+# Output JSON for the fitted ANP calibrator (gitignored, like 2d4_calibrator.json;
+# regenerated from this config + the cached prediction CSVs).
+output_path: artifacts/calibration/3B6_anp.json

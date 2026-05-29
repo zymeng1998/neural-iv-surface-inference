@@ -84,7 +84,7 @@ decomposition). The first story of any epic is always its decomposition story.
 | 3B.3 | Story | Local: ANP predictor-adapter wiring (evaluator parity test, ≤ minimal patch) | `done` | `docs/tasks/specs/3B.3_local_predictor_adapter.md` | 2026-05-28 |
 | 3B.4 | Story | Remote: full AV training of ANP across `head.kind ∈ {gaussian, quantile, point}` | `done` | `docs/tasks/specs/3B.4_remote_full_av_training.md` | 2026-05-28 |
 | 3B.5 | Story | Remote: K=5 deep ensemble of ANP point head on AV (mirrors 2D.8) | `done` | `docs/tasks/specs/3B.5_remote_deep_ensemble.md` | 2026-05-29 |
-| 3B.6 | Story | Local: calibrator re-fit on ANP val predictions (mirrors 2D.4) | `backlog` | `docs/tasks/specs/3B.6_local_calibrator_refit.md` | 2026-05-28 |
+| 3B.6 | Story | Local: calibrator re-fit on ANP val predictions (mirrors 2D.4) | `in_review` | `docs/tasks/specs/3B.6_local_calibrator_refit.md` | 2026-05-28 |
 | 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + journal + roadmap closing addendum | `backlog` | `docs/tasks/specs/3B.7_local_decision_layer_eval.md` | 2026-05-28 |
 | 3C | Epic | Phase 3 — Feature & inductive-bias expansion (microstructure, optional SVI head) | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W12 / §4) | 2026-05-27 |
 | 3C.1 | Story | Decompose Phase 3C | `backlog` | `docs/tasks/specs/3C.1_decompose_phase_3c.md` | 2026-05-27 |

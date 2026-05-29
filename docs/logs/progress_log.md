@@ -3058,3 +3058,46 @@ ensembling here. The disagreement signal is the deliverable that
   Inputs: `artifacts/runs/3B4/gaussian/val_predictions.csv` (already
   Pod-side; not pulled), `artifacts/runs/3B4/quantile/val_predictions.csv`,
   `artifacts/runs/3B5/val_predictions.csv` (local).
+
+## 2026-05-28 — 3B.6 calibrator re-fit on ANP val predictions (in_review)
+
+### What landed
+
+- `configs/calibration_3B6_anp.yaml` — clone of the 2D.4 gaussian
+  calibration recipe with input paths re-pointed at the ANP bundles
+  (3B.4 gaussian/quantile + 3B.5 ensemble). No numerical-hyperparameter
+  change vs `configs/calibration.yaml`.
+- Ran `scripts/run_calibration_fit.py` (no code change — path keys were
+  already configurable) → `artifacts/calibration/3B6_anp.json`
+  (gitignored, like `2d4_calibrator.json`; regenerable from config +
+  cached CSVs).
+- Fit params: `T = 1.1241`, `ensemble_scale = 3.1750`,
+  `ensemble_bias = 0.01801`, `has_ensemble = true`, `has_masking = false`,
+  `n_fit = 5,593,759`.
+- `tests/test_calibration_anp.py` — 6 tests, all pass: finite/positive
+  `T`; finite split-conformal offset (quantile path); val-coverage
+  recovery on holdout; JSON round-trip; `CalibratedConditionalPredictor`
+  fills all four `PredictionResult` fields wrapping a synthetic
+  ANP-shaped base + ensemble; hi-confidence MAE below overall.
+
+### Acceptance results (val fold)
+
+- Val coverage @0.90 = **0.9000** — within ±2 pp ✓.
+- Val MAE (no abstention) = **0.053334**; val hi-confidence MAE
+  (confidence ≥ 0.5) = **0.014452** → strictly below ✓ (Δ = −0.0389,
+  top 50 % of rows kept).
+
+### Notes
+
+- Test-fold coverage is **not** a 3B.6 deliverable (the script's internal
+  test verification ran but its `.report.json` is gitignored and not
+  committed); out-of-sample evaluation lives in 3B.7.
+- Mirrors 2D.4 exactly: gaussian primary + ensemble disagreement fused,
+  masking sensitivity not used (`has_masking=false`, as in the 2D.4
+  calibrator).
+
+### Next actions
+
+- Human reviews 3B.6 → `done`.
+- 3B.7 (decision-layer eval of ANP vs Phase 2D baselines) consumes
+  `artifacts/calibration/3B6_anp.json`. Local-only.
