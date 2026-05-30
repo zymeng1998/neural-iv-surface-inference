@@ -1,6 +1,6 @@
 {
-  "input_path": "/workspace/Neural-IV-Surface-inference/data_processed/spy/spy_surface_points_strict.parquet",
-  "output_path": "/workspace/Neural-IV-Surface-inference/data_processed/spy/spy_surface_points_strict_otm.parquet",
+  "input_path": "data_processed/spy/spy_surface_points_strict.parquet",
+  "output_path": "data_processed/spy/spy_surface_points_strict_otm.parquet",
   "atm_band": 0.0025,
   "rows_in": 22512040,
   "rows_out": 10531499,

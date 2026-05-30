@@ -375,9 +375,12 @@ only if neither writes to a path in the other's `file_scope`.
   `_otm` benchmarks** built (`04 --source strict_otm`): each 10,531,499
   rows, split train 5,123,586 / val 2,638,892 / test 2,769,021.
   Dirty strict + 11 dirty benchmarks **hash-unchanged** before/after.
-  Committed: `artifacts/runs/3X4/` (otm_build_manifest.json,
-  benchmark_build_manifest.json, otm_residual_same_type.csv, hash
-  proofs, logs). Story → `in_review`.
+  Committed under `artifacts/runs/3X4/`: otm_build_manifest.json,
+  benchmark_build_manifest.json, otm_residual_summary.json,
+  single_valued_assertion.txt, dirty_hashes_before.txt,
+  dirty_hashes_after.txt. The full residual CSV and raw build logs are
+  generated/regenerable, gitignored, and retained outside the committed
+  bundle. Story → `in_review` (awaiting human review; not yet `done`).
 - **Note:** started while 3X.2 is `in_review` (spec expects `done`) at
   operator direction; the builder code is the committed 3X.2 version
   (HEAD `5570b7d`).

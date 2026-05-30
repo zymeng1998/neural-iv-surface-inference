@@ -487,8 +487,11 @@ Planned correction (per ADR 0006, epic 3X):
   with synthetic-fixture tests in
   [`tests/test_otm_surface_builder.py`](../../tests/test_otm_surface_builder.py);
   the real OTM file was produced on the Pod in story 3X.4 (2026-05-30):
-  10,531,499 single-valued rows, manifest +
-  `otm_residual_same_type.csv` committed under `artifacts/runs/3X4/`.
+  10,531,499 single-valued rows. The build manifest +
+  `otm_residual_summary.json` (residual path / row count / rule counts /
+  SHA-256) are committed under `artifacts/runs/3X4/`; the full
+  `otm_residual_same_type.csv` is generated, gitignored, and regenerable
+  (retained outside the committed bundle).
 - Rebuild **all 11** benchmark variants from the OTM file with
   `04_build_benchmark_tasks.py --source strict_otm` (D3; done in 3X.4,
   ~3 min on Pod for the full set — each `_otm` variant 10,531,499 rows,

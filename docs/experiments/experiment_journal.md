@@ -1438,11 +1438,12 @@ ladder (3X.7–3X.12) on the clean substrate.
 **Timing:** 7.2 min total wall (otm-build 119s; benchmark-build 195s).
 Far under the ~1.5 h spec budget — streaming builders dominate.
 
-**Files:** `artifacts/runs/3X4/otm_build_manifest.json`,
-`benchmark_build_manifest.json`, `single_valued_assertion.txt`,
-`dirty_hashes_{before,after}.txt` (committed); `otm_residual_same_type.csv`
-+ build logs retained Pod-side / local-gitignored. OTM data parquets
-stay Pod-side (gitignored).
+**Files (committed):** `artifacts/runs/3X4/otm_build_manifest.json`,
+`benchmark_build_manifest.json`, `otm_residual_summary.json`,
+`single_valued_assertion.txt`, `dirty_hashes_before.txt`,
+`dirty_hashes_after.txt`. The full `otm_residual_same_type.csv` and raw
+build logs are generated/regenerable, gitignored, and retained outside
+the committed bundle; OTM data parquets likewise stay gitignored.
 
 **Next step:** story 3X.5 — re-audit OTM strict + 11 benchmarks with
 audit v2 (≤0.5% dup/leakage HUMAN REVIEW GATE) on the same CPU pod.

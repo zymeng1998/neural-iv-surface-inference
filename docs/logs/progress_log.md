@@ -3481,24 +3481,24 @@ No legacy artifact mutated. All new artifacts carry `_otm` suffixes
 ### Committed artifacts
 
 - `artifacts/runs/3X4/otm_build_manifest.json`,
-  `benchmark_build_manifest.json`, `single_valued_assertion.txt`,
-  `dirty_hashes_before.txt`, `dirty_hashes_after.txt`. The OTM data
-  parquets and the `otm_residual_same_type.csv` (3.3 MB) + build logs
-  stay Pod-side / local-gitignored (regenerable audit artifacts); the
-  manifest records the residual CSV's row count, rule counts, and the
-  input/output SHA-256.
+  `benchmark_build_manifest.json`, `otm_residual_summary.json`,
+  `single_valued_assertion.txt`, `dirty_hashes_before.txt`,
+  `dirty_hashes_after.txt`. The OTM data parquets, the full
+  `otm_residual_same_type.csv` (3.3 MB), and the raw build logs are
+  generated/regenerable, gitignored, and retained outside the committed
+  bundle; `otm_residual_summary.json` records the residual CSV's path,
+  row count, rule counts, and SHA-256.
 
 ### Notes
 
 - Started while 3X.2 / 3X.3 are `in_review` (spec expects 3X.2 `done`)
   at operator direction; the builder code used is the committed 3X.2
   version. No legacy artifact mutated.
-- A local doc-write hook (`~/.claude/scripts/hooks/run-with-flags.js`
-  + `insaits-security-wrapper.js` + `mcp-health-check.js`) was
-  truncating stdout at the 64 KB pipe buffer on >64 KB payloads
-  (`process.exit()` before async stdout drained), which blocked this
-  log + the experiment-journal appends. Fixed by writing hook stdout
-  synchronously to fd 1 before exit; this entry is the post-fix retry.
+- A local (outside-repo) doc-write hook was truncating stdout at the
+  64 KB pipe buffer on >64 KB payloads (`process.exit()` before async
+  stdout drained), which blocked this log + the experiment-journal
+  appends. Fixed in the local hook by writing hook stdout synchronously
+  before exit; this entry is the post-fix retry.
 
 ### Next actions
 

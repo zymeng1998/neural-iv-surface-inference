@@ -1,9 +1,10 @@
 {
-  "description": "Summary of the D7 same-type residual audit artifact for story 3X.4. The full residual CSV is a generated audit artifact, retained on the Pod persistent volume and locally, but gitignored (large, regenerable). This committed summary records its path, row count, rule counts, and hash so the evidence is traceable without committing the CSV itself.",
+  "description": "Summary of the D7 same-type residual audit artifact for story 3X.4. The full residual CSV is a generated, regenerable audit artifact retained outside the committed bundle (gitignored). This committed summary records its repo-relative path, row count, rule counts, and hash so the evidence is traceable without committing the CSV itself.",
   "residual_csv": {
-    "path_local": "artifacts/runs/3X4/otm_residual_same_type.csv",
-    "path_pod": "/workspace/Neural-IV-Surface-inference/artifacts/audits/otm_residual_same_type.csv",
+    "path": "artifacts/runs/3X4/otm_residual_same_type.csv",
+    "committed": false,
     "gitignored": true,
+    "regenerable": true,
     "row_count": 11018,
     "bytes": 3512496,
     "sha256": "a15b640f41b14a8c58cb27a5d1d989cc119f6e7a66543abf487efe6c0b7df438"
