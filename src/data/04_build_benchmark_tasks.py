@@ -38,7 +38,29 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from config import PROCESSED_DIR, SURFACE_POINTS_STRICT_FILE
+from config import (
+    PROCESSED_DIR,
+    SURFACE_POINTS_STRICT_FILE,
+    SURFACE_POINTS_STRICT_OTM_FILE,
+)
+
+# ---------------------------------------------------------------------------
+# Source-file dispatch (Phase 3X / ADR 0006)
+# ---------------------------------------------------------------------------
+# Default source remains the dirty strict file so the historical Phase 1 /
+# Phase 2 / Phase 3A / Phase 3B benchmarks rebuild byte-identically. The
+# ``strict_otm`` source is the new single-valued OTM surface from
+# ``src/data/05_build_otm_surface.py`` (story 3X.2); selecting it appends an
+# ``_otm`` suffix to every output filename so the OTM benchmarks live
+# side-by-side with the dirty ones without overwriting them.
+SOURCE_FILES: dict[str, Path] = {
+    "strict": SURFACE_POINTS_STRICT_FILE,
+    "strict_otm": SURFACE_POINTS_STRICT_OTM_FILE,
+}
+SOURCE_SUFFIXES: dict[str, str] = {
+    "strict": "",
+    "strict_otm": "_otm",
+}
 
 from neural_iv_surface_inference.data.masking import apply_mask
 from neural_iv_surface_inference.data.noise import inject_noise, NOISE_REGIMES
@@ -80,6 +102,7 @@ def build_one_variant_streaming(
     output_dir: Path,
     date_split_map: dict,
     verbose: bool = True,
+    name_suffix: str = "",
 ) -> Path:
     """Build a single benchmark variant by streaming through the source file.
 
@@ -93,7 +116,7 @@ def build_one_variant_streaming(
     hetero = variant.get("heteroscedastic", False)
     seed = variant.get("seed", 42)
 
-    name = benchmark_name(strategy, keep_frac, noise_regime, hetero)
+    name = benchmark_name(strategy, keep_frac, noise_regime, hetero) + name_suffix
 
     if verbose:
         print(f"\n[build] {name}")
@@ -213,7 +236,21 @@ def main():
         default=str(CONFIG_PATH),
         help="Path to benchmark_tasks.yaml",
     )
+    parser.add_argument(
+        "--source",
+        type=str,
+        choices=sorted(SOURCE_FILES.keys()),
+        default="strict",
+        help=(
+            "Source surface file. 'strict' (default) is the historical dirty "
+            "strict file; 'strict_otm' is the Phase 3X OTM-restricted surface "
+            "(adds an '_otm' suffix to all output filenames)."
+        ),
+    )
     args = parser.parse_args()
+
+    source_path = SOURCE_FILES[args.source]
+    name_suffix = SOURCE_SUFFIXES[args.source]
 
     cfg = load_config(Path(args.config))
     variants = cfg.get("variants", [])
@@ -222,20 +259,24 @@ def main():
     val_frac = split_cfg.get("val_frac", 0.15)
 
     if args.list:
-        print("Configured benchmark variants:")
+        print(f"Configured benchmark variants (source={args.source}):")
         for v in variants:
             name = benchmark_name(
                 v["strategy"], v["keep_frac"], v["noise_regime"],
                 v.get("heteroscedastic", False),
-            )
+            ) + name_suffix
             print(f"  {name}")
         return
 
     # Validate source file
-    if not SURFACE_POINTS_STRICT_FILE.exists():
+    if not source_path.exists():
+        step_hint = (
+            "Run Step 3 first (03_build_spy_surface_table.py)."
+            if args.source == "strict"
+            else "Run Step 5 first (05_build_otm_surface.py)."
+        )
         print(
-            f"✗ Source file not found: {SURFACE_POINTS_STRICT_FILE}\n"
-            f"  Run Step 3 first (03_build_spy_surface_table.py).",
+            f"✗ Source file not found: {source_path}\n  {step_hint}",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -249,9 +290,9 @@ def main():
             val_frac=val_frac,
         )
     else:
-        # Fallback: read only the date column from the strict file
-        print(f"  (no partitions found, reading date column from strict file)")
-        dates_table = pq.read_table(SURFACE_POINTS_STRICT_FILE, columns=["date"])
+        # Fallback: read only the date column from the source file
+        print(f"  (no partitions found, reading date column from {source_path.name})")
+        dates_table = pq.read_table(source_path, columns=["date"])
         dates = pd.to_datetime(dates_table["date"].to_pandas()).unique()
         sorted_dates = sorted(dates)
         n = len(sorted_dates)
@@ -295,7 +336,8 @@ def main():
     paths = []
     for v in variants:
         p = build_one_variant_streaming(
-            SURFACE_POINTS_STRICT_FILE, v, output_dir, date_split_map,
+            source_path, v, output_dir, date_split_map,
+            name_suffix=name_suffix,
         )
         paths.append(p)
         gc.collect()

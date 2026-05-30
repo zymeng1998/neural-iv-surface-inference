@@ -3313,3 +3313,71 @@ No legacy artifact mutated. All new artifacts carry `_otm` suffixes
 - Promote `3X.2` (`backlog → todo`) to start local implementation of
   the OTM builder. 3X.2 / 3X.3 are local-only and parallel-safe; no
   Pod time until 3X.4.
+
+---
+
+## 2026-05-30 — 3X.2 OTM-surface builder + step-04 `--source` flag landed (in_review)
+
+### Completed
+
+- Implemented [`src/data/05_build_otm_surface.py`](../../src/data/05_build_otm_surface.py):
+  streaming OTM-restricted strict-surface builder per ADR 0006 (D5 +
+  D7). Per-date buffer mirrors the audit-script pattern so the same
+  code will scale from the local synthetic fixtures to the 22 M-row
+  real strict file on a 16 GB CPU pod (story 3X.4).
+- OTM rule: `log_m < -atm_band` → keep put; `log_m > +atm_band` → keep
+  call; `|log_m| <= atm_band` → group by `(date, expiration, strike)`
+  and pick tighter `(ask − bid)/max(mid, eps)`; declared deterministic
+  fallback = `put`. **No synthetic-quote construction** anywhere in
+  the path.
+- D7 same-type residual handling at the rounded
+  `(date, log_m, tau)` key: emit `artifacts/audits/otm_residual_same_type.csv`
+  (all colliding rows for audit), classify economic equivalence on
+  `{bid, ask, mid, implied_volatility, volume, open_interest}` within
+  1e-8 tolerance, drop equivalent groups deterministically, else
+  quality-select on (relative spread → OI → volume); `keep='first'`
+  fallback is counted in the manifest.
+- Manifest reports input/output SHA-256, per-rule counts, ATM-band
+  sensitivity at the four bands `{1e-12, 0.001, 0.0025, 0.005}` (D5),
+  ATM-fallback count, residual-fallback count, dates processed, wall
+  time.
+- Added `SURFACE_POINTS_STRICT_OTM_FILE` and
+  `ATM_BAND_ABS_LOG_MONEYNESS = 0.0025` to
+  [`src/data/config.py`](../../src/data/config.py).
+- Extended [`src/data/04_build_benchmark_tasks.py`](../../src/data/04_build_benchmark_tasks.py)
+  with `--source {strict,strict_otm}` (default `strict`, byte-unchanged
+  legacy path) and an `_otm` filename suffix when the OTM source is
+  selected. `--list` now prints names with the active source's suffix.
+- New [`tests/test_otm_surface_builder.py`](../../tests/test_otm_surface_builder.py)
+  (9 tests, all pass) covering: OTM convention drops, ATM tie-break on
+  tighter spread, exact-ATM fallback to put, single-valued invariant
+  at the rounded key, ATM-band sensitivity counters, equivalent-residual
+  drop + CSV emission, non-equivalent residual quality-select, manifest
+  hash stability across runs, and `--dry-run` writes no parquet.
+
+### Verification
+
+- `pytest tests/test_otm_surface_builder.py -v` → 9 passed in 1.31 s.
+- `pytest tests/ -q` → **347 passed**, 39 warnings, 15.76 s (no
+  regression vs prior baseline).
+- Manual `--dry-run` against a hand-built synthetic fixture printed a
+  well-formed manifest with the expected counters.
+- `python3 scripts/pmr_prepush_gate.py --verbose --dry-run` flagged the
+  four evidence files; this entry + the lineage/roadmap/BOARD edits
+  satisfy the gate.
+
+### No data mutated
+
+- No real-data parquet was produced (real OTM file is story 3X.4 on
+  Pod); no existing parquet or benchmark touched; step-04 default
+  behaviour byte-unchanged.
+
+### Next actions
+
+- Human reviews the diff (`5 files changed`: new builder + new test +
+  step-04/config edits + lineage/roadmap/BOARD/progress doc updates).
+- After review approval, BOARD 3X.2 → `done`; promote 3X.3 (vectorised
+  audit v2 + paired-coordinate masking flag) which is local-CPU and
+  parallel-safe with 3X.2.
+- 3X.4 (Pod CPU build) consumes this builder unchanged on the 22 M-row
+  real strict file.

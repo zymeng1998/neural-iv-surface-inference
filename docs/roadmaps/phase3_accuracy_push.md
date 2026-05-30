@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-05-29T23:55:00-04:00
+last_updated_at: 2026-05-30T00:00:00-04:00
 ---
 
 ## 1) Why Phase 3 exists
@@ -320,7 +320,7 @@ carry an `_otm` suffix.
 | ID | Story | Locale / HW |
 |---|---|---|
 | 3X.1 | Decompose Phase 3X (ADR addendum + 3X.2–3X.14 specs) | local CPU |
-| 3X.2 | OTM-surface builder + step-04 `--source` flag + ATM-band (D5) + residual handling (D7) + tests | local CPU |
+| 3X.2 | OTM-surface builder + step-04 `--source` flag + ATM-band (D5) + residual handling (D7) + tests — **in_review** (2026-05-30) | local CPU |
 | 3X.3 | Vectorised audit v2 + paired-coordinate masking flag (default off) + parity tests | local CPU |
 | 3X.4 | Build OTM strict surface + rebuild **all 11** OTM benchmarks | Pod **CPU** |
 | 3X.5 | Audit OTM strict + all 11 benchmarks — **HUMAN REVIEW GATE** | Pod **CPU** |

@@ -156,6 +156,51 @@ decision trail.
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────┐
+│  STEP 3b — Build OTM-Restricted Strict Surface          │
+│  Script: src/data/05_build_otm_surface.py               │
+│  Config: src/data/config.py                              │
+│          (ATM_BAND_ABS_LOG_MONEYNESS = 0.0025,           │
+│           SURFACE_POINTS_STRICT_OTM_FILE)                │
+│  ADR:    docs/decisions/0006_..._data_correction.md     │
+│  Story:  3X.2 (local builder + tests)                   │
+│  Run:    3X.4 on Pod CPU (real data; this step is       │
+│          local-only code/tests in 3X.2)                  │
+│                                                         │
+│  Input:  data_processed/spy/                             │
+│          spy_surface_points_strict.parquet (from Step 3)│
+│                                                         │
+│  Processing (streaming, per-date buffer):               │
+│    1. Stream input via PyArrow iter_batches             │
+│    2. OTM rule per row (D5):                            │
+│       - log_m <  -atm_band → keep put leg only          │
+│       - log_m >  +atm_band → keep call leg only         │
+│       - |log_m| <= atm_band → pick tighter relative     │
+│         spread; deterministic fallback = put            │
+│    3. D7 residual dedup at rounded                      │
+│       (date, log_m, tau) key: drop on economic          │
+│       equivalence, else quality-select on               │
+│       (spread, OI, volume); keep='first' fallback       │
+│       counted in manifest.                              │
+│    4. Stream output to ParquetWriter; emit manifest     │
+│       JSON with input/output SHA-256, ATM-band          │
+│       sensitivity counts at {1e-12, 0.001, 0.0025,      │
+│       0.005}, residual-fallback count.                  │
+│                                                         │
+│  Output: data_processed/spy/                             │
+│          spy_surface_points_strict_otm.parquet           │
+│          artifacts/audits/otm_residual_same_type.csv     │
+│          (optional manifest JSON via --manifest)         │
+│                                                         │
+│  Status: builder + tests implemented in story 3X.2;     │
+│          real OTM file is produced by story 3X.4 (Pod). │
+│          Default step-04 source remains 'strict' so     │
+│          historical benchmarks rebuild byte-identical;  │
+│          `--source strict_otm` selects this file and    │
+│          appends '_otm' to output filenames.            │
+└────────────────────────┬────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────┐
 │  STEP 4 — EDA / First Look (manual)                    │
 │  Notebook: notebooks/01_spy_data_firstlook.ipynb        │
 │                                                         │
@@ -432,6 +477,11 @@ Planned correction (per ADR 0006, epic 3X):
   **OTM convention** (puts for `K<S`, calls for `K>S`, tie-broken at
   ATM by tighter relative spread, fallback to put). This becomes the
   canonical modelling substrate for Phase 3C / 3D / sparse-region work.
+  **Builder + tests landed in story 3X.2** as
+  [`src/data/05_build_otm_surface.py`](../../src/data/05_build_otm_surface.py)
+  with synthetic-fixture tests in
+  [`tests/test_otm_surface_builder.py`](../../tests/test_otm_surface_builder.py);
+  the real OTM file is produced on the Pod in story 3X.4.
 - Rebuild only `spy_phase1_random40_noiselow` from the OTM file
   (~7 min on Pod); historical benchmarks remain untouched and remain
   comparable to themselves.

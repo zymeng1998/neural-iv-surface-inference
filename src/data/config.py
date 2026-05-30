@@ -57,8 +57,9 @@ RAW_OPTIONS_FILE    = RAW_DIR / "spy_options.parquet"
 RAW_UNDERLYING_FILE = RAW_DIR / "spy_underlying.parquet"
 
 # ── Processed file names ─────────────────────────────────────────────
-SURFACE_POINTS_FILE        = PROCESSED_DIR / "spy_surface_points.parquet"
-SURFACE_POINTS_STRICT_FILE = PROCESSED_DIR / "spy_surface_points_strict.parquet"
+SURFACE_POINTS_FILE             = PROCESSED_DIR / "spy_surface_points.parquet"
+SURFACE_POINTS_STRICT_FILE      = PROCESSED_DIR / "spy_surface_points_strict.parquet"
+SURFACE_POINTS_STRICT_OTM_FILE  = PROCESSED_DIR / "spy_surface_points_strict_otm.parquet"
 
 # ── Schema: required columns (pipeline will fail if missing) ─────────
 REQUIRED_OPTIONS_COLS = [
@@ -103,3 +104,11 @@ STRICT_MAX_LOG_MONEYNESS =  1.0   # deep OTM
 # Wide spread flag threshold
 WIDE_SPREAD_THRESHOLD = 0.5   # (ask - bid) / mid > 50%
 SMALL_EPS = 1e-8              # avoid division by zero
+
+# ── OTM-restricted surface (Phase 3X, ADR 0006 + D5) ────────────────
+# Half-width of the near-ATM band on |log_moneyness|. Rows with
+# |log_m| <= ATM_BAND_ABS_LOG_MONEYNESS fall into the tie-break path
+# (pick the side with tighter relative spread; deterministic fallback
+# = "put"). Builder reports sensitivity counts at
+# {1e-12, 0.001, 0.0025, 0.005} in its manifest.
+ATM_BAND_ABS_LOG_MONEYNESS = 0.0025

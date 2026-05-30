@@ -70,7 +70,7 @@ last_updated_at: 2026-05-29T23:55:00-04:00
 | 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + closing addendum (ANP +2.7% vs RBF best-case; bar NOT met) | `in_review` | [`3B.7`](tasks/specs/3B.7_local_decision_layer_eval.md) | 2026-05-28 |
 | 3X | Epic | **NEW** Data correction: OTM-restricted surface + paired masking + full model-family restatement on `random40_noiselow_otm` (ADR 0006) | `in_progress` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W11.5 | 2026-05-29 |
 | 3X.1 | Story | Decompose Phase 3X (ADR 0006 addendum + 3X.2–3X.14 specs) | `in_review` | [`3X.1`](tasks/specs/3X.1_decompose_phase_3x.md) | 2026-05-29 |
-| 3X.2 | Story | Local: OTM-surface builder + step-04 `--source` + ATM-band (D5) + residual handling (D7) + tests | `backlog` | [`3X.2`](tasks/specs/3X.2_local_otm_surface_builder.md) | 2026-05-29 |
+| 3X.2 | Story | Local: OTM-surface builder + step-04 `--source` + ATM-band (D5) + residual handling (D7) + tests | `in_review` | [`3X.2`](tasks/specs/3X.2_local_otm_surface_builder.md) | 2026-05-30 |
 | 3X.3 | Story | Local: vectorised audit v2 + paired-coordinate masking flag (default off) + parity tests | `backlog` | [`3X.3`](tasks/specs/3X.3_local_audit_v2_and_paired_masking.md) | 2026-05-29 |
 | 3X.4 | Story | Remote (CPU): build OTM strict surface + rebuild all 11 OTM benchmarks | `backlog` | [`3X.4`](tasks/specs/3X.4_remote_build_otm_strict_and_benchmarks.md) | 2026-05-29 |
 | 3X.5 | Story | Remote (CPU): audit OTM strict + all 11 benchmarks — **HUMAN REVIEW GATE** | `backlog` | [`3X.5`](tasks/specs/3X.5_remote_audit_otm_gate.md) | 2026-05-29 |
