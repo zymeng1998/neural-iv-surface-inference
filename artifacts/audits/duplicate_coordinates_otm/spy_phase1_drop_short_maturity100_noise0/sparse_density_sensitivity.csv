@@ -1,0 +1,4 @@
+benchmark,key_decimals,mode,n_total_hidden,n_zero_distance,pct_zero_distance,n_hidden_with_exact_obs_dup,q25_distance,q50_distance,q75_distance,q95_distance
+spy_phase1_drop_short_maturity100_noise0_otm,10,naive,2870087,0,0.0,0,0.038356164383561646,0.06027397260273973,0.07671232876712329,0.09863013698630138
+spy_phase1_drop_short_maturity100_noise0_otm,10,dedup_obs,2870087,0,0.0,0,0.038356164383561646,0.06027397260273973,0.07671232876712329,0.09863013698630138
+spy_phase1_drop_short_maturity100_noise0_otm,10,exclude_self_dup,2870087,0,0.0,0,0.038356164383561646,0.06027397260273973,0.07671232876712329,0.09863013698630138

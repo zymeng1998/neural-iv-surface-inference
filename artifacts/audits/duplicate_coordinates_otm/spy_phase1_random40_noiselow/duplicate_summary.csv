@@ -1,0 +1,5 @@
+key_name,total_rows,rows_in_dup_groups,pct_rows_in_dup_groups,n_dup_groups,n_groups_call_put_mix,n_groups_same_type,group_size_2,group_size_3,group_size_4_plus
+date+expiration+strike,10531499,0,0.0,0,0,0,0,0,0
+"date+round(lm,8)+round(tau,8)",10531499,0,0.0,0,0,0,0,0,0
+"date+round(lm,10)+round(tau,10)",10531499,0,0.0,0,0,0,0,0,0
+"date+round(lm,12)+round(tau,12)",10531499,0,0.0,0,0,0,0,0,0

@@ -1447,3 +1447,48 @@ the committed bundle; OTM data parquets likewise stay gitignored.
 
 **Next step:** story 3X.5 — re-audit OTM strict + 11 benchmarks with
 audit v2 (≤0.5% dup/leakage HUMAN REVIEW GATE) on the same CPU pod.
+
+## 2026-05-30T16:30:00-04:00 — 3X.5 OTM audit HUMAN REVIEW GATE (CPU pod)
+
+**Goal:** prove the OTM correction worked — re-audit the strict OTM
+surface + all 11 `_otm` benchmarks with audit v2 and check each against
+the ADR 0006 / D4 gate (contract-key dup ≤0.5%, coord-key dup @10dp
+≤0.5%, held-out exact-twin share ≤0.5% per split).
+
+**Setup:** same RunPod CPU pod as 3X.4 (2 vCPU, 251 GB RAM); OTM data
+already on the volume. Audit v2 (`scripts/audit_duplicate_coordinates_v2.py`).
+12 audit passes; two parallel workers across the 2 cores.
+
+**Result — GATE PASS 12/12:**
+
+| Metric | Dirty (3X-audit) | OTM (3X.5) |
+|---|---|---|
+| strict contract-key dup share | 93.61 % | **0.0000 %** |
+| coord-key dup @ 10 dp (all artifacts) | ~93.6 % | **0.0000 %** |
+| held-out exact-twin share (per split, all benchmarks) | up to ~40% / cell | **0.0000 %** |
+| duplicate groups (strict) | 10,530,702 | **0** |
+
+- Every one of the 12 artifacts clears all three thresholds. Splits
+  checked: train / val / test.
+
+**Interpretation:** the single-valued OTM substrate eliminates both the
+duplicate-coordinate structure and the exact-twin observed/held-out
+leakage that biased dense-coordinate baselines (RBF). The correction is
+confirmed end-to-end; the benchmark suite is sound for OTM claims.
+
+**Decision impact:** D4 paired-coordinate masking **not** triggered
+(stays opt-in, default-off). Gate clears the path to the GPU retraining
+ladder (3X.7–3X.12) — **pending human approval** of this review gate.
+
+**Timing:** ~2.2 h wall for all 12 (two workers). The `audit_benchmark`
+leakage pass is the bottleneck (~20 min/benchmark, super-linear in
+dates, CPU-bound); the strict dup-pass is ~1 min. Far over the spec's
+~10–15 min estimate — candidate audit-v2 optimisation follow-up.
+
+**Files (committed):**
+`artifacts/audits/duplicate_coordinates_otm/` — per-artifact summary
+CSVs (12 dirs) + `otm_audit_gate.csv` / `.json` roll-up;
+`docs/research/duplicate_coordinate_audit_otm.md` contrast report.
+
+**Next step:** human approves → 3X.5 `done` → verify OTM artifacts on
+persistent storage → terminate CPU pod (Q4) → GPU pod for 3X.7+.

@@ -1,0 +1,11 @@
+{
+  "all_pass": true,
+  "n_pass": 12,
+  "n_total": 12,
+  "thresholds_pct": {
+    "contract_dup": 0.5,
+    "coord10_dup": 0.5,
+    "twin_leakage_per_split": 0.5
+  },
+  "dirty_contract_dup_pct": 93.6058749007198
+}

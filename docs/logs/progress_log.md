@@ -3654,3 +3654,46 @@ No legacy artifact mutated. All new artifacts carry `_otm` suffixes
 - Research critical path resumes (separate effort): 3X.4 → `done`, then
   3X.5 — the OTM audit HUMAN REVIEW GATE (≤0.5% dup/leakage) on a CPU
   pod, which blocks all GPU spend (3X.6+).
+
+## 2026-05-30 — 3X.5 OTM audit HUMAN REVIEW GATE → PASS 12/12 (in_review)
+
+### What was done
+
+- Ran audit v2 (3X.3, vectorised) on all 12 OTM artifacts — the strict
+  OTM surface + all 11 `_otm` benchmarks — on the same CPU pod that
+  built them in 3X.4 (RunPod, 2 vCPU, OTM data already on the volume).
+- Built the roll-up `artifacts/audits/duplicate_coordinates_otm/otm_audit_gate.csv`
+  (+ `.json`) with a PASS/FAIL verdict per artifact against the three
+  ADR 0006 / D4 thresholds, and the contrast report
+  `docs/research/duplicate_coordinate_audit_otm.md`.
+
+### Results
+
+- **GATE PASS 12/12.** Every artifact: contract-key dup **0.0000 %**,
+  coord-key dup @ 10 dp **0.0000 %**, held-out exact-twin share
+  **0.0000 %** on every split (train / val / test). Zero duplicate
+  groups on the single-valued substrate.
+- Audit headline drops **93.61 % → 0.0000 %** contract-key dup share.
+- D4 paired-coordinate masking is **not** triggered — it stays opt-in,
+  default-off. No remediation needed.
+
+### Compute / runtime note
+
+- audit v2's `audit_benchmark` leakage pass is the bottleneck: ~20 min
+  per 10.5M-row benchmark, super-linear in number of dates, CPU-bound
+  (not memory-bound — 213 GB free). Ran two workers across the 2 cores;
+  ~2.2 h wall for all 12. This is far over the spec's 10–15 min estimate
+  — flagged as a candidate audit-v2 optimisation follow-up (the strict
+  dup-pass on the same file is ~1 min, so the cost is specific to the
+  per-date leakage loop). Out of scope to fix under this gate story.
+
+### Next actions
+
+- **Human reviews the gate.** On approval: mark 3X.5 `done`; confirm OTM
+  data + audit artifacts are on persistent storage from a fresh shell;
+  **terminate the CPU pod** (Q4); rent a GPU pod for 3X.7+ (or run 3X.6
+  RBF-on-OTM CPU-only first).
+- Push housekeeping: 3X.3 + 3X.4 are still `in_review` (same review
+  batch); the pre-push dep gate needs them `done`, so this push either
+  waits on the operator marking them `done` or uses a documented
+  `WAIVE_DEPS` recording the in_review dep status.

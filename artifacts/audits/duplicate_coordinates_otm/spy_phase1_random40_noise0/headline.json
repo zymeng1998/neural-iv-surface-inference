@@ -1,0 +1,10 @@
+{
+  "strict_path": "/workspace/Neural-IV-Surface-inference/data_processed/spy/benchmarks/spy_phase1_random40_noise0_otm.parquet",
+  "benchmarks": [
+    "/workspace/Neural-IV-Surface-inference/data_processed/spy/benchmarks/spy_phase1_random40_noise0_otm.parquet"
+  ],
+  "contract_dup_share_pct": 0.0,
+  "n_call_put_groups": 0,
+  "n_same_type_groups": 0,
+  "audit_version": "v2"
+}

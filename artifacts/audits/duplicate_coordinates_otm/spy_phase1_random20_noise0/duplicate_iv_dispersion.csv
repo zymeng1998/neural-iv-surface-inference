@@ -1,0 +1,13 @@
+key_name,group_kind,p50,p90,p95,p99,max,mean,n
+date+expiration+strike,call_put_mix,,,,,,,
+date+expiration+strike,same_type,,,,,,,
+date+expiration+strike,all_dup_groups,,,,,,,
+"date+round(lm,8)+round(tau,8)",call_put_mix,,,,,,,
+"date+round(lm,8)+round(tau,8)",same_type,,,,,,,
+"date+round(lm,8)+round(tau,8)",all_dup_groups,,,,,,,
+"date+round(lm,10)+round(tau,10)",call_put_mix,,,,,,,
+"date+round(lm,10)+round(tau,10)",same_type,,,,,,,
+"date+round(lm,10)+round(tau,10)",all_dup_groups,,,,,,,
+"date+round(lm,12)+round(tau,12)",call_put_mix,,,,,,,
+"date+round(lm,12)+round(tau,12)",same_type,,,,,,,
+"date+round(lm,12)+round(tau,12)",all_dup_groups,,,,,,,

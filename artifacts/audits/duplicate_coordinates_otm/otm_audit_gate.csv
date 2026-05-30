@@ -1,0 +1,13 @@
+artifact,kind,contract_dup_pct,coord10_dup_pct,n_dup_groups,max_split_twin_pct,worst_split,worst_cell,verdict
+strict,strict,0.0,0.0,0,,,,PASS
+spy_phase1_drop_short_maturity100_noise0,benchmark,0.0,0.0,0,0.0,train,,PASS
+spy_phase1_drop_wings100_noise0,benchmark,0.0,0.0,0,0.0,train,,PASS
+spy_phase1_random20_noise0,benchmark,0.0,0.0,0,0.0,train,,PASS
+spy_phase1_random20_noiselow,benchmark,0.0,0.0,0,0.0,train,,PASS
+spy_phase1_random40_noise0,benchmark,0.0,0.0,0,0.0,train,,PASS
+spy_phase1_random40_noisehigh,benchmark,0.0,0.0,0,0.0,train,,PASS
+spy_phase1_random40_noiselow,benchmark,0.0,0.0,0,0.0,train,,PASS
+spy_phase1_random40_noisemed,benchmark,0.0,0.0,0,0.0,train,,PASS
+spy_phase1_random60_noise0,benchmark,0.0,0.0,0,0.0,train,,PASS
+spy_phase1_realistic40_noiselow,benchmark,0.0,0.0,0,0.0,train,,PASS
+spy_phase1_realistic40_noisemed_hetero,benchmark,0.0,0.0,0,0.0,train,,PASS
