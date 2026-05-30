@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-05-30T14:45:00-04:00
+last_updated_at: 2026-05-30T16:30:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -88,10 +88,10 @@ decomposition). The first story of any epic is always its decomposition story.
 | 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + journal + roadmap closing addendum (ANP +2.7% vs RBF best-case; bar NOT met) | `in_review` | `docs/tasks/specs/3B.7_local_decision_layer_eval.md` | 2026-05-28 |
 | 3X | Epic | Phase 3 — Data correction: OTM-restricted surface + paired-coordinate masking + full model-family restatement on `random40_noiselow_otm` (per ADR 0006) | `in_progress` | `docs/roadmaps/phase3_accuracy_push.md` (W11.5 / §4) | 2026-05-29 |
 | 3X.1 | Story | Decompose Phase 3X (ADR 0006 addendum + 3X.2–3X.14 specs) | `in_review` | `docs/tasks/specs/3X.1_decompose_phase_3x.md` | 2026-05-29 |
-| 3X.2 | Story | Local: OTM-surface builder `05_build_otm_surface.py` + step-04 `--source` flag + ATM-band (D5) + same-type residual handling (D7) + tests | `in_review` | `docs/tasks/specs/3X.2_local_otm_surface_builder.md` | 2026-05-30 |
-| 3X.3 | Story | Local: vectorised audit v2 + paired-coordinate masking flag (default off) + parity tests | `in_review` | `docs/tasks/specs/3X.3_local_audit_v2_and_paired_masking.md` | 2026-05-30 |
-| 3X.4 | Story | Remote (CPU): build OTM strict surface + rebuild all 11 OTM benchmarks — → single-valued PASS (10,531,499 rows, 0 dup groups), 11 `_otm` benchmarks, dirty files hash-unchanged | `in_review` | `docs/tasks/specs/3X.4_remote_build_otm_strict_and_benchmarks.md` | 2026-05-30 |
-| 3X.5 | Story | Remote (CPU): audit OTM strict + all 11 OTM benchmarks — **HUMAN REVIEW GATE** (≤0.5% dup/leakage) | `backlog` | `docs/tasks/specs/3X.5_remote_audit_otm_gate.md` | 2026-05-29 |
+| 3X.2 | Story | Local: OTM-surface builder `05_build_otm_surface.py` + step-04 `--source` flag + ATM-band (D5) + same-type residual handling (D7) + tests | `done` | `docs/tasks/specs/3X.2_local_otm_surface_builder.md` | 2026-05-30 |
+| 3X.3 | Story | Local: vectorised audit v2 + paired-coordinate masking flag (default off) + parity tests | `done` | `docs/tasks/specs/3X.3_local_audit_v2_and_paired_masking.md` | 2026-05-30 |
+| 3X.4 | Story | Remote (CPU): build OTM strict surface + rebuild all 11 OTM benchmarks — → single-valued PASS (10,531,499 rows, 0 dup groups), 11 `_otm` benchmarks, dirty files hash-unchanged | `done` | `docs/tasks/specs/3X.4_remote_build_otm_strict_and_benchmarks.md` | 2026-05-30 |
+| 3X.5 | Story | Remote (CPU): audit OTM strict + all 11 OTM benchmarks — **HUMAN REVIEW GATE** → **PASS 12/12** (dup 0.0000%, twin leakage 0.0000% all splits; 93.61%→0%) | `in_review` | `docs/tasks/specs/3X.5_remote_audit_otm_gate.md` | 2026-05-30 |
 | 3X.6 | Story | Remote (CPU): early RBF-on-OTM baseline (floor sanity check before GPU spend) | `backlog` | `docs/tasks/specs/3X.6_remote_rbf_on_otm_baseline.md` | 2026-05-29 |
 | 3X.7 | Story | Remote (GPU): MLP baseline on OTM (Q1 — ladder anchor) | `backlog` | `docs/tasks/specs/3X.7_remote_mlp_on_otm.md` | 2026-05-29 |
 | 3X.8 | Story | Remote (GPU): Phase 2D DeepSets on OTM — single (2D.7-equiv) + K=5 ensemble (2D.8-equiv) (D2) | `backlog` | `docs/tasks/specs/3X.8_remote_deepsets_on_otm.md` | 2026-05-29 |
