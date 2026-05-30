@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-05-28T14:00:00-04:00
+last_updated_at: 2026-05-29T23:30:00-04:00
 ---
 
 > **Read this first if you are picking up Phase 3 work cold.** It mirrors
@@ -35,6 +35,18 @@ last_updated_at: 2026-05-28T14:00:00-04:00
 - **Bar:** test MAE ≤ 0.0693 on 2D.9 slice, ≤ 0.0629 on full 2D.4
   fold; coverage stays within ±2 pp of 0.90; hi-conf MAE strictly
   below no-abstention MAE.
+- **NEW gating epic 3X (2026-05-29):** the 2026-05-29 duplicate-
+  coordinate audit found 93.61 % of strict-table rows are call-put
+  paired duplicates and 37.46 % of held-out rows in
+  `spy_phase1_random40_noiselow` have an exact observed twin —
+  invalidating the single-valued-function assumption. **3X — Data
+  correction** (OTM-restricted surface + paired-coordinate masking
+  + re-audit + ANP re-train + decision-layer re-eval) is inserted
+  between 3B and 3C; 3C and 3D are paused until 3X closes. The
+  Phase 3 acceptance bar is unchanged but is now adjudicated on the
+  OTM-clean benchmark. Full narrative:
+  [ADR 0006](decisions/0006_duplicate_coordinate_data_correction.md) +
+  [retrospective 0002](retrospectives/0002_call_put_duplicate_coordinate_discovery.md).
 
 ## Live status (synced manually with `BOARD.md`)
 
@@ -56,10 +68,12 @@ last_updated_at: 2026-05-28T14:00:00-04:00
 | 3B.5 | Story | Remote: K=5 deep ensemble of ANP point head on AV (parallels 2D.8) | `done` | [`3B.5`](tasks/specs/3B.5_remote_deep_ensemble.md) | 2026-05-29 |
 | 3B.6 | Story | Local: calibrator re-fit on ANP val predictions (parallels 2D.4) | `in_review` | [`3B.6`](tasks/specs/3B.6_local_calibrator_refit.md) | 2026-05-28 |
 | 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + closing addendum (ANP +2.7% vs RBF best-case; bar NOT met) | `in_review` | [`3B.7`](tasks/specs/3B.7_local_decision_layer_eval.md) | 2026-05-28 |
-| 3C | Epic | Feature & inductive-bias expansion (microstructure, optional SVI) | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W12 | 2026-05-27 |
-| 3C.1 | Story | Decompose Phase 3C | `backlog` | [`3C.1`](tasks/specs/3C.1_decompose_phase_3c.md) | 2026-05-27 |
-| 3D | Epic | Closing memo + re-evaluation vs RBF | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W13 | 2026-05-27 |
-| 3D.1 | Story | Decompose Phase 3D | `backlog` | [`3D.1`](tasks/specs/3D.1_decompose_phase_3d.md) | 2026-05-27 |
+| 3X | Epic | **NEW** Data correction: OTM-restricted surface + paired-coordinate masking + re-audit + ANP re-train + decision-layer re-eval (ADR 0006) | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W11.5 | 2026-05-29 |
+| 3X.1 | Story | Decompose Phase 3X (ADR 0006 + 3X.2 / 3X.3 specs; vectorised audit v2) | `backlog` | `tasks/specs/3X.1_decompose_phase_3x.md` (to be written) | 2026-05-29 |
+| 3C | Epic | Feature & inductive-bias expansion (microstructure, optional SVI) — **paused on 3X** | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W12 | 2026-05-29 |
+| 3C.1 | Story | Decompose Phase 3C | `backlog` | [`3C.1`](tasks/specs/3C.1_decompose_phase_3c.md) | 2026-05-29 |
+| 3D | Epic | Closing memo + re-evaluation vs RBF — **must include OTM-clean re-statement** | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W13 | 2026-05-29 |
+| 3D.1 | Story | Decompose Phase 3D | `backlog` | [`3D.1`](tasks/specs/3D.1_decompose_phase_3d.md) | 2026-05-29 |
 
 ## Parallel-safety matrix
 
@@ -80,8 +94,9 @@ only if neither writes to a path in the other's `file_scope`.
 | 3B.5 | 3A.*, 3C.1, 3D.1 | 3B.4 (must be `done`; reuses point config + Pod); 3B.6 / 3B.7 (chain downstream) |
 | 3B.6 | 3A.*, 3C.1, 3D.1 | 3B.4 + 3B.5 (must be `done`; reads their val predictions); 3B.7 (chains through 3B.6 calibrator) |
 | 3B.7 | 3A.*, 3C.1, 3D.1 | 3B.4 + 3B.5 + 3B.6 (must all be `done`; reads predictions + calibrator) |
-| 3C.1 | 3A.*, 3B.1, 3D.1 | none |
-| 3D.1 | 3A.*, 3B.1, 3C.1 | none |
+| 3X.1 | 3A.*, 3B.1, 3C.1, 3D.1 | none — gates 3X.2 / 3X.3 which gate 3C / 3D |
+| 3C.1 | 3A.*, 3B.1, 3D.1 | **3X (must close first)** |
+| 3D.1 | 3A.*, 3B.1, 3C.1 | **3X (must close first); 3C (consumes its OTM-clean numbers)** |
 
 > All four decomposition stories touch `BOARD.md`, `PHASE3_INDEX.md`,
 > the roadmap, and `progress_log.md`. They are listed as
@@ -303,19 +318,43 @@ only if neither writes to a path in the other's `file_scope`.
   Pod can be terminated.
 - **Open blocker:** none.
 
+### 3X.1 — Decompose Phase 3X (NEW 2026-05-29)
+
+- **2026-05-29** registered after the duplicate-coordinate audit
+  ([`docs/research/duplicate_coordinate_audit.md`](research/duplicate_coordinate_audit.md))
+  surfaced a structural call-put leg leak. Scope: write specs for
+  3X.2 (build OTM strict file + rebuild `random40_noiselow`
+  benchmark + re-audit) and 3X.3 (re-train ANP point head + re-fit
+  calibrator + re-run 2D.6 decision-layer evaluation on the
+  OTM-clean benchmark); ship vectorised v2 of
+  `scripts/audit_duplicate_coordinates.py` alongside 3X.2; commit
+  ADR 0006 (already shipped in this doc-update pass).
+- **Next concrete action:** human reviews ADR 0006 + retrospective
+  0002; promotes 3X.1 from `backlog → todo` to run in Plan mode.
+- **Open blocker:** none. 3X is local-only at the decomposition
+  stage; 3X.2 / 3X.3 are remote.
+
 ### 3C.1 — Decompose Phase 3C
 
 - **2026-05-27** initial scaffold (not yet executed).
-- **Next concrete action:** gate on 3A and 3B closing, then human
-  promotes `3C.1` to `todo`.
-- **Open blocker:** depends on 3A and 3B closing.
+- **Next concrete action:** gate on 3X closing, then human promotes
+  `3C.1` to `todo`. The sparse-region ANP-vs-RBF research note
+  ([`research/sparse_region_anp_vs_rbf_design.md`](research/sparse_region_anp_vs_rbf_design.md))
+  is now `blocked` on 3X and moves into 3C scope on the OTM-clean
+  benchmark.
+- **Open blocker:** depends on 3X closing (per ADR 0006).
 
 ### 3D.1 — Decompose Phase 3D
 
 - **2026-05-27** initial scaffold (not yet executed).
-- **Next concrete action:** gate on 3A / 3B / 3C closing, then human
-  promotes `3D.1` to `todo`.
-- **Open blocker:** depends on all three sibling epics closing.
+- **2026-05-29** acceptance scope amended: the Phase 3 closing memo
+  **must include an OTM-clean re-statement** of the 3B headline
+  numbers (and the 3A delta if material) on the substrate produced
+  by 3X.2 / 3X.3, alongside the original `spy_phase1_random40_noiselow`
+  numbers preserved for traceability.
+- **Next concrete action:** gate on 3A / 3B / 3X / 3C closing, then
+  human promotes `3D.1` to `todo`.
+- **Open blocker:** depends on 3A, 3B, **3X**, 3C closing.
 
 ## Resume snippet (copy-paste into a fresh session)
 

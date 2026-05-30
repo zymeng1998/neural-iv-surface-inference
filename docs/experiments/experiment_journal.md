@@ -1268,3 +1268,128 @@ from the gaussian / quantile head outputs from 3B.4.
 **Tests run:** no new pytests (3B.5 reuses 3B.2 / 3B.3 paths
 already covered by the integration suite). Pod sweep ran cleanly;
 all five checkpoints + manifest + members.json + CSVs emitted.
+
+---
+
+## 2026-05-29T18:30:00-04:00 — Audit: duplicate coordinates in the strict surface + benchmark leakage
+
+**Purpose:** Before running the proposed sparse-region ANP-vs-RBF
+research experiment
+([`docs/research/sparse_region_anp_vs_rbf_design.md`](../research/sparse_region_anp_vs_rbf_design.md)),
+verify that the IV surface modelled in Phase 2 / Phase 3 actually
+satisfies its single-valued-function assumption — i.e. that the same
+`(date, log_moneyness, tau)` does not carry two distinct IV labels from
+the call leg vs the put leg of the same contract.
+
+**Changed variables:** none against the existing data — this is a
+read-only audit. New tooling shipped:
+[`scripts/audit_duplicate_coordinates.py`](../../scripts/audit_duplicate_coordinates.py)
+(chunked PyArrow per-date streaming; audits the strict surface for
+contract-key + coord-key dups at 8/10/12 dp; audits a benchmark for
+observed-hidden coordinate leakage and sparse-region density
+sensitivity in three modes: naive / dedup_obs / exclude_self_dup),
+3 unit tests
+([`tests/test_audit_duplicate_coordinates.py`](../../tests/test_audit_duplicate_coordinates.py),
+all green locally and on Pod).
+
+**Result summary:** the audit ran on Pod (CPU only, 2h 39m wall total:
+strict pass 2h 11m over 4,622 dates, benchmark pass 27 m over the same
+4,622 dates, write/render < 1 m) against
+`data_processed/spy/spy_surface_points_strict.parquet` (22,512,040
+rows) and
+`data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet`
+(13,510,279 hidden rows).
+
+Strict surface (identical at 8 / 10 / 12 dp rounding):
+
+| key | rows in dup groups | % | n dup groups | call-put mix | same-type |
+|---|---:|---:|---:|---:|---:|
+| `date+expiration+strike` | 21,072,592 | 93.61 % | 10,530,702 | 10,530,258 | 444 |
+| `date+round(lm,10)+round(tau,10)` | 21,072,592 | 93.61 % | 10,530,702 | 10,530,258 | 444 |
+
+In-group IV range (`max − min`):
+
+| group kind | n | mean | p50 | p90 | p95 | p99 | max |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| call-put mix | 10,530,258 | 0.1026 | 0.0488 | 0.3024 | 0.3902 | 0.5951 | 2.9560 |
+| same-type | 444 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.0000 |
+
+Benchmark observed-hidden leakage (10-dp coordinate key, `random40_noiselow`):
+
+| metric | all splits |
+|---|---:|
+| hidden rows | 13,510,279 |
+| hidden with exact observed twin | 5,060,894 (**37.46 %**) |
+| naive `nearest_observed_distance == 0` | 5,060,894 (100 % from leakage) |
+| under `exclude_self_dup`, zero-distance | 0 |
+| q25 / q50 / q75 / q95 distance (naive) | 0.0000 / 0.0070 / 0.0106 / 0.0263 |
+| q25 / q50 / q75 / q95 distance (exclude_self_dup) | 0.0071 / 0.0086 / 0.0130 / 0.0299 |
+
+Worst leakage cells (test split):
+
+| moneyness × maturity | hidden | % with twin | twin MAE |
+|---|---:|---:|---:|
+| deep_put_wing × short | 154,446 | 30.04 % | 0.357 |
+| deep_call_wing × short | 20,305 | 2.03 % | 0.273 |
+| put_wing × short | 363,759 | 38.18 % | 0.178 |
+| call_wing × short | 145,334 | 23.87 % | 0.144 |
+
+Full per-bucket × split table:
+[`artifacts/audits/duplicate_coordinates/observed_hidden_leakage.csv`](../../artifacts/audits/duplicate_coordinates/observed_hidden_leakage.csv).
+
+**Interpretation:** the strict file is a quote table, not a surface.
+The same `(date, K, T)` carries the call IV and the put IV from the AV
+chain, and the dispersion between them is structural (median 5 vol
+points, p99 ≈ 60 vol points). The conditional model and the RBF
+baseline have both been fitting and evaluating against this
+multi-valued target since Phase 1, with the leakage skewing
+nearest-distance-based density metrics dramatically.
+
+**Decision impact:** the proposed sparse-region experiment cannot be
+interpreted on this benchmark as written — its densest-region
+stratum would be defined almost entirely by call-put leakage. A new
+gating epic **3X — Data correction** is inserted between 3B and 3C
+per [ADR 0006](../decisions/0006_duplicate_coordinate_data_correction.md):
+build `data_processed/spy/spy_surface_points_strict_otm.parquet`
+(industry-standard OTM convention: puts for `K<S`, calls for `K>S`,
+ATM tie-broken by tighter relative spread), rebuild only
+`spy_phase1_random40_noiselow` from it, re-audit (expect ≤ 0.5 % dup
+share on all keys), re-train ANP point head, re-fit calibrator,
+re-run 2D.6 decision-layer evaluation, and re-state the Phase 3
+verdict against RBF on the clean substrate. The 3B verdict (ANP +2.7 %
+vs RBF best-case; bar NOT met) and all Phase 2 / Phase 3A artifacts
+are preserved unchanged — the Phase 3D closing memo will append an
+OTM-clean re-statement alongside.
+
+**Next step:** human reviews ADR 0006 + retrospective 0002, then
+promotes story 3X.1 (decompose Phase 3X) from `backlog → todo` to
+write specs for 3X.2 (OTM build + re-audit on Pod) and 3X.3 (ANP
+re-train + decision-layer re-eval on Pod). The audit script's v2
+(vectorised `groupby.agg`, target wall time ~10–15 min on CPU pod)
+ships alongside 3X.2.
+
+**Tests run:** 3 unit tests in
+[`tests/test_audit_duplicate_coordinates.py`](../../tests/test_audit_duplicate_coordinates.py)
+on a hand-built fixture (contract-key dup detection, coord-key dup
+detection, benchmark observed-hidden twin detection). All pass on
+local Python 3.9 and on Pod Python 3.11. No regression in any
+existing pytest suite (no source code touched).
+
+**Compute used:** CPU pod only (~2h 39m wall, single process, RAM
+< 1 GB, single core ~99 % throughout). No GPU was needed and no GPU
+would have helped (Python iteration over duplicate groups is the
+hotspot, not parallel tensor math).
+
+**Files:**
+
+- `artifacts/audits/duplicate_coordinates/headline.json`
+- `artifacts/audits/duplicate_coordinates/duplicate_summary.csv`
+- `artifacts/audits/duplicate_coordinates/duplicate_iv_dispersion.csv`
+- `artifacts/audits/duplicate_coordinates/observed_hidden_leakage.csv`
+- `artifacts/audits/duplicate_coordinates/sparse_density_sensitivity.csv`
+- `docs/research/duplicate_coordinate_audit.md` (auto-generated full
+  numerical report)
+- `docs/research/duplicate_coordinate_audit_design.md` (static-analysis
+  evidence + decision matrix + Pod execution recipe)
+- `docs/decisions/0006_duplicate_coordinate_data_correction.md`
+- `docs/retrospectives/0002_call_put_duplicate_coordinate_discovery.md`

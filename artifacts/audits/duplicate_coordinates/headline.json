@@ -1,0 +1,9 @@
+{
+  "strict_path": "data_processed/spy/spy_surface_points_strict.parquet",
+  "benchmarks": [
+    "data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet"
+  ],
+  "contract_dup_share_pct": 93.6058749007198,
+  "n_call_put_groups": 10530258,
+  "n_same_type_groups": 444
+}

@@ -3153,3 +3153,102 @@ ensembling here. The disagreement signal is the deliverable that
 - Human reviews 3B.7 → `done`; epic 3B → `done`.
 - 3C.1 decomposition picks the feature direction informed by the
   addendum. **Pod can be terminated** — 3B.7 was the last 3B Pod step.
+
+---
+
+## 2026-05-29 — Duplicate-coordinate audit + new epic 3X (data correction)
+
+### Completed
+
+- Shipped `scripts/audit_duplicate_coordinates.py` (chunked PyArrow,
+  per-date streaming; audits the strict surface for contract-key +
+  coord-key duplicates at 8/10/12 dp; audits a benchmark for
+  observed-hidden coordinate leakage + sparse-region density
+  sensitivity in three modes: naive / dedup_obs / exclude_self_dup)
+  plus 3 unit tests (`tests/test_audit_duplicate_coordinates.py`,
+  all pass locally and on Pod).
+- Ran the audit on Pod (CPU only, 2h 39m wall: strict 2h 11m +
+  benchmark 27m + write < 1m) against
+  `data_processed/spy/spy_surface_points_strict.parquet` and
+  `data_processed/spy/benchmarks/spy_phase1_random40_noiselow.parquet`.
+- Pulled artifacts back:
+  `artifacts/audits/duplicate_coordinates/{headline.json,
+  duplicate_summary.csv, duplicate_iv_dispersion.csv,
+  observed_hidden_leakage.csv, sparse_density_sensitivity.csv}` +
+  `docs/research/duplicate_coordinate_audit.md` (auto-generated).
+- Wrote
+  [`docs/research/duplicate_coordinate_audit_design.md`](../research/duplicate_coordinate_audit_design.md)
+  (static-analysis evidence + locked decision matrix + Pod execution
+  recipe).
+
+### Headline finding (severe)
+
+| Metric | Value |
+|---|---:|
+| Strict rows in `(date, expiration, strike)` dup groups | 21,072,592 / 22,512,040 (**93.61 %**) |
+| Same share at `(date, round(log_m, 10), round(tau, 10))` | identical **93.61 %** |
+| Call-put paired duplicate groups | 10,530,258 (100.00 %) |
+| Same-type duplicate groups | 444 (0.004 %) |
+| Median in-group IV range (max − min) | 0.049 (≈ ANP test MAE bar) |
+| Mean / p90 / p95 / p99 / max in-group IV range | 0.103 / 0.302 / 0.390 / 0.595 / 2.96 |
+| `random40_noiselow` held-out rows with exact observed twin | 5,060,894 / 13,510,279 (**37.46 %**) |
+| Naive `nearest_observed_distance = 0` rows | 5,060,894 (all leakage) |
+| Under `exclude_self_dup` mode, zero-distance rows | 0 |
+
+### Doc-only response (this session)
+
+- Wrote
+  [ADR 0006](../decisions/0006_duplicate_coordinate_data_correction.md):
+  adopt the OTM-restricted strict surface
+  (`spy_surface_points_strict_otm.parquet`) + paired-coordinate masking
+  as the canonical modelling substrate for Phase 3C/3D and for the
+  sparse-region experiment. Original strict file + historical benchmarks
+  left untouched. Roadmap reserved ADR numbers shifted (microstructure
+  freeze → 0007, SVI/SSVI → 0008, production predictor selection → 0009).
+- Wrote
+  [retrospective 0002](../retrospectives/0002_call_put_duplicate_coordinate_discovery.md)
+  documenting the discovery, the three independent decisions that let
+  the defect through, lessons (assumption-as-invariant, OTM convention
+  literacy, leakage discipline in sparse-region experiments), and
+  improvement plan.
+- Inserted new epic **3X — Data correction** between 3B and 3C in
+  `docs/PHASE3_INDEX.md`, `docs/tasks/BOARD.md`,
+  `docs/roadmaps/phase3_accuracy_push.md` (new §W11.5 + revised
+  dependency graph). 3C / 3D marked **paused on 3X**.
+- Flagged the invalidated single-valued-function assumption at the
+  head of
+  [`docs/data_assumptions_and_cleaning.md`](../data_assumptions_and_cleaning.md)
+  and as §10 in
+  [`docs/data/data_lineage.md`](../data/data_lineage.md).
+- Marked
+  [`docs/research/sparse_region_anp_vs_rbf_design.md`](../research/sparse_region_anp_vs_rbf_design.md)
+  `status: blocked` on epic 3X (per ADR 0006). Methodology preserved
+  for re-execution on the OTM-clean benchmark.
+- Updated `README.md` Phase 3 status block to reflect 3X as the
+  immediate next epic.
+
+### No code or benchmark mutation in this entry
+
+This is a doc-only sweep. No changes to `src/`, `configs/`,
+`tests/` (beyond the audit-script tests already committed),
+`scripts/` (beyond the audit script itself), or any data file.
+
+### Notes
+
+- The audit script was CPU-bound throughout; GPU would not have helped
+  (the hotspot is Python iteration over duplicate groups, not parallel
+  matrix math). A vectorised v2 using pandas `groupby.agg` is planned
+  alongside 3X.2 and should cut wall time from 2h 39m to ~10–15 min
+  on the same CPU pod.
+- The Phase 3 acceptance bar (≥ 5 % vs RBF on test MAE; reliability
+  preserved) is **unchanged**; it is now adjudicated on the OTM-clean
+  benchmark produced by 3X.2.
+
+### Next actions
+
+- Human reviews ADR 0006 + retrospective 0002.
+- Promote 3X.1 (decompose Phase 3X) from `backlog → todo` and run it
+  in Plan mode to produce specs for 3X.2 (OTM build + re-audit) and
+  3X.3 (re-train + re-eval). Decomposition itself is local-only; 3X.2
+  / 3X.3 are remote (CPU pod for 3X.2, GPU pod for 3X.3 — see Compute
+  requirements section in their specs once written).

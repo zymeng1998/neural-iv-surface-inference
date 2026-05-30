@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-04-02T02:00:00-04:00
-last_updated_at: 2026-05-22T21:30:00-04:00
+last_updated_at: 2026-05-29T23:30:00-04:00
 ---
 
 > Repo-specific data lineage for the Neural IV Surface Inference project.
@@ -390,3 +390,61 @@ Implications:
 - If no compatible options source is found, Phase 2C full train/eval must proceed
   from the last-known-good snapshot on the remote (if preserved), with that
   decision logged (candidate ADR in `docs/decisions/`).
+
+---
+
+## 10. Single-valued-surface assumption violated by call-put duplicates (discovered 2026-05-29)
+
+A 2026-05-29 audit
+([`scripts/audit_duplicate_coordinates.py`](../../scripts/audit_duplicate_coordinates.py)
+on the strict surface table and the `spy_phase1_random40_noiselow`
+benchmark; full numerical report
+[`docs/research/duplicate_coordinate_audit.md`](../research/duplicate_coordinate_audit.md);
+ADR [`0006`](../decisions/0006_duplicate_coordinate_data_correction.md);
+retrospective [`0002`](../retrospectives/0002_call_put_duplicate_coordinate_discovery.md))
+found that:
+
+- **93.61 %** of the 22,512,040-row strict file lives inside a
+  `(date, expiration, strike)` duplicate group; the same 93.61 % share
+  collides at `(date, round(log_m, 10), round(tau, 10))` — confirming
+  the duplicates are not floating-point noise but structural call-put
+  leg pairs.
+- **10,530,258 of 10,530,702 duplicate groups (100.00 %)** are
+  call-put pairs; only 444 are same-type duplicates.
+- Median in-group IV range = **0.049**; mean 0.103; p99 0.595; max
+  2.96. The two reported IVs at the same `(K, T)` routinely disagree
+  by 5–60 vol points.
+- In `spy_phase1_random40_noiselow`, **37.46 %** of held-out rows have
+  an exact-coordinate observed twin on the same date; their naive
+  nearest-observed L2 distance is forced to 0 by call-put leakage,
+  not by genuine local density.
+
+Implication for lineage: the strict file and every downstream
+benchmark satisfy the schema described in §§2–6 but **violate the
+single-valued-function assumption** the conditional model and the RBF
+baseline both implicitly rely on. The strict file is a quote table,
+not a surface table.
+
+Planned correction (per ADR 0006, epic 3X):
+
+- Derive a new parquet
+  `data_processed/spy/spy_surface_points_strict_otm.parquet` using the
+  **OTM convention** (puts for `K<S`, calls for `K>S`, tie-broken at
+  ATM by tighter relative spread, fallback to put). This becomes the
+  canonical modelling substrate for Phase 3C / 3D / sparse-region work.
+- Rebuild only `spy_phase1_random40_noiselow` from the OTM file
+  (~7 min on Pod); historical benchmarks remain untouched and remain
+  comparable to themselves.
+- Add paired-coordinate masking in
+  `src/neural_iv_surface_inference/data/masking.py` behind a flag so
+  even residual duplicates (e.g. legitimate split-strike pairs) cannot
+  cross the observed / held-out boundary.
+- Treat re-audit as a CI invariant: contract-key dup share ≤ 0.5 %,
+  coord-key dup share ≤ 0.5 % at 10 dp, exact-twin leakage ≤ 0.5 % per
+  split.
+
+Original strict file and benchmarks are explicitly **not** mutated;
+historical Phase 1 / Phase 2 / Phase 3A / Phase 3B artifacts remain
+reproducible from them. The Phase 3D closing memo will append an
+OTM-clean re-statement of the 3B verdict alongside the original
+numbers.

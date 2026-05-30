@@ -11,19 +11,41 @@ predictions are trustworthy and abstains where they are not.
 ## Current Phase
 
 **Phase 3 — Accuracy Push: Beat RBF Without Losing Reliability — in
-progress (3A + 3B closed, 3C next).** Phase 2 (Reliability-Aware Surface
-Inference) closed on 2026-05-25 with both mandatory acceptance numbers
-green; Phase 3 attacks the remaining accuracy gap versus the per-date RBF
-interpolation baseline.
+progress (3A + 3B closed; new gating epic 3X — data correction —
+inserted between 3B and 3C/3D on 2026-05-29).** Phase 2 (Reliability-
+Aware Surface Inference) closed on 2026-05-25 with both mandatory
+acceptance numbers green; Phase 3 attacks the remaining accuracy gap
+versus the per-date RBF interpolation baseline.
+
+> **2026-05-29 — Data-integrity finding.** A duplicate-coordinate audit
+> ([`docs/research/duplicate_coordinate_audit.md`](docs/research/duplicate_coordinate_audit.md))
+> found that **93.61 %** of strict-table rows live inside a
+> `(date, expiration, strike)` duplicate group, **100 %** of those
+> duplicates are call-put leg pairs, and the median in-group IV range
+> is **0.049** (≈ the current ANP test MAE bar). This invalidates the
+> single-valued-function assumption the conditional model and the RBF
+> baseline both rely on; cross-model MAE comparisons are biased in
+> RBF's favour on dense regions, and the proposed sparse-region
+> ANP-vs-RBF experiment is not interpretable as written. A new gating
+> epic **3X — Data correction** (OTM-restricted surface +
+> paired-coordinate masking + re-audit + ANP re-train + decision-layer
+> re-eval, per
+> [ADR 0006](docs/decisions/0006_duplicate_coordinate_data_correction.md))
+> is inserted between 3B and 3C/3D. Phase 2 / Phase 3A / Phase 3B
+> artifacts are preserved unchanged; the Phase 3D closing memo will
+> append an OTM-clean re-statement of the 3B verdict alongside the
+> original numbers. Full narrative:
+> [retrospective 0002](docs/retrospectives/0002_call_put_duplicate_coordinate_discovery.md).
 
 ### Phase 3 (current)
 
 | Epic | Workstream | Status |
 |---|---|---|
 | 3A | W10 — Coordinate-representation ablation (Fourier vs raw `(k, τ)`, decoder-only) | `done` — raw beats Fourier (0.0760 vs 0.0790 full-fold test MAE); gap-to-RBF unclosed |
-| 3B | W11 — Cross-attention decoder (end-to-end DeepSets + ANP, raw `(k, τ)`) | `done` (in_review) — **bar NOT met**: ANP best-case +2.7 % vs RBF; reliability holds |
-| 3C | W12 — Feature & inductive-bias expansion (microstructure features, optional SVI head) | `backlog` (next) |
-| 3D | W13 — Phase 3 closing memo + re-evaluation versus RBF | `backlog` |
+| 3B | W11 — Cross-attention decoder (end-to-end DeepSets + ANP, raw `(k, τ)`) | `done` (in_review) — **bar NOT met**: ANP best-case +2.7 % vs RBF; reliability holds. Numbers carry an asterisk pending OTM-clean re-statement in 3D. |
+| **3X** | **W11.5 — Data correction (OTM-restricted surface + paired-coordinate masking + re-audit + ANP re-train + decision-layer re-eval)** | **`backlog` (NEXT) — per ADR 0006** |
+| 3C | W12 — Feature & inductive-bias expansion (microstructure features, optional SVI head) | `backlog` — **paused on 3X** |
+| 3D | W13 — Phase 3 closing memo + re-evaluation versus RBF (must include OTM-clean re-statement) | `backlog` |
 
 Acceptance bar: **test MAE ≤ 0.95 × RBF** on both the 2D.9 slice
 (≤ 0.0693) and the full 2D.4 fold (≤ 0.0629), with no reliability
@@ -161,6 +183,9 @@ Evidence:
 - [`docs/decisions/0002_phase1_scope_freeze.md`](docs/decisions/0002_phase1_scope_freeze.md) — Phase 1 scope-freeze ADR
 - [`docs/decisions/0003_spy_options_data_source_migration.md`](docs/decisions/0003_spy_options_data_source_migration.md) — Dubach → Alpha Vantage migration ADR
 - [`docs/decisions/0004_phase3_accuracy_push_framing.md`](docs/decisions/0004_phase3_accuracy_push_framing.md) — Phase 3 framing ADR: locality + inductive bias, not capacity
+- [`docs/decisions/0005_cross_attention_architecture_choice.md`](docs/decisions/0005_cross_attention_architecture_choice.md) — Phase 3B architecture ADR: Attentive Neural Process (ANP)
+- [`docs/decisions/0006_duplicate_coordinate_data_correction.md`](docs/decisions/0006_duplicate_coordinate_data_correction.md) — Phase 3X data-correction ADR: OTM-restricted surface + paired masking
+- [`docs/retrospectives/0002_call_put_duplicate_coordinate_discovery.md`](docs/retrospectives/0002_call_put_duplicate_coordinate_discovery.md) — discovery retrospective for the duplicate-coordinate finding
 
 ## Repository Structure
 
@@ -178,19 +203,18 @@ docs/                              Project documentation (roadmaps, memos, tasks
 
 ## Immediate Next Steps
 
-Phase 3 is **opening**. The active next steps are the four
-decomposition stories (one per epic). Each runs in **Plan mode**, writes
-the breakdown of its epic into atomic stories, and waits for human
-review before any implementation. See
-[`docs/PHASE3_INDEX.md`](docs/PHASE3_INDEX.md) for the full live
-status.
+Phase 3 has a **new gating epic** as of 2026-05-29. The active next
+step is the decomposition story for 3X (data correction). 3C / 3D are
+paused on 3X. See [`docs/PHASE3_INDEX.md`](docs/PHASE3_INDEX.md) for
+the full live status.
 
 | Story | Mode | Trigger condition |
 |---|---|---|
-| `3A.1` Decompose Phase 3A | Plan | Human promotes from `backlog → todo`, then runs |
-| `3B.1` Decompose Phase 3B | Plan | After 3A produces positional-feature decision |
-| `3C.1` Decompose Phase 3C | Plan | After 3B picks a cross-attention architecture |
-| `3D.1` Decompose Phase 3D | Plan | After 3C lands (or earlier, if 3D is purely synthesis) |
+| `3A.1` Decompose Phase 3A | Plan | `done` |
+| `3B.1` Decompose Phase 3B | Plan | `done` |
+| **`3X.1` Decompose Phase 3X (data correction)** | **Plan** | **Human reviews ADR 0006 + retrospective 0002, then promotes from `backlog → todo` and runs** |
+| `3C.1` Decompose Phase 3C | Plan | After 3X closes (OTM-clean substrate exists) |
+| `3D.1` Decompose Phase 3D | Plan | After 3C lands; must include OTM-clean re-statement of 3B verdict |
 
 Carried Phase 2 / 2E follow-ups (lower priority, do not gate Phase 3):
 

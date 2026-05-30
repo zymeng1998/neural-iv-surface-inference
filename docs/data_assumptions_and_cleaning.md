@@ -1,5 +1,27 @@
 # SPY Data Pipeline — Assumptions & Cleaning Rules
 
+> **2026-05-29 — INVALIDATED ASSUMPTION FLAG.** Until epic 3X ships,
+> the strict modelling subset produced by this pipeline is **not** a
+> single-valued function of `(log_moneyness, tau)`. A 2026-05-29 audit
+> ([`docs/research/duplicate_coordinate_audit.md`](research/duplicate_coordinate_audit.md))
+> found that **93.61 %** of strict-table rows live inside a
+> `(date, expiration, strike)` duplicate group, **100 %** of those
+> duplicates are call-put leg pairs, and the median in-group IV range
+> is **0.049**. The cleaning rules below operate per-row; they do
+> **not** enforce contract-level uniqueness, do **not** apply the
+> industry-standard OTM convention, and do **not** aggregate
+> duplicates. The conditional model and the RBF baseline both treat
+> the surface as a single-valued function, so this is a structural
+> violation, not just a data-quality concern. See
+> [ADR 0006](decisions/0006_duplicate_coordinate_data_correction.md)
+> for the correction plan (new OTM-restricted derived parquet
+> `data_processed/spy/spy_surface_points_strict_otm.parquet` +
+> paired-coordinate masking), and
+> [retrospective 0002](retrospectives/0002_call_put_duplicate_coordinate_discovery.md)
+> for the narrative. The existing strict file and historical
+> benchmarks are explicitly **not** mutated; Phase 1 / Phase 2 /
+> Phase 3A / Phase 3B artifacts remain reproducible from them.
+
 ## Phase 1 Scope
 
 - Underlying: SPY only
@@ -93,3 +115,7 @@ These thresholds are first-pass conservative choices. They will be revisited aft
 - No cross-sectional consistency checks
 - No intraday data
 - No multi-asset
+- **No call-put deduplication / no OTM-surface restriction in the
+  current strict subset** (see top-of-file invalidated-assumption
+  flag and ADR 0006). The OTM-restricted derived parquet is
+  scheduled as epic 3X.

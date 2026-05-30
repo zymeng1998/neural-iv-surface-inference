@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-05-28T13:00:00-04:00
+last_updated_at: 2026-05-29T23:30:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -86,9 +86,11 @@ decomposition). The first story of any epic is always its decomposition story.
 | 3B.5 | Story | Remote: K=5 deep ensemble of ANP point head on AV (mirrors 2D.8) | `done` | `docs/tasks/specs/3B.5_remote_deep_ensemble.md` | 2026-05-29 |
 | 3B.6 | Story | Local: calibrator re-fit on ANP val predictions (mirrors 2D.4) | `in_review` | `docs/tasks/specs/3B.6_local_calibrator_refit.md` | 2026-05-28 |
 | 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + journal + roadmap closing addendum (ANP +2.7% vs RBF best-case; bar NOT met) | `in_review` | `docs/tasks/specs/3B.7_local_decision_layer_eval.md` | 2026-05-28 |
-| 3C | Epic | Phase 3 — Feature & inductive-bias expansion (microstructure, optional SVI head) | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W12 / §4) | 2026-05-27 |
+| 3X | Epic | Phase 3 — Data correction: OTM-restricted surface + paired-coordinate masking + re-audit + ANP re-train + decision-layer re-eval (per ADR 0006) | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W11.5 / §4) | 2026-05-29 |
+| 3X.1 | Story | Decompose Phase 3X (ADR 0006 + 3X.2 / 3X.3 specs; vectorised audit v2 plan) | `backlog` | `docs/tasks/specs/3X.1_decompose_phase_3x.md` (to be written) | 2026-05-29 |
+| 3C | Epic | Phase 3 — Feature & inductive-bias expansion (microstructure, optional SVI head) — **paused on 3X** | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W12 / §4) | 2026-05-29 |
 | 3C.1 | Story | Decompose Phase 3C | `backlog` | `docs/tasks/specs/3C.1_decompose_phase_3c.md` | 2026-05-27 |
-| 3D | Epic | Phase 3 — Closing memo + re-evaluation versus RBF | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W13 / §4) | 2026-05-27 |
+| 3D | Epic | Phase 3 — Closing memo + re-evaluation versus RBF (must include OTM-clean re-statement of 3B verdict) | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W13 / §4) | 2026-05-29 |
 | 3D.1 | Story | Decompose Phase 3D | `backlog` | `docs/tasks/specs/3D.1_decompose_phase_3d.md` | 2026-05-27 |
 
 > When an epic is entered, set it to `in_progress`, add its decomposition story

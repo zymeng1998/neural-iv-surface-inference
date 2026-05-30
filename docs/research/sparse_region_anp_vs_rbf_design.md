@@ -2,13 +2,42 @@
 
 ---
 created_at: 2026-05-29T00:30:00-04:00
-last_updated_at: 2026-05-29T00:30:00-04:00
-status: proposed   # proposed | in_progress | executed | superseded
+last_updated_at: 2026-05-29T23:30:00-04:00
+status: blocked   # proposed | in_progress | executed | superseded | blocked
+blocked_on: epic 3X (data correction) per ADR 0006
 type: experiment_design
 relates_to:
-  - docs/roadmaps/phase3_accuracy_push.md  # §W11 (3B close), §W12 (3C)
+  - docs/roadmaps/phase3_accuracy_push.md  # §W11.5 (3X data correction), §W12 (3C)
+  - docs/decisions/0006_duplicate_coordinate_data_correction.md
+  - docs/retrospectives/0002_call_put_duplicate_coordinate_discovery.md
+  - docs/research/duplicate_coordinate_audit.md
   - results/3/spy_phase1_random40_noiselow/3b_compare/comparison.csv
 ---
+
+> **STATUS UPDATE 2026-05-29 — BLOCKED.** The 2026-05-29 duplicate-
+> coordinate audit
+> ([`docs/research/duplicate_coordinate_audit.md`](duplicate_coordinate_audit.md))
+> showed that on `spy_phase1_random40_noiselow`, **37.46 %** of held-out
+> rows carry an exact-coordinate observed twin on the same date (the
+> call leg, when the put leg is held out, or vice versa). Under the
+> design's `nearest_observed_distance` metric below, **all 5,060,894
+> zero-distance rows are call-put leakage artifacts, not genuine local
+> density.** The Q1 (densest) stratum the design relies on to make the
+> sparse-vs-dense comparison would therefore be defined almost entirely
+> by leakage. This design is **not interpretable as written** on the
+> current benchmark.
+>
+> Resolution path (per
+> [ADR 0006](../decisions/0006_duplicate_coordinate_data_correction.md)):
+> the experiment is re-runnable once epic **3X — Data correction**
+> ships an OTM-restricted strict surface and rebuilds
+> `spy_phase1_random40_noiselow` from it, at which point this note
+> moves into 3C scope, the density metric and the strata definitions
+> below carry through unchanged, and the verdict (RBF still wins / ANP
+> wins where data is sparse / mixed) becomes the genuine answer to the
+> hypothesis. The methodology below is preserved for that
+> re-execution. No changes to the methodology section are needed; the
+> only change is the substrate the experiment is run on.
 
 > Standalone research note. Proposes a scientifically valid way to test
 > whether the best conditional model (ANP, epic 3B) outperforms the RBF

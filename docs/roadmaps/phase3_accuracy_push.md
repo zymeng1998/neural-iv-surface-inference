@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-05-28T13:00:00-04:00
+last_updated_at: 2026-05-29T23:30:00-04:00
 ---
 
 ## 1) Why Phase 3 exists
@@ -279,6 +279,64 @@ decomposition.
 > (held-out labels survive masking, so the comparison is valid) in
 > [`docs/research/sparse_region_anp_vs_rbf_design.md`](../research/sparse_region_anp_vs_rbf_design.md).
 
+### W11.5 — Data-correction interlude (epic 3X, NEW 2026-05-29)
+
+A duplicate-coordinate audit on the AV-backed strict surface table
+(2026-05-29; full evidence
+[`docs/research/duplicate_coordinate_audit.md`](../research/duplicate_coordinate_audit.md))
+uncovered a structural violation of the single-valued-function
+assumption that has been silent since Phase 1:
+
+- **93.61 %** of the 22,512,040-row strict file lives inside a
+  `(date, expiration, strike)` duplicate group; the same 93.61 %
+  collides at `(date, round(log_m, 10), round(tau, 10))`. **100.00 %**
+  of those duplicates are call-put leg pairs.
+- **Median in-group IV range = 0.049** (≈ the current ANP test MAE
+  bar); p90 = 0.302; max = 2.96.
+- **37.46 %** of held-out rows in `spy_phase1_random40_noiselow` have
+  an exact-coordinate observed twin on the same date, forcing
+  `nearest_observed_distance = 0` regardless of true local density.
+
+This means the IV surface as it has been modelled is not a
+single-valued function: at every coordinate the loss saw two distinct
+labels, and the RBF kernel averaged over them. Cross-model MAE
+comparisons are biased in RBF's favour on dense-coordinate regions,
+and the proposed sparse-region ANP-vs-RBF experiment is **not
+interpretable as written** (its densest stratum is dominated by
+call-put leakage, not real density).
+
+[ADR 0006](../decisions/0006_duplicate_coordinate_data_correction.md)
+locks the correction: adopt the **industry-standard OTM-restricted
+surface** (puts for `K<S`, calls for `K>S`, tie-broken by tighter
+relative spread at ATM) as the canonical modelling substrate, plus
+paired-coordinate masking as a defence-in-depth guarantee.
+
+Epic 3X scope (atomic stories — see 3X.1 decomposition):
+
+- **3X.1 Decompose Phase 3X.** Specs for 3X.2 / 3X.3 (and any
+  required 3X.4); commit ADR 0006 alongside (done in this same
+  doc-update pass).
+- **3X.2 Remote: build `spy_surface_points_strict_otm.parquet`,
+  rebuild `random40_noiselow` benchmark from it, re-audit.**
+  Acceptance: contract-key dup share ≤ 0.5 %, coord-key dup share
+  ≤ 0.5 % at 10 dp, exact-twin leakage ≤ 0.5 % per split. Existing
+  strict file and benchmarks left untouched (historical
+  comparability preserved). Vectorised v2 of
+  `scripts/audit_duplicate_coordinates.py` shipped here so the
+  re-audit completes in ~10–15 min CPU instead of 2h 39m.
+- **3X.3 Remote: re-train ANP point head + re-fit 2D.4-style
+  calibrator + re-run 2D.6 decision-layer evaluation on the
+  OTM-clean benchmark.** Acceptance: matched-pair comparison ANP
+  vs RBF on the clean benchmark; committed metrics + verdict in the
+  experiment journal.
+
+3C / 3D are **paused** until 3X closes. Phase 3 acceptance bar
+(≥ 5 % vs RBF, reliability preserved) is **unchanged** but is now
+adjudicated on the OTM-clean benchmark. The original 3B verdict
+(ANP +2.7 % vs RBF best-case; bar NOT met) and the §W11 closing
+addendum are preserved; the Phase 3 closing memo (3D) will append
+an OTM-clean re-statement alongside.
+
 ### W12 — Feature & inductive-bias expansion (epic 3C)
 
 Two orthogonal directions; 3C.1 decides whether to ship one or both.
@@ -319,8 +377,9 @@ No new training, no new eval runs.
 |---|---|---|---|
 | W10 Coordinate-representation ablation | 3A | 3A.1 | parallel with 3B — independent ablation on the existing architecture |
 | W11 Cross-attention decoder | 3B | 3B.1 | parallel with 3A — the central hypothesis test |
-| W12 Feature & inductive-bias expansion | 3C | 3C.1 | depends on 3B (builds on the winning architecture) |
-| W13 Closing memo + re-evaluation | 3D | 3D.1 | last — pure synthesis on committed artifacts |
+| **W11.5 Data-correction interlude** | **3X** | **3X.1** | **between 3B and 3C — gates 3C / 3D / sparse-region experiment** |
+| W12 Feature & inductive-bias expansion | 3C | 3C.1 | depends on 3B (builds on the winning architecture) **and on 3X (clean substrate)** |
+| W13 Closing memo + re-evaluation | 3D | 3D.1 | last — pure synthesis on committed artifacts, **must include OTM-clean re-statement of 3B verdict** |
 
 Sequencing principle: **diagnose & bet in parallel → inductive-bias
 polish → synthesize**. 3A and 3B compare independently against the
@@ -331,7 +390,7 @@ Dependency graph:
 
 ```text
 3A (Fourier ablation, current arch)  ──┐
-                                       ├──→ 3C ──→ 3D
+                                       ├──→ 3X (OTM data correction) ──→ 3C ──→ 3D
 3B (cross-attention, central bet)    ──┘
 ```
 
@@ -340,7 +399,25 @@ If Phase 3 closes without meeting the acceptance bar after 3D, the
 neural-residual hybrid as a deployment answer (explicitly *not* a
 research substitute). See ADR 0004.
 
-> **Status (2026-05-28, post-3B.7):** Phase 3 is **open**, but both
+> **Status (2026-05-29, post-duplicate-coordinate audit):** Phase 3 is
+> **open**, with a new gating epic **3X** (data correction) between 3B
+> and 3C/3D. A 2026-05-29 audit
+> ([`docs/research/duplicate_coordinate_audit.md`](../research/duplicate_coordinate_audit.md))
+> found that 93.61 % of strict-table rows live in `(date, exp, strike)`
+> duplicate groups, all 100 % call-put pairs, with median in-group IV
+> range 0.049 — invalidating the single-valued-function assumption
+> the model and the RBF baseline both rely on. The Phase 3B verdict
+> (ANP +2.7 % vs RBF best-case; bar NOT met) and the Phase 2 / Phase
+> 3A artifacts are preserved unchanged; the Phase 3D closing memo will
+> append an OTM-clean re-statement after 3X.
+> [ADR 0006](../decisions/0006_duplicate_coordinate_data_correction.md)
+> + [retrospective 0002](../retrospectives/0002_call_put_duplicate_coordinate_discovery.md)
+> hold the full narrative. The sparse-region ANP-vs-RBF research note
+> (`docs/research/sparse_region_anp_vs_rbf_design.md`) is now `blocked`
+> on 3X; it moves into 3C scope on the OTM-clean benchmark. 3X.1
+> decomposition is the immediate next action.
+>
+> **Original 2026-05-28 status (preserved for traceability):** Phase 3 is **open**, but both
 > diagnostic epics have closed. Epic **3A** is `done` (raw beats
 > Fourier on the frozen 2D.7 encoder by Δ +0.00300 full-fold test MAE;
 > gap-to-RBF unclosed). Epic **3B** is `done` (in_review): ADR 0005
@@ -402,13 +479,18 @@ closes as **partial success** with a numbered doc under
 
 - **ADR 0005 — Cross-attention architecture choice** (ANP vs Set
   Transformer vs TNP). Written by 3B.1 with cost / benefit evidence.
-- **ADR 0006 — Microstructure feature set freeze**. Written by 3C.1
+  Accepted 2026-05-28.
+- **ADR 0006 — Duplicate-coordinate data correction** (OTM-restricted
+  surface + paired-coordinate masking guarantee). Written 2026-05-29
+  in response to the duplicate-coordinate audit; gates 3X / 3C / 3D.
+  Accepted 2026-05-29.
+- **ADR 0007 — Microstructure feature set freeze**. Written by 3C.1
   if 3C ships expanded `O_t` features. Locks the feature list for
   reproducibility.
-- **ADR 0007 — SVI / SSVI head adoption**. Only if 3C ships the
+- **ADR 0008 — SVI / SSVI head adoption**. Only if 3C ships the
   SVI-parameterized head. Locks the parameterization (SVI vs SSVI vs
   SABR) and the no-arbitrage projection step.
-- **ADR 0008 — Phase 3 production predictor selection**. Written at
+- **ADR 0009 — Phase 3 production predictor selection**. Written at
   the end of Phase 3 with the headline comparison; locks which
   variant becomes the production surface inference predictor.
 
