@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-05-29T23:30:00-04:00
+last_updated_at: 2026-05-29T23:55:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -86,8 +86,21 @@ decomposition). The first story of any epic is always its decomposition story.
 | 3B.5 | Story | Remote: K=5 deep ensemble of ANP point head on AV (mirrors 2D.8) | `done` | `docs/tasks/specs/3B.5_remote_deep_ensemble.md` | 2026-05-29 |
 | 3B.6 | Story | Local: calibrator re-fit on ANP val predictions (mirrors 2D.4) | `in_review` | `docs/tasks/specs/3B.6_local_calibrator_refit.md` | 2026-05-28 |
 | 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + journal + roadmap closing addendum (ANP +2.7% vs RBF best-case; bar NOT met) | `in_review` | `docs/tasks/specs/3B.7_local_decision_layer_eval.md` | 2026-05-28 |
-| 3X | Epic | Phase 3 — Data correction: OTM-restricted surface + paired-coordinate masking + re-audit + ANP re-train + decision-layer re-eval (per ADR 0006) | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W11.5 / §4) | 2026-05-29 |
-| 3X.1 | Story | Decompose Phase 3X (ADR 0006 + 3X.2 / 3X.3 specs; vectorised audit v2 plan) | `backlog` | `docs/tasks/specs/3X.1_decompose_phase_3x.md` (to be written) | 2026-05-29 |
+| 3X | Epic | Phase 3 — Data correction: OTM-restricted surface + paired-coordinate masking + full model-family restatement on `random40_noiselow_otm` (per ADR 0006) | `in_progress` | `docs/roadmaps/phase3_accuracy_push.md` (W11.5 / §4) | 2026-05-29 |
+| 3X.1 | Story | Decompose Phase 3X (ADR 0006 addendum + 3X.2–3X.14 specs) | `in_review` | `docs/tasks/specs/3X.1_decompose_phase_3x.md` | 2026-05-29 |
+| 3X.2 | Story | Local: OTM-surface builder `05_build_otm_surface.py` + step-04 `--source` flag + ATM-band (D5) + same-type residual handling (D7) + tests | `backlog` | `docs/tasks/specs/3X.2_local_otm_surface_builder.md` | 2026-05-29 |
+| 3X.3 | Story | Local: vectorised audit v2 + paired-coordinate masking flag (default off) + parity tests | `backlog` | `docs/tasks/specs/3X.3_local_audit_v2_and_paired_masking.md` | 2026-05-29 |
+| 3X.4 | Story | Remote (CPU): build OTM strict surface + rebuild all 11 OTM benchmarks | `backlog` | `docs/tasks/specs/3X.4_remote_build_otm_strict_and_benchmarks.md` | 2026-05-29 |
+| 3X.5 | Story | Remote (CPU): audit OTM strict + all 11 OTM benchmarks — **HUMAN REVIEW GATE** (≤0.5% dup/leakage) | `backlog` | `docs/tasks/specs/3X.5_remote_audit_otm_gate.md` | 2026-05-29 |
+| 3X.6 | Story | Remote (CPU): early RBF-on-OTM baseline (floor sanity check before GPU spend) | `backlog` | `docs/tasks/specs/3X.6_remote_rbf_on_otm_baseline.md` | 2026-05-29 |
+| 3X.7 | Story | Remote (GPU): MLP baseline on OTM (Q1 — ladder anchor) | `backlog` | `docs/tasks/specs/3X.7_remote_mlp_on_otm.md` | 2026-05-29 |
+| 3X.8 | Story | Remote (GPU): Phase 2D DeepSets on OTM — single (2D.7-equiv) + K=5 ensemble (2D.8-equiv) (D2) | `backlog` | `docs/tasks/specs/3X.8_remote_deepsets_on_otm.md` | 2026-05-29 |
+| 3X.9 | Story | Remote (GPU): ANP on OTM — all three heads gaussian/quantile/point (D1) | `backlog` | `docs/tasks/specs/3X.9_remote_anp_on_otm.md` | 2026-05-29 |
+| 3X.10 | Story | Remote (GPU): ANP K=5 deep ensemble on OTM (mirror 3B.5) | `backlog` | `docs/tasks/specs/3X.10_remote_anp_ensemble_on_otm.md` | 2026-05-29 |
+| 3X.11 | Story | Local: calibrator re-fit on OTM val predictions (mirror 3B.6) | `backlog` | `docs/tasks/specs/3X.11_local_calibration_on_otm.md` | 2026-05-29 |
+| 3X.12 | Story | Remote: decision-layer eval on OTM, thresholds held constant (Q2; mirror 3B.7) | `backlog` | `docs/tasks/specs/3X.12_remote_decision_layer_eval_on_otm.md` | 2026-05-29 |
+| 3X.13 | Story | Local: dirty-vs-OTM side-by-side comparison tables (matched `random40_noiselow`) | `backlog` | `docs/tasks/specs/3X.13_local_dirty_vs_otm_comparison.md` | 2026-05-29 |
+| 3X.14 | Story | Local: 3X closing addendum + methodology-progression narrative (NOT full Phase 3 memo — Q3) | `backlog` | `docs/tasks/specs/3X.14_local_closing_addendum.md` | 2026-05-29 |
 | 3C | Epic | Phase 3 — Feature & inductive-bias expansion (microstructure, optional SVI head) — **paused on 3X** | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W12 / §4) | 2026-05-29 |
 | 3C.1 | Story | Decompose Phase 3C | `backlog` | `docs/tasks/specs/3C.1_decompose_phase_3c.md` | 2026-05-27 |
 | 3D | Epic | Phase 3 — Closing memo + re-evaluation versus RBF (must include OTM-clean re-statement of 3B verdict) | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W13 / §4) | 2026-05-29 |

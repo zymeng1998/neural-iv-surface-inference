@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-05-29T23:30:00-04:00
+last_updated_at: 2026-05-29T23:55:00-04:00
 ---
 
 > **Read this first if you are picking up Phase 3 work cold.** It mirrors
@@ -68,8 +68,21 @@ last_updated_at: 2026-05-29T23:30:00-04:00
 | 3B.5 | Story | Remote: K=5 deep ensemble of ANP point head on AV (parallels 2D.8) | `done` | [`3B.5`](tasks/specs/3B.5_remote_deep_ensemble.md) | 2026-05-29 |
 | 3B.6 | Story | Local: calibrator re-fit on ANP val predictions (parallels 2D.4) | `in_review` | [`3B.6`](tasks/specs/3B.6_local_calibrator_refit.md) | 2026-05-28 |
 | 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + closing addendum (ANP +2.7% vs RBF best-case; bar NOT met) | `in_review` | [`3B.7`](tasks/specs/3B.7_local_decision_layer_eval.md) | 2026-05-28 |
-| 3X | Epic | **NEW** Data correction: OTM-restricted surface + paired-coordinate masking + re-audit + ANP re-train + decision-layer re-eval (ADR 0006) | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W11.5 | 2026-05-29 |
-| 3X.1 | Story | Decompose Phase 3X (ADR 0006 + 3X.2 / 3X.3 specs; vectorised audit v2) | `backlog` | `tasks/specs/3X.1_decompose_phase_3x.md` (to be written) | 2026-05-29 |
+| 3X | Epic | **NEW** Data correction: OTM-restricted surface + paired masking + full model-family restatement on `random40_noiselow_otm` (ADR 0006) | `in_progress` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W11.5 | 2026-05-29 |
+| 3X.1 | Story | Decompose Phase 3X (ADR 0006 addendum + 3X.2–3X.14 specs) | `in_review` | [`3X.1`](tasks/specs/3X.1_decompose_phase_3x.md) | 2026-05-29 |
+| 3X.2 | Story | Local: OTM-surface builder + step-04 `--source` + ATM-band (D5) + residual handling (D7) + tests | `backlog` | [`3X.2`](tasks/specs/3X.2_local_otm_surface_builder.md) | 2026-05-29 |
+| 3X.3 | Story | Local: vectorised audit v2 + paired-coordinate masking flag (default off) + parity tests | `backlog` | [`3X.3`](tasks/specs/3X.3_local_audit_v2_and_paired_masking.md) | 2026-05-29 |
+| 3X.4 | Story | Remote (CPU): build OTM strict surface + rebuild all 11 OTM benchmarks | `backlog` | [`3X.4`](tasks/specs/3X.4_remote_build_otm_strict_and_benchmarks.md) | 2026-05-29 |
+| 3X.5 | Story | Remote (CPU): audit OTM strict + all 11 benchmarks — **HUMAN REVIEW GATE** | `backlog` | [`3X.5`](tasks/specs/3X.5_remote_audit_otm_gate.md) | 2026-05-29 |
+| 3X.6 | Story | Remote (CPU): early RBF-on-OTM baseline | `backlog` | [`3X.6`](tasks/specs/3X.6_remote_rbf_on_otm_baseline.md) | 2026-05-29 |
+| 3X.7 | Story | Remote (GPU): MLP-on-OTM (Q1) | `backlog` | [`3X.7`](tasks/specs/3X.7_remote_mlp_on_otm.md) | 2026-05-29 |
+| 3X.8 | Story | Remote (GPU): DeepSets-on-OTM single + K=5 ensemble (D2) | `backlog` | [`3X.8`](tasks/specs/3X.8_remote_deepsets_on_otm.md) | 2026-05-29 |
+| 3X.9 | Story | Remote (GPU): ANP-on-OTM all three heads (D1) | `backlog` | [`3X.9`](tasks/specs/3X.9_remote_anp_on_otm.md) | 2026-05-29 |
+| 3X.10 | Story | Remote (GPU): ANP K=5 ensemble-on-OTM | `backlog` | [`3X.10`](tasks/specs/3X.10_remote_anp_ensemble_on_otm.md) | 2026-05-29 |
+| 3X.11 | Story | Local: calibrator re-fit on OTM val predictions | `backlog` | [`3X.11`](tasks/specs/3X.11_local_calibration_on_otm.md) | 2026-05-29 |
+| 3X.12 | Story | Remote: decision-layer eval on OTM, thresholds held constant (Q2) | `backlog` | [`3X.12`](tasks/specs/3X.12_remote_decision_layer_eval_on_otm.md) | 2026-05-29 |
+| 3X.13 | Story | Local: dirty-vs-OTM comparison tables (matched substrate) | `backlog` | [`3X.13`](tasks/specs/3X.13_local_dirty_vs_otm_comparison.md) | 2026-05-29 |
+| 3X.14 | Story | Local: 3X closing addendum + methodology progression (Q3) | `backlog` | [`3X.14`](tasks/specs/3X.14_local_closing_addendum.md) | 2026-05-29 |
 | 3C | Epic | Feature & inductive-bias expansion (microstructure, optional SVI) — **paused on 3X** | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W12 | 2026-05-29 |
 | 3C.1 | Story | Decompose Phase 3C | `backlog` | [`3C.1`](tasks/specs/3C.1_decompose_phase_3c.md) | 2026-05-29 |
 | 3D | Epic | Closing memo + re-evaluation vs RBF — **must include OTM-clean re-statement** | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W13 | 2026-05-29 |
@@ -94,7 +107,20 @@ only if neither writes to a path in the other's `file_scope`.
 | 3B.5 | 3A.*, 3C.1, 3D.1 | 3B.4 (must be `done`; reuses point config + Pod); 3B.6 / 3B.7 (chain downstream) |
 | 3B.6 | 3A.*, 3C.1, 3D.1 | 3B.4 + 3B.5 (must be `done`; reads their val predictions); 3B.7 (chains through 3B.6 calibrator) |
 | 3B.7 | 3A.*, 3C.1, 3D.1 | 3B.4 + 3B.5 + 3B.6 (must all be `done`; reads predictions + calibrator) |
-| 3X.1 | 3A.*, 3B.1, 3C.1, 3D.1 | none — gates 3X.2 / 3X.3 which gate 3C / 3D |
+| 3X.1 | 3C.1, 3D.1 | none — gates all of 3X.2–3X.14 |
+| 3X.2 | 3X.3, 3C.1, 3D.1 | 3X.4 (consumes the builder); local-only |
+| 3X.3 | 3X.2, 3C.1, 3D.1 | 3X.5 (consumes audit v2); local-only |
+| 3X.4 | 3C.1, 3D.1 | 3X.2 (`done` first); 3X.5+ chain downstream |
+| 3X.5 | 3C.1, 3D.1 | 3X.3 + 3X.4 (`done` first); **GATE** before any GPU story |
+| 3X.6 | 3C.1, 3D.1 | 3X.5 gate PASS first |
+| 3X.7 | 3C.1, 3D.1 | 3X.5 gate PASS; GPU pod |
+| 3X.8 | 3C.1, 3D.1 | 3X.5 gate PASS; GPU pod |
+| 3X.9 | 3C.1, 3D.1 | 3X.5 gate PASS; GPU pod |
+| 3X.10 | 3C.1, 3D.1 | 3X.9 (`done` first); GPU pod |
+| 3X.11 | 3C.1, 3D.1 | 3X.9 + 3X.10 (`done` first); reads OTM val predictions |
+| 3X.12 | 3C.1, 3D.1 | 3X.9 + 3X.10 + 3X.11 (`done` first) |
+| 3X.13 | 3C.1, 3D.1 | 3X.6–3X.12 (all `done`; reads their bundles) |
+| 3X.14 | 3C.1, 3D.1 | 3X.13 (`done` first) |
 | 3C.1 | 3A.*, 3B.1, 3D.1 | **3X (must close first)** |
 | 3D.1 | 3A.*, 3B.1, 3C.1 | **3X (must close first); 3C (consumes its OTM-clean numbers)** |
 
@@ -320,19 +346,20 @@ only if neither writes to a path in the other's `file_scope`.
 
 ### 3X.1 — Decompose Phase 3X (NEW 2026-05-29)
 
-- **2026-05-29** registered after the duplicate-coordinate audit
-  ([`docs/research/duplicate_coordinate_audit.md`](research/duplicate_coordinate_audit.md))
-  surfaced a structural call-put leg leak. Scope: write specs for
-  3X.2 (build OTM strict file + rebuild `random40_noiselow`
-  benchmark + re-audit) and 3X.3 (re-train ANP point head + re-fit
-  calibrator + re-run 2D.6 decision-layer evaluation on the
-  OTM-clean benchmark); ship vectorised v2 of
-  `scripts/audit_duplicate_coordinates.py` alongside 3X.2; commit
-  ADR 0006 (already shipped in this doc-update pass).
-- **Next concrete action:** human reviews ADR 0006 + retrospective
-  0002; promotes 3X.1 from `backlog → todo` to run in Plan mode.
-- **Open blocker:** none. 3X is local-only at the decomposition
-  stage; 3X.2 / 3X.3 are remote.
+- **2026-05-29 (executed)** decomposition shipped. Epic 3X →
+  `in_progress`; 3X.1 → `in_review`. **14 atomic stories** registered
+  with fully-populated specs (3X.1–3X.14): local code (3X.2 OTM
+  builder, 3X.3 audit v2 + paired masking), CPU-pod build + audit gate
+  + RBF floor (3X.4–3X.6), GPU retraining (3X.7 MLP, 3X.8 DeepSets
+  single+ensemble, 3X.9 ANP 3 heads, 3X.10 ANP ensemble), local
+  calibrator (3X.11), decision-layer eval (3X.12), comparison tables
+  (3X.13), closing addendum (3X.14). ADR 0006 addendum records D1–D8
+  + Q1–Q8 + the `random40_noiselow_otm` primary substrate + the
+  deferred all-11 future-work study + the no-overclaim guardrail.
+- **Next concrete action:** human reviews the ADR 0006 addendum + the
+  13 new specs; promotes `3X.2` from `backlog → todo` (local, no Pod).
+  3X.2 / 3X.3 are local-only and parallel-safe with each other.
+- **Open blocker:** none.
 
 ### 3C.1 — Decompose Phase 3C
 

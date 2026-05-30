@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-05-29T23:30:00-04:00
+last_updated_at: 2026-05-29T23:55:00-04:00
 ---
 
 ## 1) Why Phase 3 exists
@@ -311,31 +311,74 @@ surface** (puts for `K<S`, calls for `K>S`, tie-broken by tighter
 relative spread at ATM) as the canonical modelling substrate, plus
 paired-coordinate masking as a defence-in-depth guarantee.
 
-Epic 3X scope (atomic stories — see 3X.1 decomposition):
+Epic 3X scope — **14 atomic stories** (decomposed in 3X.1; full D1–D8
++ Q1–Q8 record in the
+[ADR 0006 addendum](../decisions/0006_duplicate_coordinate_data_correction.md#addendum-2026-05-29--decomposition-decisions-locked-in-3x1)).
+**Preservation-first:** no legacy artifact is mutated; all new artifacts
+carry an `_otm` suffix.
 
-- **3X.1 Decompose Phase 3X.** Specs for 3X.2 / 3X.3 (and any
-  required 3X.4); commit ADR 0006 alongside (done in this same
-  doc-update pass).
-- **3X.2 Remote: build `spy_surface_points_strict_otm.parquet`,
-  rebuild `random40_noiselow` benchmark from it, re-audit.**
-  Acceptance: contract-key dup share ≤ 0.5 %, coord-key dup share
-  ≤ 0.5 % at 10 dp, exact-twin leakage ≤ 0.5 % per split. Existing
-  strict file and benchmarks left untouched (historical
-  comparability preserved). Vectorised v2 of
-  `scripts/audit_duplicate_coordinates.py` shipped here so the
-  re-audit completes in ~10–15 min CPU instead of 2h 39m.
-- **3X.3 Remote: re-train ANP point head + re-fit 2D.4-style
-  calibrator + re-run 2D.6 decision-layer evaluation on the
-  OTM-clean benchmark.** Acceptance: matched-pair comparison ANP
-  vs RBF on the clean benchmark; committed metrics + verdict in the
-  experiment journal.
+| ID | Story | Locale / HW |
+|---|---|---|
+| 3X.1 | Decompose Phase 3X (ADR addendum + 3X.2–3X.14 specs) | local CPU |
+| 3X.2 | OTM-surface builder + step-04 `--source` flag + ATM-band (D5) + residual handling (D7) + tests | local CPU |
+| 3X.3 | Vectorised audit v2 + paired-coordinate masking flag (default off) + parity tests | local CPU |
+| 3X.4 | Build OTM strict surface + rebuild **all 11** OTM benchmarks | Pod **CPU** |
+| 3X.5 | Audit OTM strict + all 11 benchmarks — **HUMAN REVIEW GATE** | Pod **CPU** |
+| 3X.6 | Early RBF-on-OTM baseline (floor sanity check before GPU spend) | Pod **CPU** |
+| 3X.7 | MLP-on-OTM baseline (Q1 — ladder anchor) | Pod GPU |
+| 3X.8 | DeepSets-on-OTM — single (2D.7-equiv) + K=5 ensemble (2D.8-equiv) (D2) | Pod GPU |
+| 3X.9 | ANP-on-OTM — all three heads (D1) | Pod GPU |
+| 3X.10 | ANP K=5 ensemble-on-OTM (mirror 3B.5) | Pod GPU |
+| 3X.11 | Calibrator re-fit on OTM val predictions (mirror 3B.6) | local CPU |
+| 3X.12 | Decision-layer eval on OTM, thresholds held constant (Q2) | Pod |
+| 3X.13 | Dirty-vs-OTM side-by-side comparison tables (matched substrate) | local CPU |
+| 3X.14 | 3X closing addendum + methodology-progression narrative (Q3) | local CPU |
+
+**Primary retraining substrate:** the model-family restatement
+(3X.6–3X.12) runs on **`spy_phase1_random40_noiselow_otm` only** — the
+clean apples-to-apples counterpart to the dirty `random40_noiselow`
+experiments — so the correction (raw call+put benchmark → OTM
+single-valued benchmark) is isolated from any masking/noise change. All
+11 OTM variants are still rebuilt and audited (3X.4 / 3X.5) for
+substrate completeness.
+
+**Split Pod rental (Q4):** CPU pod for the build + audit gate + RBF
+floor (3X.4–3X.6); human review of the gate; then a GPU pod for
+retraining (3X.7–3X.12). Verify OTM artifacts are on persistent storage
+before terminating the CPU pod.
+
+**Baseline ladder the closing tables carry (3X.13):** RBF-on-OTM →
+MLP-on-OTM → DeepSets-on-OTM (single + ensemble) → ANP-on-OTM (3 heads
++ ensemble) → calibrated / decision-layer — each paired against its
+committed dirty counterpart.
+
+#### Future work — full all-11 OTM retraining (deferred robustness study)
+
+Phase 3X performs the full corrected model-family restatement on the
+matched `random40_noiselow_otm` benchmark because this is the clean
+apples-to-apples counterpart to the original dirty `random40_noiselow`
+experiments. All 11 OTM benchmark variants are rebuilt and audited to
+make the corrected benchmark suite complete. **Full GPU-heavy retraining
+across all 11 OTM variants is deferred as a future robustness study.**
+That future study would test whether the dirty-vs-OTM conclusion and the
+DeepSets-vs-ANP architecture ranking remain stable across masking
+regimes, noise regimes, and structured sparsity patterns (the seven
+questions enumerated in the ADR 0006 addendum). Until it runs, the
+3X conclusion is scoped to the matched substrate only.
+
+**No-overclaim guardrail.** Correct claim: *"the original Phase 2D /
+Phase 3B result was restated on the matched clean OTM benchmark
+`random40_noiselow_otm`."* Forbidden claim: *"the result is robust
+across all OTM benchmark variants"* — that requires the deferred study.
 
 3C / 3D are **paused** until 3X closes. Phase 3 acceptance bar
 (≥ 5 % vs RBF, reliability preserved) is **unchanged** but is now
 adjudicated on the OTM-clean benchmark. The original 3B verdict
 (ANP +2.7 % vs RBF best-case; bar NOT met) and the §W11 closing
 addendum are preserved; the Phase 3 closing memo (3D) will append
-an OTM-clean re-statement alongside.
+an OTM-clean re-statement alongside. Per Q5, if 2D-on-OTM changes the
+architecture conclusion, a retrospective / ADR addendum is opened
+rather than reopening Phase 2.
 
 ### W12 — Feature & inductive-bias expansion (epic 3C)
 

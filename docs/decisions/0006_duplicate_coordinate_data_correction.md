@@ -260,6 +260,104 @@ runnable only on the OTM benchmark and is moved into 3C scope.
   (non-strict) dataset* — likely not, as no model trains on it, but
   the audit findings should be documented for the public reader.
 
+---
+
+## Addendum (2026-05-29) — decomposition decisions locked in 3X.1
+
+The original "Epic 3X (new) — scope" sketch above (three stories) was
+superseded by a **preservation-first, full-restatement** decomposition
+after an operator review that prioritized scientific completeness over
+minimum compute. The epic now has **14 atomic stories (3X.1–3X.14)**.
+The eight decision points (D1–D8) and eight follow-up questions
+(Q1–Q8) below are the binding record; the per-story specs implement
+them.
+
+### Decision points (D1–D8)
+
+| # | Decision |
+|---|---|
+| D1 | Retrain **all three** ANP heads on OTM (gaussian, quantile, point_control) — no head dropped (3X.9). |
+| D2 | Retrain the Phase 2D DeepSets family on OTM: single 2D.7-equiv + K=5 2D.8-equiv ensemble (3X.8). |
+| D3 | Rebuild **all 11** OTM benchmark variants and audit all of them (3X.4 / 3X.5). |
+| D4 | Paired-coordinate masking ships behind a flag, **default off**; the OTM audit gate (3X.5) is the trigger that makes it mandatory if any benchmark shows > 0.5 % exact-twin leakage per split. |
+| D5 | Configurable ATM band (default `0.0025`) for the OTM tie-breaker, with sensitivity reporting at `{1e-12, 0.001, 0.0025, 0.005}`; tie-break on tighter relative spread; deterministic documented fallback; **no synthetic-quote construction** (3X.2). If the default band selects an implausible fraction of contracts on real data, stop and write an evidence note for operator approval — do not silently change it. |
+| D6 | Keep audit v1 as historical evidence; add vectorised audit v2 with parity tests (3X.3). |
+| D7 | Same-type residual duplicates: emit a CSV, classify economic equivalence, drop deterministically if equivalent, else quality-select; `keep='first'` is the documented final fallback with a reported count (3X.2). |
+| D8 | Retrain from scratch with the **same seeds** as the dirty runs; **no warm-start** from dirty checkpoints (3X.7–3X.10). |
+
+### Training acceptance criteria (revised)
+
+OTM validation NLL ≤ dirty NLL is **not** a pass/fail gate (different
+distribution, row count, moneyness coverage, and label-noise
+structure). Acceptance instead requires: training completes; no
+NaN/inf losses; validation loss decreases from early epochs and
+stabilizes; finite valid predictions; prediction row counts match
+benchmark query rows; manifests include dataset source hash, config
+hash, seed, and code version. Dirty-vs-OTM NLL/MAE comparisons are
+reported as **diagnostics**, not gates.
+
+### Follow-up questions (Q1–Q8)
+
+| # | Answer |
+|---|---|
+| Q1 | Include MLP-on-OTM in the baseline ladder (3X.7). |
+| Q2 | Hold the decision-layer threshold config **constant** between dirty and OTM in 3X; if dirty-tuned thresholds are misfit on OTM, document as a diagnostic and open a follow-up retune story — do not retune inside 3X (3X.12). |
+| Q3 | 3X.14 produces only the 3X closing addendum + methodology progression; the **full Phase 3 final memo remains a 3D deliverable**. |
+| Q4 | Split Pod rental: **CPU pod** for build + audit gate + RBF (3X.4–3X.6), human review, then **GPU pod** for retraining (3X.7–3X.12). Verify all OTM artifacts are on persistent storage and visible from a fresh shell before terminating the CPU pod. |
+| Q5 | If 2D-on-OTM beats RBF-on-OTM (or ANP-on-OTM), do **not** reopen Phase 2; record a retrospective and/or ADR addendum re-evaluating the Phase 2→3 architecture-bottleneck diagnosis, and update the forward roadmap. Do not hide or soften a reversing result (3X.14). |
+| Q6 | The 3C sparse-region study reopens only **after** 3X.14, on the OTM substrate, if the audit gate passed and the 3X.13 comparison is complete. |
+| Q7 | Verify the benchmark-validity documentation commit before running 3X.1 (done — commit `6b8451e`, pushed). |
+| Q8 | Ship audit v2 (3X.3) **before** the OTM audit gate (3X.5). |
+
+### Primary retraining substrate (operator-confirmed)
+
+The primary dirty-vs-OTM model-family retraining (3X.6–3X.12) runs on
+**`spy_phase1_random40_noiselow_otm` only** — the clean apples-to-apples
+counterpart to the original dirty `random40_noiselow` experiments. This
+isolates the substrate correction (legacy raw call+put benchmark →
+clean OTM single-valued benchmark) without simultaneously changing the
+masking / noise regime. All 11 OTM variants are still **rebuilt and
+audited** (3X.4 / 3X.5) so the corrected benchmark suite is complete and
+the deferred robustness study has a substrate to run on.
+
+### Future work — full all-11 OTM retraining (deferred robustness study)
+
+Full GPU-heavy retraining of every model family across all 11 OTM
+benchmark variants is **deferred as future work**. It would answer
+questions the primary `random40_noiselow_otm` restatement does not:
+
+1. Robustness across masking regimes (does the family ranking hold under
+   different observed-context patterns, not just random40?).
+2. Robustness across noise regimes (none / low / med / high /
+   heteroscedastic).
+3. Structured-sparsity behaviour (wing drop, maturity drop, realistic
+   liquidity).
+4. Architecture-vs-data interaction (does the DeepSets-vs-ANP difference
+   depend on the benchmark regime?).
+5. Reliability-layer stability (calibration / abstention / confidence /
+   decision-layer behaviour across OTM regimes).
+6. Support for the later 3C sparse-region / structured-sparsity study on
+   a clean substrate, without returning to the dirty benchmark.
+7. A stronger generalization claim, if we ever want to assert the
+   corrected conclusion is robust across benchmark regimes.
+
+### No-overclaim guardrail (binds 3X.13, 3X.14, and 3D)
+
+- **Correct claim:** *"The original Phase 2D / Phase 3B result was
+  restated on the matched clean OTM benchmark `random40_noiselow_otm`."*
+- **Forbidden claim:** *"The result is robust across all OTM benchmark
+  variants."* — that requires the deferred all-11 retraining study.
+
+### Status note
+
+The "Open questions deferred to 3X.1" above are resolved by this
+addendum: paired masking is opt-in default-off with an audit-gate
+trigger (D4); legacy-benchmark dup-leakage is documented in the audit
+report + data lineage rather than via a sidecar; no OTM build for the
+conservative dataset (no model trains on it). ADR status stays
+**Accepted**; it moves to **Implemented** when 3X.14 records the
+outcome.
+
 ## References
 
 - Audit design + structural evidence:

@@ -3252,3 +3252,64 @@ This is a doc-only sweep. No changes to `src/`, `configs/`,
   3X.3 (re-train + re-eval). Decomposition itself is local-only; 3X.2
   / 3X.3 are remote (CPU pod for 3X.2, GPU pod for 3X.3 — see Compute
   requirements section in their specs once written).
+
+---
+
+## 2026-05-29 (rev. 2) — Phase 3X decomposition executed (3X.1)
+
+### Completed
+
+- Ran 3X.1 (decompose Phase 3X) after the operator confirmed the
+  expanded preservation-first scope (D1–D8 + Q1–Q8 + the
+  `random40_noiselow_otm` primary substrate). Epic 3X → `in_progress`;
+  3X.1 → `in_review`.
+- Wrote the **ADR 0006 addendum** recording D1–D8, Q1–Q8, the revised
+  training acceptance criteria (no NLL pass/fail gate), the primary
+  substrate decision, the deferred all-11 future-work robustness study
+  (seven scientific-value questions), and the no-overclaim guardrail.
+- Authored **14 atomic specs** (`docs/tasks/specs/3X.{1..14}_*.md`):
+  - 3X.2 local OTM-surface builder (ATM-band D5 + residual handling D7),
+  - 3X.3 local vectorised audit v2 + paired-coordinate masking flag,
+  - 3X.4 CPU-pod build OTM strict + all 11 OTM benchmarks,
+  - 3X.5 CPU-pod audit gate (12 artifacts; ≤ 0.5 % thresholds; HUMAN
+    REVIEW),
+  - 3X.6 CPU-pod early RBF-on-OTM floor,
+  - 3X.7 GPU MLP-on-OTM, 3X.8 GPU DeepSets single + K=5 ensemble,
+    3X.9 GPU ANP 3 heads, 3X.10 GPU ANP K=5 ensemble,
+  - 3X.11 local calibrator re-fit, 3X.12 decision-layer eval
+    (thresholds held constant),
+  - 3X.13 local dirty-vs-OTM comparison tables,
+  - 3X.14 local closing addendum + methodology progression.
+- Updated BOARD (14 rows), PHASE3_INDEX (status table + parallel
+  matrix + 3X.1 checkpoint), roadmap § W11.5 (14-story table + split
+  rental + future-work block + no-overclaim guardrail).
+
+### Compute plan recorded in specs
+
+- CPU-pod window: 3X.4–3X.6 (~3–4 h). Human review gate after 3X.5.
+- GPU-pod window: 3X.7–3X.12 (~16–20 h; the two ensembles are ~10 h).
+- Local: 3X.1–3X.3, 3X.11, 3X.13, 3X.14.
+- New persistent-storage footprint ~15–25 GB (OTM strict + 11
+  benchmarks + run bundles). Operator to provision Pod volume ≥ 25 GB
+  free.
+
+### Preservation guarantee
+
+No legacy artifact mutated. All new artifacts carry `_otm` suffixes
+(data, benchmarks, runs `3X4`–`3X12`, calibration `3X11`, results
+`..._otm/`). Audit v1 kept as historical evidence; v2 added alongside.
+
+### Notes
+
+- This is a docs-only decomposition pass (specs + board/index/roadmap/
+  ADR addendum). No source code, config, data, or model touched.
+- Doc updates from the prior pass (ADR 0006, retrospective 0002, audit
+  artifacts, README/lineage/etc.) are already committed + pushed at
+  `6b8451e`.
+
+### Next actions
+
+- Human reviews the ADR 0006 addendum + the 13 new specs.
+- Promote `3X.2` (`backlog → todo`) to start local implementation of
+  the OTM builder. 3X.2 / 3X.3 are local-only and parallel-safe; no
+  Pod time until 3X.4.
