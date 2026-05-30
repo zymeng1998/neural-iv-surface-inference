@@ -3612,3 +3612,45 @@ No legacy artifact mutated. All new artifacts carry `_otm` suffixes
 - Operator reviews the M1 diff; flips M1.2–M1.5 → `done` on BOARD.
 - Decide the waiver-audit-write design (follow-up #2) before the next
   real waiver.
+
+## 2026-05-30 — M1 epic closed (done) after operator review
+
+### Completed
+
+- Operator reviewed the two pushed M1 commits (`019362a` infra,
+  `2b5a56c` push-range gate bugfix). All four implementation stories
+  flipped `in_review` → `done` (M1.2 AGENTS.md/Cursor bootstrap, M1.3
+  dep gate, M1.4 scope gate, M1.5 commit-msg trailer); M1.1 already
+  `done`. **Epic M1 → `done`.**
+- Roadmap subtask matrix + frontmatter updated; BOARD epic row carries
+  the outcome summary.
+
+### Results
+
+- 3 push-blocking gates live (PMR + dependency + file-scope) plus the
+  commit-msg agent-trailer gate; all installed via
+  `scripts/install_hooks.sh`. 38 gate tests pass.
+- Marking M1.2–M1.5 `done` in one commit makes the dependency chain
+  self-consistent (each dep resolves to `done` on the BOARD the gate
+  reads), so this closeout push needs **no waiver** — the clean pass is
+  itself the end-to-end confirmation the dep gate works.
+
+### Open items
+
+- **M1.6 deferred** (not a backlog story yet). The waiver-recording
+  timing problem is unresolved: audit lines written during `pre-push`
+  mutate the tracked tree *after* the commit is sealed. Before
+  implementing, compare (1) stderr-only at pre-push with the durable
+  trail in commit message/trailer/operator notes; (2) pre-commit /
+  commit-msg-time recording so the audit is inside the same commit;
+  (3) a dedicated waiver log only if written before commit sealing.
+  Captured in `docs/roadmaps/meta1_agent_collaboration.md` Known
+  follow-ups #2. Do not draft the M1.6 spec until the design is chosen.
+- Scope gate only fires when a spec is in the diff (follow-up #3) —
+  low priority, revisit if drift appears.
+
+### Next actions
+
+- Research critical path resumes (separate effort): 3X.4 → `done`, then
+  3X.5 — the OTM audit HUMAN REVIEW GATE (≤0.5% dup/leakage) on a CPU
+  pod, which blocks all GPU spend (3X.6+).

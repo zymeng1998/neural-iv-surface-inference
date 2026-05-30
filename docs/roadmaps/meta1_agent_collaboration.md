@@ -2,9 +2,9 @@
 
 ---
 created_at: 2026-05-30T13:00:00-04:00
-last_updated_at: 2026-05-30T13:00:00-04:00
+last_updated_at: 2026-05-30T14:45:00-04:00
 epic: M1
-status: in_progress
+status: done
 ---
 
 ## Goal
@@ -25,11 +25,12 @@ version: prose rules in `CLAUDE.md` and story specs get bent
 
 | ID | Title | Locale | Status |
 |---|---|---|---|
-| M1.1 | Decompose M1 + ADR 0007 + 4 sub-specs | local | in_progress |
-| M1.2 | `AGENTS.md` router + Cursor bootstrap + CLAUDE.md re-point | local | backlog |
-| M1.3 | `check_story_dependencies.py` + tests + `install_hooks.sh` | local | backlog |
-| M1.4 | `check_file_scope.py` + tests | local | backlog |
-| M1.5 | `commit-msg` trailer hook (agent-trailer enforcement) | local | backlog |
+| M1.1 | Decompose M1 + ADR 0007 + 4 sub-specs | local | done |
+| M1.2 | `AGENTS.md` router + Cursor bootstrap + CLAUDE.md re-point | local | done |
+| M1.3 | `check_story_dependencies.py` + tests + `install_hooks.sh` | local | done |
+| M1.4 | `check_file_scope.py` + tests | local | done |
+| M1.5 | `commit-msg` trailer hook (agent-trailer enforcement) | local | done |
+| M1.6 | Waiver-recording timing fix (deferred — design comparison pending, see Known follow-ups #2) | local | deferred |
 
 All stories are `parallel_safe_with: ["3X.*", "3B.*", "3C.*", "3D.*"]`
 because they touch only workflow infra (`scripts/`, `docs/`,
