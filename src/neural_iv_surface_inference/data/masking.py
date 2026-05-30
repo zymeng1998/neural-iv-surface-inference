@@ -200,6 +200,8 @@ def apply_mask(
     keep_frac: float = 0.4,
     rng: np.random.Generator | None = None,
     seed: int = 42,
+    paired_coord: bool = False,
+    paired_coord_decimals: int = 10,
     **kwargs,
 ) -> pd.DataFrame:
     """Add an ``observed`` boolean column to *df* using the chosen strategy.
@@ -207,7 +209,9 @@ def apply_mask(
     Parameters
     ----------
     df : pd.DataFrame
-        Must contain ``log_moneyness`` and ``tau`` columns.
+        Must contain ``log_moneyness`` and ``tau`` columns. When
+        ``paired_coord=True`` and a ``date`` column is present, the
+        rounded key also includes ``date``.
     strategy : str
         One of 'random', 'drop_short_maturity', 'drop_long_maturity',
         'drop_random_maturity', 'drop_wings', 'drop_atm', 'realistic'.
@@ -217,6 +221,14 @@ def apply_mask(
         If None, one is created from *seed*.
     seed : int
         Seed for the random generator (used only if rng is None).
+    paired_coord : bool, default False
+        When True, rows sharing a rounded ``(date, log_m, tau)`` key
+        flip observed/held-out together. The first row encountered for
+        each key sets the value for the rest. Default-off path is
+        byte-identical to the legacy behaviour (3X.3 / ADR 0006 D4).
+    paired_coord_decimals : int, default 10
+        Rounding tolerance for the paired key. Matches the audit's
+        primary coordinate-rounding tolerance.
     **kwargs
         Forwarded to the underlying masking function.
 
@@ -248,6 +260,40 @@ def apply_mask(
     else:
         raise ValueError(f"Unknown masking strategy: {strategy}")
 
+    if paired_coord and n > 0:
+        mask = _broadcast_to_paired_key(
+            df, mask, decimals=paired_coord_decimals
+        )
+
     df = df.copy()
     df["observed"] = mask
     return df
+
+
+def _broadcast_to_paired_key(
+    df: pd.DataFrame,
+    mask: np.ndarray,
+    decimals: int,
+) -> np.ndarray:
+    """Broadcast the first per-key mask value to every row in its key group.
+
+    Key is the rounded ``(date, log_m, tau)`` triple; ``date`` is omitted
+    if absent. Result is deterministic in row order (the first row
+    encountered in *df* fixes the value for the rest in the same group).
+    """
+    n = len(df)
+    lm_r = np.round(df["log_moneyness"].to_numpy(dtype=float), decimals)
+    tau_r = np.round(df["tau"].to_numpy(dtype=float), decimals)
+    key_cols: list[str] = ["lm_r", "tau_r"]
+    key_frame: dict[str, np.ndarray] = {"lm_r": lm_r, "tau_r": tau_r}
+    if "date" in df.columns:
+        key_frame = {"date": df["date"].to_numpy(), **key_frame}
+        key_cols = ["date", *key_cols]
+    key_frame["__row"] = np.arange(n, dtype=np.int64)
+    key_df = pd.DataFrame(key_frame)
+    representative = (
+        key_df.groupby(key_cols, sort=False)["__row"]
+        .transform("min")
+        .to_numpy()
+    )
+    return np.asarray(mask, dtype=bool)[representative]

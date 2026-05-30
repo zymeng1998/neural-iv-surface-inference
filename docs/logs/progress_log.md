@@ -3381,3 +3381,65 @@ No legacy artifact mutated. All new artifacts carry `_otm` suffixes
   parallel-safe with 3X.2.
 - 3X.4 (Pod CPU build) consumes this builder unchanged on the 22 M-row
   real strict file.
+
+## 2026-05-30 — 3X.3 vectorised audit v2 + paired-coordinate masking flag (in_review)
+
+### Completed
+
+- New [`scripts/audit_duplicate_coordinates_v2.py`](../../scripts/audit_duplicate_coordinates_v2.py)
+  reproduces v1's CLI + output contract (same five files:
+  `duplicate_summary.csv`, `duplicate_iv_dispersion.csv`,
+  `observed_hidden_leakage.csv`, `sparse_density_sensitivity.csv`,
+  `headline.json`, plus the markdown report) but replaces the two slow
+  per-group Python loops with vectorised numpy / `groupby.agg`:
+  - `update_strict_acc_vectorised` does iv-range and call-put mix
+    detection via one `agg(n=size, iv_min=min, iv_max=max,
+    n_call=sum, n_put=sum)` pass per date — no `for key, idx in
+    grouped.indices.items()` walk.
+  - `update_density_vectorised` builds the d² matrix once and derives
+    all three density modes (`naive`, `dedup_obs`, `exclude_self_dup`)
+    by masking d² entries, instead of re-running per-twin
+    nearest-neighbour as v1 did.
+- v1 (`scripts/audit_duplicate_coordinates.py`) is untouched — kept as
+  historical evidence of the discovery method (ADR 0006 / D6).
+- Extended [`src/neural_iv_surface_inference/data/masking.py`](../../src/neural_iv_surface_inference/data/masking.py)
+  with `paired_coord: bool = False` (and `paired_coord_decimals=10`) on
+  `apply_mask`. When True, rows sharing a rounded
+  `(date, log_m, tau)` key are broadcast to the first row's observed
+  flag so call-put pairs flip together (ADR 0006 D4). Default-off path
+  is byte-identical to legacy behaviour.
+- New [`tests/test_audit_v2_parity.py`](../../tests/test_audit_v2_parity.py)
+  asserts v2 and v1 accumulators are equal on the v1 fixtures plus a
+  same-type duplicate row added to exercise the `same_type` branch:
+  identical `total_rows`, `rows_in_dup_groups`, `n_dup_groups`,
+  call-put-mix / same-type counts, group-size histogram, sorted
+  iv_range arrays (≤ 1e-9), and identical leakage + density
+  accumulators on the benchmark fixture.
+- New [`tests/test_paired_masking.py`](../../tests/test_paired_masking.py):
+  default-off byte-identity across four strategies (`random`,
+  `realistic`, `drop_short_maturity`, `drop_wings`); `paired_coord=True`
+  yields zero cross-key leakage on a 2-leg-per-key fixture; identity
+  on coord-unique fixture; no-`date`-column fallback works.
+
+### Verification
+
+- `pytest tests/test_audit_v2_parity.py tests/test_paired_masking.py -v`
+  → 10 passed in 3.82 s.
+- `pytest tests/ -q` → **357 passed**, 39 warnings, 15.82 s (no
+  regression; default masking byte-unchanged).
+- v2's real-data timing target (~10–15 min for the 12-artifact OTM
+  audit on a CPU pod) is validated in 3X.5, not here.
+
+### No data mutated
+
+- No real-data parquet was read or produced; tests use synthetic
+  in-memory fixtures only.
+
+### Next actions
+
+- Human reviews the diff (`4 evidence files`: new v2 script + new
+  parity test + new paired-masking test + masking.py extension; plus
+  PMR doc updates).
+- After review approval, BOARD 3X.3 → `done`; remote stories 3X.4 (OTM
+  build) and 3X.5 (OTM audit gate, using v2) become the next active
+  Pod work.
