@@ -3697,3 +3697,19 @@ No legacy artifact mutated. All new artifacts carry `_otm` suffixes
   batch); the pre-push dep gate needs them `done`, so this push either
   waits on the operator marking them `done` or uses a documented
   `WAIVE_DEPS` recording the in_review dep status.
+
+## 2026-05-30 — 3X.5 gate APPROVED; 3X.2–3X.5 closed `done`
+
+- Operator reviewed the 3X.5 OTM audit gate (PASS 12/12) and approved it.
+  3X.5 flips `in_review → done`.
+- Batch closeout pushed in two no-waiver commits: `28523ef` promoted
+  3X.2/3X.3/3X.4 `in_review → done` (self-consistent dep chain), then
+  `165d45e` landed the 3X.5 gate artifacts. Split into two sequential
+  pushes because the file-scope gate drops `done` specs from its scope
+  union, so closing deps + advancing 3X.5 in one push range would have
+  falsely flagged the dep-spec edits.
+- **Phase 3X data correction is complete on the build/audit side.** GPU
+  spend is unblocked: 3X.6 (RBF-on-OTM, CPU-ok) and 3X.7+ (GPU pod) may
+  proceed on the clean OTM substrate.
+- CPU pod may be terminated (Q4): 12 OTM parquets + 12 audit dirs +
+  roll-up confirmed on the persistent volume and on origin.

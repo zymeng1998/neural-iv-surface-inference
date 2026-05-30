@@ -73,7 +73,7 @@ last_updated_at: 2026-05-30T01:25:00-04:00
 | 3X.2 | Story | Local: OTM-surface builder + step-04 `--source` + ATM-band (D5) + residual handling (D7) + tests | `done` | [`3X.2`](tasks/specs/3X.2_local_otm_surface_builder.md) | 2026-05-30 |
 | 3X.3 | Story | Local: vectorised audit v2 + paired-coordinate masking flag (default off) + parity tests | `done` | [`3X.3`](tasks/specs/3X.3_local_audit_v2_and_paired_masking.md) | 2026-05-30 |
 | 3X.4 | Story | Remote (CPU): build OTM strict surface + rebuild all 11 OTM benchmarks — → single-valued PASS, 11 `_otm` benchmarks, dirty hashes unchanged | `done` | [`3X.4`](tasks/specs/3X.4_remote_build_otm_strict_and_benchmarks.md) | 2026-05-30 |
-| 3X.5 | Story | Remote (CPU): audit OTM strict + all 11 benchmarks — **HUMAN REVIEW GATE** → **PASS 12/12** (93.61%→0% dup; 0% twin leakage all splits) | `in_review` | [`3X.5`](tasks/specs/3X.5_remote_audit_otm_gate.md) | 2026-05-30 |
+| 3X.5 | Story | Remote (CPU): audit OTM strict + all 11 benchmarks — **HUMAN REVIEW GATE** → **PASS 12/12** (93.61%→0% dup; 0% twin leakage all splits) | `done` | [`3X.5`](tasks/specs/3X.5_remote_audit_otm_gate.md) | 2026-05-30 |
 | 3X.6 | Story | Remote (CPU): early RBF-on-OTM baseline | `backlog` | [`3X.6`](tasks/specs/3X.6_remote_rbf_on_otm_baseline.md) | 2026-05-29 |
 | 3X.7 | Story | Remote (GPU): MLP-on-OTM (Q1) | `backlog` | [`3X.7`](tasks/specs/3X.7_remote_mlp_on_otm.md) | 2026-05-29 |
 | 3X.8 | Story | Remote (GPU): DeepSets-on-OTM single + K=5 ensemble (D2) | `backlog` | [`3X.8`](tasks/specs/3X.8_remote_deepsets_on_otm.md) | 2026-05-29 |
