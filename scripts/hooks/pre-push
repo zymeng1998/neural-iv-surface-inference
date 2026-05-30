@@ -1,0 +1,19 @@
+#!/bin/sh
+# Pre-push hook — orchestrates all push-blocking gates in order.
+# Installed by scripts/install_hooks.sh. Per ADR 0007.
+#
+# Order matters: cheapest first, so a noisy failure isn't masked by an
+# even noisier later one.
+
+set -e
+
+# 1. PMR doc-coverage gate (existing).
+python3 scripts/pmr_prepush_gate.py
+
+# 2. Story-dependency gate (M1.3).
+python3 scripts/check_story_dependencies.py
+
+# 3. File-scope gate (M1.4). Optional until M1.4 ships.
+if [ -f scripts/check_file_scope.py ]; then
+    python3 scripts/check_file_scope.py
+fi

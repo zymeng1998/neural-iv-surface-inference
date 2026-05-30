@@ -1,0 +1,26 @@
+---
+description: Multi-agent bootstrap — always route through AGENTS.md
+alwaysApply: true
+---
+
+# Bootstrap
+
+Before doing anything else in this repository, read `AGENTS.md` at the
+repo root. It is the canonical entry point for all coding agents and
+contains the routing table for where to read next.
+
+Do NOT broadly grep `docs/` for orientation — `AGENTS.md` §2 tells you
+exactly which files to read for the task at hand.
+
+Do NOT read `docs/neural_iv_surface_project_personal_notes.md` or
+`docs/neural_iv_surface_research_methodology_narrative.md` unless the
+operator explicitly names them — they are the operator's personal,
+gitignored notebooks.
+
+Hard rules and git-hook-enforced gates are listed in `AGENTS.md` §3.
+Bending any of them requires an explicit env-var waiver
+(`WAIVE_DEPS`, `WAIVE_SCOPE`, `WAIVE_TRAILER`). Never silently override.
+
+Agent-driven commits must carry a `Co-authored-by: Cursor <cursoragent@cursor.com>`
+trailer (enforced by the `commit-msg` hook once `bash scripts/install_hooks.sh`
+has been run on this clone).

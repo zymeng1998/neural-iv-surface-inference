@@ -1,0 +1,5 @@
+#!/bin/sh
+# commit-msg hook — agent-trailer enforcement (M1.5).
+# Installed by scripts/install_hooks.sh. Per ADR 0007.
+
+python3 scripts/check_commit_trailer.py "$1"

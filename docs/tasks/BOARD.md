@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-05-30T01:25:00-04:00
+last_updated_at: 2026-05-30T13:00:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -105,6 +105,12 @@ decomposition). The first story of any epic is always its decomposition story.
 | 3C.1 | Story | Decompose Phase 3C | `backlog` | `docs/tasks/specs/3C.1_decompose_phase_3c.md` | 2026-05-27 |
 | 3D | Epic | Phase 3 — Closing memo + re-evaluation versus RBF (must include OTM-clean re-statement of 3B verdict) | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W13 / §4) | 2026-05-29 |
 | 3D.1 | Story | Decompose Phase 3D | `backlog` | `docs/tasks/specs/3D.1_decompose_phase_3d.md` | 2026-05-27 |
+| M1 | Epic | Meta — Multi-agent collaboration infrastructure (ADR 0007: AGENTS.md router + executable rule gates) | `in_progress` | `docs/roadmaps/meta1_agent_collaboration.md` | 2026-05-30 |
+| M1.1 | Story | Decompose M1 + ADR 0007 + 4 sub-specs | `done` | `docs/tasks/specs/M1.1_decompose_m1.md` | 2026-05-30 |
+| M1.2 | Story | `AGENTS.md` router + `.cursor/rules/000-bootstrap.mdc` + CLAUDE.md re-point | `in_review` | `docs/tasks/specs/M1.2_agents_md_and_cursor_bootstrap.md` | 2026-05-30 |
+| M1.3 | Story | `scripts/check_story_dependencies.py` + tests + `install_hooks.sh` (gate that would have caught 3X.4) | `in_review` | `docs/tasks/specs/M1.3_check_story_dependencies.md` | 2026-05-30 |
+| M1.4 | Story | `scripts/check_file_scope.py` + tests + pre-push wiring | `in_review` | `docs/tasks/specs/M1.4_check_file_scope.md` | 2026-05-30 |
+| M1.5 | Story | `commit-msg` hook — agent-trailer enforcement (Claude / Cursor / Codex / Aider) | `in_review` | `docs/tasks/specs/M1.5_commit_msg_trailer_hook.md` | 2026-05-30 |
 
 > When an epic is entered, set it to `in_progress`, add its decomposition story
 > (e.g. `2A.1`), then add the resulting stories as new rows. Do not delete or

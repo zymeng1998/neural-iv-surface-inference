@@ -1,0 +1,6 @@
+#!/bin/sh
+# Pre-commit hook — currently a no-op placeholder.
+# Reserved for future fast local checks. Installed by
+# scripts/install_hooks.sh per ADR 0007.
+
+exit 0

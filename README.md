@@ -1,5 +1,16 @@
 # Neural IV Surface Inference
 
+## First-time setup (per clone)
+
+```bash
+bash scripts/install_hooks.sh
+```
+
+Installs project-managed git hooks (PMR + story-dep + file-scope + agent-
+trailer gates). Required on every fresh clone — laptop, RunPod, CI. See
+[`AGENTS.md`](AGENTS.md) for the multi-agent collaboration entry point
+and [ADR 0007](docs/decisions/0007_multi_agent_handoff.md) for the why.
+
 ## Overview
 
 Neural IV Surface Inference is an ML × Finance project focused on recovering

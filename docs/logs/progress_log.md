@@ -3507,3 +3507,64 @@ No legacy artifact mutated. All new artifacts carry `_otm` suffixes
   3X.4 -> `done`.
 - 3X.5 (OTM audit gate via audit v2 — the <=0.5% dup/leakage human
   review gate) runs next on the **same CPU pod** before any GPU spend.
+
+## 2026-05-30 — M1 multi-agent collaboration infrastructure (M1.1–M1.5 in_review)
+
+### Completed
+
+- Registered **epic M1** on `docs/tasks/BOARD.md` (meta lane,
+  `parallel_safe_with: ["3X.*", "3B.*", "3C.*", "3D.*"]`) plus five
+  atomic sub-stories M1.1–M1.5.
+- **ADR 0007** authored
+  ([`docs/decisions/0007_multi_agent_handoff.md`](../decisions/0007_multi_agent_handoff.md)) —
+  two-layer model: a router file (`AGENTS.md`) for discovery + four
+  executable git-hook gates for enforcement. Motivated by the 3X.4
+  incident where Cursor ran a story while a declared dependency was
+  still `in_review`; the rule was prose-only and nothing stopped it.
+- **M1.2 — discovery layer**: `AGENTS.md` at repo root (104 lines, a
+  routing table + cold-start prompt), `.cursor/rules/000-bootstrap.mdc`
+  with `alwaysApply: true`, and a 12-line directive prepended to
+  `CLAUDE.md` pointing every Claude session at `AGENTS.md` first.
+- **M1.3 — dependency gate**: `scripts/check_story_dependencies.py`
+  parses each touched spec's `## Dependencies` block, cross-references
+  `BOARD.md`, blocks pushes when an active spec depends on a story
+  that is not `done`. `WAIVE_DEPS="<id>:<status>:<reason>"` env-var
+  bypasses *and* writes an audit line to the spec checkpoint. 15
+  pytest cases cover parsing, evaluation, waivers, and CLI; all green.
+- **M1.4 — file-scope gate**: `scripts/check_file_scope.py` enforces
+  the spec front-matter `file_scope:` glob list (scope **union** across
+  multiple active specs in one push). `WAIVE_SCOPE="<reason>"` bypass
+  with audit line. 13 tests; all green.
+- **M1.5 — agent-trailer hook**: `scripts/check_commit_trailer.py`
+  detects agent-driven commits via env vars (`CLAUDECODE`,
+  `CURSOR_TRACE_ID`, `CODEX_*`, `AIDER_*`) and requires a
+  `Co-authored-by:` trailer. `WAIVE_TRAILER` bypass for rebase fixups.
+  8 tests; all green.
+- **Hook orchestration**: `scripts/hooks/{pre-push,pre-commit,commit-msg}`
+  + `scripts/install_hooks.sh` (idempotent installer). Pre-push runs
+  PMR -> dep -> scope in order; first failure wins.
+
+### Notes
+
+- All M1 work is workflow infrastructure — `src/`, `data_processed/`,
+  and configs are untouched. M1 is parallel-safe with every research
+  epic.
+- The gates apply to **every** agent, Claude included. The 3X.4-style
+  rule violation will now block at push time regardless of which agent
+  attempts it.
+- Project-level scope only (per operator direction). Promotion to
+  `~/.claude/` is out of scope for M1; will be considered after the
+  pattern proves stable.
+- M1.2 is in_review while M1.1 is in_review (not yet `done`), so the
+  dep gate flags this batch — bypass for this push uses
+  `WAIVE_DEPS="M1.1:in_review:initial bootstrap push of the M1 epic
+  itself; chicken-and-egg ordering"` etc.
+
+### Next actions
+
+- Operator reviews the M1.1–M1.5 diff; flip BOARD M1.* → `done`.
+- Run `bash scripts/install_hooks.sh` on every active clone (laptop,
+  Pod). Document in README first-time-setup section.
+- Hand the cold-start prompt at the bottom of `AGENTS.md` to the next
+  Cursor session to verify it bootstraps cleanly without reading
+  the whole `docs/` tree.

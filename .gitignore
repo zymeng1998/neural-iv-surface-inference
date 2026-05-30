@@ -87,14 +87,17 @@ Thumbs.db
 *.swp
 
 # AI / coding-assistant config and context files
-CLAUDE.md
+# EXCEPTION (ADR 0007 — docs/decisions/0007_multi_agent_handoff.md):
+# three project-level multi-agent discovery files are deliberately
+# COMMITTED so the handoff rules travel with `git clone` and bind every
+# agent (Claude, Cursor, …):
+#     AGENTS.md, CLAUDE.md, .cursor/rules/000-bootstrap.mdc
+# Everything else AI-assistant-related stays local-only (ignored below).
 CLAUDE.local.md
 .claude/
 .claude*
-.cursor/
 .cursorrules
 .cursorignore
-.cursor*
 .aider*
 .continue/
 .github/copilot-instructions.md
@@ -104,11 +107,16 @@ CLAUDE.local.md
 .tabnine/
 GEMINI.md
 .gemini/
-AGENTS.md
 .agent/
 .openhands/
 .codex/
 .zed/
+
+# .cursor/: ignore all contents EXCEPT the committed bootstrap rule.
+.cursor/*
+!.cursor/rules/
+.cursor/rules/*
+!.cursor/rules/000-bootstrap.mdc
 
 # Local-only private operational notes
 docs/private/**
