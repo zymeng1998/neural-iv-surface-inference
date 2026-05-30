@@ -1,0 +1,4 @@
+rows 10531499
+max_group_size 1
+n_dup_groups 0
+SINGLE_VALUED True

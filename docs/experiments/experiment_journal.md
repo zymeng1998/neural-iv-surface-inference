@@ -1393,3 +1393,56 @@ hotspot, not parallel tensor math).
   evidence + decision matrix + Pod execution recipe)
 - `docs/decisions/0006_duplicate_coordinate_data_correction.md`
 - `docs/retrospectives/0002_call_put_duplicate_coordinate_discovery.md`
+
+---
+
+## 2026-05-30T01:25:00-04:00 — 3X.4 OTM strict surface + 11 OTM benchmarks (CPU pod build)
+
+**Experiment:** Story 3X.4 — produce the single-valued OTM-restricted
+strict surface from the dirty strict file and rebuild all 11 benchmark
+variants from it (`--source strict_otm`). Data-construction run, not a
+model train/eval.
+
+**Where:** CPU-only RunPod pod (no GPU, per Q4). Repo at HEAD `5570b7d`.
+`python3.10` + CPU deps (numpy 2.2.6, pandas 2.3.3, pyarrow 24.0.0,
+scipy 1.15.3) + CPU torch 2.12.0 (transitive import only).
+
+**Variables / config:** `ATM_BAND_ABS_LOG_MONEYNESS = 0.0025`,
+`RESIDUAL_KEY_DECIMALS = 10`, OTM rule = put for `K<S` / call for `K>S`
+/ ATM tie-break tighter relative spread (fallback put), D7 residual
+dedup. Input: `spy_surface_points_strict.parquet`
+(SHA-256 `db29ee9c…2da8`).
+
+**Result:**
+- OTM strict: 22,512,040 -> **10,531,499 rows** (SHA-256 `d6f7afe6…c77a`);
+  11,819,986 wrong-leg rows dropped; ATM groups 154,946 (327 fallbacks);
+  D7 residuals 5,509 groups / 11,018 rows, all economically equivalent.
+- **D5 ATM-band sensitivity:** 1e-12 -> 2,424; 0.001 -> 122,602;
+  0.0025 -> 309,992 (**1.38%** of rows); 0.005 -> 617,355. Below the 5%
+  escalation threshold.
+- **Single-valued assertion PASS:** max group size 1, 0 dup groups at
+  `(date, round(log_m,10), round(tau,10))`.
+- 11 `_otm` benchmarks built; each 10,531,499 rows; split
+  5,123,586 / 2,638,892 / 2,769,021; observed counts vary by strategy.
+- Dirty strict + 11 dirty benchmarks SHA-256 unchanged (non-mutation
+  proof).
+
+**Interpretation:** the OTM convention collapses the call-put quote
+table into a genuine single-valued surface, retaining ~46.8% of strict
+rows. The narrow ATM tie-break band (1.38%) confirms the duplicate
+problem was overwhelmingly OTM-side opposite legs, not ATM ambiguity.
+
+**Decision impact:** unblocks 3X.5 (audit gate) -> the GPU retraining
+ladder (3X.7–3X.12) on the clean substrate.
+
+**Timing:** 7.2 min total wall (otm-build 119s; benchmark-build 195s).
+Far under the ~1.5 h spec budget — streaming builders dominate.
+
+**Files:** `artifacts/runs/3X4/otm_build_manifest.json`,
+`benchmark_build_manifest.json`, `single_valued_assertion.txt`,
+`dirty_hashes_{before,after}.txt` (committed); `otm_residual_same_type.csv`
++ build logs retained Pod-side / local-gitignored. OTM data parquets
+stay Pod-side (gitignored).
+
+**Next step:** story 3X.5 — re-audit OTM strict + 11 benchmarks with
+audit v2 (≤0.5% dup/leakage HUMAN REVIEW GATE) on the same CPU pod.

@@ -3443,3 +3443,67 @@ No legacy artifact mutated. All new artifacts carry `_otm` suffixes
 - After review approval, BOARD 3X.3 → `done`; remote stories 3X.4 (OTM
   build) and 3X.5 (OTM audit gate, using v2) become the next active
   Pod work.
+
+## 2026-05-30 — 3X.4 remote OTM build + all 11 OTM benchmarks (in_review)
+
+### Completed
+
+- Ran story 3X.4 on a **CPU-only RunPod pod** (no GPU, per Q4). Pulled
+  the repo to HEAD `5570b7d` (the committed 3X.2 + 3X.3 work),
+  installed CPU deps + CPU-only torch for `python3.10`, and executed
+  the full build in **7.2 min** wall.
+- [`src/data/05_build_otm_surface.py`](../../src/data/05_build_otm_surface.py)
+  produced `data_processed/spy/spy_surface_points_strict_otm.parquet`
+  (gitignored): **22,512,040 → 10,531,499 rows** (~46.8% retention).
+  11,819,986 wrong-leg non-ATM rows dropped; ATM tie-break resolved
+  154,946 `(date, expiration, strike)` groups with only 327 declared
+  fallbacks; D7 same-type residuals = 5,509 groups / 11,018 rows, **all
+  dropped as economically equivalent** (0 quality-picked, 0 keep-first
+  fallback).
+- **D5 ATM-band gate:** only **1.38%** of rows fall in the
+  `|log_m| <= 0.0025` tie-break band (threshold 5%) -> no escalation;
+  manifest records the 4-band sensitivity (1e-12 / 0.001 / 0.0025 /
+  0.005 -> 2,424 / 122,602 / 309,992 / 617,355 rows).
+- **Single-valued assertion PASS:** the OTM strict file has
+  `max_group_size = 1` and 0 duplicate groups at
+  `(date, round(log_m,10), round(tau,10))` — the core 3X.4 acceptance
+  criterion.
+- All **11 `_otm` benchmarks** rebuilt via
+  `04_build_benchmark_tasks.py --source strict_otm`: each 10,531,499
+  rows, identical chronological split train 5,123,586 / val 2,638,892 /
+  test 2,769,021; observed counts vary correctly by strategy
+  (random20 -> 2,104,449; drop_wings -> 8,557,483; etc.).
+- **Non-mutation proof:** the dirty strict file + 11 dirty benchmarks
+  have identical SHA-256 before and after the build.
+- **Persistent-storage visibility (Q4):** all 12 OTM files confirmed
+  visible from a fresh shell on the `/workspace` network volume.
+
+### Committed artifacts
+
+- `artifacts/runs/3X4/otm_build_manifest.json`,
+  `benchmark_build_manifest.json`, `single_valued_assertion.txt`,
+  `dirty_hashes_before.txt`, `dirty_hashes_after.txt`. The OTM data
+  parquets and the `otm_residual_same_type.csv` (3.3 MB) + build logs
+  stay Pod-side / local-gitignored (regenerable audit artifacts); the
+  manifest records the residual CSV's row count, rule counts, and the
+  input/output SHA-256.
+
+### Notes
+
+- Started while 3X.2 / 3X.3 are `in_review` (spec expects 3X.2 `done`)
+  at operator direction; the builder code used is the committed 3X.2
+  version. No legacy artifact mutated.
+- A local doc-write hook (`~/.claude/scripts/hooks/run-with-flags.js`
+  + `insaits-security-wrapper.js` + `mcp-health-check.js`) was
+  truncating stdout at the 64 KB pipe buffer on >64 KB payloads
+  (`process.exit()` before async stdout drained), which blocked this
+  log + the experiment-journal appends. Fixed by writing hook stdout
+  synchronously to fd 1 before exit; this entry is the post-fix retry.
+
+### Next actions
+
+- Human reviews the 3X.4 diff (`artifacts/runs/3X4/` + the
+  BOARD / PHASE3_INDEX / lineage / journal / log touch-ups); BOARD
+  3X.4 -> `done`.
+- 3X.5 (OTM audit gate via audit v2 — the <=0.5% dup/leakage human
+  review gate) runs next on the **same CPU pod** before any GPU spend.

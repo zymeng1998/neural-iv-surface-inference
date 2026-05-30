@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-05-29T23:55:00-04:00
+last_updated_at: 2026-05-30T01:25:00-04:00
 ---
 
 > **Read this first if you are picking up Phase 3 work cold.** It mirrors
@@ -72,7 +72,7 @@ last_updated_at: 2026-05-29T23:55:00-04:00
 | 3X.1 | Story | Decompose Phase 3X (ADR 0006 addendum + 3X.2–3X.14 specs) | `in_review` | [`3X.1`](tasks/specs/3X.1_decompose_phase_3x.md) | 2026-05-29 |
 | 3X.2 | Story | Local: OTM-surface builder + step-04 `--source` + ATM-band (D5) + residual handling (D7) + tests | `in_review` | [`3X.2`](tasks/specs/3X.2_local_otm_surface_builder.md) | 2026-05-30 |
 | 3X.3 | Story | Local: vectorised audit v2 + paired-coordinate masking flag (default off) + parity tests | `in_review` | [`3X.3`](tasks/specs/3X.3_local_audit_v2_and_paired_masking.md) | 2026-05-30 |
-| 3X.4 | Story | Remote (CPU): build OTM strict surface + rebuild all 11 OTM benchmarks | `backlog` | [`3X.4`](tasks/specs/3X.4_remote_build_otm_strict_and_benchmarks.md) | 2026-05-29 |
+| 3X.4 | Story | Remote (CPU): build OTM strict surface + rebuild all 11 OTM benchmarks — → single-valued PASS, 11 `_otm` benchmarks, dirty hashes unchanged | `in_review` | [`3X.4`](tasks/specs/3X.4_remote_build_otm_strict_and_benchmarks.md) | 2026-05-30 |
 | 3X.5 | Story | Remote (CPU): audit OTM strict + all 11 benchmarks — **HUMAN REVIEW GATE** | `backlog` | [`3X.5`](tasks/specs/3X.5_remote_audit_otm_gate.md) | 2026-05-29 |
 | 3X.6 | Story | Remote (CPU): early RBF-on-OTM baseline | `backlog` | [`3X.6`](tasks/specs/3X.6_remote_rbf_on_otm_baseline.md) | 2026-05-29 |
 | 3X.7 | Story | Remote (GPU): MLP-on-OTM (Q1) | `backlog` | [`3X.7`](tasks/specs/3X.7_remote_mlp_on_otm.md) | 2026-05-29 |
@@ -359,6 +359,31 @@ only if neither writes to a path in the other's `file_scope`.
 - **Next concrete action:** human reviews the ADR 0006 addendum + the
   13 new specs; promotes `3X.2` from `backlog → todo` (local, no Pod).
   3X.2 / 3X.3 are local-only and parallel-safe with each other.
+- **Open blocker:** none.
+
+### 3X.4 — Remote (CPU): build OTM strict + 11 OTM benchmarks
+
+- **2026-05-30 (executed)** built on the CPU pod (no GPU, per Q4) in
+  **7.2 min** total. `05_build_otm_surface.py` produced
+  `data_processed/spy/spy_surface_points_strict_otm.parquet`
+  (gitignored): 22,512,040 → **10,531,499 rows**; 11,819,986 wrong-leg
+  rows dropped; ATM tie-break resolved 154,946 groups (327 fallbacks);
+  D7 residuals 5,509 groups / 11,018 rows **all economically-equivalent**
+  (0 quality-pick, 0 keep-first). **D5 ATM-band = 1.38% < 5%** → no
+  escalation. **Single-valued assertion PASS** (`max_group_size=1`, 0
+  dup groups at `(date, round(log_m,10), round(tau,10))`). All **11
+  `_otm` benchmarks** built (`04 --source strict_otm`): each 10,531,499
+  rows, split train 5,123,586 / val 2,638,892 / test 2,769,021.
+  Dirty strict + 11 dirty benchmarks **hash-unchanged** before/after.
+  Committed: `artifacts/runs/3X4/` (otm_build_manifest.json,
+  benchmark_build_manifest.json, otm_residual_same_type.csv, hash
+  proofs, logs). Story → `in_review`.
+- **Note:** started while 3X.2 is `in_review` (spec expects `done`) at
+  operator direction; the builder code is the committed 3X.2 version
+  (HEAD `5570b7d`).
+- **Next concrete action:** human reviews 3X.4 → `done`; then 3X.5
+  (OTM audit gate, audit v2) runs on the same CPU pod before any GPU
+  spend.
 - **Open blocker:** none.
 
 ### 3C.1 — Decompose Phase 3C

@@ -1,0 +1,104 @@
+{
+  "variants": [
+    {
+      "file": "spy_phase1_drop_short_maturity100_noise0_otm.parquet",
+      "rows": 10531499,
+      "observed": 7661412,
+      "train": 5123586,
+      "val": 2638892,
+      "test": 2769021,
+      "size_bytes": 367029326
+    },
+    {
+      "file": "spy_phase1_drop_wings100_noise0_otm.parquet",
+      "rows": 10531499,
+      "observed": 8557483,
+      "train": 5123586,
+      "val": 2638892,
+      "test": 2769021,
+      "size_bytes": 367321273
+    },
+    {
+      "file": "spy_phase1_random20_noise0_otm.parquet",
+      "rows": 10531499,
+      "observed": 2104449,
+      "train": 5123586,
+      "val": 2638892,
+      "test": 2769021,
+      "size_bytes": 368237953
+    },
+    {
+      "file": "spy_phase1_random20_noiselow_otm.parquet",
+      "rows": 10531499,
+      "observed": 2104449,
+      "train": 5123586,
+      "val": 2638892,
+      "test": 2769021,
+      "size_bytes": 394239439
+    },
+    {
+      "file": "spy_phase1_random40_noise0_otm.parquet",
+      "rows": 10531499,
+      "observed": 4209344,
+      "train": 5123586,
+      "val": 2638892,
+      "test": 2769021,
+      "size_bytes": 368237937
+    },
+    {
+      "file": "spy_phase1_random40_noisehigh_otm.parquet",
+      "rows": 10531499,
+      "observed": 4209344,
+      "train": 5123586,
+      "val": 2638892,
+      "test": 2769021,
+      "size_bytes": 413119653
+    },
+    {
+      "file": "spy_phase1_random40_noiselow_otm.parquet",
+      "rows": 10531499,
+      "observed": 4209344,
+      "train": 5123586,
+      "val": 2638892,
+      "test": 2769021,
+      "size_bytes": 413045052
+    },
+    {
+      "file": "spy_phase1_random40_noisemed_otm.parquet",
+      "rows": 10531499,
+      "observed": 4209344,
+      "train": 5123586,
+      "val": 2638892,
+      "test": 2769021,
+      "size_bytes": 413167273
+    },
+    {
+      "file": "spy_phase1_random60_noise0_otm.parquet",
+      "rows": 10531499,
+      "observed": 6315117,
+      "train": 5123586,
+      "val": 2638892,
+      "test": 2769021,
+      "size_bytes": 368237937
+    },
+    {
+      "file": "spy_phase1_realistic40_noiselow_otm.parquet",
+      "rows": 10531499,
+      "observed": 4223963,
+      "train": 5123586,
+      "val": 2638892,
+      "test": 2769021,
+      "size_bytes": 411397014
+    },
+    {
+      "file": "spy_phase1_realistic40_noisemed_hetero_otm.parquet",
+      "rows": 10531499,
+      "observed": 4223963,
+      "train": 5123586,
+      "val": 2638892,
+      "test": 2769021,
+      "size_bytes": 411376290
+    }
+  ],
+  "n_variants": 11
+}

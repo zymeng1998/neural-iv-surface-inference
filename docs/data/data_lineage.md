@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-04-02T02:00:00-04:00
-last_updated_at: 2026-05-29T23:30:00-04:00
+last_updated_at: 2026-05-30T01:25:00-04:00
 ---
 
 > Repo-specific data lineage for the Neural IV Surface Inference project.
@@ -192,7 +192,12 @@ decision trail.
 │          (optional manifest JSON via --manifest)         │
 │                                                         │
 │  Status: builder + tests implemented in story 3X.2;     │
-│          real OTM file is produced by story 3X.4 (Pod). │
+│          real OTM file PRODUCED on Pod in story 3X.4    │
+│          (2026-05-30, in_review): 22,512,040 →           │
+│          10,531,499 rows; single-valued at              │
+│          (date, log_m, tau) verified (max group=1);     │
+│          ATM-band 1.38% < 5% (no D5 escalation);        │
+│          D7 residuals 11,018 rows all econ-equivalent.  │
 │          Default step-04 source remains 'strict' so     │
 │          historical benchmarks rebuild byte-identical;  │
 │          `--source strict_otm` selects this file and    │
@@ -481,10 +486,16 @@ Planned correction (per ADR 0006, epic 3X):
   [`src/data/05_build_otm_surface.py`](../../src/data/05_build_otm_surface.py)
   with synthetic-fixture tests in
   [`tests/test_otm_surface_builder.py`](../../tests/test_otm_surface_builder.py);
-  the real OTM file is produced on the Pod in story 3X.4.
-- Rebuild only `spy_phase1_random40_noiselow` from the OTM file
-  (~7 min on Pod); historical benchmarks remain untouched and remain
-  comparable to themselves.
+  the real OTM file was produced on the Pod in story 3X.4 (2026-05-30):
+  10,531,499 single-valued rows, manifest +
+  `otm_residual_same_type.csv` committed under `artifacts/runs/3X4/`.
+- Rebuild **all 11** benchmark variants from the OTM file with
+  `04_build_benchmark_tasks.py --source strict_otm` (D3; done in 3X.4,
+  ~3 min on Pod for the full set — each `_otm` variant 10,531,499 rows,
+  split 5,123,586 / 2,638,892 / 2,769,021). The dirty strict file and
+  the 11 dirty benchmarks are provably untouched (SHA-256 unchanged)
+  and remain comparable to themselves; the primary modelling /
+  restatement substrate is `spy_phase1_random40_noiselow_otm`.
 - Add paired-coordinate masking in
   `src/neural_iv_surface_inference/data/masking.py` behind a flag so
   even residual duplicates (e.g. legitimate split-strike pairs) cannot
