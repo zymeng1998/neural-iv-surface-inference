@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -219,3 +220,54 @@ def test_main_passes_with_waiver_and_writes_audit(tmp_path, monkeypatch):
                   "--board", str(board.relative_to(tmp_path))])
     assert rc == 0
     assert "DEP WAIVER" in spec.read_text()
+
+
+# ---------------------------------------------------------------------------
+# changed_files_from_git — commit-range detection (regression for the
+# push-time no-op bug: gates must inspect <upstream>..HEAD, not just the
+# working tree, because the tree is clean at push time).
+# ---------------------------------------------------------------------------
+
+def _run(cmd, cwd):
+    subprocess.run(cmd, cwd=cwd, check=True,
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+def _init_repo_with_upstream(tmp_path):
+    """Create a work repo W tracking a bare origin, return W path."""
+    origin = tmp_path / "origin.git"
+    work = tmp_path / "work"
+    _run(["git", "init", "--bare", "-b", "main", str(origin)], cwd=tmp_path)
+    _run(["git", "init", "-b", "main", str(work)], cwd=tmp_path)
+    _run(["git", "config", "user.email", "t@t.t"], cwd=work)
+    _run(["git", "config", "user.name", "t"], cwd=work)
+    _run(["git", "remote", "add", "origin", str(origin)], cwd=work)
+    (work / "seed.txt").write_text("seed\n")
+    _run(["git", "add", "-A"], cwd=work)
+    _run(["git", "commit", "-m", "seed"], cwd=work)
+    _run(["git", "push", "-u", "origin", "main"], cwd=work)
+    return work
+
+
+def test_changed_files_sees_unpushed_commit(tmp_path, monkeypatch):
+    work = _init_repo_with_upstream(tmp_path)
+    # New commit touching a spec, NOT yet pushed and NOT in the work tree
+    # as an uncommitted change.
+    spec_dir = work / "docs" / "tasks" / "specs"
+    spec_dir.mkdir(parents=True)
+    (spec_dir / "M9.9.md").write_text("# x\n")
+    _run(["git", "add", "-A"], cwd=work)
+    _run(["git", "commit", "-m", "add spec"], cwd=work)
+
+    monkeypatch.chdir(work)
+    changed = {p.as_posix() for p in cs.changed_files_from_git()}
+    # The committed-but-unpushed spec MUST be detected (this is the bug:
+    # working tree is clean here, only the commit range carries it).
+    assert "docs/tasks/specs/M9.9.md" in changed
+
+
+def test_changed_files_clean_after_push_is_empty(tmp_path, monkeypatch):
+    work = _init_repo_with_upstream(tmp_path)
+    monkeypatch.chdir(work)
+    # Everything pushed, tree clean → no changed files.
+    assert cs.changed_files_from_git() == []

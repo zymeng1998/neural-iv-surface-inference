@@ -117,34 +117,61 @@ def parse_board(board_path: Path) -> Dict[str, str]:
 # Diff discovery
 # ---------------------------------------------------------------------------
 
-def changed_files_from_git() -> List[Path]:
-    """Files changed vs origin/HEAD if available, else vs HEAD."""
-    candidates = [
-        ["git", "diff", "--name-only", "--cached"],
-        ["git", "diff", "--name-only", "HEAD"],
-    ]
-    seen: Set[str] = set()
-    for cmd in candidates:
-        try:
-            out = subprocess.check_output(cmd, text=True, stderr=subprocess.DEVNULL)
-        except subprocess.CalledProcessError:
-            continue
-        for line in out.splitlines():
-            line = line.strip()
-            if line:
-                seen.add(line)
-    # Untracked files
+def _git(args: List[str]) -> str:
+    """Run a git command, returning stdout (empty string on failure)."""
     try:
-        out = subprocess.check_output(
-            ["git", "ls-files", "--others", "--exclude-standard"],
-            text=True, stderr=subprocess.DEVNULL,
+        return subprocess.check_output(
+            ["git"] + args, text=True, stderr=subprocess.DEVNULL
         )
-        for line in out.splitlines():
+    except subprocess.CalledProcessError:
+        return ""
+
+
+def changed_files_from_git() -> List[Path]:
+    """Files in the commits about to be pushed, plus working-tree changes.
+
+    At ``git push`` time the working tree is clean (everything committed),
+    so the meaningful set is the commit range ``<upstream>..HEAD`` — the
+    same range the PMR gate inspects. We deliberately do NOT read the
+    pre-push stdin here: when several gates are chained in one hook the
+    first script (the PMR gate) drains stdin, leaving none for us. The
+    ``<upstream>..HEAD`` diff is independent of stdin and therefore
+    robust to gate ordering.
+
+    Working-tree (staged + unstaged + untracked) changes are also
+    included so the gate is useful when run standalone *before* a commit.
+    """
+    seen: Set[str] = set()
+
+    # 1. Commits being pushed: <upstream>..HEAD (the push range).
+    branch = _git(["rev-parse", "--abbrev-ref", "HEAD"]).strip()
+    upstream = _git(
+        ["rev-parse", "--abbrev-ref", f"{branch}@{{upstream}}"]
+    ).strip()
+    if upstream:
+        rng = _git(["diff", "--name-only", f"{upstream}..HEAD"])
+    else:
+        # No upstream configured (e.g. brand-new branch) — fall back to
+        # the last few commits so a first push is still inspected.
+        rng = _git(["diff", "--name-only", "HEAD~5..HEAD"]) or _git(
+            ["show", "--name-only", "--pretty=format:", "HEAD"]
+        )
+    for line in rng.splitlines():
+        line = line.strip()
+        if line:
+            seen.add(line)
+
+    # 2. Working-tree changes (standalone pre-commit usage).
+    for cmd in (
+        ["diff", "--name-only", "--cached"],
+        ["diff", "--name-only", "HEAD"],
+        ["ls-files", "--others", "--exclude-standard"],
+    ):
+        for line in _git(cmd).splitlines():
             line = line.strip()
             if line:
                 seen.add(line)
-    except subprocess.CalledProcessError:
-        pass
+
     return [Path(p) for p in sorted(seen)]
 
 

@@ -3568,3 +3568,47 @@ No legacy artifact mutated. All new artifacts carry `_otm` suffixes
 - Hand the cold-start prompt at the bottom of `AGENTS.md` to the next
   Cursor session to verify it bootstraps cleanly without reading
   the whole `docs/` tree.
+
+## 2026-05-30 — M1 multi-agent infra landed + push-time gate bugfix (in_review)
+
+### Completed
+
+- Landed epic **M1** (multi-agent collaboration infrastructure, ADR
+  0007) in commit `019362a`: discovery layer (`AGENTS.md`,
+  `.cursor/rules/000-bootstrap.mdc`, `CLAUDE.md` re-point) + enforcement
+  layer (`check_story_dependencies.py`, `check_file_scope.py`,
+  `check_commit_trailer.py`, `scripts/hooks/*`, `install_hooks.sh`).
+- `.gitignore`: narrow negation now commits exactly `AGENTS.md`,
+  `CLAUDE.md`, `.cursor/rules/000-bootstrap.mdc` (reverses `a3d3ee1` for
+  those three only) so the handoff rules travel with `git clone`. All
+  other AI-assistant artifacts stay local-only.
+- **Bugfix (belongs to M1.3):** the dependency + file-scope gates were a
+  **no-op at push time** — they inspected only the working tree, which is
+  clean once everything is committed. Rewrote `changed_files_from_git()`
+  to inspect the push range `<upstream>..HEAD` (mirroring the PMR gate),
+  plus working-tree changes for standalone pre-commit use. Added a real
+  git-repo regression test (`test_changed_files_sees_unpushed_commit`).
+  Caught by dogfooding: the bootstrap push "passed" the dep gate without
+  the waiver ever firing, which is what surfaced the defect.
+
+### Results
+
+- 38 gate tests pass (`tests/test_check_{story_dependencies,file_scope,
+  commit_trailer}.py`).
+- commit-msg hook validated the trailer on `019362a` (M1.5 dogfood).
+
+### Open items
+
+- M1.2–M1.5 are `in_review` (await operator diff review); M1.1 `done`.
+- Two open M1 refinements logged in
+  `docs/roadmaps/meta1_agent_collaboration.md` (Known follow-ups):
+  waiver writes mutate the tree at push time; scope gate only fires when
+  a spec is in the diff.
+- Stray untracked `.run_3x5_driver.py` at repo root (not from M1) —
+  flag for the operator; likely a 3X.5 scratch file.
+
+### Next actions
+
+- Operator reviews the M1 diff; flips M1.2–M1.5 → `done` on BOARD.
+- Decide the waiver-audit-write design (follow-up #2) before the next
+  real waiver.

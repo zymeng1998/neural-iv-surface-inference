@@ -61,3 +61,35 @@ M1.2 ships before M1.3 so the next agent (Cursor or Claude) reading
 - Migrating any of this to `~/.claude/` global config.
 - Cross-agent task locking / queueing.
 - CI-side enforcement (gates run locally; CI is a future iteration).
+
+## Known follow-ups / refinements
+
+Discovered while dogfooding the M1 gates on their own bootstrap push
+(commit `019362a`):
+
+1. **[FIXED, commit pending] Push-time no-op.** The first cut of
+   `check_story_dependencies.py` / `check_file_scope.py` inspected only
+   the working tree (`git diff HEAD` / `--cached` / untracked). At
+   `git push` time the tree is clean, so both gates saw zero files and
+   passed *trivially* — they never inspected the commits being pushed.
+   Fixed by detecting the push range `<upstream>..HEAD` (mirroring
+   `pmr_prepush_gate.py`), with a regression test
+   (`test_changed_files_sees_unpushed_commit`). Note: the gates
+   deliberately do **not** read the pre-push stdin, because the PMR gate
+   runs first in the chained hook and drains it.
+
+2. **[OPEN] Waiver audit-line writes mutate the tree at push time.**
+   When a `WAIVE_DEPS` / `WAIVE_SCOPE` waiver fires, the gate appends an
+   audit line to the affected spec's checkpoint *during the pre-push
+   hook* — i.e. after the commit is built — leaving an uncommitted diff
+   in the working tree post-push. Options to evaluate: (a) write waivers
+   to a dedicated append-only log (`docs/logs/waiver_audit.md`) instead
+   of the spec; (b) emit to stderr only and rely on commit message +
+   operator shell history; (c) move the check to commit-msg/pre-commit
+   time so the audit can be part of the commit. Decide before the next
+   real waiver is needed.
+
+3. **[OPEN] Scope gate only fires when a spec is in the diff.** Editing
+   a story-scoped source file *without* touching that story's spec
+   slips past `check_file_scope.py` (no active spec in the diff → no-op).
+   Acceptable for now; revisit if it causes drift.
