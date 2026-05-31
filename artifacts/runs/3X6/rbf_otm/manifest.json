@@ -1,0 +1,49 @@
+{
+  "story": "3X.6",
+  "description": "Early RBF-on-OTM baseline (floor sanity check before GPU spend)",
+  "benchmark": "spy_phase1_random40_noiselow_otm",
+  "benchmark_path_remote": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm.parquet",
+  "benchmark_rows_total": 10531499,
+  "split_rows": {"train": 5123586, "val": 2638892, "test": 2769021},
+  "model": {
+    "method": "rbf",
+    "kernel": "thin_plate_spline",
+    "smoothing": 1e-3,
+    "clip": [1e-4, 10.0],
+    "source": "src/neural_iv_surface_inference/models/interpolation.py",
+    "protocol": "per-date RBF fit on observed points, predict all points; mirrors dirty RBF protocol"
+  },
+  "target": "iv_clean",
+  "splits_run": ["val", "test"],
+  "predictions_parquet": {
+    "val": "artifacts/runs/3X6/rbf_otm/predictions_val.parquet (gitignored, ~39 MB)",
+    "test": "artifacts/runs/3X6/rbf_otm/predictions_test.parquet (gitignored, ~42 MB)"
+  },
+  "metrics_csv": "results/3/spy_phase1_random40_noiselow_otm/rbf/metrics_summary.csv",
+  "results": {
+    "val": {"overall_mae": 0.006151118707710642, "overall_rmse": 0.009831638506665996, "observed_mae": 0.005513426318946455, "unobserved_mae": 0.006575361113104126, "n": 2638892, "n_nonfinite_pred": 0, "wall_seconds": 143.2},
+    "test": {"overall_mae": 0.006131847035635011, "overall_rmse": 0.010040897291445864, "observed_mae": 0.005544204015917675, "unobserved_mae": 0.006523754441402372, "n": 2769021, "n_nonfinite_pred": 0, "wall_seconds": 123.1}
+  },
+  "contrast_rbf_on_dirty": {
+    "dirty_fullfold_test_mae": 0.0662,
+    "dirty_slice_2d9_test_mae": 0.0729689212440884,
+    "otm_test_mae": 0.006131847035635011,
+    "ratio_dirty_over_otm_fullfold": 10.8,
+    "note": "RBF floor drops ~10.8x on the deduplicated single-valued OTM substrate vs the dirty substrate (93.61% duplicate-coordinate leakage, ADR 0006). The OTM interpolation problem is well-posed and smooth, RAISING the accuracy bar for the neural family in 3X.7+."
+  },
+  "compute": {
+    "locale": "remote RunPod CPU pod 213.173.105.99:15705",
+    "repo_path_remote": "/workspace/Neural-IV-Surface-inference",
+    "pod_git_head_at_run": "5570b7d",
+    "code_note": "RBF code (interpolation.py/eval.py/loaders.py) predates Phase 3X and is byte-identical to origin/main 89c45f6; pod was not fast-forwarded to avoid untracked-audit-artifact conflicts.",
+    "venv": "/workspace/venv-2e2",
+    "scipy": "1.15.3",
+    "pandas": "2.3.3",
+    "numpy": "2.2.6"
+  },
+  "acceptance": {
+    "finite_predictions_all_dates": true,
+    "val_test_mae_recorded": true,
+    "no_neural_training": true
+  }
+}

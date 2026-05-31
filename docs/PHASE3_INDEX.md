@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-05-30T01:25:00-04:00
+last_updated_at: 2026-05-30T23:59:00-04:00
 ---
 
 > **Read this first if you are picking up Phase 3 work cold.** It mirrors
@@ -74,7 +74,7 @@ last_updated_at: 2026-05-30T01:25:00-04:00
 | 3X.3 | Story | Local: vectorised audit v2 + paired-coordinate masking flag (default off) + parity tests | `done` | [`3X.3`](tasks/specs/3X.3_local_audit_v2_and_paired_masking.md) | 2026-05-30 |
 | 3X.4 | Story | Remote (CPU): build OTM strict surface + rebuild all 11 OTM benchmarks — → single-valued PASS, 11 `_otm` benchmarks, dirty hashes unchanged | `done` | [`3X.4`](tasks/specs/3X.4_remote_build_otm_strict_and_benchmarks.md) | 2026-05-30 |
 | 3X.5 | Story | Remote (CPU): audit OTM strict + all 11 benchmarks — **HUMAN REVIEW GATE** → **PASS 12/12** (93.61%→0% dup; 0% twin leakage all splits) | `done` | [`3X.5`](tasks/specs/3X.5_remote_audit_otm_gate.md) | 2026-05-30 |
-| 3X.6 | Story | Remote (CPU): early RBF-on-OTM baseline | `backlog` | [`3X.6`](tasks/specs/3X.6_remote_rbf_on_otm_baseline.md) | 2026-05-29 |
+| 3X.6 | Story | Remote (CPU): early RBF-on-OTM baseline — → test MAE 0.00613 / val 0.00615, 0 non-finite; ~10.8× below RBF-on-dirty 0.0662 (raises neural bar for 3X.7+) | `in_review` | [`3X.6`](tasks/specs/3X.6_remote_rbf_on_otm_baseline.md) | 2026-05-30 |
 | 3X.7 | Story | Remote (GPU): MLP-on-OTM (Q1) | `backlog` | [`3X.7`](tasks/specs/3X.7_remote_mlp_on_otm.md) | 2026-05-29 |
 | 3X.8 | Story | Remote (GPU): DeepSets-on-OTM single + K=5 ensemble (D2) | `backlog` | [`3X.8`](tasks/specs/3X.8_remote_deepsets_on_otm.md) | 2026-05-29 |
 | 3X.9 | Story | Remote (GPU): ANP-on-OTM all three heads (D1) | `backlog` | [`3X.9`](tasks/specs/3X.9_remote_anp_on_otm.md) | 2026-05-29 |
@@ -387,6 +387,32 @@ only if neither writes to a path in the other's `file_scope`.
 - **Next concrete action:** human reviews 3X.4 → `done`; then 3X.5
   (OTM audit gate, audit v2) runs on the same CPU pod before any GPU
   spend.
+- **Open blocker:** none.
+
+### 3X.6 — Remote (CPU): early RBF-on-OTM baseline
+
+- **2026-05-30 (executed)** RBF (thin-plate spline, smoothing 1e-3,
+  per-date) run on `spy_phase1_random40_noiselow_otm` **val + test** on
+  the CPU pod (`213.173.105.99:15705`, `venv-2e2` scipy 1.15.3), via the
+  committed `models/interpolation.py` + `eval.py`. ~4.5 min total wall
+  (val 143 s / test 123 s). **All predictions finite** (0 non-finite on
+  both splits).
+- **Headline:** test overall MAE **0.006132** (val 0.006151); observed
+  0.005544 / unobserved 0.006524 (test). Contrast RBF-on-dirty: 0.0662
+  full-fold / 0.0730 on the 2D.9 slice → the OTM RBF floor is **~10.8×
+  lower**. The deduplicated single-valued OTM surface is a well-posed,
+  smooth interpolation problem (93.61 % → 0 % dup, 0 % twin leakage per
+  3X.5), so RBF nails it — which **raises the accuracy bar** the neural
+  family must clear in 3X.7+ (≈0.006, not ≈0.066). Not a build artefact:
+  finite everywhere, monotone moneyness/maturity buckets, small
+  observed↔unobserved gap.
+- **Artifacts:** `results/3/spy_phase1_random40_noiselow_otm/rbf/metrics_summary.csv`
+  (committed) + `artifacts/runs/3X6/rbf_otm/manifest.json` (committed) +
+  `predictions_{val,test}.parquet` (~40 MB each, gitignored per the
+  `artifacts/runs/**/*.parquet` convention).
+- **Next concrete action:** human reviews 3X.6 → `done`. This is the
+  **last CPU-pod story** — terminate the CPU pod; rent a GPU pod for
+  3X.7 (MLP-on-OTM, ladder anchor).
 - **Open blocker:** none.
 
 ### 3C.1 — Decompose Phase 3C

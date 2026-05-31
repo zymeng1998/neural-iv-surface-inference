@@ -3713,3 +3713,56 @@ No legacy artifact mutated. All new artifacts carry `_otm` suffixes
   proceed on the clean OTM substrate.
 - CPU pod may be terminated (Q4): 12 OTM parquets + 12 audit dirs +
   roll-up confirmed on the persistent volume and on origin.
+
+## 2026-05-30 — 3X.6 early RBF-on-OTM baseline → test MAE 0.00613 (in_review)
+
+### What was done
+
+- Ran the per-date RBF interpolation baseline (thin-plate spline,
+  smoothing 1e-3, the committed `models/interpolation.py`) on
+  `spy_phase1_random40_noiselow_otm` **val + test** on the CPU pod
+  (`213.173.105.99:15705`, `venv-2e2`, scipy 1.15.3). Target = `iv_clean`;
+  metrics via the committed `training/eval.py`. ~4.5 min wall (val 143 s
+  / test 123 s).
+- Runner stayed an ad-hoc pod-side script (`run_3x6.py`, uncommitted):
+  `scripts/` is outside 3X.6's `file_scope`, and this matches the
+  existing `run_3x4.sh` pattern. Did **not** `git pull` on the pod —
+  untracked 3X.4/3X.5 audit artifacts would block an ff-merge and the
+  RBF code is byte-identical to origin/main anyway.
+
+### Results
+
+- **Test overall MAE 0.006132** (val 0.006151); observed 0.005544 /
+  unobserved 0.006524 (test); RMSE 0.01004 (test). **0 non-finite
+  predictions** on either split (acceptance check PASS).
+- Contrast RBF-on-dirty: **0.0662** full-fold / **0.0730** on the 2D.9
+  slice → the OTM RBF floor is **~10.8× lower**.
+- Plausibility PASS: finite everywhere, monotone moneyness/maturity
+  buckets (ATM lowest ~0.0049, wings highest ~0.0088), small
+  observed↔unobserved gap. Consistent with the 3X.5 single-valued
+  substrate (93.61 % → 0 % dup, 0 % twin leakage). This is the **expected**
+  effect of removing duplicate-coordinate contamination (ADR 0006), not
+  an OTM-build problem.
+
+### Decision impact
+
+- The neural family in 3X.7+ must now beat **≈0.006**, not ≈0.066 — the
+  Phase 3 "beat RBF by ≥5 %" bar is far harder on the clean OTM substrate.
+  No re-scoping done here; flagged for 3X.13 (comparison) / 3X.14
+  (closing addendum) under ADR 0006's no-overclaim guardrail. The OTM
+  benchmark is a different/smaller substrate than dirty, so the contrast
+  is "RBF floor per substrate", not a like-for-like row comparison.
+
+### Files (committed)
+
+- `results/3/spy_phase1_random40_noiselow_otm/rbf/metrics_summary.csv`
+  (val + test, full bucket breakdown).
+- `artifacts/runs/3X6/rbf_otm/manifest.json` (run provenance + the
+  dirty-vs-OTM contrast). The `predictions_{val,test}.parquet` (~40 MB
+  each) are gitignored per the `artifacts/runs/**/*.parquet` convention.
+
+### Next actions
+
+- **Human reviews 3X.6 → `done`.** This is the **last CPU-pod story**:
+  terminate the CPU pod (Q4); rent a GPU pod for 3X.7 (MLP-on-OTM,
+  ladder anchor). OTM benchmarks remain on the persistent volume.

@@ -1492,3 +1492,73 @@ CSVs (12 dirs) + `otm_audit_gate.csv` / `.json` roll-up;
 
 **Next step:** human approves → 3X.5 `done` → verify OTM artifacts on
 persistent storage → terminate CPU pod (Q4) → GPU pod for 3X.7+.
+
+## 2026-05-30T23:59:00-04:00 — 3X.6 early RBF-on-OTM baseline (CPU pod)
+
+**Goal:** establish the RBF floor on the clean
+`spy_phase1_random40_noiselow_otm` benchmark *before* any GPU spend — a
+sanity check that the OTM construction (3X.2–3X.5) produced a sensibly
+difficult problem, and a contrast against the RBF-on-dirty floor that
+the whole Phase 3 bar is defined against.
+
+**Setup:** RunPod CPU pod (`213.173.105.99:15705`, `venv-2e2`, scipy
+1.15.3); OTM benchmark already on the volume (10,531,499 rows; val
+2,638,892 / test 2,769,021). Per-date RBF (thin-plate spline, smoothing
+1e-3) via the committed `models/interpolation.py`; metrics via
+`training/eval.py`; target `iv_clean`. Ad-hoc pod runner (uncommitted;
+`scripts/` is outside 3X.6 file_scope). val + test only (matched to the
+spec's `predictions_{val,test}`).
+
+**Result — RBF-on-OTM floor:**
+
+| split | overall MAE | observed MAE | unobserved MAE | RMSE | non-finite |
+|---|---|---|---|---|---|
+| val | 0.006151 | 0.005513 | 0.006575 | 0.009832 | 0 |
+| test | 0.006132 | 0.005544 | 0.006524 | 0.010041 | 0 |
+
+**Dirty-vs-OTM contrast (the headline):**
+
+| RBF baseline | substrate | test MAE | n (test) |
+|---|---|---|---|
+| RBF-on-OTM (3X.6) | `random40_noiselow_otm` (single-valued) | **0.006132** | 2,769,021 |
+| RBF-on-dirty full-fold | `random40_noiselow` (dirty) | 0.0662 | 5,805,664 |
+| RBF-on-dirty 2D.9 slice | `random40_noiselow` (dirty) | 0.0730 | 64,610 |
+
+→ the OTM RBF floor is **~10.8× lower** than the dirty full-fold floor.
+
+**Interpretation:** the dirty RBF floor (0.066) was massively inflated
+by duplicate-coordinate contamination — the same `(log_moneyness, tau)`
+carrying conflicting IVs (call/put opposite legs), which no interpolator
+can fit (93.61 % dup share, exact-twin held-out leakage up to ~40 %/cell
+per the 3X audit). The OTM convention collapses the quote table into a
+genuine single-valued, smooth surface (3X.5 gate: 0 % dup, 0 % twin
+leakage on every split), so RBF interpolates it almost exactly. The drop
+is therefore **expected and confirmatory**, not a build artefact:
+predictions are finite everywhere, the moneyness/maturity buckets are
+monotone (ATM ~0.0049 lowest, wings ~0.0088 highest), and the
+observed↔unobserved gap is small (0.0055 → 0.0065), i.e. RBF generalises
+to truly held-out coordinates nearly as well as it fits observed ones.
+
+**Decision impact:** the Phase 3 accuracy bar is far harder on the clean
+substrate — neural models in 3X.7+ must beat **≈0.006**, not ≈0.066. The
+"beat RBF by ≥5 %" framing must be re-stated on the OTM substrate (per
+ADR 0006's no-overclaim guardrail). Caveat for downstream: OTM is a
+different, smaller substrate than dirty, so this is a per-substrate floor
+contrast, not a like-for-like row comparison — 3X.13 builds the matched
+side-by-side tables and 3X.14 writes the methodology-progression
+narrative. No re-scoping decided here.
+
+**Timing:** ~4.5 min total wall (val 143 s / test 123 s) — well under the
+spec's 20–40 min estimate (per-date thin-plate solves on ~1.5k observed
+points/date are cheap).
+
+**Files (committed):**
+`results/3/spy_phase1_random40_noiselow_otm/rbf/metrics_summary.csv`
+(val + test, full bucket breakdown);
+`artifacts/runs/3X6/rbf_otm/manifest.json` (provenance + contrast). The
+`predictions_{val,test}.parquet` (~40 MB each) are gitignored per the
+`artifacts/runs/**/*.parquet` convention.
+
+**Next step:** human approves 3X.6 → `done`; **terminate the CPU pod**
+(last CPU-pod story, Q4); rent a GPU pod for 3X.7 (MLP-on-OTM, the
+ladder anchor).
