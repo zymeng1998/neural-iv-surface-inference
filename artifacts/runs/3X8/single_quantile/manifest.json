@@ -1,0 +1,28 @@
+{
+  "story": "3X.8",
+  "head_kind": "quantile",
+  "git_sha": "5570b7daa3f352d9fddf806c9a6a433736bd71c2",
+  "config_hash": "31aabfcb61d0ed06",
+  "benchmark_file": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm.parquet",
+  "splits": {
+    "train_rows": 5123586,
+    "val_rows": 2638892,
+    "test_rows": 2769021
+  },
+  "epochs_completed": 50,
+  "final_train_loss": 0.0026677722697986254,
+  "final_val_loss": 0.0032811744921756062,
+  "best_val_loss": 0.0031458094440908594,
+  "val_mae_mu": 0.012943549081683159,
+  "test_mae_mu": 0.014180073514580727,
+  "quantile_monotonicity_ok": true,
+  "train_wall_clock_s": 258.1124310493469,
+  "score_wall_clock_s": 14.96954870223999,
+  "device": "cuda",
+  "outputs": {
+    "checkpoint": "artifacts/runs/3X8/single_quantile/checkpoints/best_conditional.pt",
+    "val_predictions": "artifacts/runs/3X8/single_quantile/val_predictions.csv",
+    "test_predictions": "artifacts/runs/3X8/single_quantile/test_predictions.csv",
+    "training_curve": "artifacts/runs/3X8/single_quantile/training_curve.csv"
+  }
+}

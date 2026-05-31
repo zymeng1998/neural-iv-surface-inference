@@ -1,0 +1,27 @@
+# 3X.7 — masked-MLP baseline on the OTM-restricted benchmark.
+# Faithful clone of configs/baseline.yaml (same seed/hparams); only the
+# dataset is repointed to the OTM single-valued surface and outputs land
+# under artifacts/runs/3X7/. From-scratch (D8): NOT warm-started from the
+# dirty MLP checkpoint. Ladder anchor only (Q1): RBF -> MLP -> DeepSets -> ANP.
+
+seed: 42
+
+data:
+  benchmark_file: data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm.parquet
+  batch_size: 256
+  num_workers: 0
+
+# ── MLP baseline (fixed historical architecture — do NOT change) ──────
+mlp:
+  input_dim: 2
+  hidden_dim: 128
+  n_layers: 3
+  dropout: 0.1
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  epochs: 50
+  patience: 10
+
+paths:
+  checkpoint_dir: artifacts/runs/3X7/mlp_otm/checkpoints
+  results_dir: artifacts/runs/3X7/mlp_otm

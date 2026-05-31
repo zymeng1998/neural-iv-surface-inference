@@ -1,0 +1,49 @@
+{
+  "story": "3X.7",
+  "model": "masked_mlp_baseline",
+  "git_sha": "5570b7daa3f352d9fddf806c9a6a433736bd71c2",
+  "config_hash": "295bf2600d96b6bf",
+  "benchmark_file": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm.parquet",
+  "benchmark_sha256_16": "b614e0437eceac70",
+  "seed": 42,
+  "from_scratch": true,
+  "splits": {
+    "train_rows": 5123586,
+    "val_rows": 2638892,
+    "test_rows": 2769021
+  },
+  "epochs_completed": 12,
+  "final_train_loss": 0.0045784218432496915,
+  "final_val_obs_mse": 0.002455665975857858,
+  "best_val_obs_mse": 0.0019602986476279526,
+  "val_mae_vs_iv_true": {
+    "overall_mae": 0.03391062468290329,
+    "observed_mae": 0.03453315794467926,
+    "unobserved_mae": 0.03349648043513298
+  },
+  "test_mae_vs_iv_true": {
+    "overall_mae": 0.030062895268201828,
+    "observed_mae": 0.03070889599621296,
+    "unobserved_mae": 0.029632067307829857
+  },
+  "val_mae_vs_iv_clean": {
+    "overall_mae": 0.03349683806300163,
+    "observed_mae": 0.033497389405965805,
+    "unobserved_mae": 0.03349648043513298
+  },
+  "test_mae_vs_iv_clean": {
+    "overall_mae": 0.029626868665218353,
+    "observed_mae": 0.02961907908320427,
+    "unobserved_mae": 0.029632067307829857
+  },
+  "predictions_finite": true,
+  "train_wall_clock_s": 4037.5038571357727,
+  "score_wall_clock_s": 110.88328409194946,
+  "device": "cuda",
+  "outputs": {
+    "checkpoint": "artifacts/runs/3X7/mlp_otm/checkpoints/best_mlp.pt",
+    "predictions_val": "artifacts/runs/3X7/mlp_otm/predictions_val.parquet",
+    "predictions_test": "artifacts/runs/3X7/mlp_otm/predictions_test.parquet",
+    "training_curve": "artifacts/runs/3X7/mlp_otm/training_curve.csv"
+  }
+}

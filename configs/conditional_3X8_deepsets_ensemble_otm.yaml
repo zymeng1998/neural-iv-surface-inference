@@ -1,0 +1,39 @@
+# 3X.8 — K=5 DeepSets deep-ensemble (point head) on OTM.
+# Faithful clone of configs/conditional_2D8_ensemble.yaml; dataset -> _otm,
+# outputs under 3X8/ensemble. Same seeds [101,202,303,404,505] and hparams.
+# decoder_kind left at model default (deepsets). D8 from-scratch. Mirrors
+# the 2D.8 recipe exactly — do NOT change architecture/hparams.
+
+seed: 42
+
+data:
+  benchmark_file: data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm.parquet
+  batch_size: 32
+  num_workers: 0
+
+conditional:
+  context_dim: 3
+  coord_dim: 2
+  hidden_dim: 128
+  latent_dim: 64
+  n_elem_layers: 2
+  n_post_layers: 1
+  n_decoder_layers: 3
+
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  epochs: 50
+  patience: 10
+
+  head:
+    kind: point
+    quantiles: [0.05, 0.5, 0.95]
+
+ensemble:
+  size: 5
+  seeds: [101, 202, 303, 404, 505]
+
+paths:
+  checkpoint_dir: artifacts/runs/3X8/ensemble/checkpoints
+  log_dir: artifacts/runs/3X8/ensemble/logs
+  results_dir: artifacts/runs/3X8/ensemble

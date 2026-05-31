@@ -325,8 +325,8 @@ carry an `_otm` suffix.
 | 3X.4 | Build OTM strict surface + rebuild **all 11** OTM benchmarks — **done** (2026-05-30) | Pod **CPU** |
 | 3X.5 | Audit OTM strict + all 11 benchmarks — **HUMAN REVIEW GATE** → **PASS 12/12** (93.61%→0% dup; 0% twin leakage) — **done** (2026-05-30) | Pod **CPU** |
 | 3X.6 | Early RBF-on-OTM baseline (floor sanity check before GPU spend) — → test MAE **0.00613** (~10.8× below RBF-on-dirty 0.0662) — **done** (2026-05-31) | Pod **CPU** |
-| 3X.7 | MLP-on-OTM baseline (Q1 — ladder anchor) | Pod GPU |
-| 3X.8 | DeepSets-on-OTM — single (2D.7-equiv) + K=5 ensemble (2D.8-equiv) (D2) | Pod GPU |
+| 3X.7 | MLP-on-OTM baseline (Q1 — ladder anchor) — → test MAE **0.03006** (~3.2× below dirty MLP 0.0951) — **in_review** (2026-05-31) | Pod GPU |
+| 3X.8 | DeepSets-on-OTM — single (2D.7-equiv) + K=5 ensemble (2D.8-equiv) (D2) — → test MAE quantile **0.01418** / gaussian 0.01530 / ensemble 0.01594 / point 0.01752 (~5× below dirty 2D 0.072–0.079) — **in_review** (2026-05-31) | Pod GPU |
 | 3X.9 | ANP-on-OTM — all three heads (D1) | Pod GPU |
 | 3X.10 | ANP K=5 ensemble-on-OTM (mirror 3B.5) | Pod GPU |
 | 3X.11 | Calibrator re-fit on OTM val predictions (mirror 3B.6) | local CPU |

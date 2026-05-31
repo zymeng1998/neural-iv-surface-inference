@@ -1,0 +1,74 @@
+{
+  "story": "2D.8",
+  "git_sha": "5570b7daa3f352d9fddf806c9a6a433736bd71c2",
+  "config_hash": "0f3038fcfcfd1737",
+  "benchmark_file": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm.parquet",
+  "splits": {
+    "train_rows": 5123586,
+    "val_rows": 2638892,
+    "test_rows": 2769021
+  },
+  "ensemble_size": 5,
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "members": [
+    {
+      "seed": 101,
+      "val_loss": 0.0005205195266171359,
+      "checkpoint": "seed_101/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 251.83732104301453
+    },
+    {
+      "seed": 202,
+      "val_loss": 0.0006240036957685581,
+      "checkpoint": "seed_202/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 232.7120087146759
+    },
+    {
+      "seed": 303,
+      "val_loss": 0.0005040967920318839,
+      "checkpoint": "seed_303/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 232.49477219581604
+    },
+    {
+      "seed": 404,
+      "val_loss": 0.0004935849958035925,
+      "checkpoint": "seed_404/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 232.7081606388092
+    },
+    {
+      "seed": 505,
+      "val_loss": 0.00048353346276351,
+      "checkpoint": "seed_505/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 231.7738790512085
+    }
+  ],
+  "ensemble_val_mae": 0.016263997182250023,
+  "ensemble_test_mae": 0.01593746989965439,
+  "disagreement_test_stats": {
+    "min": 7.851176633266732e-05,
+    "mean": 0.004787493497133255,
+    "max": 0.09697407484054565,
+    "any_positive": true,
+    "any_negative": false
+  },
+  "train_total_wall_clock_s": 1181.5261416435242,
+  "score_wall_clock_s": 20.309543132781982,
+  "device": "cuda",
+  "outputs": {
+    "members_json": "artifacts/runs/3X8/ensemble/checkpoints/ensemble/members.json",
+    "val_predictions": "artifacts/runs/3X8/ensemble/val_predictions.csv",
+    "test_predictions": "artifacts/runs/3X8/ensemble/test_predictions.csv",
+    "training_curves": "artifacts/runs/3X8/ensemble/training_curves.csv"
+  }
+}

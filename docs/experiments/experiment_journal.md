@@ -1562,3 +1562,82 @@ points/date are cheap).
 **Next step:** human approves 3X.6 → `done`; **terminate the CPU pod**
 (last CPU-pod story, Q4); rent a GPU pod for 3X.7 (MLP-on-OTM, the
 ladder anchor).
+
+---
+
+## 2026-05-31T12:30:00-04:00 — 3X.7 (MLP) + 3X.8 (DeepSets) on OTM (GPU pod)
+
+**Story:** 3X.7 + 3X.8 (first GPU stories of Phase 3X). **Mode:** remote,
+RTX 4000 Ada (20 GB), `/workspace/venv-2e2/bin/python` (torch 2.11.0+cu128).
+
+**Question:** what are MLP-on-OTM and DeepSets-on-OTM (single 2D.7-equiv
+heads + K=5 2D.8-equiv ensemble) val/test MAE on
+`random40_noiselow_otm`, vs their dirty counterparts? Diagnostic only —
+no pass/fail NLL gate (different distribution).
+
+**Config:** faithful clones of the dirty baselines — `baseline.yaml`
+(3X.7) and `conditional_2D7_{gaussian,quantile,point_control}.yaml` +
+`conditional_2D8_ensemble.yaml` (3X.8), dataset repointed to `_otm`,
+identical seed 42 (singles) / seeds [101,202,303,404,505] (ensemble),
+identical hparams. From-scratch (D8). DeepSets is the model-default
+`decoder_kind` (unset in config), exactly as 2D.7. Ensemble produced by
+the verbatim `run_2d8_ensemble.py` (manifest `story: 2D.8` by design).
+
+**Results — clean OTM ladder (test MAE vs `implied_volatility`):**
+
+| Model | substrate | val MAE | test MAE | dirty test MAE | OTM/dirty |
+|---|---|---:|---:|---:|---:|
+| MLP (3X.7) | OTM | 0.03391 | 0.03006 | 0.0951 | 0.32 |
+| DeepSets gaussian (3X.8) | OTM | 0.01462 | 0.01530 | 0.0787 | 0.19 |
+| DeepSets quantile (3X.8) | OTM | 0.01294 | **0.01418** | 0.0719 | 0.20 |
+| DeepSets point (3X.8) | OTM | 0.01804 | 0.01752 | 0.0756 | 0.23 |
+| DeepSets K=5 ens (3X.8) | OTM | 0.01626 | 0.01594 | 0.0748 | 0.21 |
+| RBF (3X.6, context) | OTM | 0.00615 | 0.00613 | 0.0662 | — |
+
+n_test = 2,769,021; n_val = 2,638,892; n_train = 5,123,586 (same splits
+all rows). Acceptance checks: all trainings finite (no NaN/inf), val loss
+decreases & stabilises, prediction rows == query rows, manifests carry
+dataset/config/seed/code hashes, quantile monotonicity holds on test,
+ensemble disagreement strictly > 0 (mean 0.00479, max 0.097). PMR gate
+dry-run PASS.
+
+**Interpretation:**
+- Every model drops ~3–5× on OTM vs dirty. The dirty MAE was inflated by
+  the irreducible call-put duplicate-label disagreement (median in-group
+  IV range ≈0.049, ADR 0006) that no model can fit; the clean
+  single-valued surface (3X.5 gate: 0 % dup, 0 % twin leakage) removes
+  it. **Expected and confirmatory**, mirrors the 3X.6 RBF drop.
+- The OTM ladder is coherent and monotone in inductive structure: RBF
+  0.0061 (local interpolator) < DeepSets 0.014–0.018 (conditional) < MLP
+  0.030 (unconditional). Conditioning buys ~2× over the MLP; the
+  query-attends-to-context decoder (ANP, 3X.9) is the next rung.
+- **The DeepSets→RBF gap that motivated Phase 3 persists on clean data**
+  (best DeepSets quantile 0.0142 ≈ 2.3× the RBF floor 0.0061). This is a
+  diagnostic, not the Phase 3 verdict — calibration (3X.11) + decision
+  layer (3X.12) + ANP (3X.9/3X.10) are still pending, and 3X.13/3X.14
+  build the matched dirty-vs-OTM tables + methodology narrative under
+  ADR 0006's no-overclaim guardrail (per-substrate contrast, not a
+  like-for-like row comparison: OTM is a smaller, different substrate).
+- Head ranking shifted slightly vs dirty: on OTM quantile-median is best
+  among singles (dirty had quantile best too); point is worst on OTM
+  (dirty gaussian was worst). The K=5 ensemble (0.01594) sits between
+  gaussian and point — ensembling the point head does not beat the
+  single quantile head on this clean substrate.
+
+**Timing:** 3X.8 single heads ~5 s/epoch (date-batched, ~3–4 min each
+incl. scoring); K=5 ensemble ~232 s/member (~20 min total). 3X.7 MLP
+~220–400 s/epoch (row-batched, CPU-loader-bound; slowed by running in
+parallel with 3X.8), early-stop epoch 12, ~67 min train + scoring. 3X.7
+was launched first as a GPU-stack smoke gate; 3X.8 launched in parallel
+once 3X.7 epoch 1 returned finite on OTM.
+
+**Files (committed):** manifests under `artifacts/runs/3X7/mlp_otm/` and
+`artifacts/runs/3X8/{single_gaussian,single_quantile,single_point,ensemble}/`
++ `.../ensemble/checkpoints/ensemble/members.json`. Training curves,
+per-row predictions (~2.0 GB for 3X.8), and logs are gitignored
+(`artifacts/runs/**/*.{csv,parquet,log}`) — pulled to local for 3X.11/
+3X.12; checkpoints left on the pod's persistent `/workspace` volume.
+
+**Next step:** human approves 3X.7 / 3X.8 → `done`. GPU pod stays up for
+3X.9 (ANP-on-OTM, all 3 heads) + 3X.10 (ANP K=5 ensemble); 3X.11
+(calibrator refit) is local CPU on the pulled-back val predictions.

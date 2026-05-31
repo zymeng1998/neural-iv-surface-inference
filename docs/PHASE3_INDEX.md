@@ -75,8 +75,8 @@ last_updated_at: 2026-05-31T00:20:00-04:00
 | 3X.4 | Story | Remote (CPU): build OTM strict surface + rebuild all 11 OTM benchmarks — → single-valued PASS, 11 `_otm` benchmarks, dirty hashes unchanged | `done` | [`3X.4`](tasks/specs/3X.4_remote_build_otm_strict_and_benchmarks.md) | 2026-05-30 |
 | 3X.5 | Story | Remote (CPU): audit OTM strict + all 11 benchmarks — **HUMAN REVIEW GATE** → **PASS 12/12** (93.61%→0% dup; 0% twin leakage all splits) | `done` | [`3X.5`](tasks/specs/3X.5_remote_audit_otm_gate.md) | 2026-05-30 |
 | 3X.6 | Story | Remote (CPU): early RBF-on-OTM baseline — → test MAE 0.00613 / val 0.00615, 0 non-finite; ~10.8× below RBF-on-dirty 0.0662 (raises neural bar for 3X.7+) | `done` | [`3X.6`](tasks/specs/3X.6_remote_rbf_on_otm_baseline.md) | 2026-05-31 |
-| 3X.7 | Story | Remote (GPU): MLP-on-OTM (Q1) | `backlog` | [`3X.7`](tasks/specs/3X.7_remote_mlp_on_otm.md) | 2026-05-29 |
-| 3X.8 | Story | Remote (GPU): DeepSets-on-OTM single + K=5 ensemble (D2) | `backlog` | [`3X.8`](tasks/specs/3X.8_remote_deepsets_on_otm.md) | 2026-05-29 |
+| 3X.7 | Story | Remote (GPU): MLP-on-OTM (Q1) — → test MAE **0.03006** (val 0.03391), finite; ~3.2× below dirty MLP 0.0951 | `in_review` | [`3X.7`](tasks/specs/3X.7_remote_mlp_on_otm.md) | 2026-05-31 |
+| 3X.8 | Story | Remote (GPU): DeepSets-on-OTM single + K=5 ensemble (D2) — → test MAE quantile **0.01418** / gaussian 0.01530 / ensemble 0.01594 / point 0.01752; ~5× below dirty 2D 0.072–0.079 | `in_review` | [`3X.8`](tasks/specs/3X.8_remote_deepsets_on_otm.md) | 2026-05-31 |
 | 3X.9 | Story | Remote (GPU): ANP-on-OTM all three heads (D1) | `backlog` | [`3X.9`](tasks/specs/3X.9_remote_anp_on_otm.md) | 2026-05-29 |
 | 3X.10 | Story | Remote (GPU): ANP K=5 ensemble-on-OTM | `backlog` | [`3X.10`](tasks/specs/3X.10_remote_anp_ensemble_on_otm.md) | 2026-05-29 |
 | 3X.11 | Story | Local: calibrator re-fit on OTM val predictions | `backlog` | [`3X.11`](tasks/specs/3X.11_local_calibration_on_otm.md) | 2026-05-29 |
@@ -415,6 +415,39 @@ only if neither writes to a path in the other's `file_scope`.
   CPU-pod story** — the CPU pod can now be terminated; next action is a
   GPU pod for 3X.7 (MLP-on-OTM, ladder anchor).
 - **Open blocker:** none.
+
+### 3X.7 — Remote (GPU): MLP-on-OTM (ladder anchor, Q1)
+
+- **2026-05-31 (executed → in_review)** Fixed Phase-1 masked MLP trained
+  from scratch (D8) on `spy_phase1_random40_noiselow_otm`, GPU pod RTX
+  4000 Ada (`213.173.108.15:17654`, `/workspace/venv-2e2/bin/python` torch
+  2.11.0+cu128). Early-stop epoch 12 (best epoch 2), ~67 min.
+- **Headline:** test MAE(iv_true) **0.03006** / val 0.03391;
+  MAE(iv_clean) test 0.02963. Finite; prediction rows == query rows.
+  Dirty MLP 0.0951 → ~3.2× lower on OTM.
+- **Artifacts:** `artifacts/runs/3X7/mlp_otm/manifest.json` (committed);
+  `training_curve.csv` + `predictions_{val,test}.parquet` (~51 MB,
+  gitignored, pulled to local for 3X.11). Checkpoint on pod `/workspace`.
+- **Open blocker:** none (awaiting human → `done`).
+
+### 3X.8 — Remote (GPU): DeepSets-on-OTM (single + K=5 ensemble, D2)
+
+- **2026-05-31 (executed → in_review)** Phase-2D DeepSets/mean-pool
+  conditional family restated from scratch (D8) on
+  `random40_noiselow_otm`, same GPU pod. Singles (gaussian/quantile/point,
+  decoder_kind default=deepsets) ~3–4 min each; K=5 ensemble (seeds
+  101/202/303/404/505) ~20 min. Ensemble via verbatim `run_2d8_ensemble.py`
+  (manifest `story: 2D.8` by design).
+- **Headline (test MAE):** quantile **0.01418** / gaussian 0.01530 /
+  ensemble 0.01594 / point 0.01752 (val 0.01294 / 0.01462 / 0.01626 /
+  0.01804). qmono ok; ensemble disagreement mean 0.00479 (all > 0). All
+  finite. Dirty 2D 0.072–0.079 → ~5× lower on OTM. DeepSets→RBF gap
+  persists on clean data (best DeepSets ≈ 2.3× RBF floor 0.00613).
+- **Artifacts:** `artifacts/runs/3X8/{single_gaussian,single_quantile,single_point,ensemble}/manifest.json`
+  + `ensemble/checkpoints/ensemble/members.json` (committed); curves +
+  per-row predictions (~2.0 GB, gitignored, pulled to local for
+  3X.11/3X.12). Checkpoints on pod `/workspace`.
+- **Open blocker:** none (awaiting human → `done`).
 
 ### 3C.1 — Decompose Phase 3C
 
