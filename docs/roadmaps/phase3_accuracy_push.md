@@ -320,11 +320,11 @@ carry an `_otm` suffix.
 | ID | Story | Locale / HW |
 |---|---|---|
 | 3X.1 | Decompose Phase 3X (ADR addendum + 3X.2–3X.14 specs) | local CPU |
-| 3X.2 | OTM-surface builder + step-04 `--source` flag + ATM-band (D5) + residual handling (D7) + tests — **in_review** (2026-05-30) | local CPU |
-| 3X.3 | Vectorised audit v2 + paired-coordinate masking flag (default off) + parity tests — **in_review** (2026-05-30) | local CPU |
-| 3X.4 | Build OTM strict surface + rebuild **all 11** OTM benchmarks | Pod **CPU** |
-| 3X.5 | Audit OTM strict + all 11 benchmarks — **HUMAN REVIEW GATE** | Pod **CPU** |
-| 3X.6 | Early RBF-on-OTM baseline (floor sanity check before GPU spend) | Pod **CPU** |
+| 3X.2 | OTM-surface builder + step-04 `--source` flag + ATM-band (D5) + residual handling (D7) + tests — **done** (2026-05-30) | local CPU |
+| 3X.3 | Vectorised audit v2 + paired-coordinate masking flag (default off) + parity tests — **done** (2026-05-30) | local CPU |
+| 3X.4 | Build OTM strict surface + rebuild **all 11** OTM benchmarks — **done** (2026-05-30) | Pod **CPU** |
+| 3X.5 | Audit OTM strict + all 11 benchmarks — **HUMAN REVIEW GATE** → **PASS 12/12** (93.61%→0% dup; 0% twin leakage) — **done** (2026-05-30) | Pod **CPU** |
+| 3X.6 | Early RBF-on-OTM baseline (floor sanity check before GPU spend) — → test MAE **0.00613** (~10.8× below RBF-on-dirty 0.0662) — **done** (2026-05-31) | Pod **CPU** |
 | 3X.7 | MLP-on-OTM baseline (Q1 — ladder anchor) | Pod GPU |
 | 3X.8 | DeepSets-on-OTM — single (2D.7-equiv) + K=5 ensemble (2D.8-equiv) (D2) | Pod GPU |
 | 3X.9 | ANP-on-OTM — all three heads (D1) | Pod GPU |
