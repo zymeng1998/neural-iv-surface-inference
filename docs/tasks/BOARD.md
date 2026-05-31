@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-05-30T23:59:00-04:00
+last_updated_at: 2026-05-31T00:20:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -92,7 +92,7 @@ decomposition). The first story of any epic is always its decomposition story.
 | 3X.3 | Story | Local: vectorised audit v2 + paired-coordinate masking flag (default off) + parity tests | `done` | `docs/tasks/specs/3X.3_local_audit_v2_and_paired_masking.md` | 2026-05-30 |
 | 3X.4 | Story | Remote (CPU): build OTM strict surface + rebuild all 11 OTM benchmarks — → single-valued PASS (10,531,499 rows, 0 dup groups), 11 `_otm` benchmarks, dirty files hash-unchanged | `done` | `docs/tasks/specs/3X.4_remote_build_otm_strict_and_benchmarks.md` | 2026-05-30 |
 | 3X.5 | Story | Remote (CPU): audit OTM strict + all 11 OTM benchmarks — **HUMAN REVIEW GATE** → **PASS 12/12** (dup 0.0000%, twin leakage 0.0000% all splits; 93.61%→0%) | `done` | `docs/tasks/specs/3X.5_remote_audit_otm_gate.md` | 2026-05-30 |
-| 3X.6 | Story | Remote (CPU): early RBF-on-OTM baseline (floor sanity check before GPU spend) — → test MAE **0.00613** (val 0.00615), 0 non-finite; **~10.8× below** RBF-on-dirty 0.0662 → OTM floor far lower, raises the neural bar for 3X.7+ | `in_review` | `docs/tasks/specs/3X.6_remote_rbf_on_otm_baseline.md` | 2026-05-30 |
+| 3X.6 | Story | Remote (CPU): early RBF-on-OTM baseline (floor sanity check before GPU spend) — → test MAE **0.00613** (val 0.00615), 0 non-finite; **~10.8× below** RBF-on-dirty 0.0662 → OTM floor far lower, raises the neural bar for 3X.7+ | `done` | `docs/tasks/specs/3X.6_remote_rbf_on_otm_baseline.md` | 2026-05-31 |
 | 3X.7 | Story | Remote (GPU): MLP baseline on OTM (Q1 — ladder anchor) | `backlog` | `docs/tasks/specs/3X.7_remote_mlp_on_otm.md` | 2026-05-29 |
 | 3X.8 | Story | Remote (GPU): Phase 2D DeepSets on OTM — single (2D.7-equiv) + K=5 ensemble (2D.8-equiv) (D2) | `backlog` | `docs/tasks/specs/3X.8_remote_deepsets_on_otm.md` | 2026-05-29 |
 | 3X.9 | Story | Remote (GPU): ANP on OTM — all three heads gaussian/quantile/point (D1) | `backlog` | `docs/tasks/specs/3X.9_remote_anp_on_otm.md` | 2026-05-29 |

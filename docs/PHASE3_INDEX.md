@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-05-30T23:59:00-04:00
+last_updated_at: 2026-05-31T00:20:00-04:00
 ---
 
 > **Read this first if you are picking up Phase 3 work cold.** It mirrors
@@ -74,7 +74,7 @@ last_updated_at: 2026-05-30T23:59:00-04:00
 | 3X.3 | Story | Local: vectorised audit v2 + paired-coordinate masking flag (default off) + parity tests | `done` | [`3X.3`](tasks/specs/3X.3_local_audit_v2_and_paired_masking.md) | 2026-05-30 |
 | 3X.4 | Story | Remote (CPU): build OTM strict surface + rebuild all 11 OTM benchmarks — → single-valued PASS, 11 `_otm` benchmarks, dirty hashes unchanged | `done` | [`3X.4`](tasks/specs/3X.4_remote_build_otm_strict_and_benchmarks.md) | 2026-05-30 |
 | 3X.5 | Story | Remote (CPU): audit OTM strict + all 11 benchmarks — **HUMAN REVIEW GATE** → **PASS 12/12** (93.61%→0% dup; 0% twin leakage all splits) | `done` | [`3X.5`](tasks/specs/3X.5_remote_audit_otm_gate.md) | 2026-05-30 |
-| 3X.6 | Story | Remote (CPU): early RBF-on-OTM baseline — → test MAE 0.00613 / val 0.00615, 0 non-finite; ~10.8× below RBF-on-dirty 0.0662 (raises neural bar for 3X.7+) | `in_review` | [`3X.6`](tasks/specs/3X.6_remote_rbf_on_otm_baseline.md) | 2026-05-30 |
+| 3X.6 | Story | Remote (CPU): early RBF-on-OTM baseline — → test MAE 0.00613 / val 0.00615, 0 non-finite; ~10.8× below RBF-on-dirty 0.0662 (raises neural bar for 3X.7+) | `done` | [`3X.6`](tasks/specs/3X.6_remote_rbf_on_otm_baseline.md) | 2026-05-31 |
 | 3X.7 | Story | Remote (GPU): MLP-on-OTM (Q1) | `backlog` | [`3X.7`](tasks/specs/3X.7_remote_mlp_on_otm.md) | 2026-05-29 |
 | 3X.8 | Story | Remote (GPU): DeepSets-on-OTM single + K=5 ensemble (D2) | `backlog` | [`3X.8`](tasks/specs/3X.8_remote_deepsets_on_otm.md) | 2026-05-29 |
 | 3X.9 | Story | Remote (GPU): ANP-on-OTM all three heads (D1) | `backlog` | [`3X.9`](tasks/specs/3X.9_remote_anp_on_otm.md) | 2026-05-29 |
@@ -410,9 +410,10 @@ only if neither writes to a path in the other's `file_scope`.
   (committed) + `artifacts/runs/3X6/rbf_otm/manifest.json` (committed) +
   `predictions_{val,test}.parquet` (~40 MB each, gitignored per the
   `artifacts/runs/**/*.parquet` convention).
-- **Next concrete action:** human reviews 3X.6 → `done`. This is the
-  **last CPU-pod story** — terminate the CPU pod; rent a GPU pod for
-  3X.7 (MLP-on-OTM, ladder anchor).
+- **2026-05-31** operator approved the closeout; 3X.6 → `done`
+  (committed `ea4f66e` evidence, then status flip). This is the **last
+  CPU-pod story** — the CPU pod can now be terminated; next action is a
+  GPU pod for 3X.7 (MLP-on-OTM, ladder anchor).
 - **Open blocker:** none.
 
 ### 3C.1 — Decompose Phase 3C
