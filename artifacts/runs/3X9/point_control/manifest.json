@@ -1,0 +1,40 @@
+{
+  "story": "3X.9",
+  "head_kind": "point",
+  "decoder_kind": "anp",
+  "anp": {
+    "n_heads": 4,
+    "d_head": null,
+    "mlp_hidden": 128,
+    "include_z_in_decoder": true
+  },
+  "coord_encoding": {
+    "kind": "raw"
+  },
+  "freeze_encoder": false,
+  "seed": 42,
+  "git_sha": "5570b7daa3f352d9fddf806c9a6a433736bd71c2",
+  "config_hash": "3161e6f551a8722e",
+  "benchmark_file": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm.parquet",
+  "splits": {
+    "train_rows": 5123586,
+    "val_rows": 2638892,
+    "test_rows": 2769021
+  },
+  "epochs_completed": 50,
+  "final_train_loss": 0.00024587752704974264,
+  "final_val_loss": 0.00019632205029748465,
+  "best_val_loss": 0.00016517775392540815,
+  "val_mae_mu": 0.009563255123794079,
+  "test_mae_mu": 0.009871306829154491,
+  "quantile_monotonicity_ok": true,
+  "train_wall_clock_s": 672.9741659164429,
+  "score_wall_clock_s": 31.051199913024902,
+  "device": "cuda",
+  "outputs": {
+    "checkpoint": "artifacts/runs/3X9/point_control/checkpoints/best_conditional.pt",
+    "val_predictions": "artifacts/runs/3X9/point_control/val_predictions.csv",
+    "test_predictions": "artifacts/runs/3X9/point_control/test_predictions.csv",
+    "training_curve": "artifacts/runs/3X9/point_control/training_curve.csv"
+  }
+}

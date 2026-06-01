@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-05-31T00:20:00-04:00
+last_updated_at: 2026-05-31T16:10:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -95,8 +95,8 @@ decomposition). The first story of any epic is always its decomposition story.
 | 3X.6 | Story | Remote (CPU): early RBF-on-OTM baseline (floor sanity check before GPU spend) — → test MAE **0.00613** (val 0.00615), 0 non-finite; **~10.8× below** RBF-on-dirty 0.0662 → OTM floor far lower, raises the neural bar for 3X.7+ | `done` | `docs/tasks/specs/3X.6_remote_rbf_on_otm_baseline.md` | 2026-05-31 |
 | 3X.7 | Story | Remote (GPU): MLP baseline on OTM (Q1 — ladder anchor) — → test MAE **0.03006** (val 0.03391), early-stop ep12/best ep2, finite; dirty MLP 0.0951 → ~3.2× lower on OTM | `in_review` | `docs/tasks/specs/3X.7_remote_mlp_on_otm.md` | 2026-05-31 |
 | 3X.8 | Story | Remote (GPU): Phase 2D DeepSets on OTM — single (2D.7-equiv) + K=5 ensemble (2D.8-equiv) (D2) — → test MAE quantile **0.01418** / gaussian 0.01530 / ensemble 0.01594 / point 0.01752; dirty 2D 0.072–0.079 → ~5× lower on OTM; qmono ok, disagreement>0 | `in_review` | `docs/tasks/specs/3X.8_remote_deepsets_on_otm.md` | 2026-05-31 |
-| 3X.9 | Story | Remote (GPU): ANP on OTM — all three heads gaussian/quantile/point (D1) | `backlog` | `docs/tasks/specs/3X.9_remote_anp_on_otm.md` | 2026-05-29 |
-| 3X.10 | Story | Remote (GPU): ANP K=5 deep ensemble on OTM (mirror 3B.5) | `backlog` | `docs/tasks/specs/3X.10_remote_anp_ensemble_on_otm.md` | 2026-05-29 |
+| 3X.9 | Story | Remote (GPU): ANP on OTM — all three heads gaussian/quantile/point (D1) — → test MAE gaussian **0.01440** / quantile **0.01175** / point **0.00987**, qmono ok; dirty 3B.4 0.0726/0.0681/0.0684 → ~5–7× lower on OTM | `in_review` | `docs/tasks/specs/3X.9_remote_anp_on_otm.md` | 2026-05-31 |
+| 3X.10 | Story | Remote (GPU): ANP K=5 deep ensemble on OTM (mirror 3B.5) — → ensemble test MAE **0.01220**, disagreement mean **0.00679** (dirty 3B.5 disagreement 0.0121 → ~56 % on OTM) | `in_review` | `docs/tasks/specs/3X.10_remote_anp_ensemble_on_otm.md` | 2026-05-31 |
 | 3X.11 | Story | Local: calibrator re-fit on OTM val predictions (mirror 3B.6) | `backlog` | `docs/tasks/specs/3X.11_local_calibration_on_otm.md` | 2026-05-29 |
 | 3X.12 | Story | Remote: decision-layer eval on OTM, thresholds held constant (Q2; mirror 3B.7) | `backlog` | `docs/tasks/specs/3X.12_remote_decision_layer_eval_on_otm.md` | 2026-05-29 |
 | 3X.13 | Story | Local: dirty-vs-OTM side-by-side comparison tables (matched `random40_noiselow`) | `backlog` | `docs/tasks/specs/3X.13_local_dirty_vs_otm_comparison.md` | 2026-05-29 |

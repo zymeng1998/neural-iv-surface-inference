@@ -1,0 +1,86 @@
+{
+  "story": "3X.10",
+  "head_kind": "point",
+  "decoder_kind": "anp",
+  "anp": {
+    "n_heads": 4,
+    "d_head": null,
+    "mlp_hidden": 128,
+    "include_z_in_decoder": true
+  },
+  "coord_encoding": {
+    "kind": "raw"
+  },
+  "freeze_encoder": false,
+  "git_sha": "5570b7daa3f352d9fddf806c9a6a433736bd71c2",
+  "config_hash": "3161e6f551a8722e",
+  "benchmark_file": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm.parquet",
+  "splits": {
+    "train_rows": 5123586,
+    "val_rows": 2638892,
+    "test_rows": 2769021
+  },
+  "ensemble_size": 5,
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "members": [
+    {
+      "seed": 101,
+      "val_loss": 0.00022927157062275165,
+      "checkpoint": "seed_101/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 675.3278520107269
+    },
+    {
+      "seed": 202,
+      "val_loss": 0.0003079408349797384,
+      "checkpoint": "seed_202/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 646.5925824642181
+    },
+    {
+      "seed": 303,
+      "val_loss": 0.0003383528945216147,
+      "checkpoint": "seed_303/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 646.828013420105
+    },
+    {
+      "seed": 404,
+      "val_loss": 0.00019733397758417678,
+      "checkpoint": "seed_404/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 648.7046873569489
+    },
+    {
+      "seed": 505,
+      "val_loss": 0.000294069748633774,
+      "checkpoint": "seed_505/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 648.291570186615
+    }
+  ],
+  "ensemble_val_mae": 0.01125281024724245,
+  "ensemble_test_mae": 0.012200304307043552,
+  "disagreement_test_stats": {
+    "min": 0.0001226676831720397,
+    "mean": 0.0067905825562775135,
+    "max": 0.12888765335083008,
+    "any_positive": true,
+    "any_negative": false
+  },
+  "train_total_wall_clock_s": 3265.744705438614,
+  "score_wall_clock_s": 51.222126483917236,
+  "device": "cuda",
+  "outputs": {
+    "members_json": "artifacts/runs/3X10/checkpoints/ensemble/members.json",
+    "val_predictions": "artifacts/runs/3X10/val_predictions.csv",
+    "test_predictions": "artifacts/runs/3X10/test_predictions.csv",
+    "training_curves": "artifacts/runs/3X10/training_curves.csv"
+  }
+}
