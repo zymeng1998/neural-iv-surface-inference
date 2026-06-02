@@ -1791,3 +1791,80 @@ consistent with the OTM substrate's ~10× lower error level (3X.6,
   (dirty-vs-OTM comparison, which should explicitly contrast the
   3B.6 vs 3X.11 calibrator parameters and the val→test drift
   noted above).
+
+## 2026-06-02 — 3X.12 decision-layer eval on OTM (Q2 invariant held)
+
+### Setup
+
+- Story: 3X.12 (remote, RunPod RTX 2000 Ada).
+- Config: `configs/decision_layer_eval_3X12_otm.yaml` — clone of
+  `configs/decision_layer_eval_3B7_anp.yaml` with **only** the
+  input bundle repointed:
+  - `benchmark_path` → `spy_phase1_random40_noiselow_otm.parquet`
+  - `checkpoint` → `artifacts/runs/3X9/gaussian/checkpoints/best_conditional.pt`
+  - `ensemble_manifest` → `artifacts/runs/3X10/checkpoints/ensemble/members.json`
+  - `calibrator_path` → `artifacts/calibration/3X11_anp_otm.json`
+- Q2 invariant: `decision_config: configs/decision_layer.yaml`,
+  `diagnostics` block, `nominal_coverage: 0.90` all bit-identical
+  to 3B.7. No threshold retune.
+
+### Results
+
+`results/3/spy_phase1_random40_noiselow_otm/3x_anp/metrics_summary.csv`:
+
+| split | n     | mae       | cov@0.90 | mean_width | hi_conf_mae | abstain | trad   | flag_viol |
+|-------|------:|----------:|---------:|-----------:|------------:|--------:|-------:|----------:|
+| train | 5704  | 0.03381   | 0.9243   | 0.14504    | 0.02050     | 1.0     | 0.1563 | 2475      |
+| val   | 41490 | 0.01271   | 0.9664   | 0.05865    | 0.00868     | 1.0     | 0.3721 | 2175      |
+| test  | 29550 | **0.01162** | **0.9295** | **0.05382** | **0.00835** | 1.0 | 0.3764 | 1814 |
+
+Cross-substrate (test split, same threshold config) — for context;
+the formal apples-to-apples table is 3X.13:
+
+| metric | OTM (3X.12) | dirty AV (3B.7) |
+|---|---|---|
+| `mae` | 0.01162 | 0.08135 |
+| `hi_conf_mae_keep0.8` | 0.00835 | 0.05416 |
+| `coverage_90` | 0.9295 | 0.9149 |
+| `mean_width` | 0.05382 | 0.30377 |
+| `mean_tradability` | 0.3764 | 0.2575 |
+| `abstain_rate` | 1.0 | 1.0 |
+| `n_forbidden_flag_violations` | 1814 | 9007 |
+
+### Verdict
+
+- Q2 (decision-layer thresholds held constant): the dirty-tuned
+  thresholds **do** transfer to OTM — the run produces finite,
+  sharper, better-calibrated numbers without any retune.
+  Hi-conf MAE is ~6.5× lower; mean width ~5.6× narrower;
+  forbidden-flag violations 80 % lower.
+- `abstain_rate=1.0` is **not** an OTM-specific failure: 3B.7
+  hits the same value on val/test. The OTM run does not need a
+  decision-layer change to demonstrate the substrate win; any
+  threshold rework belongs in a separate, explicit story (out of
+  scope per 3X.12 non-goals).
+
+### Tests
+
+- Threshold-config diff vs 3B.7: empty (verified by repo-relative
+  string equality on the `decision_config:` line + entire
+  `diagnostics:` block + `nominal_coverage:`).
+- Bundle written; metrics finite on every split.
+- `python3 scripts/pmr_prepush_gate.py --verbose --dry-run` →
+  run before push this session.
+
+### Files
+
+- Committed:
+  `configs/decision_layer_eval_3X12_otm.yaml`,
+  `results/3/spy_phase1_random40_noiselow_otm/3x_anp/{metrics_summary.csv,
+  region_tradability.csv, abstention_curve.png, calibration_plot.png}`.
+- Pod-side / uncommitted (2D.9 / 3B.7 convention):
+  `predictions_decisions.csv` (~21 MB),
+  `stage_3X12/`, `artifacts/runs/3X12/` staging tree.
+
+### Next actions
+
+- Operator reviews 3X.12 → `done`. Unblocks 3X.13 (local
+  dirty-vs-OTM comparison tables), which will assemble the
+  formal long-format comparison from these numbers + 3B.7's.

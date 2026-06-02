@@ -3965,3 +3965,81 @@ authored as atomic stories under 3X.1 decomposition.
 - Operator reviews 3X.11 → `done`. Unblocks 3X.12 (decision-layer
   eval on OTM, thresholds held constant from 2D.5), which is the
   Q2-answering story for the OTM substrate.
+
+## 2026-06-02 — 3X.12 decision-layer eval on OTM (in_review, Q2 invariant held)
+
+### What landed
+
+Story 3X.12 — closed the Q2 (decision-layer thresholds held
+constant) loop on the OTM substrate. Cloned the 3B.7 decision-eval
+config verbatim (same `decision_config: configs/decision_layer.yaml`,
+same diagnostics budget — `keep_fraction=0.8`, `n_draws=5`,
+`seed=0`, `max_dates_per_split=10`, `nominal_coverage=0.90`), only
+repointing the input bundle:
+
+- benchmark → `spy_phase1_random40_noiselow_otm.parquet`
+- base checkpoint → 3X.9 full-AV OTM ANP gaussian head
+- ensemble manifest → 3X.10 K=5 OTM ANP point ensemble
+- calibrator → 3X.11 OTM re-fit (`3X11_anp_otm.json`)
+
+Threshold-identity invariant verified by string-equality on
+`decision_config` + the diagnostics block; bundle written + curated
+into `results/3/spy_phase1_random40_noiselow_otm/3x_anp/`.
+
+### Headline numbers (test split, `random40_noiselow_otm`, 10-date slice)
+
+| metric | OTM (3X.12) | dirty AV (3B.7) | ratio |
+|---|---|---|---|
+| `mae` | 0.01162 | 0.08135 | **× 0.143** (~7× lower) |
+| `hi_conf_mae_keep0.8` | 0.00835 | 0.05416 | **× 0.154** (~6.5× lower) |
+| `coverage_90` | 0.9295 | 0.9149 | + 0.015 |
+| `mean_width` | 0.05382 | 0.30377 | × 0.18 (~5.6× narrower) |
+| `mean_tradability` | 0.3764 | 0.2575 | + 0.119 |
+| `abstain_rate` | 1.0 | 1.0 | unchanged |
+| `n_forbidden_flag_violations` | 1814 | 9007 | × 0.20 |
+
+(3B.7 row from `results/3/spy_phase1_random40_noiselow/3b_anp/metrics_summary.csv`,
+quoted for context only — the apples-to-apples comparison table is 3X.13.)
+
+### Verdict on Q2
+
+The dirty-tuned decision thresholds **transfer** to the OTM substrate
+in the sense that the run completes and produces finite, sharper,
+better-calibrated interval-level numbers without any retune. The
+`abstain_rate=1.0` on val + test is **not** an OTM-specific misfit
+— 3B.7 also abstained at 1.0 on those splits. Under the same
+threshold config the OTM substrate yields ~7× lower test MAE and
+~5.6× narrower mean intervals while shaving 80 % of forbidden-flag
+violations. The hi-conf MAE is the operative comparable metric
+since abstention saturates; OTM beats dirty there by ~6.5×.
+
+Per the spec's non-goal: thresholds are **not retuned** here. The
+fact that train abstain_rate differs across substrates (0.867 dirty
+vs 1.0 OTM) is logged as a diagnostic for a possible future
+threshold-retuning story; **no decision-layer changes shipped**.
+
+### Tests
+
+- Threshold-config diff vs 3B.7: empty (verified by repo-relative
+  string equality on `decision_config:`, `diagnostics:` block,
+  `nominal_coverage:`).
+- Bundle written with finite metrics on all three splits.
+- `python3 scripts/pmr_prepush_gate.py --verbose --dry-run` →
+  pending this session.
+
+### Files
+
+- Committed:
+  `configs/decision_layer_eval_3X12_otm.yaml`,
+  `results/3/spy_phase1_random40_noiselow_otm/3x_anp/{metrics_summary.csv,
+  region_tradability.csv, abstention_curve.png, calibration_plot.png}`.
+- Pod-side / uncommitted (2D.9 / 3B.7 convention):
+  `predictions_decisions.csv` (~21 MB per-row decisions),
+  `artifacts/runs/3X12/` staging tree.
+
+### Next actions
+
+- Operator reviews 3X.12 → `done`. Unblocks 3X.13 (local
+  dirty-vs-OTM side-by-side comparison tables on matched
+  `random40_noiselow`), which is the explicit Q3-style writeup
+  story for Phase 3X.

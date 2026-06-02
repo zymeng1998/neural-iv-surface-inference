@@ -1,0 +1,53 @@
+# Decision-layer eval runner — ANP closing evidence on the OTM substrate
+# (story 3X.12). Drives `scripts/run_decision_layer_eval.py` against the
+# OTM ANP cross-attention architecture's calibrated predictor, on
+# `spy_phase1_random40_noiselow_otm` with the **same** decision config +
+# same diagnostics budget (10-date slice + seed) as 2D.9 / 3B.7.
+#
+# Q2 invariant: decision-layer thresholds are NOT retuned — this isolates
+# the data-substrate correction (OTM clean substrate vs dirty AV) and not
+# the decision policy. Thresholds inherited verbatim from
+# `configs/decision_layer.yaml`, identical to the 3B.7 run.
+#
+# ONE pair: the OTM ANP calibrated conditional predictor —
+#   * base       — 3X.9 full-AV OTM ANP gaussian head.
+#   * calibrator — 3X.11 re-fit calibrator on OTM val predictions
+#                  (artifacts/calibration/3X11_anp_otm.json; gitignored,
+#                  regenerated on the Pod from
+#                  configs/calibration_3X11_anp_otm.yaml + cached
+#                  3X.9/3X.10 prediction CSVs).
+#   * ensemble   — 3X.10 K=5 OTM ANP point-head deep ensemble.
+#
+# Execution (Pod, GPU optional — light runner; runs where the OTM
+# benchmark + checkpoints live):
+#   python3 scripts/run_decision_layer_eval.py \
+#     --config configs/decision_layer_eval_3X12_otm.yaml \
+#     --results-root <stage_dir>
+# then curate <stage_dir>/spy_phase1_random40_noiselow_otm/
+# conditional_calibrated/ into
+# results/3/spy_phase1_random40_noiselow_otm/3x_anp/ (the runner keys
+# output dirs on predictor_name, which must be `conditional_calibrated`
+# for dispatch).
+
+results_root: results/3
+decision_config: configs/decision_layer.yaml
+
+# Identical diagnostics budget to 2D.9 / 3B.7 so the OTM ANP reliability /
+# tradability numbers are directly comparable: same 10-dates-per-split
+# cap, same perturbation draws, same seed.
+diagnostics:
+  keep_fraction: 0.8
+  n_draws: 5
+  seed: 0
+  max_dates_per_split: 10
+
+nominal_coverage: 0.90
+
+pairs:
+  - dataset: spy_phase1_random40_noiselow_otm
+    benchmark_path: data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm.parquet
+    predictor: conditional_calibrated
+    checkpoint: artifacts/runs/3X9/gaussian/checkpoints/best_conditional.pt
+    calibrator_path: artifacts/calibration/3X11_anp_otm.json
+    ensemble_manifest: artifacts/runs/3X10/checkpoints/ensemble/members.json
+    device: cuda
