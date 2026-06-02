@@ -1868,3 +1868,69 @@ the formal apples-to-apples table is 3X.13:
 - Operator reviews 3X.12 → `done`. Unblocks 3X.13 (local
   dirty-vs-OTM comparison tables), which will assemble the
   formal long-format comparison from these numbers + 3B.7's.
+
+## 2026-06-02 — 3X.13 dirty-vs-OTM matched comparison
+
+### Context
+
+- Story: 3X.13 (local Mac, CPU only).
+- Scope: matched-substrate test-MAE comparison on
+  `random40_noiselow` — every dirty number cited from a committed
+  3A / 3B / 2D bundle; every OTM number cited from the 3X.6–3X.12
+  bundles. **No model re-run.**
+- Pointer: `results/3/spy_phase1_random40_noiselow_otm/3x_compare/
+  comparison.csv` (long, 67 rows) +
+  `comparison_wide.{csv,md}` (11 family×head pairs).
+
+### Headline ratios (test MAE, dirty / OTM)
+
+| family | head | dirty | OTM | dirty/OTM |
+|---|---|---:|---:|---:|
+| rbf | interp | 0.0662 | 0.00613 | 10.80× |
+| anp_calibrated | fused | 0.0813 | 0.01162 | 7.00× |
+| anp_single | point | 0.0684 | 0.00987 | 6.93× |
+| anp_single | quantile | 0.0681 | 0.01175 | 5.79× |
+| anp_ensemble | point | 0.0689 | 0.01220 | 5.64× |
+| deepsets_single | gaussian | 0.0787 | 0.01530 | 5.15× |
+| deepsets_single | quantile | 0.0719 | 0.01418 | 5.07× |
+| anp_single | gaussian | 0.0726 | 0.01440 | 5.04× |
+| deepsets_ensemble | point | 0.0748 | 0.01594 | 4.69× |
+| deepsets_single | point | 0.0756 | 0.01752 | 4.31× |
+| mlp | point | 0.0905 | 0.03006 | 3.01× |
+
+### Reading
+
+The OTM substrate floor (RBF interp) is **~10.8× below** the dirty
+floor (0.00613 vs 0.0662), and every neural family inherits a
+substantial fraction of that gain (3–7×). The neural-vs-RBF gap that
+3B left open on dirty (best ANP point head 0.0680 vs RBF 0.0662 →
+RBF wins) **closes on OTM** (best ANP point head 0.00987 vs RBF
+0.00613 → RBF still wins on test MAE, but the absolute gap shrank
+from +0.0018 to +0.0037 — RBF leads more on the cleaner substrate
+because it can interpolate a single-valued surface without
+absorption error, while the neural decoders pay the same encoder
+amortization cost on either substrate). The headline framing — "OTM
+beats dirty by 3–11× across all families" — should not be
+extrapolated to the other 10 OTM variants without dedicated runs;
+the scope label on the comparison file states this explicitly.
+
+### Tests
+
+- `comparison.csv` has 67 rows, 0 NaN, every row has a non-empty
+  `source` path.
+- Both substrates populated for every mae key shared across the
+  ladder (dirty RBF val intentionally absent — only the test-MAE
+  headline is roadmap-cited).
+- `python3 scripts/pmr_prepush_gate.py --verbose --dry-run` →
+  run before push this session.
+
+### Files
+
+- New: `scripts/build_dirty_vs_otm_comparison.py`,
+  `results/3/spy_phase1_random40_noiselow_otm/3x_compare/{comparison.csv,
+  comparison_wide.csv, comparison_wide.md}`.
+
+### Next actions
+
+- Operator reviews 3X.13 → `done`. Unblocks 3X.14 (closing addendum
+  + methodology-progression narrative), the final 3X story.

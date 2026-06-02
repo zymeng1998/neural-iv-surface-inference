@@ -4043,3 +4043,76 @@ threshold-retuning story; **no decision-layer changes shipped**.
   dirty-vs-OTM side-by-side comparison tables on matched
   `random40_noiselow`), which is the explicit Q3-style writeup
   story for Phase 3X.
+
+## 2026-06-02 — 3X.13 dirty-vs-OTM comparison tables (in_review)
+
+### What landed
+
+Story 3X.13 — assembled the matched dirty-vs-OTM side-by-side
+comparison on `random40_noiselow`. New script
+`scripts/build_dirty_vs_otm_comparison.py` reads committed bundles
+only (no model re-run); emits long-format `comparison.csv`
+(67 rows) plus a wide pivot `comparison_wide.{csv,md}` (11 family×head
+pairs).
+
+### Coverage
+
+- RBF interp (dirty 0.0662 cited from roadmap → OTM 0.00613)
+- MLP point (2D masked_mlp 0.0905 → 3X.7 OTM 0.03006)
+- DeepSets single — gaussian / quantile / point (2D.7 → 3X.8 single)
+- DeepSets K=5 ensemble (2D.8 → 3X.8 ensemble)
+- ANP single — gaussian / quantile / point (3B.4 → 3X.9)
+- ANP K=5 ensemble (3B.5 → 3X.10)
+- ANP calibrated decision-layer view (3B.7 → 3X.12)
+
+### Headline ratios (test MAE dirty / OTM, sorted)
+
+| family | head | dirty / OTM |
+|---|---|---:|
+| rbf | interp | 10.80× |
+| anp_calibrated | fused | 7.00× |
+| anp_single | point | 6.93× |
+| anp_single | quantile | 5.79× |
+| anp_ensemble | point | 5.64× |
+| deepsets_single | gaussian | 5.15× |
+| deepsets_single | quantile | 5.07× |
+| anp_single | gaussian | 5.04× |
+| deepsets_ensemble | point | 4.69× |
+| deepsets_single | point | 4.31× |
+| mlp | point | 3.01× |
+
+OTM beats dirty by ~3–11× on test MAE across every model family.
+The widest gap is RBF (interpolation has the most to gain from a
+clean single-valued surface); the narrowest is MLP (per-row baseline
+that does not amortize across the date set).
+
+### Tests
+
+- `comparison.csv` has 67 rows, 0 NaN, every row carries a non-empty
+  `source` path (script asserts).
+- Both `dirty` and `otm` substrates present for every mae key shared
+  across substrates (only the dirty RBF val row is intentionally
+  absent — only the test-MAE headline is roadmap-cited).
+- `python3 scripts/pmr_prepush_gate.py --verbose --dry-run` → pending
+  this session.
+
+### Files
+
+- New: `scripts/build_dirty_vs_otm_comparison.py`,
+  `results/3/spy_phase1_random40_noiselow_otm/3x_compare/{comparison.csv,
+  comparison_wide.csv, comparison_wide.md}`.
+- Touched: `docs/tasks/BOARD.md`,
+  `docs/tasks/specs/3X.13_local_dirty_vs_otm_comparison.md`,
+  `docs/PHASE3_INDEX.md`, this log, `docs/experiments/experiment_journal.md`.
+
+### Non-goals respected
+
+- No model or baseline re-run; every cell cites a committed bundle.
+- No claim across the other 10 OTM variants (scope label states
+  "`random40_noiselow` matched substrate only").
+- No closing narrative (that is 3X.14).
+
+### Next actions
+
+- Operator reviews 3X.13 → `done`. Unblocks 3X.14 (closing addendum
+  + methodology-progression narrative), the final 3X story.
