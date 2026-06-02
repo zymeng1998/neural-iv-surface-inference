@@ -1641,3 +1641,153 @@ per-row predictions (~2.0 GB for 3X.8), and logs are gitignored
 **Next step:** human approves 3X.7 / 3X.8 → `done`. GPU pod stays up for
 3X.9 (ANP-on-OTM, all 3 heads) + 3X.10 (ANP K=5 ensemble); 3X.11
 (calibrator refit) is local CPU on the pulled-back val predictions.
+
+## 2026-05-31 — 3X.9 (ANP all heads) + 3X.10 (ANP K=5 ensemble) on OTM
+
+### Setup
+
+- Pod: `213.173.108.10:19244` (RTX 4000 Ada, 20 GiB), `venv-2e2`.
+- Dataset: `data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm.parquet`
+  (train 5,123,586 / val 2,638,892 / test 2,769,021 rows).
+- Configs: faithful clones of `conditional_3B4_anp_*.yaml` (3X.9) and
+  `conditional_3B5_anp_ensemble.yaml` (3X.10); only the dataset and
+  `paths.*` repointed. ANP `(n_heads=4, mlp_hidden=128, include_z=true)`,
+  `coord_encoding.kind=raw`, `freeze_encoder=false`, seed 42 for 3X.9 and
+  `[101,202,303,404,505]` for 3X.10. D8 from-scratch.
+- Runners: `scripts/run_3x9_anp.py`, `scripts/run_3x10_anp_ensemble.py`
+  (story tags flipped from 3B.4/3B.5). Launched sequentially:
+  3X.9 gaussian → quantile → point → 3X.10 ensemble. Total wall
+  ~1 h 36 min (much faster than the 7–8 h spec estimate — 4000 Ada chews
+  through this benchmark).
+
+### Results
+
+| Story | Head | epochs | best val loss | val MAE | test MAE | qmono | dirty 3B.4/3B.5 test MAE | OTM / dirty |
+|---|---|---|---|---|---|---|---|---|
+| 3X.9 | gaussian | 29 (early stop @ 19) | −3.7960 | 0.01349 | **0.01440** | ok | 0.0726 | ~5.0× lower |
+| 3X.9 | quantile | 50 | 0.002685 | 0.01131 | **0.01175** | ok | 0.0681 | ~5.8× lower |
+| 3X.9 | point | 50 | 0.000165 | 0.00956 | **0.00987** | n/a | 0.0684 | ~6.9× lower |
+| 3X.10 | ensemble K=5 | 50 ea | — | 0.01125 | **0.01220** | n/a | (3B.5 test 0.0684) | ~5.6× lower |
+
+3X.10 disagreement (test): min 0.000123, **mean 0.00679**, max 0.1289,
+all non-negative. Dirty 3B.5 disagreement mean was 0.0121 — OTM
+disagreement is **~56 % of dirty**, consistent with the cleaner
+substrate having less for the ensemble to disagree on.
+
+### Diagnostics
+
+- All four runs finished with finite losses and prediction row counts
+  matching benchmark query rows; quantile monotonicity holds on test.
+- ANP test MAE on OTM (0.00987 point) is **better than the OTM DeepSets
+  point-head from 3X.8** (0.01752) — ANP cross-attention pays on the
+  clean substrate where it didn't on the dirty one (3B.4 point was
+  0.0684 vs 2D.7 point ~0.072, ~equal).
+- Ensemble mean test MAE (0.01220) sits **between the single point head
+  (0.00987) and the gaussian head (0.01440)** — ensembling here is
+  giving disagreement signal more than headline MAE; that's the
+  expected role for 3X.11 calibration.
+
+### Files
+
+- Pod-side checkpoints: `runs/3X9/{gaussian,quantile,point_control}/checkpoints/best_conditional.pt`,
+  `runs/3X10/checkpoints/ensemble/seed_{101..505}/best_conditional.pt`.
+- Local committed: `artifacts/runs/3X9/{...}/manifest.json`,
+  `artifacts/runs/3X10/manifest.json`, `.../ensemble/members.json`.
+- Local gitignored (pulled for 3X.11/3X.12 downstream): per-row
+  `val_predictions.csv` / `test_predictions.csv` (~0.5 GB per 3X.9 head,
+  ~0.5 GB 3X.10), `training_curve(s).csv`, per-run logs.
+
+### Next actions
+
+- Operator reviews 3X.9 / 3X.10 → `done`. GPU pod can be released; the
+  remaining OTM-arm stories (3X.11 calibrator, 3X.12 decision-layer
+  eval) are local CPU work that consumes the pulled-back predictions.
+
+
+## 2026-06-02 — 3X.11 calibrator re-fit on OTM val predictions
+
+### Setup
+
+- Locale: local Mac, CPU-only; ~30 s wall (fit) + ~30 s (val verify).
+- Config: `configs/calibration_3X11_anp_otm.yaml` (clone of
+  `calibration_3B6_anp.yaml` with inputs re-pointed at 3X.9 gaussian
+  and 3X.10 ensemble).
+- Inputs: `artifacts/runs/3X9/gaussian/{val,test}_predictions.csv`
+  (2,638,892 val rows / 2,769,021 test rows) joined positionally
+  with `artifacts/runs/3X10/{val,test}_predictions.csv`. Row counts
+  match; join keys agree row-for-row.
+- Recipe unchanged from 2D.4 / 3B.6: per-point temperature scaling
+  on the gaussian head + monotone disagreement → sigma mapping
+  fused from the K=5 ensemble.
+
+### Fit parameters (OTM, n_fit = 2,638,892 val rows)
+
+| Param            | OTM 3X.11 | Dirty 3B.6 |
+|------------------|-----------|------------|
+| temperature `T`  | 1.0050    | 1.1241     |
+| ensemble_scale   | 1.9090    | 3.1750     |
+| ensemble_bias    | 0.001402  | 0.018015   |
+| u0               | 0.017691  | 0.052732   |
+| u_scale          | 0.006445  | 0.027761   |
+| has_ensemble     | true      | true       |
+
+The OTM calibrator needs essentially no temperature warp (`T ≈ 1`)
+— the OTM ANP gaussian head is already close to calibrated on val —
+and a much smaller ensemble-scale than the dirty 3B.6 fit, both
+consistent with the OTM substrate's ~10× lower error level (3X.6,
+3X.9).
+
+### Val verification (spec acceptance — passes)
+
+- Val coverage @0.90 = **0.9000** (within ±2 pp of nominal — the
+  spec's acceptance gate).
+- Val no-abstention MAE = 0.01349; val hi-conf MAE (conf ≥ 0.5,
+  ~50 % of rows) = **0.00849** → fusion lowers MAE by **37 %** when
+  the operator keeps the high-confidence half. Hi-conf MAE @ conf ≥
+  0.7 (~9.7 % of rows) = 0.00725.
+
+### Test verification (out-of-band — flagged for 3X.12 / 3X.13)
+
+- Test coverage = 0.8656 (3.4 pp below nominal; outside the
+  script's ±0.02 tolerance check). Mean interval width = 0.0574.
+  Error/uncertainty correlation: pearson 0.614, spearman 0.402.
+- Comparable dirty 3B.6 test coverage was 0.8901 (in-band) with
+  pearson 0.777 / spearman 0.810 — i.e. the OTM substrate exhibits
+  **both lower error/uncertainty ranking correlation and larger
+  val→test coverage drift** than dirty did, even though OTM
+  absolute MAE is ~5–7× lower. Plausible mechanism: with the noise
+  floor much lower on OTM, residual macro-regime drift between val
+  and test becomes a larger fraction of the noise scale the
+  calibrator is matching. **This is a question 3X.13 should
+  surface explicitly in the dirty-vs-OTM comparison tables;** the
+  fit itself meets the spec's acceptance gate (val coverage).
+
+### Tests
+
+- `pytest tests/test_calibration_anp_otm.py -v` → 6 passed in 5.36s
+  on Python 3.9.6. Mirrors 3B.6's parity suite with OTM-scaled
+  synthetic fixtures (sigma_true uniform on [0.005, 0.06] vs 3B.6's
+  [0.05, 0.6]). All four classes covered: gaussian fit invariants,
+  quantile conformal-offset finite, JSON round-trip,
+  `CalibratedConditionalPredictor` fills lower / upper /
+  confidence_score, hi-confidence MAE below overall.
+
+### Files
+
+- Committed: `configs/calibration_3X11_anp_otm.yaml`,
+  `tests/test_calibration_anp_otm.py`. Fit manifest lives inline
+  above (3B.6 precedent: the whole `artifacts/calibration/` tree
+  is gitignored).
+- Gitignored (regenerable from config + cached CSVs):
+  `artifacts/calibration/3X11_anp_otm.json` (calibrator weights),
+  `artifacts/calibration/3X11_anp_otm.report.json` (test-fold
+  report).
+
+### Next actions
+
+- Operator reviews 3X.11 → `done`. Unblocks 3X.12 (remote
+  decision-layer eval on OTM, thresholds held constant from 2D.5 —
+  the Q2-answering story for the OTM substrate) and 3X.13
+  (dirty-vs-OTM comparison, which should explicitly contrast the
+  3B.6 vs 3X.11 calibrator parameters and the val→test drift
+  noted above).

@@ -1,0 +1,46 @@
+# Calibration fit configuration — Phase 3X / story 3X.11 (ANP re-fit on OTM).
+#
+# Faithful restatement of the 3B.6 ANP calibration recipe on the OTM-restricted
+# substrate (ADR 0006), with the input bundle re-pointed at the OTM ANP runs:
+#   * primary head      <- 3X.9 full-AV ANP gaussian run (OTM)
+#   * ensemble disagreement <- 3X.10 K=5 ANP point-head deep ensemble (OTM)
+#
+# Fusion formula, temperature-scaling / split-conformal paths, monotone
+# disagreement->sigma mapping, and all numerical hyperparameters are inherited
+# unchanged from 2D.4 / 3B.6 (see configs/calibration.yaml,
+# configs/calibration_3B6_anp.yaml). Only the input bundle changes; this is
+# the OTM restatement called for by Phase 3X. Pure CPU; no torch, no model
+# load, no AV data dependency at fit time.
+
+# Either "gaussian" or "quantile". Mirrors 3B.6's primary (gaussian) fit; the
+# quantile pair is wired for parity but the committed 3X.11 calibrator is the
+# gaussian one (matches the 2d4_calibrator.json / 3B6_anp.json precedent).
+head_kind: gaussian
+
+# Source CSVs (3X.9 full-AV OTM ANP runs). Paths are repo-relative.
+sources:
+  gaussian:
+    val:  artifacts/runs/3X9/gaussian/val_predictions.csv
+    test: artifacts/runs/3X9/gaussian/test_predictions.csv
+  quantile:
+    val:  artifacts/runs/3X9/quantile/val_predictions.csv
+    test: artifacts/runs/3X9/quantile/test_predictions.csv
+
+# Deep-ensemble disagreement signal (3X.10). Joined positionally on
+# (date, log_moneyness, tau, observed); row counts match the 3X.9 bundle.
+ensemble:
+  val:  artifacts/runs/3X10/val_predictions.csv
+  test: artifacts/runs/3X10/test_predictions.csv
+
+# Ground-truth column to score against — `iv_true` matches the 3X.9 / 3X.10
+# evaluator convention (same as 3B.4 / 3B.5 / 2D.7 / 2D.8).
+target_col: iv_true
+
+# Nominal interval level.
+nominal_alpha: 0.9
+tolerance: 0.02
+
+# Output JSON for the fitted OTM ANP calibrator (gitignored, like
+# 2d4_calibrator.json / 3B6_anp.json; regenerated from this config + the
+# cached prediction CSVs).
+output_path: artifacts/calibration/3X11_anp_otm.json

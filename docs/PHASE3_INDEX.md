@@ -77,9 +77,9 @@ last_updated_at: 2026-05-31T00:20:00-04:00
 | 3X.6 | Story | Remote (CPU): early RBF-on-OTM baseline — → test MAE 0.00613 / val 0.00615, 0 non-finite; ~10.8× below RBF-on-dirty 0.0662 (raises neural bar for 3X.7+) | `done` | [`3X.6`](tasks/specs/3X.6_remote_rbf_on_otm_baseline.md) | 2026-05-31 |
 | 3X.7 | Story | Remote (GPU): MLP-on-OTM (Q1) — → test MAE **0.03006** (val 0.03391), finite; ~3.2× below dirty MLP 0.0951 | `in_review` | [`3X.7`](tasks/specs/3X.7_remote_mlp_on_otm.md) | 2026-05-31 |
 | 3X.8 | Story | Remote (GPU): DeepSets-on-OTM single + K=5 ensemble (D2) — → test MAE quantile **0.01418** / gaussian 0.01530 / ensemble 0.01594 / point 0.01752; ~5× below dirty 2D 0.072–0.079 | `in_review` | [`3X.8`](tasks/specs/3X.8_remote_deepsets_on_otm.md) | 2026-05-31 |
-| 3X.9 | Story | Remote (GPU): ANP-on-OTM all three heads (D1) | `backlog` | [`3X.9`](tasks/specs/3X.9_remote_anp_on_otm.md) | 2026-05-29 |
-| 3X.10 | Story | Remote (GPU): ANP K=5 ensemble-on-OTM | `backlog` | [`3X.10`](tasks/specs/3X.10_remote_anp_ensemble_on_otm.md) | 2026-05-29 |
-| 3X.11 | Story | Local: calibrator re-fit on OTM val predictions | `backlog` | [`3X.11`](tasks/specs/3X.11_local_calibration_on_otm.md) | 2026-05-29 |
+| 3X.9 | Story | Remote (GPU): ANP-on-OTM all three heads (D1) — → test MAE gaussian **0.01440** / quantile **0.01175** / point **0.00987**; ~5–7× below dirty 3B.4 | `in_review` | [`3X.9`](tasks/specs/3X.9_remote_anp_on_otm.md) | 2026-05-31 |
+| 3X.10 | Story | Remote (GPU): ANP K=5 ensemble-on-OTM — → ensemble test MAE **0.01220**, disagreement mean 0.00679 (~56% of dirty 3B.5) | `in_review` | [`3X.10`](tasks/specs/3X.10_remote_anp_ensemble_on_otm.md) | 2026-05-31 |
+| 3X.11 | Story | Local: calibrator re-fit on OTM val predictions — → val cov **0.9000**, T=1.005, ens_scale=1.91, val hi-conf MAE 0.00849 < no-abst 0.01349; test cov 0.866 (val→test drift ~3.4pp, > 3B.6 dirty) | `in_review` | [`3X.11`](tasks/specs/3X.11_local_calibration_on_otm.md) | 2026-06-02 |
 | 3X.12 | Story | Remote: decision-layer eval on OTM, thresholds held constant (Q2) | `backlog` | [`3X.12`](tasks/specs/3X.12_remote_decision_layer_eval_on_otm.md) | 2026-05-29 |
 | 3X.13 | Story | Local: dirty-vs-OTM comparison tables (matched substrate) | `backlog` | [`3X.13`](tasks/specs/3X.13_local_dirty_vs_otm_comparison.md) | 2026-05-29 |
 | 3X.14 | Story | Local: 3X closing addendum + methodology progression (Q3) | `backlog` | [`3X.14`](tasks/specs/3X.14_local_closing_addendum.md) | 2026-05-29 |
