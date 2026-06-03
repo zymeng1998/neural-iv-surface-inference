@@ -191,17 +191,20 @@ decision trail.
 │          artifacts/audits/otm_residual_same_type.csv     │
 │          (optional manifest JSON via --manifest)         │
 │                                                         │
-│  Status: builder + tests implemented in story 3X.2;     │
-│          real OTM file PRODUCED on Pod in story 3X.4    │
-│          (2026-05-30, in_review): 22,512,040 →           │
+│  Status: DONE (epic 3X closed 2026-06-02). Builder +    │
+│          tests in 3X.2; real OTM file produced on Pod   │
+│          in 3X.4 and audited PASS 12/12 in 3X.5         │
+│          (dup 93.61%→0%, twin leakage 0%): 22,512,040 → │
 │          10,531,499 rows; single-valued at              │
 │          (date, log_m, tau) verified (max group=1);     │
 │          ATM-band 1.38% < 5% (no D5 escalation);        │
 │          D7 residuals 11,018 rows all econ-equivalent.  │
-│          Default step-04 source remains 'strict' so     │
-│          historical benchmarks rebuild byte-identical;  │
-│          `--source strict_otm` selects this file and    │
-│          appends '_otm' to output filenames.            │
+│          This OTM file is now the CANONICAL modelling   │
+│          substrate (ADR 0006 Implemented). Default      │
+│          step-04 source remains 'strict' so historical  │
+│          benchmarks rebuild byte-identical; `--source   │
+│          strict_otm` selects this file and appends      │
+│          '_otm' to output filenames.                    │
 └────────────────────────┬────────────────────────────────┘
                          │
                          ▼
@@ -475,7 +478,8 @@ single-valued-function assumption** the conditional model and the RBF
 baseline both implicitly rely on. The strict file is a quote table,
 not a surface table.
 
-Planned correction (per ADR 0006, epic 3X):
+Correction (per ADR 0006, epic 3X — **COMPLETED, epic closed
+2026-06-02**; ADR 0006 → Implemented):
 
 - Derive a new parquet
   `data_processed/spy/spy_surface_points_strict_otm.parquet` using the
@@ -500,15 +504,29 @@ Planned correction (per ADR 0006, epic 3X):
   and remain comparable to themselves; the primary modelling /
   restatement substrate is `spy_phase1_random40_noiselow_otm`.
 - Add paired-coordinate masking in
-  `src/neural_iv_surface_inference/data/masking.py` behind a flag so
-  even residual duplicates (e.g. legitimate split-strike pairs) cannot
-  cross the observed / held-out boundary.
+  `src/neural_iv_surface_inference/data/masking.py` behind a flag
+  (shipped opt-in, **default-off**, in story 3X.3) so even residual
+  duplicates (e.g. legitimate split-strike pairs) cannot cross the
+  observed / held-out boundary.
 - Treat re-audit as a CI invariant: contract-key dup share ≤ 0.5 %,
   coord-key dup share ≤ 0.5 % at 10 dp, exact-twin leakage ≤ 0.5 % per
-  split.
+  split. **Story 3X.5 ran this gate on the OTM strict surface + all 11
+  OTM benchmarks: PASS 12/12** (dup 0.0000 %, twin leakage 0.0000 %
+  across all splits).
 
 Original strict file and benchmarks are explicitly **not** mutated;
 historical Phase 1 / Phase 2 / Phase 3A / Phase 3B artifacts remain
-reproducible from them. The Phase 3D closing memo will append an
-OTM-clean re-statement of the 3B verdict alongside the original
-numbers.
+reproducible from them.
+
+**Outcome (epic 3X closed 2026-06-02).** The full model-family ladder
+was restated on the matched clean benchmark
+`spy_phase1_random40_noiselow_otm`. RBF still wins and the
+neural-vs-RBF gap *widened* on clean data (the dirty call-put confound
+had been penalising RBF's interpolation of two-valued targets): best
+ANP head +2.7 % → +61 % vs RBF, calibrated production +90 %; the Phase 3
+bar is still NOT met. The DeepSets→ANP architecture story survives.
+Scope is the matched substrate only (all-11-variant robustness deferred).
+Narrative:
+[`docs/research/duplicate_coordinate_methodology_progression.md`](../research/duplicate_coordinate_methodology_progression.md).
+The Phase 3D closing memo will fold this OTM-clean re-statement in
+alongside the original dirty numbers.

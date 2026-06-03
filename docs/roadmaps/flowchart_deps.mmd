@@ -1,3 +1,7 @@
+%% NOTE (2026-06-02): the S5–S8 conceptual nodes are the ORIGINAL plan.
+%% The "Phase 3: Accuracy Push (executed epics)" subgraph at the bottom
+%% reflects the work as actually executed (epics 3A/3B/3X/3C/3D + M1) with
+%% current status. Any committed .png render of this file is STALE — regenerate.
 flowchart TD
     subgraph Phase1["Phase 1: Benchmarkable Prototype"]
         direction TB
@@ -68,8 +72,34 @@ flowchart TD
 
     FINAL(["Decision-Grade<br/>IV Surface"])
 
+    EXECNOTE["Executed epic breakdown (supersedes S5–S8 conceptual plan):<br/>Phase 2 = epics 2A–2E (reliability, conditional model, decision layer)<br/>Phase 3 = epics 3A/3B/3X/3C/3D + meta-epic M1"]
+    Phase2 --> EXECNOTE --> Phase3AP
+
+    subgraph Phase3AP["Phase 3: Accuracy Push (executed epics)"]
+        direction TB
+        E3A["3A Coord-encoding ablation<br/>raw beats Fourier ✅"]
+        E3B["3B Cross-attention ANP decoder<br/>bar NOT met, +2.7pct dirty ✅"]
+        E3X["3X Data correction (OTM surface)<br/>RBF still wins, gap WIDENED to +61pct ✅"]
+        E3C["3C Feature / inductive-bias expansion<br/>🔧 NEXT (clean OTM substrate)"]
+        E3D["3D Phase 3 closing memo + re-eval ⏳"]
+        E3A --> E3B --> E3X --> E3C --> E3D
+    end
+
+    DG3X{{"3X verdict (ADR 0006 Q5):<br/>did the architecture conclusion change?"}}
+    E3X --> DG3X
+    DG3X -- "No: DeepSets→ANP survives,<br/>no Phase 2 reopen" --> E3C
+
+    P4FALL(["Phase 4 fallback:<br/>RBF-prior + neural-residual hybrid<br/>(if 3C/3D still miss the bar)"])
+    E3D -. "bar still not met" .-> P4FALL
+
     style DG1 fill:#fff3cd,stroke:#856404,color:#856404
     style DG2 fill:#fff3cd,stroke:#856404,color:#856404
     style DG3 fill:#fff3cd,stroke:#856404,color:#856404
+    style DG3X fill:#fff3cd,stroke:#856404,color:#856404
     style FINAL fill:#d4edda,stroke:#155724,color:#155724
     style S33 fill:#cce5ff,stroke:#004085,color:#004085
+    style E3A fill:#d4edda,stroke:#155724,color:#155724
+    style E3B fill:#d4edda,stroke:#155724,color:#155724
+    style E3X fill:#d4edda,stroke:#155724,color:#155724
+    style E3C fill:#cce5ff,stroke:#004085,color:#004085
+    style EXECNOTE fill:#f8f9fa,stroke:#495057,color:#212529

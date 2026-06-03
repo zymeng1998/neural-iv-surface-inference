@@ -380,6 +380,62 @@ an OTM-clean re-statement alongside. Per Q5, if 2D-on-OTM changes the
 architecture conclusion, a retrospective / ADR addendum is opened
 rather than reopening Phase 2.
 
+#### W11.5 — 3X closing addendum (filled by 3X.14 — 2026-06-02)
+
+Epic 3X is complete. The OTM-restricted surface was built, audited
+(3X.5: PASS 12/12, 93.61 %→0 % duplication, 0 % twin leakage), and the
+full model-family ladder was re-run on the matched clean benchmark
+`spy_phase1_random40_noiselow_otm`. Full narrative:
+[`docs/research/duplicate_coordinate_methodology_progression.md`](../research/duplicate_coordinate_methodology_progression.md);
+evidence bundle:
+`results/3/spy_phase1_random40_noiselow_otm/3x_compare/`.
+
+**Verdict — RBF vs ANP: conclusion unchanged in direction, *wider* in
+magnitude.**
+
+| Comparison | Dirty (full fold) | OTM (test) |
+|---|---|---|
+| RBF | 0.0662 | 0.00613 |
+| Best ANP (point head) | 0.0680 | 0.00987 |
+| ANP − RBF (relative) | **+2.7 %** | **+61 %** |
+| Calibrated ANP (`anp_calibrated`) − RBF | +9–11 % | **+90 %** (0.01162 vs 0.00613) |
+
+The Phase 3 acceptance bar (ANP ≥ 5 % below RBF) is **still NOT MET, and
+missed by a wider margin on clean data**. The original 3B near-miss
+(+2.7 %) was partly an artifact of the dirty call-put confound, which
+penalized the local interpolator (RBF averaged two-valued targets) more
+than the amortized neural decoders. Correcting it let RBF pull *further
+ahead*, not ANP catch up. Every family improves 3–11× on the clean
+substrate; RBF improves the most (10.8×) precisely because it was most
+hurt by the defect. This is ADR 0006's "conclusion unchanged / removed a
+confounder" branch, with the sharpened nuance that the confounder was
+**flattering ANP**.
+
+**Verdict — DeepSets → ANP architecture story: survives.** ANP beats
+DeepSets at matched head on every OTM comparison (point 1.77×, ensemble
+1.31×, quantile 1.21×, gaussian 1.06×). The cross-attention thesis holds
+on clean data; the ranking did **not** reverse, so the Q5 trigger for a
+Phase 2 reopen / architecture-revising retrospective is **not fired**.
+ADR 0006 moves to **Implemented**.
+
+**Reliability:** 3X.12 preserved the floor with thresholds held constant
+(coverage@0.90 = 0.9295; hi-conf MAE 0.00835 < no-abstention 0.01162),
+at the cost of more val→test calibration drift (3X.11) on the tighter
+OTM error scale.
+
+**No-overclaim guardrail (binds this addendum):** scoped to the matched
+`random40_noiselow_otm` substrate only. The other 10 OTM variants were
+rebuilt and audited but **not** retrained — the all-11 robustness study
+is deferred (§W11.5 "Future work"). No robustness claim is made here.
+
+**Forward:** 3C reopens on the clean OTM substrate (Q6) with the honest
+target restored — the gap to close is ~+61 % (best head) / ~+90 %
+(production), not the dirty +2.7 %. The 3B implication is reinforced:
+decoder-architecture iteration has plateaued; 3C should prioritise
+feature / inductive-bias expansion, with the Phase 4 RBF-prior hybrid as
+the production fallback. The full Phase 3 closing memo remains a 3D
+deliverable (Q3).
+
 ### W12 — Feature & inductive-bias expansion (epic 3C)
 
 Two orthogonal directions; 3C.1 decides whether to ship one or both.
@@ -459,6 +515,18 @@ research substitute). See ADR 0004.
 > (`docs/research/sparse_region_anp_vs_rbf_design.md`) is now `blocked`
 > on 3X; it moves into 3C scope on the OTM-clean benchmark. 3X.1
 > decomposition is the immediate next action.
+>
+> **Update (2026-06-02, 3X CLOSED — see §W11.5 closing addendum):**
+> epic 3X is `done`. The OTM restatement confirmed the 3B verdict in
+> direction and *widened* it — RBF still wins, and on the clean
+> single-valued benchmark the best-ANP-head gap grew from +2.7 % to
+> +61 % (calibrated production +90 %); the bar remains NOT MET. The
+> DeepSets→ANP architecture story survives (ANP beats DeepSets at every
+> matched head on OTM), so no Phase 2 reopen (Q5 trigger not fired) and
+> ADR 0006 → **Implemented**. Narrative:
+> [`duplicate_coordinate_methodology_progression.md`](../research/duplicate_coordinate_methodology_progression.md).
+> **3C and 3D now reopen on the clean OTM substrate;** the immediate
+> next action is promoting **3C.1** (decompose Phase 3C) to `todo`.
 >
 > **Original 2026-05-28 status (preserved for traceability):** Phase 3 is **open**, but both
 > diagnostic epics have closed. Epic **3A** is `done` (raw beats

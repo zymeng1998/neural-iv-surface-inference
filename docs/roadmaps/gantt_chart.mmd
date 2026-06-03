@@ -1,3 +1,7 @@
+%% NOTE (2026-06-02): the S1–S8 sections below are the ORIGINAL conceptual
+%% 4-phase plan. The work actually executed as epics 2A–2E / 3A–3D + 3X + M1.
+%% The "Executed epic breakdown" sections at the bottom reflect reality and
+%% current status. Any committed .png render of this file is STALE — regenerate.
 gantt
     title Neural IV Surface Inference — Project Roadmap
     dateFormat YYYY-MM-DD
@@ -38,3 +42,20 @@ gantt
     Phase 2 Latent Quality Review          :milestone, m2, after s5, 0d
     Phase 3 Surface Quality Gate           :milestone, m3, after s7, 0d
     Decision-Grade Surface Achieved        :milestone, m4, after s8, 0d
+
+    section Phase 2 Executed (epics 2A-2E)
+    2A-2D Reliability + conditional model + decision layer :done, p2, 2026-05-22, 2026-05-25
+    2E Latent-capacity follow-ups (2E.3 cancelled)         :active, p2e, 2026-05-26, 7d
+
+    section Phase 3 Accuracy Push Executed
+    3A Coordinate-encoding ablation (raw beats Fourier)    :done, e3a, 2026-05-28, 1d
+    3B Cross-attention ANP decoder (bar NOT met, +2.7pct)  :done, e3b, 2026-05-28, 2d
+    3X Data correction OTM restatement (RBF wins, widened) :done, e3x, 2026-05-29, 2026-06-02
+    3C Feature / inductive-bias expansion (NEXT)           :e3c, after e3x, 14d
+    3D Phase 3 closing memo + re-evaluation                :e3d, after e3c, 7d
+
+    section Meta
+    M1 Multi-agent collaboration infrastructure (ADR 0007) :done, em1, 2026-05-29, 1d
+
+    section Milestones Executed
+    3X closed - RBF still wins, gap widened                :milestone, m3x, 2026-06-02, 0d

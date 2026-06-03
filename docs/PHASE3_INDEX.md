@@ -42,10 +42,15 @@ last_updated_at: 2026-05-31T00:20:00-04:00
   invalidating the single-valued-function assumption. **3X — Data
   correction** (OTM-restricted surface + paired-coordinate masking
   + re-audit + ANP re-train + decision-layer re-eval) is inserted
-  between 3B and 3C; 3C and 3D are paused until 3X closes. The
-  Phase 3 acceptance bar is unchanged but is now adjudicated on the
-  OTM-clean benchmark. Full narrative:
+  between 3B and 3C. **3X CLOSED 2026-06-02 (3X.14):** RBF still
+  wins on the clean OTM benchmark and the gap *widened* (best ANP head
+  +2.7% dirty → +61% OTM; bar still NOT MET); the DeepSets→ANP
+  architecture story survives (no Q5 reopen); ADR 0006 → Implemented.
+  **3C now reopens** on the clean OTM substrate (next action: promote
+  3C.1 to `todo`). The Phase 3 acceptance bar is unchanged but is now
+  adjudicated on the OTM-clean benchmark. Full narrative:
   [ADR 0006](decisions/0006_duplicate_coordinate_data_correction.md) +
+  [methodology progression](research/duplicate_coordinate_methodology_progression.md) +
   [retrospective 0002](retrospectives/0002_call_put_duplicate_coordinate_discovery.md).
 
 ## Live status (synced manually with `BOARD.md`)
@@ -68,21 +73,21 @@ last_updated_at: 2026-05-31T00:20:00-04:00
 | 3B.5 | Story | Remote: K=5 deep ensemble of ANP point head on AV (parallels 2D.8) | `done` | [`3B.5`](tasks/specs/3B.5_remote_deep_ensemble.md) | 2026-05-29 |
 | 3B.6 | Story | Local: calibrator re-fit on ANP val predictions (parallels 2D.4) | `in_review` | [`3B.6`](tasks/specs/3B.6_local_calibrator_refit.md) | 2026-05-28 |
 | 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + closing addendum (ANP +2.7% vs RBF best-case; bar NOT met) | `in_review` | [`3B.7`](tasks/specs/3B.7_local_decision_layer_eval.md) | 2026-05-28 |
-| 3X | Epic | **NEW** Data correction: OTM-restricted surface + paired masking + full model-family restatement on `random40_noiselow_otm` (ADR 0006) | `in_progress` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W11.5 | 2026-05-29 |
-| 3X.1 | Story | Decompose Phase 3X (ADR 0006 addendum + 3X.2–3X.14 specs) | `in_review` | [`3X.1`](tasks/specs/3X.1_decompose_phase_3x.md) | 2026-05-29 |
+| 3X | Epic | **NEW** Data correction: OTM-restricted surface + paired masking + full model-family restatement on `random40_noiselow_otm` (ADR 0006) — **CLOSED** (3X.14): RBF wins, gap WIDENED on clean OTM; DeepSets→ANP survives; ADR 0006 Implemented | `done` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W11.5 | 2026-06-02 |
+| 3X.1 | Story | Decompose Phase 3X (ADR 0006 addendum + 3X.2–3X.14 specs) | `done` | [`3X.1`](tasks/specs/3X.1_decompose_phase_3x.md) | 2026-06-02 |
 | 3X.2 | Story | Local: OTM-surface builder + step-04 `--source` + ATM-band (D5) + residual handling (D7) + tests | `done` | [`3X.2`](tasks/specs/3X.2_local_otm_surface_builder.md) | 2026-05-30 |
 | 3X.3 | Story | Local: vectorised audit v2 + paired-coordinate masking flag (default off) + parity tests | `done` | [`3X.3`](tasks/specs/3X.3_local_audit_v2_and_paired_masking.md) | 2026-05-30 |
 | 3X.4 | Story | Remote (CPU): build OTM strict surface + rebuild all 11 OTM benchmarks — → single-valued PASS, 11 `_otm` benchmarks, dirty hashes unchanged | `done` | [`3X.4`](tasks/specs/3X.4_remote_build_otm_strict_and_benchmarks.md) | 2026-05-30 |
 | 3X.5 | Story | Remote (CPU): audit OTM strict + all 11 benchmarks — **HUMAN REVIEW GATE** → **PASS 12/12** (93.61%→0% dup; 0% twin leakage all splits) | `done` | [`3X.5`](tasks/specs/3X.5_remote_audit_otm_gate.md) | 2026-05-30 |
 | 3X.6 | Story | Remote (CPU): early RBF-on-OTM baseline — → test MAE 0.00613 / val 0.00615, 0 non-finite; ~10.8× below RBF-on-dirty 0.0662 (raises neural bar for 3X.7+) | `done` | [`3X.6`](tasks/specs/3X.6_remote_rbf_on_otm_baseline.md) | 2026-05-31 |
-| 3X.7 | Story | Remote (GPU): MLP-on-OTM (Q1) — → test MAE **0.03006** (val 0.03391), finite; ~3.2× below dirty MLP 0.0951 | `in_review` | [`3X.7`](tasks/specs/3X.7_remote_mlp_on_otm.md) | 2026-05-31 |
-| 3X.8 | Story | Remote (GPU): DeepSets-on-OTM single + K=5 ensemble (D2) — → test MAE quantile **0.01418** / gaussian 0.01530 / ensemble 0.01594 / point 0.01752; ~5× below dirty 2D 0.072–0.079 | `in_review` | [`3X.8`](tasks/specs/3X.8_remote_deepsets_on_otm.md) | 2026-05-31 |
+| 3X.7 | Story | Remote (GPU): MLP-on-OTM (Q1) — → test MAE **0.03006** (val 0.03391), finite; ~3.2× below dirty MLP 0.0951 | `done` | [`3X.7`](tasks/specs/3X.7_remote_mlp_on_otm.md) | 2026-06-02 |
+| 3X.8 | Story | Remote (GPU): DeepSets-on-OTM single + K=5 ensemble (D2) — → test MAE quantile **0.01418** / gaussian 0.01530 / ensemble 0.01594 / point 0.01752; ~5× below dirty 2D 0.072–0.079 | `done` | [`3X.8`](tasks/specs/3X.8_remote_deepsets_on_otm.md) | 2026-06-02 |
 | 3X.9 | Story | Remote (GPU): ANP-on-OTM all three heads (D1) — → test MAE gaussian **0.01440** / quantile **0.01175** / point **0.00987**; ~5–7× below dirty 3B.4 | `done` | [`3X.9`](tasks/specs/3X.9_remote_anp_on_otm.md) | 2026-06-02 |
 | 3X.10 | Story | Remote (GPU): ANP K=5 ensemble-on-OTM — → ensemble test MAE **0.01220**, disagreement mean 0.00679 (~56% of dirty 3B.5) | `done` | [`3X.10`](tasks/specs/3X.10_remote_anp_ensemble_on_otm.md) | 2026-06-02 |
 | 3X.11 | Story | Local: calibrator re-fit on OTM val predictions — → val cov **0.9000**, T=1.005, ens_scale=1.91, val hi-conf MAE 0.00849 < no-abst 0.01349; test cov 0.866 (val→test drift ~3.4pp, > 3B.6 dirty) | `done` | [`3X.11`](tasks/specs/3X.11_local_calibration_on_otm.md) | 2026-06-02 |
 | 3X.12 | Story | Remote: decision-layer eval on OTM, thresholds held constant (Q2) — → test MAE **0.01162**, hi-conf MAE **0.00835**, cov@0.90 **0.9295**, mean_width **0.0538**, abstain 1.0, flag-viol **1814** (dirty 3B.7: 0.0813 / 0.0542 / 0.915 / 0.304 / 1.0 / 9007 — ~7× MAE, ~5.6× width, 20 % violations under unchanged thresholds) | `done` | [`3X.12`](tasks/specs/3X.12_remote_decision_layer_eval_on_otm.md) | 2026-06-02 |
 | 3X.13 | Story | Local: dirty-vs-OTM comparison tables (matched substrate) — → 11 family×head pairs, OTM beats dirty by **3.0×–10.8×** on test MAE (RBF widest, MLP narrowest); calibrated-fused 7.0× (0.0813 → 0.01162) | `in_review` | [`3X.13`](tasks/specs/3X.13_local_dirty_vs_otm_comparison.md) | 2026-06-02 |
-| 3X.14 | Story | Local: 3X closing addendum + methodology progression (Q3) | `backlog` | [`3X.14`](tasks/specs/3X.14_local_closing_addendum.md) | 2026-05-29 |
+| 3X.14 | Story | Local: 3X closing addendum + methodology progression (Q3) — → verdict **RBF-vs-ANP unchanged in direction, gap WIDENED** (+2.7%→+61% best head; bar still NOT MET); **DeepSets→ANP story SURVIVES** (no Q5 reopen); ADR 0006 → Implemented; narrative committed | `done` | [`3X.14`](tasks/specs/3X.14_local_closing_addendum.md) | 2026-06-02 |
 | 3C | Epic | Feature & inductive-bias expansion (microstructure, optional SVI) — **paused on 3X** | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W12 | 2026-05-29 |
 | 3C.1 | Story | Decompose Phase 3C | `backlog` | [`3C.1`](tasks/specs/3C.1_decompose_phase_3c.md) | 2026-05-29 |
 | 3D | Epic | Closing memo + re-evaluation vs RBF — **must include OTM-clean re-statement** | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W13 | 2026-05-29 |

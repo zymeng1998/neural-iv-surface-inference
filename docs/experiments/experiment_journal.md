@@ -1904,12 +1904,15 @@ The OTM substrate floor (RBF interp) is **~10.8× below** the dirty
 floor (0.00613 vs 0.0662), and every neural family inherits a
 substantial fraction of that gain (3–7×). The neural-vs-RBF gap that
 3B left open on dirty (best ANP point head 0.0680 vs RBF 0.0662 →
-RBF wins) **closes on OTM** (best ANP point head 0.00987 vs RBF
-0.00613 → RBF still wins on test MAE, but the absolute gap shrank
-from +0.0018 to +0.0037 — RBF leads more on the cleaner substrate
-because it can interpolate a single-valued surface without
-absorption error, while the neural decoders pay the same encoder
-amortization cost on either substrate). The headline framing — "OTM
+RBF wins) **widens on OTM** (best ANP point head 0.00987 vs RBF
+0.00613 → RBF still wins on test MAE, and the absolute gap grew
+from +0.0018 to +0.0037, i.e. from +2.7 % to +61 % relative — RBF
+leads more on the cleaner substrate because it can interpolate a
+single-valued surface without absorption error, while the neural
+decoders pay the same encoder amortization cost on either
+substrate). [Correction: an earlier draft of this paragraph wrote
+"closes on OTM / gap shrank", which contradicted its own numbers
+(0.0037 > 0.0018); the gap widens. Carried into the 3X.14 verdict.] The headline framing — "OTM
 beats dirty by 3–11× across all families" — should not be
 extrapolated to the other 10 OTM variants without dedicated runs;
 the scope label on the comparison file states this explicitly.
@@ -1934,3 +1937,69 @@ the scope label on the comparison file states this explicitly.
 
 - Operator reviews 3X.13 → `done`. Unblocks 3X.14 (closing addendum
   + methodology-progression narrative), the final 3X story.
+
+## 2026-06-02 — 3X.14 closing addendum + methodology-progression narrative (epic 3X close-out)
+
+**Mode:** local CPU, docs-only synthesis over the 3X.13 comparison
+bundle + the audit / ADR / retrospective trail. No model or baseline
+re-run; every number traces to a committed source via
+`results/3/spy_phase1_random40_noiselow_otm/3x_compare/comparison.csv`.
+
+### Verdict
+
+**RBF vs ANP — conclusion unchanged in direction, *wider* in magnitude.**
+On the matched clean OTM benchmark the gap from best ANP (point head) to
+RBF grew from the dirty **+2.7 %** (0.0680 vs 0.0662) to **+61 %**
+(0.00987 vs 0.00613); the calibrated production predictor sits at +90 %
+(0.01162 vs 0.00613). The Phase 3 acceptance bar (≥ 5 % below RBF) is
+**still NOT MET, missed by a wider margin**. The dirty call-put confound
+had been *flattering* ANP — RBF, as the local interpolator forced to
+average two-valued targets, was the model most penalized by the defect
+(floor improves 10.8× on correction vs 3–7× for the neural families).
+Correcting it let RBF pull further ahead, not ANP catch up.
+
+**DeepSets → ANP — architecture story survives.** ANP beats DeepSets at
+matched head on every OTM comparison (point 1.77×, ensemble 1.31×,
+quantile 1.21×, gaussian 1.06×). Ranking did not reverse → ADR 0006 Q5
+trigger **not fired**; no Phase 2 reopen, no architecture-revising
+retrospective/ADR addendum. ADR 0006 → **Implemented**.
+
+**Reliability** (3X.12, thresholds held constant): coverage@0.90 =
+0.9295; hi-conf MAE 0.00835 < no-abstention 0.01162. Floor preserved.
+
+### No-overclaim guardrail
+
+Scoped to `spy_phase1_random40_noiselow_otm` matched substrate only. The
+other 10 OTM variants were rebuilt + audited (3X.4/3X.5) but not
+retrained; all-11 robustness is deferred future work. No robustness
+claim is made.
+
+### Correction logged
+
+The 3X.13 journal "Reading" paragraph above (line ~1905) originally
+wrote that the gap "closes on OTM / shrank from +0.0018 to +0.0037" —
+internally contradictory (0.0037 > 0.0018 is a *widening*). Corrected
+in place to "widens on OTM"; the numbers were always right, only the
+verb was wrong. The 3X.14 verdict uses the corrected reading.
+
+### Files
+
+- New: `docs/research/duplicate_coordinate_methodology_progression.md`
+  (legacy-dirty → audit → correction → clean-restatement narrative with
+  the headline table embedded).
+- Touched: `docs/roadmaps/phase3_accuracy_push.md` (§W11.5 closing
+  addendum), `docs/decisions/0006_duplicate_coordinate_data_correction.md`
+  (status → Implemented + Outcome section), this journal (3X.13 verb fix
+  + this entry), `docs/tasks/BOARD.md`, `docs/PHASE3_INDEX.md`,
+  `docs/logs/progress_log.md`, `docs/tasks/specs/3X.14_local_closing_addendum.md`.
+
+### Tests
+
+- `python3 scripts/pmr_prepush_gate.py --verbose --dry-run` → run before
+  push this session.
+
+### Next actions
+
+- Operator reviews 3X.14 → `done`; epic 3X → `done`. Per Q6, 3C reopens
+  on the clean OTM substrate (separate session). The full Phase 3 closing
+  memo remains a 3D deliverable (Q3).

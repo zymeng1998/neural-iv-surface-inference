@@ -4116,3 +4116,106 @@ that does not amortize across the date set).
 
 - Operator reviews 3X.13 → `done`. Unblocks 3X.14 (closing addendum
   + methodology-progression narrative), the final 3X story.
+
+## 2026-06-02 — 3X.14 closing addendum + methodology narrative (in_review, epic 3X close-out)
+
+Docs-only synthesis closing epic 3X. Wrote the methodology-progression
+narrative (legacy-dirty → audit → correction → clean OTM restatement)
+and the roadmap §W11.5 closing addendum; flipped ADR 0006 to
+**Implemented** with an Outcome section.
+
+### Verdict
+
+- **RBF vs ANP — unchanged in direction, gap WIDENED.** Best ANP (point
+  head) vs RBF went from dirty **+2.7 %** (0.0680/0.0662) to OTM **+61 %**
+  (0.00987/0.00613); calibrated production predictor +90 % (0.01162 vs
+  0.00613). Phase 3 bar still NOT MET, missed by more. The dirty call-put
+  confound had flattered ANP — RBF (local interpolator forced to average
+  two-valued targets) was most penalized by the defect (floor improves
+  10.8× on correction vs 3–7× neural). Correcting it widened RBF's lead.
+- **DeepSets → ANP — architecture story SURVIVES.** ANP beats DeepSets
+  at matched head on OTM (point 1.77×, ensemble 1.31×, quantile 1.21×,
+  gaussian 1.06×). No ranking reversal → ADR 0006 Q5 trigger not fired →
+  no Phase 2 reopen, no architecture-revising retrospective/ADR addendum.
+- **Reliability** preserved (3X.12: coverage@0.90 0.9295; hi-conf MAE
+  0.00835 < no-abstention 0.01162).
+
+### Stale-claim fix
+
+Corrected the 3X.13 journal "Reading" paragraph, which said the gap
+"closes on OTM / shrank from +0.0018 to +0.0037" — self-contradictory
+(0.0037 > 0.0018). Changed to "widens on OTM" (+2.7 % → +61 %); numbers
+were already correct, only the verb was wrong.
+
+### Files
+
+- New: `docs/research/duplicate_coordinate_methodology_progression.md`.
+- Touched: `docs/roadmaps/phase3_accuracy_push.md` (§W11.5 addendum),
+  `docs/decisions/0006_duplicate_coordinate_data_correction.md`
+  (Implemented + Outcome), `docs/experiments/experiment_journal.md`
+  (3X.13 verb fix + 3X.14 close-out), `docs/tasks/BOARD.md`,
+  `docs/PHASE3_INDEX.md`, this log,
+  `docs/tasks/specs/3X.14_local_closing_addendum.md`.
+
+### Non-goals respected
+
+- No full Phase 3 final memo (that is 3D — Q3).
+- No robustness claim across the other 10 OTM variants (no-overclaim
+  guardrail; matched `random40_noiselow_otm` only).
+- No 3C work started (3C reopens separately per Q6).
+- No model / baseline re-run; every number cites a committed bundle.
+
+### Tests
+
+- `python3 scripts/pmr_prepush_gate.py --verbose --dry-run` → pending
+  this session.
+
+### Next actions
+
+- Operator reviews 3X.14 → `done`; epic 3X → `done`. 3C reopens on the
+  clean OTM substrate in a separate session.
+
+## 2026-06-02 — Post-3X documentation sync (README, lineage, reviewer_state, roadmap charts)
+
+Propagated the epic-3X closure into the peripheral docs that were not
+touched by the 3X.14 close-out itself.
+
+### Files updated
+
+- **README.md** — "Current Phase": 3X → `done` with verdict; 3C marked
+  NEXT (reopens on clean OTM); added a 3X-closed callout + a "3X closing
+  result" paragraph; removed the now-resolved "pending OTM re-statement"
+  asterisk on 3B.
+- **docs/data/data_lineage.md** — Step-3b OTM-builder status `in_review`
+  → DONE/canonical; §10 "Planned correction" → "COMPLETED, epic closed";
+  recorded the 3X.5 audit-gate PASS 12/12, the default-off paired-mask
+  ship (3X.3), and an Outcome paragraph with the widened-gap verdict.
+- **docs/agent_bootstrap/reviewer_state.{md,json}** — **full refresh**
+  `99ec6fa` → `7788f12`. Status snapshot now covers epics M1 (done, ADR
+  0007) and 3X (done) plus 3C/3D backlog; ADR list extended to 0001–0007;
+  retro list to 0001–0002; log counts refreshed (progress 90 / journal
+  31). **Labeled `manual-doc-sync`, not a code-review pass** — the
+  `99ec6fa..7788f12` implementation commits were not line-reviewed in
+  this refresh (caveat recorded in both files).
+- **docs/roadmaps/{gantt_chart,flowchart_deps}.mmd** — appended an
+  "executed epic breakdown" (2A–2E / 3A–3D + 3X + M1) with current
+  status, since the legacy S1–S8 nodes encode the original conceptual
+  plan. **`.png` renders are now stale** (no `mmdc` locally; flagged in
+  each `.mmd` header for regeneration).
+
+### Not touched (by operator instruction)
+
+- `docs/neural_iv_surface_project_personal_notes.md` and
+  `docs/neural_iv_surface_research_methodology_narrative.md` (gitignored
+  personal notebooks) — operator will update in a separate session; a
+  written plan was provided this session.
+
+### Tests
+
+- `python3 scripts/pmr_prepush_gate.py --verbose --dry-run` → PASS.
+
+### Follow-ups
+
+- Regenerate the two roadmap `.png` renders once a mermaid renderer is
+  available.
+- Optional: a real code-level reviewer pass over `99ec6fa..7788f12`.

@@ -22,11 +22,14 @@ predictions are trustworthy and abstains where they are not.
 ## Current Phase
 
 **Phase 3 — Accuracy Push: Beat RBF Without Losing Reliability — in
-progress (3A + 3B closed; new gating epic 3X — data correction —
-inserted between 3B and 3C/3D on 2026-05-29).** Phase 2 (Reliability-
-Aware Surface Inference) closed on 2026-05-25 with both mandatory
-acceptance numbers green; Phase 3 attacks the remaining accuracy gap
-versus the per-date RBF interpolation baseline.
+progress (3A + 3B + 3X closed; 3C reopens next on the clean OTM
+substrate).** Phase 2 (Reliability-Aware Surface Inference) closed on
+2026-05-25 with both mandatory acceptance numbers green; Phase 3 attacks
+the remaining accuracy gap versus the per-date RBF interpolation
+baseline. The gating data-correction epic **3X closed 2026-06-02**: on
+the corrected single-valued OTM benchmark RBF still wins and the gap
+*widened* (best ANP head +2.7 % → +61 %; bar still NOT met), while the
+DeepSets→ANP architecture story survives.
 
 > **2026-05-29 — Data-integrity finding.** A duplicate-coordinate audit
 > ([`docs/research/duplicate_coordinate_audit.md`](docs/research/duplicate_coordinate_audit.md))
@@ -47,15 +50,28 @@ versus the per-date RBF interpolation baseline.
 > append an OTM-clean re-statement of the 3B verdict alongside the
 > original numbers. Full narrative:
 > [retrospective 0002](docs/retrospectives/0002_call_put_duplicate_coordinate_discovery.md).
+>
+> **2026-06-02 — 3X closed.** The OTM-restricted surface was built,
+> audited (PASS 12/12, 93.61 %→0 % duplication, 0 % twin leakage), and
+> the full model-family ladder was restated on the matched clean
+> benchmark `spy_phase1_random40_noiselow_otm`. **Verdict:** RBF still
+> wins and the gap *widened* — the dirty call-put confound had been
+> flattering the neural models by forcing RBF to average two-valued
+> targets. Best ANP head goes from +2.7 % (dirty) to **+61 %** vs RBF on
+> clean test MAE (calibrated production +90 %); the Phase 3 bar is still
+> NOT met, by a wider margin. The DeepSets→ANP architecture story
+> survives (ANP beats DeepSets at every matched head on OTM), so no
+> Phase 2 reopen and ADR 0006 → **Implemented**. Narrative:
+> [methodology progression](docs/research/duplicate_coordinate_methodology_progression.md).
 
 ### Phase 3 (current)
 
 | Epic | Workstream | Status |
 |---|---|---|
 | 3A | W10 — Coordinate-representation ablation (Fourier vs raw `(k, τ)`, decoder-only) | `done` — raw beats Fourier (0.0760 vs 0.0790 full-fold test MAE); gap-to-RBF unclosed |
-| 3B | W11 — Cross-attention decoder (end-to-end DeepSets + ANP, raw `(k, τ)`) | `done` (in_review) — **bar NOT met**: ANP best-case +2.7 % vs RBF; reliability holds. Numbers carry an asterisk pending OTM-clean re-statement in 3D. |
-| **3X** | **W11.5 — Data correction (OTM-restricted surface + paired-coordinate masking + re-audit + ANP re-train + decision-layer re-eval)** | **`backlog` (NEXT) — per ADR 0006** |
-| 3C | W12 — Feature & inductive-bias expansion (microstructure features, optional SVI head) | `backlog` — **paused on 3X** |
+| 3B | W11 — Cross-attention decoder (end-to-end DeepSets + ANP, raw `(k, τ)`) | `done` — **bar NOT met**: ANP best-case +2.7 % vs RBF (dirty); reliability holds. Restated on clean OTM in 3X. |
+| **3X** | **W11.5 — Data correction (OTM-restricted surface + paired-coordinate masking + re-audit + full model-family restatement + decision-layer re-eval)** | **`done` (2026-06-02)** — RBF still wins, gap WIDENED (+2.7 %→+61 % best head, +90 % calibrated; bar still NOT met); DeepSets→ANP survives; ADR 0006 Implemented |
+| 3C | W12 — Feature & inductive-bias expansion (microstructure features, optional SVI head) | `backlog` — **NEXT** (reopens on clean OTM substrate; promote 3C.1 to `todo`) |
 | 3D | W13 — Phase 3 closing memo + re-evaluation versus RBF (must include OTM-clean re-statement) | `backlog` |
 
 Acceptance bar: **test MAE ≤ 0.95 × RBF** on both the 2D.9 slice
@@ -78,6 +94,23 @@ within ±2 pp; hi-conf MAE 0.0542 < no-abstention 0.0813). Evidence:
 and the §W11 closing addendum in the roadmap. Implication: pure
 decoder-architecture iteration has plateaued; 3C should prioritise
 feature / inductive-bias expansion.
+
+**3X closing result (epic 3X, 2026-06-02).** Restating the full
+model-family ladder on the corrected single-valued OTM benchmark
+sharpened the 3B verdict rather than overturning it. Every family
+improves 3–11× on clean data (RBF floor 0.0662→0.00613, 10.8×; best ANP
+point head 0.0684→0.00987, 6.9×), but because RBF was the model most
+penalised by the dirty call-put confound, correcting it *widened* RBF's
+lead: the best-ANP-head gap grew from +2.7 % to **+61 %** (calibrated
+production +90 %), so the bar is missed by more, not less. The
+DeepSets→ANP ranking holds on clean data (ANP beats DeepSets at every
+matched head, 1.06–1.77×) — the architecture story survives and no
+Phase 2 reopen is warranted. Scope is the matched
+`random40_noiselow_otm` substrate only; all-11-variant robustness is
+deferred future work. Evidence:
+[`results/3/spy_phase1_random40_noiselow_otm/3x_compare/comparison_wide.md`](results/3/spy_phase1_random40_noiselow_otm/3x_compare/comparison_wide.md);
+narrative:
+[`docs/research/duplicate_coordinate_methodology_progression.md`](docs/research/duplicate_coordinate_methodology_progression.md).
 
 The single fresh-session entry point for Phase 3 is
 [`docs/PHASE3_INDEX.md`](docs/PHASE3_INDEX.md) — read it first if you

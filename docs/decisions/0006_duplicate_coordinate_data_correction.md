@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted
+Implemented (2026-06-02) — was Accepted (2026-05-29). Outcome recorded
+in the [Outcome](#outcome-2026-06-02--recorded-by-3x14) section below.
 
 ## Date
 
@@ -357,6 +358,34 @@ report + data lineage rather than via a sidecar; no OTM build for the
 conservative dataset (no model trains on it). ADR status stays
 **Accepted**; it moves to **Implemented** when 3X.14 records the
 outcome.
+
+## Outcome (2026-06-02) — recorded by 3X.14
+
+The correction was implemented end-to-end and is now the canonical
+modelling substrate. Summary of what shipped and what it changed:
+
+- **Build + audit (3X.2–3X.5):** OTM strict surface + 11 OTM benchmarks
+  built; audit gate **PASS 12/12** — duplication 93.61 %→**0.0000 %**,
+  exact-twin leakage **0.0000 %** across all splits.
+- **Restatement (3X.6–3X.13):** full model-family ladder re-run on the
+  matched `spy_phase1_random40_noiselow_otm`. Every family improves
+  3–11× on clean data; RBF floor 0.0662→**0.00613** (10.8×).
+- **Q5 architecture check — no reversal.** ANP still beats DeepSets at
+  matched head on OTM (point 1.77×, ensemble 1.31×, quantile 1.21×,
+  gaussian 1.06×). The DeepSets→ANP cross-attention thesis survives, so
+  **no Phase 2 reopen and no architecture-revising retrospective/ADR
+  addendum** are warranted (the Q5 trigger did not fire).
+- **RBF-vs-ANP verdict — unchanged in direction, wider in magnitude.**
+  ANP's gap to RBF grew from the dirty +2.7 % (best point head) to
+  **+61 %** on clean test MAE (calibrated production predictor +90 %).
+  The dirty call-put confound had been flattering ANP by penalizing
+  RBF's interpolation of two-valued targets. Phase 3 bar still NOT MET.
+- **Scope:** matched substrate only; all-11 robustness retraining
+  deferred (no-overclaim guardrail honored).
+
+Full narrative:
+[`docs/research/duplicate_coordinate_methodology_progression.md`](../research/duplicate_coordinate_methodology_progression.md).
+Roadmap §W11.5 carries the closing addendum.
 
 ## References
 

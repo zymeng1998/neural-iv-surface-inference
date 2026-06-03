@@ -4,11 +4,11 @@
   "bootstrap_completed_at": "2026-04-02T01:34:00-04:00",
   "baseline_completed": true,
   "baseline_completed_at": "2026-04-02T01:35:00-04:00",
-  "last_review_run_at": "2026-05-29T07:00:00-04:00",
-  "last_review_run_type": "ongoing",
-  "last_processed_git_head": "99ec6faf3685723a13d2ebc1b057355dccc4fd64",
-  "last_processed_git_head_short": "99ec6fa",
-  "last_processed_diff_signature": "src/neural_iv_surface_inference/{features/coord_encoding.py,models/{anp_decoder,conditional_surface}.py,training/train_conditional.py,eval/adapters.py};configs/{conditional_3A3_{raw,fourier},conditional_3B4_anp_{gaussian,quantile,point_control},conditional_3B5_anp_ensemble}.yaml;scripts/{run_3a_decoder_only.py,run_3a_decoder_only.sh,run_3b4_single.py,run_conditional_3B4.sh,run_3b5_ensemble.py,run_conditional_3B5.sh};tests/{test_anp_decoder.py,test_anp_predictor_adapter.py,integration/{test_3a_decoder_only_wiring,test_anp_wiring,test_conditional_coord_encoding_wiring}.py,unit/test_coord_encoding.py};artifacts/runs/{3A/{raw,fourier}/manifest.json,3B4/{gaussian,quantile,point_control}/manifest.json,3B5/{manifest,members}.json,3B5/training_curves.csv};docs/tasks/{BOARD.md,specs/3{A.1,A.2,A.3,A.4,B.1,B.2,B.3,B.4,B.5,B.6,B.7}_*.md};docs/decisions/{0004_phase3_accuracy_push_framing,0005_cross_attention_architecture_choice}.md;docs/PHASE3_INDEX.md;docs/roadmaps/phase3_accuracy_push.md;docs/experiments/experiment_journal.md;docs/logs/progress_log.md",
+  "last_review_run_at": "2026-06-02T14:30:00-04:00",
+  "last_review_run_type": "manual-doc-sync",
+  "last_processed_git_head": "7788f12",
+  "last_processed_git_head_short": "7788f12",
+  "last_processed_diff_signature": "src/data/{05_build_otm_surface.py,04_build_benchmark_tasks.py(--source flag)};src/neural_iv_surface_inference/data/masking.py(paired-coordinate flag,default-off);scripts/{run_3x7_mlp,run_3x8_deepsets,run_3x9_anp,run_3x10_anp_ensemble}.{py,sh},scripts/{audit_duplicate_coordinates,build_dirty_vs_otm_comparison,run_calibration_anp,install_hooks}.py,scripts/hooks/{check_story_dependencies,check_file_scope,check_commit_trailer}.py;tests/{test_otm_surface_builder,test_paired_masking,test_audit_v2_parity,test_audit_duplicate_coordinates,test_calibration_anp,test_calibration_anp_otm,test_check_story_dependencies,test_check_file_scope,test_check_commit_trailer}.py;artifacts/audits/duplicate_coordinates/*;artifacts/runs/{3X4,3X7,3X8,3X9,3X10}/*;results/3/spy_phase1_random40_noiselow_otm/{rbf,3x_anp,3x_compare}/*;docs/decisions/{0006_duplicate_coordinate_data_correction,0007_multi_agent_handoff}.md;docs/research/{duplicate_coordinate_audit,duplicate_coordinate_audit_design,sparse_region_anp_vs_rbf_design,duplicate_coordinate_methodology_progression}.md;docs/retrospectives/0002_call_put_duplicate_coordinate_discovery.md;docs/roadmaps/{phase3_accuracy_push,meta1_agent_collaboration}.md;docs/tasks/{BOARD.md,specs/{3X.1..3X.14,M1.1..M1.5,3C.1}_*.md};docs/{PHASE3_INDEX.md,data/data_lineage.md};README.md;docs/experiments/experiment_journal.md;docs/logs/progress_log.md",
   "last_processed_packet_fingerprint": null,
   "known_bootstrap_files": [
     "docs/agent_bootstrap/project_memory_registry.md",
@@ -27,14 +27,19 @@
     ".pre-commit-config.yaml"
   ],
   "known_retrospective_ids": [
-    "0001"
+    "0001",
+    "0002"
   ],
   "known_decision_ids": [
     "0001",
     "0002",
-    "0003"
+    "0003",
+    "0004",
+    "0005",
+    "0006",
+    "0007"
   ],
-  "known_progress_log_last_entry_timestamp": "2026-05-27T00:30:00-04:00",
-  "known_experiment_journal_entry_count": 14,
-  "notes": "Refreshed 2026-05-27 after 2E.2 close-out: epic 2E opened (Phase 2 follow-ups, open-ended) and first follow-up story 2E.2 closed. HEAD advanced 345dffb -> 90c46fa across two 2E.2 commits (e5022de local modules + CLI + tests; 90c46fa Pod run on the 2D.7 gaussian checkpoint + journal + memo addendum + bug-fix backports). Latent-capacity diagnostic on the 2D.7 gaussian checkpoint (val, 300/693 dates) found the 64-dim latent dramatically over-parameterized: eff_rank_entropy=3.97, stable_rank=1.97, dead_pcs=52/64, k95=5, k99=7. Top-2 PCs hold 78% of variance and 51% of prediction quality; top-8 PC reconstruction recovers val NLL to within 0.2%. Memo addendum recommends 2E.3 SHRINK sweep latent_dim ∈ {2,4,8,16,32,64}. 2E.3 stays backlog awaiting human review."
+  "known_progress_log_last_entry_timestamp": "2026-06-02T00:00:00-04:00",
+  "known_experiment_journal_entry_count": 31,
+  "notes": "Full refresh 2026-06-02 at epic-3X close-out (HEAD 99ec6fa -> 7788f12). NOTE ON TYPE: this is a manual documentation sync performed by the session that closed epic 3X, NOT a diff-driven code-review pass. The 3X / M1 implementation commits below were not given a line-level reviewer review in this refresh; if a substantive code review is wanted, treat 99ec6fa..7788f12 as unreviewed despite last_processed_git_head being advanced. SINCE LAST REFRESH: (1) Epic M1 (multi-agent collaboration infrastructure) shipped under ADR 0007 + roadmap meta1_agent_collaboration.md: git-hook gates (check_story_dependencies / check_file_scope / check_commit_trailer + install_hooks.sh) that enforce AGENTS.md hard rules; epic M1 closed. (2) Epic 3X (data correction) opened on the 2026-05-29 duplicate-coordinate audit (ADR 0006 + retrospective 0002): 93.61% of strict-table rows are call-put paired duplicates violating the single-valued-function assumption. 3X.2 OTM builder (src/data/05_build_otm_surface.py) + step-04 --source flag; 3X.3 vectorised audit v2 + paired-coordinate masking flag (default off); 3X.4 built OTM strict surface (22,512,040 -> 10,531,499 single-valued rows) + 11 OTM benchmarks on CPU pod; 3X.5 HUMAN REVIEW GATE PASS 12/12 (dup 93.61%->0%, twin leakage ->0%); 3X.6 RBF-on-OTM floor 0.00613 (~10.8x below dirty 0.0662); 3X.7 MLP 0.03006; 3X.8 DeepSets single+ensemble (best quantile 0.01418); 3X.9 ANP three heads (point 0.00987 / quantile 0.01175 / gaussian 0.01440); 3X.10 ANP K=5 ensemble 0.01220; 3X.11 calibrator re-fit on OTM (val cov 0.900, test cov 0.866); 3X.12 decision-layer eval thresholds-held-constant (test 0.01162, cov@0.90 0.9295); 3X.13 dirty-vs-OTM matched comparison tables; 3X.14 closing addendum + methodology-progression narrative. EPIC 3X CLOSED 2026-06-02; ADR 0006 -> Implemented. HEADLINE VERDICT: RBF still wins on the clean OTM benchmark and the gap WIDENED (best ANP head +2.7% dirty -> +61% OTM; calibrated production +90%); Phase 3 bar still NOT met, missed by a wider margin. The dirty call-put confound had been flattering the neural models by forcing RBF to average two-valued targets. DeepSets->ANP architecture story SURVIVES (ANP beats DeepSets at every matched head on OTM, 1.06-1.77x) -> ADR 0006 Q5 reopen trigger NOT fired; no Phase 2 reopen. Scope = matched random40_noiselow_otm substrate only; all-11-variant robustness deferred. NEXT: 3C reopens on the clean OTM substrate (promote 3C.1 to todo). Open: epic 2E still in_progress (2E.3 latent_dim sweep cancelled per board)."
 }
