@@ -2003,3 +2003,96 @@ verb was wrong. The 3X.14 verdict uses the corrected reading.
 - Operator reviews 3X.14 → `done`; epic 3X → `done`. Per Q6, 3C reopens
   on the clean OTM substrate (separate session). The full Phase 3 closing
   memo remains a 3D deliverable (Q3).
+
+---
+
+## 3C.3 — ANP + `micro_v1` three-head retrain on OTM (2026-06-03)
+
+**Story:** 3C.3 (remote, GPU). **Status:** in_review.
+**Substrate:** `spy_phase1_random40_noiselow_otm` (train 5,123,586 / val
+2,638,892 / test 2,769,021). **Code:** `8be9de2` (3C.2) + uncommitted 3C.3
+driver. **Pod:** RunPod RTX 4000 Ada (20 GB), `venv-2e2` (torch 2.11+cu128).
+
+### Question
+
+What is the ANP+`micro_v1` test MAE / NLL / quantile coverage across the
+three heads, and how does it compare to the matched 3X.9 OTM baselines and
+the RBF-on-OTM floor?
+
+### Protocol
+
+Faithful restatement of 3X.9 with the only modelling change being the
+per-quote feature tuple (3 → 9 dims, ADR 0008): appends `(bid, ask,
+bid_ask_spread_rel, volume, open_interest, put_call_indicator)`. Same seed
+(42), hparams, `decoder_kind: anp`, `coord_encoding.kind: raw`,
+`freeze_encoder: false`, 50-epoch budget, patience 10. From-scratch (D8).
+
+**Normalization (driver-owned, ADR 0008 §Normalization).** 3C.2 deferred
+z-score fitting to 3C.3, so all normalization lives in
+`scripts/run_3c3_anp_micro.py`; loader / encoder / `train_conditional`
+imported unmodified (3C.3 non-goal). Operator-confirmed scope: z-score the
+**5 new continuous** features `(bid, ask, bid_ask_spread_rel, volume,
+open_interest)` on the **train split only**; the 3 legacy dims
+`(log_moneyness, tau, iv)` and `put_call_indicator` are fed RAW (byte-
+identical to 3X.9 on the shared dims → clean ablation). Per-feature stats
+persisted in each manifest.
+
+Train-split z-score stats: bid μ3.150/σ4.657, ask μ3.276/σ7.229,
+spread_rel μ0.150/σ0.248, volume μ1097/σ10819, open_interest μ8349/σ23047.
+
+### Results (test split, μ MAE)
+
+| Head | 3C.3 micro_v1 | 3X.9 minimal | Δ (micro − 3X.9) | RBF floor |
+|---|---|---|---|---|
+| gaussian | 0.016338 | 0.01440 | **+0.00194** | 0.00613 |
+| quantile | 0.013619 | 0.01175 | **+0.00187** | 0.00613 |
+| point | 0.014389 | 0.00987 | **+0.00452** | 0.00613 |
+
+Other diagnostics: gaussian test NLL −2.099 (val −2.620), σ̄ 0.01504;
+gaussian val MAE 0.013485; quantile 90% interval coverage 0.688
+(uncalibrated — calibration is 3C.5's job, matching the 3X.9→2D pattern);
+quantile monotonic on test in 100 % of rows; point val MAE 0.014236.
+Epochs: gaussian 35 (early-stopped), quantile 50, point 50. Wall:
+gauss ~11 m, quant ~15 m, point ~15 m (~41 m total).
+
+### Verdict (diagnostic only — bar adjudicated at 3C.6 / 3C.8)
+
+**`micro_v1` HURTS test MAE in every head** vs the matched 3X.9 OTM
+baseline, and all heads remain well above the RBF-on-OTM floor (0.00613).
+The AV-native microstructure context did not give the encoder a useful
+reliability signal at this benchmark; if anything it added noise. This is a
+clean negative result — the headline 3C question is answered. The Phase 3
+acceptance bar (ANP ≥ 5 % below RBF, etc.) is evaluated end-to-end at 3C.6
+with the calibrator + decision layer, not on raw test MAE here.
+
+### Open flag for 3C.8
+
+Train max|z| reaches **ask = 691σ** (a single ~$5000 ask quote) and
+**volume = 922σ**; test max|z| is milder (ask 18.9, volume 32.3). This is
+the heavy-tail condition ADR 0008 reserved for an opt-in
+log-transform-before-z-score follow-up. Whether the regression is driven by
+these tails (vs the features being uninformative) is a 3C.8 question; the
+head-uniformity of the loss (all 3 heads worse) is consistent with an
+input-conditioning problem rather than a head-specific one.
+
+### Artifacts
+
+- `artifacts/runs/3C3/{gaussian,quantile,point}/manifest.json` (committed) —
+  carry `feature_set=micro_v1`, `context_dim=9`, `zscore_stats`,
+  `zscore_max_abs_z`, dataset/config/seed/git hashes.
+- `artifacts/runs/3C3/{gaussian,quantile,point}/training_curve.csv` (committed).
+- `predictions_{val,test}.parquet` (gitignored; pulled to local for 3C.5 / 3C.7).
+
+### Tests
+
+- Pre-launch smoke: 9-dim context, finite 1-epoch loss, scoring 100 % finite,
+  checkpoint round-trips `feature_set=micro_v1`.
+- Post-run: row counts == query rows (val 2,638,892 / test 2,769,021);
+  quantile monotonic on test; all manifest fields present; μ 100 % finite.
+- `python3 scripts/pmr_prepush_gate.py --verbose --dry-run` → run before push.
+
+### Next actions
+
+- Operator promotes 3C.3 `in_review → done`. Then 3C.4 (K=5 ANP+`micro_v1`
+  ensemble, same Pod window) and 3C.5 (calibrator refit on these val
+  predictions).

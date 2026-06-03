@@ -4361,3 +4361,66 @@ that block and that is what is persisted into the checkpoint `config`.
 
 - Operator review → promote 3C.2 `in_review → done`; unblocks 3C.3 (remote
   ANP three-head retrain with `conditional.feature_set: micro_v1` on OTM).
+
+---
+
+## 2026-06-03 — 3C.3 ANP + `micro_v1` three-head retrain on OTM (in_review)
+
+Ran the headline 3C model: DeepSets+ANP retrained on
+`spy_phase1_random40_noiselow_otm` with `feature_set: micro_v1` (9-dim
+context) across all three heads, on RunPod (RTX 4000 Ada). Faithful
+restatement of 3X.9; only modelling change is the per-quote feature tuple.
+
+### Result (negative)
+
+`micro_v1` is **worse than 3X.9** on test MAE in every head — gaussian
+0.01634 (+0.00194), quantile 0.01362 (+0.00187), point 0.01439 (+0.00452);
+all above the RBF-on-OTM floor 0.00613. The AV-native microstructure
+context did not help at this benchmark. Clean negative result; the Phase 3
+bar is adjudicated end-to-end at 3C.6 / 3C.8, not on raw test MAE here.
+
+### Implementation note — z-scoring lives in the driver
+
+3C.2 deferred z-score fitting to 3C.3 (and scoped it out of the loader). So
+`scripts/run_3c3_anp_micro.py` owns it: fit per-feature (mean, std) on the
+OTM **train** split, apply to all splits, persist stats in the manifest. A
+driver-local `_PrenormConditionalDataset` consumes the already-materialised
++ z-scored frame (it must NOT re-derive `bid_ask_spread_rel`, which the
+loader would recompute from the z-scored bid/ask). The loader, `SetEncoder`,
+`ANPDecoder`, `ConditionalSurfaceModel`, and `train_conditional` are imported
+unmodified, honouring the 3C.3 non-goal. Operator-confirmed normalization
+scope: z-score the 5 new continuous micro features only; legacy 3 dims +
+`put_call_indicator` raw.
+
+### Diagnostic flagged for 3C.8
+
+Train max|z|: ask 691σ ($5000 outlier quote), volume 922σ — the heavy-tail
+condition ADR 0008 reserves for an opt-in log-transform follow-up.
+
+### Files
+
+- New: `configs/conditional_3C3_anp_micro_{gaussian,quantile,point}_otm.yaml`,
+  `scripts/run_3c3_anp_micro.{py,sh}`,
+  `artifacts/runs/3C3/{gaussian,quantile,point}/{manifest.json,training_curve.csv}`.
+- Predictions parquet gitignored (pulled to local for 3C.5 / 3C.7).
+- Touched: `docs/tasks/BOARD.md`, `docs/PHASE3_INDEX.md`, this log,
+  `docs/experiments/experiment_journal.md`,
+  `docs/tasks/specs/3C.3_remote_anp_micro_three_head.md`.
+
+### Config deltas vs 3X.9
+
+`data.feature_set: micro_v1` added; `conditional.context_dim: 3` **removed**
+(the 3C.2 guard hard-errors on a stale context_dim paired with micro_v1 —
+feature_set is now authoritative); paths repointed to `artifacts/runs/3C3/`.
+
+### Tests
+
+- Pre-launch smoke (9-dim ctx, finite loss, scoring finite, ckpt round-trip).
+- Post-run verification: row counts == query rows; quantile monotonic on
+  test; manifest fields present; μ 100 % finite.
+- `python3 scripts/pmr_prepush_gate.py --verbose --dry-run` → run before push.
+
+### Next actions
+
+- Operator promotes 3C.3 `in_review → done`; then 3C.4 (ensemble) + 3C.5
+  (calibrator refit on these val predictions).

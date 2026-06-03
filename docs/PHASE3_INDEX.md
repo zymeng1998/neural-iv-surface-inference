@@ -104,7 +104,7 @@ last_updated_at: 2026-06-02T22:30:00-04:00
 | 3C | Epic | Feature & inductive-bias expansion (microstructure-only per 3C.1 / ADR 0008; SVI deferred) — on OTM clean substrate | `in_progress` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W12 | 2026-06-02 |
 | 3C.1 | Story | Decompose Phase 3C (ADR 0008 + 3C.2–3C.8 specs; microstructure-only / `micro_v1` / 3-head / OTM) | `done` | [`3C.1`](tasks/specs/3C.1_decompose_phase_3c.md) | 2026-06-02 |
 | 3C.2 | Story | Local: microstructure feature pipeline + `feature_set ∈ {minimal, micro_v1}` flag on loader/encoder/model/predictor + tests (no training) | `in_review` | [`3C.2`](tasks/specs/3C.2_local_micro_feature_pipeline.md) | 2026-06-03 |
-| 3C.3 | Story | Remote (GPU): DeepSets+ANP retrain with `micro_v1` across `head.kind ∈ {gaussian, quantile, point}` on OTM (mirrors 3X.9) | `todo` | [`3C.3`](tasks/specs/3C.3_remote_anp_micro_three_head.md) | 2026-06-02 |
+| 3C.3 | Story | Remote (GPU): DeepSets+ANP retrain with `micro_v1` across `head.kind ∈ {gaussian, quantile, point}` on OTM (mirrors 3X.9). Ran; micro_v1 worse than 3X.9 on test MAE in all 3 heads | `in_review` | [`3C.3`](tasks/specs/3C.3_remote_anp_micro_three_head.md) | 2026-06-03 |
 | 3C.4 | Story | Remote (GPU): K=5 ANP+`micro_v1` point-head ensemble on OTM (mirrors 3X.10) | `todo` | [`3C.4`](tasks/specs/3C.4_remote_anp_micro_ensemble.md) | 2026-06-02 |
 | 3C.5 | Story | Local: calibrator re-fit on ANP+`micro_v1` val predictions (mirrors 3X.11 / 3B.6) | `todo` | [`3C.5`](tasks/specs/3C.5_local_calibrator_refit_micro.md) | 2026-06-02 |
 | 3C.6 | Story | Remote: decision-layer eval on OTM, thresholds held constant against 3X.12 (Q2; mirrors 3X.12) | `todo` | [`3C.6`](tasks/specs/3C.6_remote_decision_layer_eval_micro.md) | 2026-06-02 |
@@ -531,8 +531,17 @@ only if neither writes to a path in the other's `file_scope`.
   3X.9 configs; flip `data.feature_set: micro_v1`; everything else
   unchanged (seed, hparams, `decoder_kind: anp`, `coord_encoding.kind:
   raw`, `freeze_encoder: false`). Sequential ~2.5–3.5 h Pod sweep.
-- **Next concrete action:** gate on 3C.2 close.
-- **Open blocker:** 3C.2.
+- **2026-06-03** executed (`in_review`). Ran on RunPod RTX 4000 Ada,
+  ~41 min total (gauss 11m / quant 15m / point 15m). All 3 heads finite,
+  quantile monotonic on test. Test MAE: gauss 0.01634, quant 0.01362,
+  point 0.01439 — micro_v1 **worse than 3X.9** on every head (Δ +0.00194 /
+  +0.00187 / +0.00452); all above the RBF floor 0.00613. Z-score fitting
+  lives in the driver (3C.2 deferred it here); 5 new continuous features
+  z-scored on the OTM train split, legacy dims raw. Fat-tail diagnostic
+  (ask 691σ, volume 922σ) flagged for 3C.8.
+- **Next concrete action:** operator promotes `in_review → done`; run 3C.4
+  (ensemble, same Pod window).
+- **Open blocker:** none.
 
 ### 3C.4 — Remote (GPU): K=5 ANP+`micro_v1` point-head ensemble on OTM
 

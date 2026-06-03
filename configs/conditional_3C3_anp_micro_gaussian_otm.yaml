@@ -1,0 +1,64 @@
+# 3C.3 — ANP cross-attention decoder on OTM with the micro_v1 feature set,
+# head.kind=gaussian. Faithful clone of conditional_3X9_anp_gaussian_otm.yaml.
+#
+# DELTAS vs 3X.9 (ADR 0008):
+#   * data.feature_set: micro_v1  — appends the six AV-native microstructure
+#     dims to the per-quote context tuple (3 -> 9).
+#   * conditional.context_dim removed — feature_set is now authoritative for
+#     the per-quote context dim. The 3C.2 guard in ConditionalSurfaceModel
+#     hard-errors on a stale context_dim=3 paired with micro_v1, so the line
+#     cannot simply be left at 3.
+#   * paths repointed to artifacts/runs/3C3/gaussian.
+#
+# Everything else (seed, hparams, decoder_kind=anp, coord_encoding=raw,
+# freeze_encoder=false, epoch budget, optimizer schedule) is byte-identical
+# to 3X.9 — this is the clean per-quote-feature ablation.
+#
+# Normalization (ADR 0008 §Normalization): the driver
+# scripts/run_3c3_anp_micro.py z-scores the 5 new continuous micro features
+# (bid, ask, bid_ask_spread_rel, volume, open_interest) against the OTM
+# *train* split only and persists the per-feature stats in the manifest. The
+# 3 legacy dims (log_moneyness, tau, implied_volatility) and put_call_indicator
+# are fed RAW — identical to how 3X.9 fed its 3 dims. D8 from-scratch; do NOT
+# warm-start from a minimal-feature checkpoint (input projection in_features
+# differs).
+
+seed: 42
+
+data:
+  benchmark_file: data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm.parquet
+  feature_set: micro_v1
+  batch_size: 32
+  num_workers: 0
+
+conditional:
+  coord_dim: 2
+  hidden_dim: 128
+  latent_dim: 64
+  n_elem_layers: 2
+  n_post_layers: 1
+  n_decoder_layers: 3
+
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  epochs: 50
+  patience: 10
+
+  decoder_kind: anp
+  anp:
+    n_heads: 4
+    d_head: null
+    mlp_hidden: 128
+    include_z_in_decoder: true
+  coord_encoding:
+    kind: raw
+  freeze_encoder: false
+
+  head:
+    kind: gaussian
+    quantiles: [0.05, 0.5, 0.95]
+
+paths:
+  checkpoint_dir: artifacts/runs/3C3/gaussian/checkpoints
+  log_dir: artifacts/runs/3C3/gaussian/logs
+  results_dir: artifacts/runs/3C3/gaussian

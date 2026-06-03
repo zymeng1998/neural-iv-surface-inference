@@ -1,0 +1,53 @@
+# 3C.3 — ANP cross-attention decoder on OTM with the micro_v1 feature set,
+# head.kind=quantile. Faithful clone of conditional_3X9_anp_quantile_otm.yaml.
+#
+# DELTAS vs 3X.9 (ADR 0008):
+#   * data.feature_set: micro_v1  — appends the six AV-native microstructure
+#     dims to the per-quote context tuple (3 -> 9).
+#   * conditional.context_dim removed — feature_set is authoritative for the
+#     per-quote context dim (the 3C.2 guard rejects a stale context_dim=3).
+#   * paths repointed to artifacts/runs/3C3/quantile.
+#
+# Everything else (seed, hparams, decoder_kind=anp, coord_encoding=raw,
+# freeze_encoder=false, epoch budget, optimizer schedule) is byte-identical
+# to 3X.9. See the gaussian config header for the full normalization note.
+
+seed: 42
+
+data:
+  benchmark_file: data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm.parquet
+  feature_set: micro_v1
+  batch_size: 32
+  num_workers: 0
+
+conditional:
+  coord_dim: 2
+  hidden_dim: 128
+  latent_dim: 64
+  n_elem_layers: 2
+  n_post_layers: 1
+  n_decoder_layers: 3
+
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  epochs: 50
+  patience: 10
+
+  decoder_kind: anp
+  anp:
+    n_heads: 4
+    d_head: null
+    mlp_hidden: 128
+    include_z_in_decoder: true
+  coord_encoding:
+    kind: raw
+  freeze_encoder: false
+
+  head:
+    kind: quantile
+    quantiles: [0.05, 0.5, 0.95]
+
+paths:
+  checkpoint_dir: artifacts/runs/3C3/quantile/checkpoints
+  log_dir: artifacts/runs/3C3/quantile/logs
+  results_dir: artifacts/runs/3C3/quantile

@@ -1,0 +1,103 @@
+{
+  "story": "3C.3",
+  "head_kind": "quantile",
+  "feature_set": "micro_v1",
+  "context_features": [
+    "log_moneyness",
+    "tau",
+    "implied_volatility",
+    "bid",
+    "ask",
+    "bid_ask_spread_rel",
+    "volume",
+    "open_interest",
+    "put_call_indicator"
+  ],
+  "context_dim": 9,
+  "zscore_columns": [
+    "bid",
+    "ask",
+    "bid_ask_spread_rel",
+    "volume",
+    "open_interest"
+  ],
+  "zscore_stats": {
+    "bid": {
+      "mean": 3.1495132959610705,
+      "std": 4.656797051929206,
+      "std_effective": 4.656797051929206
+    },
+    "ask": {
+      "mean": 3.2755049139411336,
+      "std": 7.228573276396705,
+      "std_effective": 7.228573276396705
+    },
+    "bid_ask_spread_rel": {
+      "mean": 0.15049643436486013,
+      "std": 0.24758252883476548,
+      "std_effective": 0.24758252883476548
+    },
+    "volume": {
+      "mean": 1097.1412169133102,
+      "std": 10819.030748042653,
+      "std_effective": 10819.030748042653
+    },
+    "open_interest": {
+      "mean": 8348.680024108115,
+      "std": 23047.266261714663,
+      "std_effective": 23047.266261714663
+    }
+  },
+  "zscore_max_abs_z": {
+    "train": {
+      "bid": 9.135138511657715,
+      "ask": 691.1771240234375,
+      "bid_ask_spread_rel": 7.470218181610107,
+      "volume": 922.8628540039062,
+      "open_interest": 29.4031982421875
+    },
+    "test": {
+      "bid": 18.910097122192383,
+      "ask": 18.3859920501709,
+      "bid_ask_spread_rel": 7.468635559082031,
+      "volume": 32.26979064941406,
+      "open_interest": 21.494796752929688
+    }
+  },
+  "decoder_kind": "anp",
+  "anp": {
+    "n_heads": 4,
+    "d_head": null,
+    "mlp_hidden": 128,
+    "include_z_in_decoder": true
+  },
+  "coord_encoding": {
+    "kind": "raw"
+  },
+  "freeze_encoder": false,
+  "seed": 42,
+  "git_sha": "8be9de2315390a1fcbff15119970bf7e6f30355a",
+  "config_hash": "495725409bdbd9bd",
+  "benchmark_file": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm.parquet",
+  "splits": {
+    "train_rows": 5123586,
+    "val_rows": 2638892,
+    "test_rows": 2769021
+  },
+  "epochs_completed": 50,
+  "final_train_loss": 0.00224883853590262,
+  "final_val_loss": 0.0033297465098175135,
+  "best_val_loss": 0.0030545885357159104,
+  "val_mae_mu": 0.012282376177608967,
+  "test_mae_mu": 0.01361906249076128,
+  "quantile_monotonicity_ok": true,
+  "train_wall_clock_s": 686.3179380893707,
+  "score_wall_clock_s": 29.72897958755493,
+  "device": "cuda",
+  "outputs": {
+    "checkpoint": "artifacts/runs/3C3/quantile/checkpoints/best_conditional.pt",
+    "predictions_val": "artifacts/runs/3C3/quantile/predictions_val.parquet",
+    "predictions_test": "artifacts/runs/3C3/quantile/predictions_test.parquet",
+    "training_curve": "artifacts/runs/3C3/quantile/training_curve.csv"
+  }
+}
