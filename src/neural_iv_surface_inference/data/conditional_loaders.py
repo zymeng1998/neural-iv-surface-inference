@@ -24,8 +24,117 @@ import torch
 from torch.utils.data import Dataset
 
 
-_CONTEXT_FEATURES = ("log_moneyness", "tau", "implied_volatility")
+# ── Feature-set contract (ADR 0008) ───────────────────────────────────────
+#
+# ``minimal`` is the legacy three-dim per-quote tuple and the **default** —
+# every committed Phase 2 / Phase 3 / 3X checkpoint stays reproducible
+# byte-for-byte. ``micro_v1`` appends the six AV-native microstructure
+# features frozen in ADR 0008, in the exact order below.
+_CONTEXT_FEATURES_MINIMAL = ("log_moneyness", "tau", "implied_volatility")
+_MICRO_V1_EXTRA = (
+    "bid",
+    "ask",
+    "bid_ask_spread_rel",
+    "volume",
+    "open_interest",
+    "put_call_indicator",
+)
+_CONTEXT_FEATURES_MICRO_V1 = _CONTEXT_FEATURES_MINIMAL + _MICRO_V1_EXTRA
+
+# Back-compat alias: the legacy module constant is the ``minimal`` tuple.
+_CONTEXT_FEATURES = _CONTEXT_FEATURES_MINIMAL
 _QUERY_FEATURES = ("log_moneyness", "tau")
+
+# Map of supported feature sets -> ordered per-quote context columns.
+FEATURE_SET_FEATURES: dict[str, tuple[str, ...]] = {
+    "minimal": _CONTEXT_FEATURES_MINIMAL,
+    "micro_v1": _CONTEXT_FEATURES_MICRO_V1,
+}
+
+# ε for the relative bid/ask spread (ADR 0008 §Decision, feature #3).
+_SPREAD_EPS = 1e-4
+
+# Columns every feature set needs.
+_BASE_REQUIRED = {
+    "date",
+    "log_moneyness",
+    "tau",
+    "implied_volatility",
+    "iv_clean",
+    "observed",
+}
+# Raw columns ``micro_v1`` needs in order to *materialise* its six extra
+# features. ``bid_ask_spread_rel`` and ``put_call_indicator`` are derived
+# in-loader from these (they are not stored on the surface table); ``mid``
+# is optional and falls back to ``(bid + ask) / 2``.
+_MICRO_RAW_REQUIRED = {"bid", "ask", "volume", "open_interest", "type"}
+
+DEFAULT_FEATURE_SET = "minimal"
+
+
+def resolve_context_features(feature_set: str = DEFAULT_FEATURE_SET) -> tuple[str, ...]:
+    """Return the ordered context columns for ``feature_set`` (ADR 0008)."""
+    try:
+        return FEATURE_SET_FEATURES[feature_set]
+    except KeyError as exc:
+        raise ValueError(
+            f"unknown feature_set {feature_set!r}; "
+            f"expected one of {sorted(FEATURE_SET_FEATURES)}"
+        ) from exc
+
+
+def feature_set_context_dim(feature_set: str = DEFAULT_FEATURE_SET) -> int:
+    """Per-quote context dimensionality implied by ``feature_set``."""
+    return len(resolve_context_features(feature_set))
+
+
+def _materialize_micro_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Return a copy of ``df`` with the two derived ``micro_v1`` columns added.
+
+    Derives, per ADR 0008:
+      - ``bid_ask_spread_rel = (ask - bid) / max(mid, ε)``, ε = 1e-4
+        (``mid`` column if present, else ``(bid + ask) / 2``).
+      - ``put_call_indicator = +1`` for ``type == "call"``, ``-1`` for
+        ``"put"``. Any other ``type`` value is a hard error.
+
+    The remaining four ``micro_v1`` features (``bid``, ``ask``, ``volume``,
+    ``open_interest``) are AV-native columns used verbatim.
+    """
+    out = df.copy()
+    bid = pd.to_numeric(out["bid"], errors="coerce").to_numpy(dtype=np.float64)
+    ask = pd.to_numeric(out["ask"], errors="coerce").to_numpy(dtype=np.float64)
+    if "mid" in out.columns:
+        mid = pd.to_numeric(out["mid"], errors="coerce").to_numpy(dtype=np.float64)
+    else:
+        mid = (bid + ask) / 2.0
+    out["bid_ask_spread_rel"] = (ask - bid) / np.maximum(mid, _SPREAD_EPS)
+
+    type_norm = out["type"].astype(str).str.lower()
+    valid = type_norm.isin(["call", "put"])
+    if not bool(valid.all()):
+        bad = sorted(set(type_norm[~valid].tolist()))
+        raise ValueError(
+            f"micro_v1: 'type' column has values outside {{call, put}}: {bad}"
+        )
+    out["put_call_indicator"] = np.where(type_norm.to_numpy() == "call", 1.0, -1.0)
+    return out
+
+
+def build_context_matrix(
+    df: pd.DataFrame, feature_set: str = DEFAULT_FEATURE_SET
+) -> np.ndarray:
+    """Build the float32 ``(n_rows, context_dim)`` matrix for ``feature_set``.
+
+    Single source of truth for the per-quote context tuple, shared by the
+    dataset (training) and the predictor adapter (inference) so both order
+    columns identically per ADR 0008. For ``minimal`` this is a verbatim
+    column select (bit-for-bit identical to the pre-3C.2 loader); for
+    ``micro_v1`` the two derived columns are materialised first.
+    """
+    features = resolve_context_features(feature_set)
+    if feature_set == "micro_v1":
+        df = _materialize_micro_columns(df)
+    return df.loc[:, list(features)].to_numpy(dtype=np.float32)
 
 
 class ConditionalIVSurfaceDataset(Dataset):
@@ -53,18 +162,37 @@ class ConditionalIVSurfaceDataset(Dataset):
     df : pd.DataFrame
         A benchmark dataset (output of Step 4) filtered to a single split.
         Must contain at least the columns ``date``, ``log_moneyness``, ``tau``,
-        ``implied_volatility``, ``iv_clean``, ``observed``.
+        ``implied_volatility``, ``iv_clean``, ``observed``. When
+        ``feature_set="micro_v1"`` it must also contain the raw AV columns
+        ``bid``, ``ask``, ``volume``, ``open_interest``, ``type`` (and
+        optionally ``mid``) so the loader can materialise the ADR 0008
+        microstructure tuple.
+    feature_set : {"minimal", "micro_v1"}
+        ADR 0008 feature contract. ``minimal`` (default) is the legacy
+        3-dim ``(log_moneyness, tau, implied_volatility)`` context;
+        ``micro_v1`` appends the six frozen microstructure features for a
+        9-dim context. The default preserves byte-for-byte behaviour for
+        every committed checkpoint.
     """
 
-    def __init__(self, df: pd.DataFrame):
-        required = {"date", "log_moneyness", "tau", "implied_volatility",
-                    "iv_clean", "observed"}
+    def __init__(self, df: pd.DataFrame, feature_set: str = DEFAULT_FEATURE_SET):
+        self.feature_set = feature_set
+        self.context_features = resolve_context_features(feature_set)
+        self.context_in_features = len(self.context_features)
+
+        required = set(_BASE_REQUIRED)
+        if feature_set == "micro_v1":
+            required |= _MICRO_RAW_REQUIRED
         missing = required - set(df.columns)
         if missing:
             raise ValueError(f"ConditionalIVSurfaceDataset: missing columns {sorted(missing)}")
 
         # Sort chronologically; preserves time-based split integrity.
         df = df.sort_values("date", kind="stable").reset_index(drop=True)
+        # Materialise the two derived micro_v1 columns once (vectorised) so
+        # the per-date select below is a plain column lookup.
+        if feature_set == "micro_v1":
+            df = _materialize_micro_columns(df)
 
         self.dates: list[pd.Timestamp] = []
         self._contexts: list[torch.Tensor] = []
@@ -80,7 +208,7 @@ class ConditionalIVSurfaceDataset(Dataset):
                     "the conditional model cannot form a context for it."
                 )
 
-            ctx_rows = group.loc[obs_mask, list(_CONTEXT_FEATURES)].to_numpy(dtype=np.float32)
+            ctx_rows = group.loc[obs_mask, list(self.context_features)].to_numpy(dtype=np.float32)
             query_rows = group[list(_QUERY_FEATURES)].to_numpy(dtype=np.float32)
             target_rows = group["iv_clean"].to_numpy(dtype=np.float32)
             query_obs = obs_mask.astype(np.bool_)

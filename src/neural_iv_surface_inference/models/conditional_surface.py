@@ -23,6 +23,10 @@ from typing import Any, Literal
 import torch
 import torch.nn as nn
 
+from neural_iv_surface_inference.data.conditional_loaders import (
+    DEFAULT_FEATURE_SET,
+    feature_set_context_dim,
+)
 from neural_iv_surface_inference.features.coord_encoding import (
     build_coord_encoding,
 )
@@ -338,7 +342,7 @@ class ConditionalSurfaceModel(nn.Module):
 
     def __init__(
         self,
-        context_dim: int = 3,
+        context_dim: int | None = None,
         coord_dim: int = 2,
         hidden_dim: int = 64,
         latent_dim: int = 32,
@@ -349,8 +353,21 @@ class ConditionalSurfaceModel(nn.Module):
         coord_encoding: dict[str, Any] | None = None,
         decoder_kind: Literal["deepsets", "anp"] = "deepsets",
         anp: dict[str, Any] | None = None,
+        feature_set: str = DEFAULT_FEATURE_SET,
     ) -> None:
         super().__init__()
+        # ADR 0008: ``feature_set`` is authoritative for the per-quote context
+        # dimensionality. ``context_dim`` is retained for backward compat; if
+        # passed it must agree with ``feature_set`` (catches mis-config where
+        # someone flips to micro_v1 but leaves a stale context_dim=3).
+        self.feature_set = str(feature_set)
+        resolved_context_dim = feature_set_context_dim(self.feature_set)
+        if context_dim is not None and int(context_dim) != resolved_context_dim:
+            raise ValueError(
+                f"context_dim={context_dim} conflicts with "
+                f"feature_set={self.feature_set!r} (expected {resolved_context_dim})"
+            )
+        context_dim = resolved_context_dim
         self.head_cfg: dict[str, Any] = dict(head or {"kind": "point"})
         kind = str(self.head_cfg.get("kind", "point"))
         if kind not in {"point", "gaussian", "quantile"}:

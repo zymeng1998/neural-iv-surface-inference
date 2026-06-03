@@ -81,7 +81,7 @@ decision trail.
 | `artifacts/checkpoints/best_mlp.pt` | Best MLP model checkpoint | `scripts/run_baseline.py` via `training/train.py` (refit on new data in 2C.8) |
 | `artifacts/results/baseline_results.csv` | Baseline comparison metrics (interp vs MLP) | `scripts/run_baseline.py` (refreshed on new data in 2C.8) |
 | (loader) `src/neural_iv_surface_inference/data/loaders.py::IVSurfaceDataset` | Point-wise loader used by the Phase 1 MLP baseline | Phase 1 |
-| (loader) `src/neural_iv_surface_inference/data/conditional_loaders.py::ConditionalIVSurfaceDataset` + `collate_conditional` | **Date-grouped** loader for the W3 conditional surface model (2C.2): one date per sample, ragged context = observed rows, padded with boolean masks for the set encoder | 2C.2 |
+| (loader) `src/neural_iv_surface_inference/data/conditional_loaders.py::ConditionalIVSurfaceDataset` + `collate_conditional` | **Date-grouped** loader for the W3 conditional surface model (2C.2): one date per sample, ragged context = observed rows, padded with boolean masks for the set encoder. **3C.2** adds a `feature_set ∈ {minimal, micro_v1}` flag (ADR 0008): `minimal` (default) = legacy 3-tuple `(log_moneyness, tau, implied_volatility)`; `micro_v1` = 9-tuple appending `(bid, ask, bid_ask_spread_rel, volume, open_interest, put_call_indicator)`. The last two are **derived in-loader** from raw AV columns (`bid`/`ask`/`mid`/`type`) — no `01_*…05_*` pipeline change. The flag is persisted into the checkpoint `config` and round-trips via `eval/adapters.py::ConditionalSurfacePredictor.from_checkpoint`. | 2C.2; flag 3C.2 |
 
 ---
 

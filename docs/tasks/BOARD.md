@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-06-02T14:00:00-04:00
+last_updated_at: 2026-06-03T00:00:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -101,9 +101,16 @@ decomposition). The first story of any epic is always its decomposition story.
 | 3X.12 | Story | Remote: decision-layer eval on OTM, thresholds held constant (Q2; mirror 3B.7) — → test MAE **0.01162** / hi-conf MAE **0.00835** / cov@0.90 **0.9295** / mean_width **0.0538** / abstain 1.0 / flag-viol **1814** (dirty 3B.7: 0.0813 / 0.0542 / 0.915 / 0.304 / 1.0 / 9007 — Q2 invariant held: thresholds unchanged) | `done` | `docs/tasks/specs/3X.12_remote_decision_layer_eval_on_otm.md` | 2026-06-02 |
 | 3X.13 | Story | Local: dirty-vs-OTM side-by-side comparison tables (matched `random40_noiselow`) — → 11 family×head pairs assembled; OTM beats dirty by **3.0×–10.8×** on test MAE (RBF 10.80×, calibrated-fused 7.00×, MLP 3.01×); long+wide tables cite committed bundles only | `done` | `docs/tasks/specs/3X.13_local_dirty_vs_otm_comparison.md` | 2026-06-02 |
 | 3X.14 | Story | Local: 3X closing addendum + methodology-progression narrative (NOT full Phase 3 memo — Q3) — → **verdict: RBF-vs-ANP unchanged in direction, gap WIDENED** (+2.7% dirty → +61% OTM best head, +90% calibrated; bar still NOT MET); DeepSets→ANP architecture story SURVIVES (ANP beats DeepSets all heads, 1.06–1.77×) → no Q5 reopen; ADR 0006 → Implemented | `done` | `docs/tasks/specs/3X.14_local_closing_addendum.md` | 2026-06-02 |
-| 3C | Epic | Phase 3 — Feature & inductive-bias expansion (microstructure, optional SVI head) — **paused on 3X** | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W12 / §4) | 2026-05-29 |
-| 3C.1 | Story | Decompose Phase 3C | `backlog` | `docs/tasks/specs/3C.1_decompose_phase_3c.md` | 2026-05-27 |
-| 3D | Epic | Phase 3 — Closing memo + re-evaluation versus RBF (must include OTM-clean re-statement of 3B verdict) | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W13 / §4) | 2026-05-29 |
+| 3C | Epic | Phase 3 — Feature & inductive-bias expansion (microstructure-only per 3C.1 / ADR 0008; SVI deferred) — on OTM clean substrate | `in_progress` | `docs/roadmaps/phase3_accuracy_push.md` (W12 / §4) | 2026-06-02 |
+| 3C.1 | Story | Decompose Phase 3C (ADR 0008 + 3C.2–3C.8 specs; microstructure-only / `micro_v1` / 3-head sweep / OTM) | `done` | `docs/tasks/specs/3C.1_decompose_phase_3c.md` | 2026-06-02 |
+| 3C.2 | Story | Local: microstructure feature pipeline + `feature_set ∈ {minimal, micro_v1}` flag on loader/encoder/model/predictor + unit/integration tests (no training) | `in_review` | `docs/tasks/specs/3C.2_local_micro_feature_pipeline.md` | 2026-06-03 |
+| 3C.3 | Story | Remote (GPU): full AV retrain of DeepSets+ANP with `feature_set: micro_v1` across `head.kind ∈ {gaussian, quantile, point}` on OTM (mirrors 3X.9) | `todo` | `docs/tasks/specs/3C.3_remote_anp_micro_three_head.md` | 2026-06-02 |
+| 3C.4 | Story | Remote (GPU): K=5 ANP+`micro_v1` point-head deep ensemble on OTM (mirrors 3X.10) | `todo` | `docs/tasks/specs/3C.4_remote_anp_micro_ensemble.md` | 2026-06-02 |
+| 3C.5 | Story | Local: calibrator re-fit on ANP+`micro_v1` val predictions (mirrors 3X.11 / 3B.6) | `todo` | `docs/tasks/specs/3C.5_local_calibrator_refit_micro.md` | 2026-06-02 |
+| 3C.6 | Story | Remote: decision-layer eval on OTM with thresholds held constant against 3X.12 (Q2 invariant; mirrors 3X.12) | `todo` | `docs/tasks/specs/3C.6_remote_decision_layer_eval_micro.md` | 2026-06-02 |
+| 3C.7 | Story | Local: OTM-baseline vs OTM+`micro_v1` comparison tables (long + wide) on matched substrate (mirrors 3X.13) | `todo` | `docs/tasks/specs/3C.7_local_micro_vs_baseline_comparison.md` | 2026-06-02 |
+| 3C.8 | Story | Local: 3C closing addendum on §W12 + ADR 0008 → Implemented + journal/README sync (NOT full Phase 3 memo — 3D) | `todo` | `docs/tasks/specs/3C.8_local_3c_closing_addendum.md` | 2026-06-02 |
+| 3D | Epic | Phase 3 — Closing memo + re-evaluation versus RBF (must include OTM-clean re-statement of 3B verdict) | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W13 / §4) | 2026-06-02 |
 | 3D.1 | Story | Decompose Phase 3D | `backlog` | `docs/tasks/specs/3D.1_decompose_phase_3d.md` | 2026-05-27 |
 | M1 | Epic | Meta — Multi-agent collaboration infrastructure (ADR 0007: AGENTS.md router + executable rule gates) — → 3 gates live (PMR + dep + scope) + commit-msg trailer; dep gate now inspects push range; M1.6 waiver-timing refinement deferred | `done` | `docs/roadmaps/meta1_agent_collaboration.md` | 2026-05-30 |
 | M1.1 | Story | Decompose M1 + ADR 0007 + 4 sub-specs | `done` | `docs/tasks/specs/M1.1_decompose_m1.md` | 2026-05-30 |

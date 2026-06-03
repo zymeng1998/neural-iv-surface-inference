@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-05-31T00:20:00-04:00
+last_updated_at: 2026-06-02T22:30:00-04:00
 ---
 
 > **Read this first if you are picking up Phase 3 work cold.** It mirrors
@@ -46,9 +46,22 @@ last_updated_at: 2026-05-31T00:20:00-04:00
   wins on the clean OTM benchmark and the gap *widened* (best ANP head
   +2.7% dirty → +61% OTM; bar still NOT MET); the DeepSets→ANP
   architecture story survives (no Q5 reopen); ADR 0006 → Implemented.
-  **3C now reopens** on the clean OTM substrate (next action: promote
-  3C.1 to `todo`). The Phase 3 acceptance bar is unchanged but is now
-  adjudicated on the OTM-clean benchmark. Full narrative:
+  **3C ENTERED 2026-06-02 — decomposition in_review.** Scope locked:
+  **microstructure-only (`micro_v1`)** per
+  [ADR 0008](decisions/0008_microstructure_feature_set_freeze.md) —
+  six AV-native per-quote fields (`bid`, `ask`, `bid_ask_spread_rel`,
+  `volume`, `open_interest`, `put_call_indicator`) → 9-dim context.
+  SVI / SSVI head deferred. Three-head sweep + K=5 ensemble + Q2
+  decision-layer invariant held; matched `random40_noiselow_otm` only.
+  Seven new stories (3C.2 … 3C.8), **all promoted to `todo`**
+  (2026-06-02) and 3C.1 closed `done`. **3C.2 implemented (2026-06-03,
+  `in_review`)** — the `feature_set ∈ {minimal, micro_v1}` flag is wired
+  through loader / encoder / model / predictor / training loop with the
+  default `minimal` preserving every legacy checkpoint byte-for-byte (16
+  new tests; full suite 417 passed). **Next action: operator promotes
+  3C.2 → `done`, then 3C.3 (remote three-head retrain consuming the
+  flag) — the strict chain 3C.2 → … → 3C.8.** The Phase 3 acceptance bar is unchanged but is
+  now adjudicated on the OTM-clean benchmark. Full narrative:
   [ADR 0006](decisions/0006_duplicate_coordinate_data_correction.md) +
   [methodology progression](research/duplicate_coordinate_methodology_progression.md) +
   [retrospective 0002](retrospectives/0002_call_put_duplicate_coordinate_discovery.md).
@@ -88,9 +101,16 @@ last_updated_at: 2026-05-31T00:20:00-04:00
 | 3X.12 | Story | Remote: decision-layer eval on OTM, thresholds held constant (Q2) — → test MAE **0.01162**, hi-conf MAE **0.00835**, cov@0.90 **0.9295**, mean_width **0.0538**, abstain 1.0, flag-viol **1814** (dirty 3B.7: 0.0813 / 0.0542 / 0.915 / 0.304 / 1.0 / 9007 — ~7× MAE, ~5.6× width, 20 % violations under unchanged thresholds) | `done` | [`3X.12`](tasks/specs/3X.12_remote_decision_layer_eval_on_otm.md) | 2026-06-02 |
 | 3X.13 | Story | Local: dirty-vs-OTM comparison tables (matched substrate) — → 11 family×head pairs, OTM beats dirty by **3.0×–10.8×** on test MAE (RBF widest, MLP narrowest); calibrated-fused 7.0× (0.0813 → 0.01162) | `in_review` | [`3X.13`](tasks/specs/3X.13_local_dirty_vs_otm_comparison.md) | 2026-06-02 |
 | 3X.14 | Story | Local: 3X closing addendum + methodology progression (Q3) — → verdict **RBF-vs-ANP unchanged in direction, gap WIDENED** (+2.7%→+61% best head; bar still NOT MET); **DeepSets→ANP story SURVIVES** (no Q5 reopen); ADR 0006 → Implemented; narrative committed | `done` | [`3X.14`](tasks/specs/3X.14_local_closing_addendum.md) | 2026-06-02 |
-| 3C | Epic | Feature & inductive-bias expansion (microstructure, optional SVI) — **paused on 3X** | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W12 | 2026-05-29 |
-| 3C.1 | Story | Decompose Phase 3C | `backlog` | [`3C.1`](tasks/specs/3C.1_decompose_phase_3c.md) | 2026-05-29 |
-| 3D | Epic | Closing memo + re-evaluation vs RBF — **must include OTM-clean re-statement** | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W13 | 2026-05-29 |
+| 3C | Epic | Feature & inductive-bias expansion (microstructure-only per 3C.1 / ADR 0008; SVI deferred) — on OTM clean substrate | `in_progress` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W12 | 2026-06-02 |
+| 3C.1 | Story | Decompose Phase 3C (ADR 0008 + 3C.2–3C.8 specs; microstructure-only / `micro_v1` / 3-head / OTM) | `done` | [`3C.1`](tasks/specs/3C.1_decompose_phase_3c.md) | 2026-06-02 |
+| 3C.2 | Story | Local: microstructure feature pipeline + `feature_set ∈ {minimal, micro_v1}` flag on loader/encoder/model/predictor + tests (no training) | `in_review` | [`3C.2`](tasks/specs/3C.2_local_micro_feature_pipeline.md) | 2026-06-03 |
+| 3C.3 | Story | Remote (GPU): DeepSets+ANP retrain with `micro_v1` across `head.kind ∈ {gaussian, quantile, point}` on OTM (mirrors 3X.9) | `todo` | [`3C.3`](tasks/specs/3C.3_remote_anp_micro_three_head.md) | 2026-06-02 |
+| 3C.4 | Story | Remote (GPU): K=5 ANP+`micro_v1` point-head ensemble on OTM (mirrors 3X.10) | `todo` | [`3C.4`](tasks/specs/3C.4_remote_anp_micro_ensemble.md) | 2026-06-02 |
+| 3C.5 | Story | Local: calibrator re-fit on ANP+`micro_v1` val predictions (mirrors 3X.11 / 3B.6) | `todo` | [`3C.5`](tasks/specs/3C.5_local_calibrator_refit_micro.md) | 2026-06-02 |
+| 3C.6 | Story | Remote: decision-layer eval on OTM, thresholds held constant against 3X.12 (Q2; mirrors 3X.12) | `todo` | [`3C.6`](tasks/specs/3C.6_remote_decision_layer_eval_micro.md) | 2026-06-02 |
+| 3C.7 | Story | Local: OTM-baseline vs OTM+`micro_v1` comparison tables on matched substrate (mirrors 3X.13) | `todo` | [`3C.7`](tasks/specs/3C.7_local_micro_vs_baseline_comparison.md) | 2026-06-02 |
+| 3C.8 | Story | Local: 3C closing addendum + ADR 0008 → Implemented + journal/README sync (NOT full Phase 3 memo — 3D) | `todo` | [`3C.8`](tasks/specs/3C.8_local_3c_closing_addendum.md) | 2026-06-02 |
+| 3D | Epic | Closing memo + re-evaluation vs RBF — **must include OTM-clean re-statement** | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W13 | 2026-06-02 |
 | 3D.1 | Story | Decompose Phase 3D | `backlog` | [`3D.1`](tasks/specs/3D.1_decompose_phase_3d.md) | 2026-05-29 |
 
 ## Parallel-safety matrix
@@ -126,8 +146,15 @@ only if neither writes to a path in the other's `file_scope`.
 | 3X.12 | 3C.1, 3D.1 | 3X.9 + 3X.10 + 3X.11 (`done` first) |
 | 3X.13 | 3C.1, 3D.1 | 3X.6–3X.12 (all `done`; reads their bundles) |
 | 3X.14 | 3C.1, 3D.1 | 3X.13 (`done` first) |
-| 3C.1 | 3A.*, 3B.1, 3D.1 | **3X (must close first)** |
-| 3D.1 | 3A.*, 3B.1, 3C.1 | **3X (must close first); 3C (consumes its OTM-clean numbers)** |
+| 3C.1 | 3D.1 | **3X (must close first; now `done`)** |
+| 3C.2 | 3D.1 | 3C.1 (`in_review` → `done` first); local-only |
+| 3C.3 | 3D.1 | 3C.2 (`done` first; consumes the `feature_set` flag); GPU pod |
+| 3C.4 | 3D.1 | 3C.3 (`done` first; reuses point config + Pod); GPU pod |
+| 3C.5 | 3D.1 | 3C.3 + 3C.4 (`done` first; reads their val predictions) |
+| 3C.6 | 3D.1 | 3C.5 (`done` first); GPU pod |
+| 3C.7 | 3D.1 | 3C.6 (`done` first; reads its committed metrics) |
+| 3C.8 | 3D.1 | 3C.7 (`done` first); pure docs synthesis |
+| 3D.1 | 3C.1 | **3X (must close first; now `done`); 3C (consumes its OTM+`micro_v1` numbers)** |
 
 > All four decomposition stories touch `BOARD.md`, `PHASE3_INDEX.md`,
 > the roadmap, and `progress_log.md`. They are listed as
@@ -456,13 +483,103 @@ only if neither writes to a path in the other's `file_scope`.
 
 ### 3C.1 — Decompose Phase 3C
 
-- **2026-05-27** initial scaffold (not yet executed).
-- **Next concrete action:** gate on 3X closing, then human promotes
-  `3C.1` to `todo`. The sparse-region ANP-vs-RBF research note
-  ([`research/sparse_region_anp_vs_rbf_design.md`](research/sparse_region_anp_vs_rbf_design.md))
-  is now `blocked` on 3X and moves into 3C scope on the OTM-clean
-  benchmark.
-- **Open blocker:** depends on 3X closing (per ADR 0006).
+- **2026-05-27** initial scaffold (pre-3X; superseded).
+- **2026-06-02 (executed)** decomposition shipped. Epic 3C →
+  `in_progress`; 3C.1 → `in_review`. **ADR 0008** written
+  (microstructure feature set freeze): six AV-native per-quote fields
+  (`bid`, `ask`, `bid_ask_spread_rel`, `volume`, `open_interest`,
+  `put_call_indicator`) appended to the existing 3-tuple →
+  `feature_set: micro_v1` (9-dim context), default flag value
+  `minimal` for byte-for-byte backwards-compat. SVI / SSVI track
+  **deferred**. **Seven atomic stories** registered (3C.2 … 3C.8):
+  3C.2 local pipeline extension, 3C.3 remote three-head retrain on
+  OTM, 3C.4 remote K=5 ensemble, 3C.5 local calibrator re-fit, 3C.6
+  remote decision-layer eval (Q2 invariant), 3C.7 local comparison
+  tables, 3C.8 local closing addendum (NOT the full Phase 3 memo —
+  that is 3D / Q3). PMR gate dry-run passes.
+- **2026-06-02 (closed)** operator approved; 3C.1 → `done`; all seven
+  downstream stories (3C.2 … 3C.8) promoted `backlog → todo`.
+- **Next concrete action:** implement `3C.2` (local pipeline
+  extension, no Pod) — head of the strict chain.
+- **Open blocker:** none.
+
+### 3C.2 — Local: microstructure feature pipeline + `feature_set` flag
+
+- **2026-06-02** registered via 3C.1 decomposition.
+- **2026-06-03** implemented, `in_review`. `feature_set ∈ {minimal,
+  micro_v1}` wired through `ConditionalIVSurfaceDataset` (resolver +
+  `build_context_matrix`; derives `bid_ask_spread_rel` /
+  `put_call_indicator` in-loader from raw AV columns — no pipeline
+  change), `SetEncoder` `in_dim` (driven by `feature_set` via the model
+  constructor in `models/conditional_surface.py`),
+  `ConditionalSurfaceModel` (conflict guard), `eval/adapters.py`
+  `ConditionalSurfacePredictor.from_checkpoint` + `predict`, and the
+  `train_conditional` config passthrough (persisted in the checkpoint
+  `config`). Default `minimal` keeps every 2D / 3A / 3B / 3X checkpoint
+  bit-for-bit reproducible (frozen-reference byte assert). 16 new tests
+  green; full suite 417 passed; no training; CPU-only.
+- **Path note:** `feature_set` lives in the `conditional` config block
+  (not `data.feature_set`); `SetEncoder` is in
+  `models/conditional_surface.py`; predictor is `eval/adapters.py`.
+- **Next concrete action:** operator review → promote `in_review →
+  done`; unblocks 3C.3.
+- **Open blocker:** none.
+
+### 3C.3 — Remote (GPU): ANP three-head retrain with `micro_v1` on OTM
+
+- **2026-06-02** registered (not yet executed). Scope: clone the three
+  3X.9 configs; flip `data.feature_set: micro_v1`; everything else
+  unchanged (seed, hparams, `decoder_kind: anp`, `coord_encoding.kind:
+  raw`, `freeze_encoder: false`). Sequential ~2.5–3.5 h Pod sweep.
+- **Next concrete action:** gate on 3C.2 close.
+- **Open blocker:** 3C.2.
+
+### 3C.4 — Remote (GPU): K=5 ANP+`micro_v1` point-head ensemble on OTM
+
+- **2026-06-02** registered (not yet executed). Scope: clone the 3X.10
+  ensemble config; flip `data.feature_set: micro_v1`; keep seeds
+  `[101, 202, 303, 404, 505]`; ~2 h Pod sweep. Best amortised in the
+  same Pod window as 3C.3.
+- **Next concrete action:** gate on 3C.3 close.
+- **Open blocker:** 3C.3.
+
+### 3C.5 — Local: calibrator re-fit on ANP+`micro_v1` val predictions
+
+- **2026-06-02** registered (not yet executed). Scope: clone the
+  3X.11 calibration config; re-point input val parquets at 3C.3 +
+  3C.4 outputs; produce `artifacts/calibration/3C5_anp_micro.json`.
+  CPU-only, ~5–10 min wall + tests.
+- **Next concrete action:** gate on 3C.3 + 3C.4 close + val parquets
+  pulled to local.
+- **Open blocker:** 3C.3, 3C.4.
+
+### 3C.6 — Remote: decision-layer eval on OTM with thresholds held constant
+
+- **2026-06-02** registered (not yet executed). Scope: clone the
+  3X.12 decision-layer config; flip predictor wiring at 3C.3 / 3C.4
+  / 3C.5 only; thresholds bit-for-bit identical to 3X.12 (Q2
+  invariant). Ships `results/3/spy_phase1_random40_noiselow_otm/3c_anp_micro/`.
+- **Next concrete action:** gate on 3C.5 close.
+- **Open blocker:** 3C.5.
+
+### 3C.7 — Local: `micro_v1` vs OTM-baseline comparison tables
+
+- **2026-06-02** registered (not yet executed). Scope: assemble long +
+  wide comparison CSVs (matched substrate) from already-committed
+  3X.6 / 3X.9 / 3X.10 / 3X.12 / 3C.3 / 3C.4 / 3C.6 bundles. No
+  re-runs; provenance tests on every cell.
+- **Next concrete action:** gate on 3C.6 close.
+- **Open blocker:** 3C.6.
+
+### 3C.8 — Local: 3C closing addendum + ADR 0008 → Implemented
+
+- **2026-06-02** registered (not yet executed). Scope: §W12 closing
+  addendum + ADR 0008 status flip with filled Outcome block + BOARD
+  / PHASE3_INDEX / progress_log / journal / README sync. Pure docs.
+  NOT the full Phase 3 closing memo (that is 3D — Q3 carried from
+  3X).
+- **Next concrete action:** gate on 3C.7 close.
+- **Open blocker:** 3C.7.
 
 ### 3D.1 — Decompose Phase 3D
 

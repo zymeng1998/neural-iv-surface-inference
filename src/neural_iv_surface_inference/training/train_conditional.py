@@ -195,9 +195,18 @@ def train_conditional(
     coord_encoding_cfg = config.get("coord_encoding")
     decoder_kind = str(config.get("decoder_kind", "deepsets"))
     anp_cfg = config.get("anp")
+    # 3C.2 / ADR 0008: feature_set is authoritative for the context dim and is
+    # persisted into the saved checkpoint ``config`` block below so
+    # ``ConditionalSurfacePredictor.from_checkpoint`` reconstructs it without
+    # an operator override. Defaults to "minimal" (legacy 3-dim context).
+    feature_set = str(config.get("feature_set", "minimal"))
+    context_dim_cfg = config.get("context_dim")
+    # Record the resolved feature_set on the config that gets persisted into
+    # the checkpoint, so it is always present even when the caller defaulted.
+    config = {**config, "feature_set": feature_set}
 
     model = ConditionalSurfaceModel(
-        context_dim=int(config.get("context_dim", 3)),
+        context_dim=int(context_dim_cfg) if context_dim_cfg is not None else None,
         coord_dim=int(config.get("coord_dim", 2)),
         hidden_dim=int(config.get("hidden_dim", 64)),
         latent_dim=int(config.get("latent_dim", 32)),
@@ -208,6 +217,7 @@ def train_conditional(
         coord_encoding=coord_encoding_cfg,
         decoder_kind=decoder_kind,  # type: ignore[arg-type]
         anp=anp_cfg,
+        feature_set=feature_set,
     ).to(device)
 
     # 3A.3: optionally seed the encoder from a saved checkpoint

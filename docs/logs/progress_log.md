@@ -4219,3 +4219,145 @@ touched by the 3X.14 close-out itself.
 - Regenerate the two roadmap `.png` renders once a mermaid renderer is
   available.
 - Optional: a real code-level reviewer pass over `99ec6fa..7788f12`.
+
+## 2026-06-02 — 3C.1: decomposed Phase 3C (microstructure-only; ADR 0008; seven new stories)
+
+Executed the 3C.1 decomposition. Epic 3C → `in_progress`; 3C.1 →
+`in_review`. Pure docs-only work.
+
+### Scope decisions (operator-confirmed 2026-06-02)
+
+- Track scope: **microstructure only** (SVI / SSVI head **deferred**).
+- Feature set `micro_v1`: six AV-native per-quote fields appended to
+  the existing 3-tuple (`bid`, `ask`, `bid_ask_spread_rel`, `volume`,
+  `open_interest`, `put_call_indicator`) → 9-dim context. Frozen by
+  **ADR 0008**.
+- `feature_set ∈ {minimal, micro_v1}` flag, default `minimal`, so
+  every committed 2D / 3A / 3B / 3X checkpoint stays byte-for-byte
+  reproducible.
+- Head sweep: all three heads (gaussian / quantile / point) mirroring
+  3X.9.
+- Substrate: `spy_phase1_random40_noiselow_otm` only (no 11-variant
+  fan-out; deferred robustness study from §W11.5 carries through).
+- Decision-layer thresholds **held constant** against 3X.12 (Q2
+  invariant carries forward).
+- No-overclaim guardrail (carried from 3X) — matched substrate only.
+- ADR renumbering vs the pre-3X 3C.1 stub: microstructure → **ADR
+  0008** (0006 / 0007 are taken by duplicate-coordinate and
+  multi-agent handoff); deferred SVI track reserves **ADR 0009**.
+
+### Story list (seven new stories, all atomic)
+
+| ID | Locale / HW | Title |
+|---|---|---|
+| 3C.2 | local CPU | microstructure feature pipeline + `feature_set` flag + tests (no training) |
+| 3C.3 | remote GPU | ANP three-head retrain with `micro_v1` on OTM (mirrors 3X.9) |
+| 3C.4 | remote GPU | K=5 ANP+`micro_v1` point-head ensemble on OTM (mirrors 3X.10) |
+| 3C.5 | local CPU | calibrator re-fit on ANP+`micro_v1` val predictions (mirrors 3X.11 / 3B.6) |
+| 3C.6 | remote GPU | decision-layer eval on OTM, thresholds held constant (Q2; mirrors 3X.12) |
+| 3C.7 | local CPU | OTM-baseline vs OTM+`micro_v1` comparison tables (mirrors 3X.13) |
+| 3C.8 | local CPU | 3C closing addendum + ADR 0008 → Implemented (NOT full Phase 3 memo — 3D / Q3) |
+
+Dependency chain: `3C.2 → 3C.3 → 3C.4 → 3C.5 → 3C.6 → 3C.7 → 3C.8`.
+Best Pod-rental shape: single GPU window covering 3C.3 + 3C.4 + 3C.6
+(~5 h total).
+
+### Files
+
+- **New:** `docs/decisions/0008_microstructure_feature_set_freeze.md`;
+  `docs/tasks/specs/3C.{2,3,4,5,6,7,8}_*.md` (7 specs).
+- **Rewritten:** `docs/tasks/specs/3C.1_decompose_phase_3c.md` (the
+  pre-3X stub replaced with locked decisions, story list, updated
+  file_scope to include ADR 0008).
+- **Edited:** `docs/tasks/BOARD.md` (3C epic → `in_progress`; 3C.1 →
+  `in_review`; 7 new `backlog` story rows; 3D timestamp bump),
+  `docs/roadmaps/phase3_accuracy_push.md` (§W12 replaced with concrete
+  decomposition + decisions block; status block at file tail extended
+  with the 3C-entered note), `docs/PHASE3_INDEX.md` (Live status table
+  + parallel-safety matrix + per-story checkpoint blocks for 3C.2 …
+  3C.8 + 30-second orientation refresh), this log.
+
+### Non-goals respected
+
+- No source code, config, data, model, or training artifact touched.
+- No SVI / SSVI head work started.
+- No 11-variant retraining fanout proposed.
+- No Phase 3 closing memo work (that is 3D — Q3 carried from 3X).
+- No personal-notebook files touched (gitignored, operator-only).
+
+### Tests
+
+- `python3 scripts/pmr_prepush_gate.py --verbose --dry-run` → pending
+  this session (run before commit).
+
+### Next actions
+
+- Operator reviews ADR 0008 + 3C.1 + 3C.2 … 3C.8 specs; promotes 3C.1
+  to `done` and 3C.2 to `todo`. 3C.2 is local-only (no Pod) so
+  implementation can start without rental planning.
+
+## 2026-06-03 — 3C.2: micro_v1 feature_set flag wired through loader/model/predictor/training (in_review)
+
+Implemented the `feature_set ∈ {minimal, micro_v1}` flag (ADR 0008)
+end-to-end. **No training** — plumbing + tests only. Epic 3C stays
+`in_progress`; 3C.2 → `in_review`. Local Mac, CPU-only.
+
+### What was built
+
+- **`data/conditional_loaders.py`** — `feature_set` param on
+  `ConditionalIVSurfaceDataset` (default `minimal`); `resolve_context_features`
+  / `feature_set_context_dim` resolvers; `build_context_matrix` shared by the
+  dataset and the predictor adapter so both order the 9 columns identically.
+  `bid_ask_spread_rel = (ask−bid)/max(mid, 1e-4)` and `put_call_indicator`
+  (+1 call / −1 put) are **materialised in-loader** from raw AV columns —
+  they are not stored on the surface table, so the no-pipeline-change non-goal
+  holds. `type` outside {call, put} is a hard error.
+- **`models/conditional_surface.py`** — `feature_set` kwarg drives the
+  `SetEncoder(in_dim=…)`; `context_dim` retained for back-compat but, if
+  passed, must agree with `feature_set` (conflict guard). `SetEncoder` lives
+  here, not a separate `models/encoder.py`.
+- **`eval/adapters.py`** — `ConditionalSurfacePredictor.from_checkpoint`
+  reads `feature_set` from the checkpoint `config` (default `minimal`) and
+  forwards it; `predict` builds the right context columns via
+  `build_context_matrix`. (This is the real predictor adapter; the spec's
+  `inference/conditional_predictor.py` path predates the current tree.)
+- **`training/train_conditional.py`** — reads `feature_set` from the
+  `conditional` config block, forwards to the model, and records it onto the
+  persisted checkpoint `config` so it always round-trips.
+- **`configs/conditional_3C2_micro_smoke.yaml`** — tiny CPU smoke config
+  (1 epoch) used only by the integration test for hyperparameters.
+- **Three test files** — `tests/test_conditional_loader_micro.py` (shape,
+  ADR 0008 column order, derived-feature correctness, `mid` fallback,
+  `put_call_indicator` domain, missing-column + bad-`type` errors,
+  **minimal byte-for-byte frozen-reference** assert),
+  `tests/test_set_encoder_micro.py` (`in_dim=9` round-trip + masking; model
+  builds + forwards finite for deepsets **and** anp; conflict guard),
+  `tests/integration/test_micro_wiring.py` (smoke-config → train 1 epoch →
+  checkpoint → `from_checkpoint` round-trip → finite predict + finite scalar
+  loss; legacy minimal checkpoint still loads).
+
+### Design note: where `feature_set` lives
+
+In the **`conditional`** config block (next to `context_dim` / `decoder_kind`),
+not a separate `data.feature_set`, because `train_conditional` only receives
+that block and that is what is persisted into the checkpoint `config`.
+
+### Tests
+
+- `pytest tests/test_conditional_loader_micro.py tests/test_set_encoder_micro.py
+  tests/integration/test_micro_wiring.py -q` → 16 passed.
+- `pytest tests/ -q` → **417 passed**, exit 0 (no regression; was 401).
+- `python3 scripts/pmr_prepush_gate.py --verbose --dry-run` → green.
+
+### Non-goals respected
+
+- No real training; no `_QUERY_FEATURES` change (queries stay 2-dim); no
+  `01_*…05_*` pipeline change; no `mid` / `vix` / `realized_vol`; no
+  in-loader normalization (z-score stats are 3C.3's job); no `minimal`
+  default change (legacy checkpoints bit-identical); no ANP / DeepSets
+  decoder-internal change.
+
+### Next actions
+
+- Operator review → promote 3C.2 `in_review → done`; unblocks 3C.3 (remote
+  ANP three-head retrain with `conditional.feature_set: micro_v1` on OTM).

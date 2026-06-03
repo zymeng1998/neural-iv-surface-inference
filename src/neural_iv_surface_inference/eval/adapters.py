@@ -19,6 +19,10 @@ from torch.utils.data import DataLoader
 
 import pandas as pd
 
+from neural_iv_surface_inference.data.conditional_loaders import (
+    DEFAULT_FEATURE_SET,
+    build_context_matrix,
+)
 from neural_iv_surface_inference.data.loaders import IVSurfaceDataset
 from neural_iv_surface_inference.models.baseline_mlp import BaselineMLP
 from neural_iv_surface_inference.models.conditional_surface import (
@@ -99,8 +103,17 @@ class ConditionalSurfacePredictor:
         self,
         model: ConditionalSurfaceModel,
         device: torch.device | None = None,
+        feature_set: str | None = None,
     ):
         self.model = model
+        # ADR 0008: the feature set governs which context columns ``predict``
+        # builds. Prefer the value the model was constructed with; fall back
+        # to the explicit arg, then to the legacy ``minimal`` default.
+        self.feature_set = str(
+            feature_set
+            if feature_set is not None
+            else getattr(model, "feature_set", DEFAULT_FEATURE_SET)
+        )
         self.device = device if device is not None else torch.device(
             "cuda" if torch.cuda.is_available() else "cpu"
         )
@@ -126,8 +139,14 @@ class ConditionalSurfacePredictor:
         coord_encoding_cfg = cfg.get("coord_encoding")
         decoder_kind = str(cfg.get("decoder_kind", "deepsets"))
         anp_cfg = cfg.get("anp") or {}
+        # 3C.2 / ADR 0008: feature_set is authoritative for the context dim.
+        # Absent on legacy checkpoints → "minimal" (3-dim), bit-identical.
+        feature_set = str(cfg.get("feature_set", DEFAULT_FEATURE_SET))
+        context_dim = (
+            int(cfg["context_dim"]) if "context_dim" in cfg else None
+        )
         model = ConditionalSurfaceModel(
-            context_dim=int(cfg.get("context_dim", 3)),
+            context_dim=context_dim,
             coord_dim=int(cfg.get("coord_dim", 2)),
             hidden_dim=int(cfg.get("hidden_dim", 64)),
             latent_dim=int(cfg.get("latent_dim", 32)),
@@ -138,13 +157,17 @@ class ConditionalSurfacePredictor:
             coord_encoding=coord_encoding_cfg,
             decoder_kind=decoder_kind,  # type: ignore[arg-type]
             anp=dict(anp_cfg),
+            feature_set=feature_set,
         )
         model.load_state_dict(ckpt["model_state_dict"])
-        return cls(model=model, device=device)
+        return cls(model=model, device=device, feature_set=feature_set)
 
     @torch.no_grad()
     def predict(self, df: pd.DataFrame) -> PredictionResult:
         required = {"date", "log_moneyness", "tau", "implied_volatility", "observed"}
+        if self.feature_set == "micro_v1":
+            # Raw AV columns needed to materialise the ADR 0008 micro tuple.
+            required |= {"bid", "ask", "volume", "open_interest", "type"}
         missing = required - set(df.columns)
         if missing:
             raise ValueError(
@@ -174,9 +197,9 @@ class ConditionalSurfacePredictor:
                 # rejects on the *training* side).
                 continue
 
-            ctx = group.loc[
-                obs_mask, ["log_moneyness", "tau", "implied_volatility"]
-            ].to_numpy(dtype=np.float32)
+            ctx = build_context_matrix(
+                group.loc[obs_mask], self.feature_set
+            )
             query = group[["log_moneyness", "tau"]].to_numpy(dtype=np.float32)
 
             ctx_t = torch.from_numpy(ctx).unsqueeze(0).to(self.device)

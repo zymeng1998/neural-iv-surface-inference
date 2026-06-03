@@ -1,0 +1,48 @@
+# 3C.2 — micro_v1 smoke config.
+#
+# Purpose: give `tests/integration/test_micro_wiring.py` a *real* config to
+# load so the `feature_set: micro_v1` plumbing is exercised end-to-end
+# (loader → SetEncoder(in_dim=9) → checkpoint → predictor round-trip).
+#
+# NOT a results config. Tiny dims, 1 epoch, CPU. The integration test reads
+# the `conditional` block for hyperparameters and synthesises an in-memory
+# micro_v1 frame; it does NOT read `data.benchmark_file` (raw data lives only
+# on the Pod). The real micro_v1 retrain is 3C.3.
+
+seed: 7
+
+data:
+  # Informational only — the integration test does not read this path.
+  benchmark_file: data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm.parquet
+  batch_size: 4
+  num_workers: 0
+
+conditional:
+  # feature_set is authoritative for the context dim (ADR 0008). context_dim
+  # is omitted on purpose so the model derives 9 from feature_set; set it to 9
+  # explicitly if you prefer — the model validates the two agree.
+  feature_set: micro_v1
+  coord_dim: 2
+  hidden_dim: 16
+  latent_dim: 8
+  n_elem_layers: 2
+  n_post_layers: 1
+  n_decoder_layers: 2
+
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  epochs: 1
+  patience: 1
+
+  decoder_kind: deepsets
+  coord_encoding:
+    kind: raw
+  freeze_encoder: false
+
+  head:
+    kind: point
+
+paths:
+  checkpoint_dir: artifacts/runs/3C2_smoke/checkpoints
+  log_dir: artifacts/runs/3C2_smoke/logs
+  results_dir: artifacts/runs/3C2_smoke

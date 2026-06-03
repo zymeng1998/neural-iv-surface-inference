@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-05-30T00:00:00-04:00
+last_updated_at: 2026-06-02T22:30:00-04:00
 ---
 
 ## 1) Why Phase 3 exists
@@ -438,24 +438,59 @@ deliverable (Q3).
 
 ### W12 — Feature & inductive-bias expansion (epic 3C)
 
-Two orthogonal directions; 3C.1 decides whether to ship one or both.
+Two orthogonal directions were originally on the table (microstructure
+features in `O_t`; SVI / SSVI parameterized head). 3C.1 (decomposition,
+2026-06-02, post-3X) **picks scope = microstructure only**; the SVI
+head is deferred to a separate epic if/when `micro_v1` does not narrow
+the post-3X gap.
 
-- **Microstructure features in `O_t`.** The current per-quote tuple is
-  `(log_moneyness, τ, iv_input)` — 3 dims. Adding `bid`, `ask`,
-  `bid_ask_spread`, `mid_price`, `volume`, `open_interest`,
-  `put_call_indicator`, and exogenous state (`spot_level`, `vix`,
-  `recent_realized_vol_5d`, `days_to_next_earnings_or_dividend`) gives
-  the encoder real signal about quote reliability and vol regime.
-  Note: this does **not** require latent rank to rise — most of these
-  are correlated with the surface itself. It lets the encoder
-  *downweight* unreliable quotes (wide spread, low volume) when
-  forming `z_t`.
-- **SVI / SSVI parameterized head.** Instead of free
-  `decoder(z_t, k, τ) → σ`, output `θ_t ∈ R^5` (SVI per slice) and
-  evaluate the SVI formula at `(k, τ)`. Built-in arbitrage-free
-  structure under SSVI (Gatheral & Jacquier 2014); strong inductive
-  bias; what practitioners actually use. Risk: under-fitting genuinely
-  complex surfaces.
+#### Concrete decomposition (registered 2026-06-02)
+
+3C.1 locked the following scope, recorded in
+[`3C.1`](../tasks/specs/3C.1_decompose_phase_3c.md) and
+[ADR 0008](../decisions/0008_microstructure_feature_set_freeze.md):
+
+- **Track scope:** microstructure only. SVI / SSVI track deferred.
+- **Feature set `micro_v1`:** six AV-native per-quote fields appended
+  to the existing 3-tuple — `bid`, `ask`, `bid_ask_spread_rel`,
+  `volume`, `open_interest`, `put_call_indicator` — for a 9-dim
+  context tuple. Frozen by ADR 0008. `mid`, `spot`, `vix`,
+  `realized_vol`, earnings calendar are **out of scope** for
+  `micro_v1` (collinear or require a new ingest path).
+- **Flag:** `feature_set ∈ {minimal, micro_v1}`, default `minimal` —
+  every committed 2D / 3A / 3B / 3X checkpoint stays reproducible
+  byte-for-byte.
+- **Head sweep:** all three heads (gaussian / quantile / point),
+  mirrors 3X.9.
+- **Substrate:** `spy_phase1_random40_noiselow_otm` only. No all-11
+  fan-out (deferred robustness study from §W11.5 carries through).
+- **Decision-layer thresholds held constant** against 3X.12 (Q2
+  invariant carries forward).
+- **No-overclaim guardrail** carries from 3X — claims scoped to the
+  matched substrate only.
+
+| ID | Locale / HW | Title | One artifact bundle |
+|---|---|---|---|
+| [`3C.2`](../tasks/specs/3C.2_local_micro_feature_pipeline.md) | local CPU | Microstructure feature pipeline + `feature_set` flag on loader/encoder/model/predictor/training loop + unit/integration tests | code patch + 3 test files + smoke config; no training |
+| [`3C.3`](../tasks/specs/3C.3_remote_anp_micro_three_head.md) | remote GPU | Full AV retrain of DeepSets+ANP with `feature_set: micro_v1` across `head.kind ∈ {gaussian, quantile, point}` on OTM | `artifacts/runs/3C3/{gaussian,quantile,point}/` mirroring 3X.9 |
+| [`3C.4`](../tasks/specs/3C.4_remote_anp_micro_ensemble.md) | remote GPU | K=5 ANP+`micro_v1` point-head deep ensemble on OTM (seeds [101,202,303,404,505]) | `artifacts/runs/3C4/ensemble/` mirroring 3X.10 |
+| [`3C.5`](../tasks/specs/3C.5_local_calibrator_refit_micro.md) | local CPU | Calibrator re-fit on ANP+`micro_v1` val predictions | `configs/calibration_3C5_anp_micro.yaml` + `artifacts/calibration/3C5_anp_micro.json` + tests |
+| [`3C.6`](../tasks/specs/3C.6_remote_decision_layer_eval_micro.md) | remote GPU | End-to-end decision-layer eval on OTM, thresholds held constant (Q2) | `results/3/spy_phase1_random40_noiselow_otm/3c_anp_micro/` + `artifacts/runs/3C6/manifest.json` |
+| [`3C.7`](../tasks/specs/3C.7_local_micro_vs_baseline_comparison.md) | local CPU | OTM-baseline vs OTM+`micro_v1` comparison tables (long + wide) on matched substrate | `results/3/spy_phase1_random40_noiselow_otm/3c_compare/` long + wide + `headline.md` |
+| [`3C.8`](../tasks/specs/3C.8_local_3c_closing_addendum.md) | local CPU | 3C closing addendum (§W12) + ADR 0008 → Implemented + journal/README sync; **NOT** the full Phase 3 memo (Q3 — 3D) | this section's closing addendum + ADR Outcome + BOARD/INDEX/log/journal/README edits |
+
+Dependency chain: `3C.2 → 3C.3 → 3C.4 → 3C.5 → 3C.6 → 3C.7 → 3C.8`.
+3C.3 and 3C.4 should share a single Pod-GPU rental window (~5 h total)
+to amortise rental. Each story is atomic — one question, one artifact
+bundle, one acceptance check; no story spans local + remote.
+
+#### W12 — 3C closing addendum (filled by 3C.8 on close — placeholder)
+
+Filled by 3C.8 with: headline test MAE per family×head for `micro_v1`
+vs the matched OTM baselines (3X.9 / 3X.10) and vs RBF-on-OTM (3X.6
+floor 0.00613); calibrated production verdict against the Phase 3 bar
+vs 3X.12; forward recommendation (3D close, `micro_v2` data-source
+ADR, or Phase 4 RBF-prior hybrid).
 
 ### W13 — Closing memo + re-evaluation (epic 3D)
 
@@ -525,8 +560,26 @@ research substitute). See ADR 0004.
 > matched head on OTM), so no Phase 2 reopen (Q5 trigger not fired) and
 > ADR 0006 → **Implemented**. Narrative:
 > [`duplicate_coordinate_methodology_progression.md`](../research/duplicate_coordinate_methodology_progression.md).
-> **3C and 3D now reopen on the clean OTM substrate;** the immediate
-> next action is promoting **3C.1** (decompose Phase 3C) to `todo`.
+>
+> **Update (2026-06-02, 3C ENTERED — decomposition in_review):** epic 3C
+> is `in_progress`; story `3C.1` (decompose Phase 3C) is `in_review`.
+> Scope locked: **microstructure-only (`micro_v1`)** per ADR 0008 — six
+> AV-native per-quote fields (`bid`, `ask`, `bid_ask_spread_rel`,
+> `volume`, `open_interest`, `put_call_indicator`) appended to the
+> existing 3-tuple → 9-dim context. Three-head sweep (gaussian /
+> quantile / point) mirroring 3X.9; K=5 ensemble mirroring 3X.10; Q2
+> decision-layer threshold invariant held; matched
+> `random40_noiselow_otm` substrate only; SVI / SSVI head **deferred**
+> to a separate epic if `micro_v1` does not narrow the gap. Seven new
+> atomic stories (3C.2 … 3C.8) registered. **3C.1 closed `done`
+> 2026-06-02; all seven downstream stories promoted to `todo`.
+> 3C.2 implemented 2026-06-03 (`in_review`): the `feature_set ∈
+> {minimal, micro_v1}` flag is wired through loader / encoder / model /
+> predictor / training loop (default `minimal` preserves every legacy
+> checkpoint byte-for-byte; 16 new tests, full suite 417 passed; no
+> training). Immediate next action: operator promotes 3C.2 → `done`,
+> then 3C.3 (remote three-head retrain consuming the flag) — strict
+> chain 3C.2 → … → 3C.8.**
 >
 > **Original 2026-05-28 status (preserved for traceability):** Phase 3 is **open**, but both
 > diagnostic epics have closed. Epic **3A** is `done` (raw beats
