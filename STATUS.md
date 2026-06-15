@@ -1,50 +1,49 @@
-# STATUS — 3C closed & finalized; 3D.1 readied (todo); M1.6 filed
+# STATUS — Phase 3D entered & decomposed (3D.1 executed)
 
-**Updated:** 2026-06-14 (late)
+**Updated:** 2026-06-15
 **Branch:** main
 **Mode:** local, documentation/planning only — no GPU, no model/eval/pipeline run
 
 ## Where things stand
 
-Epic **3C is closed** (`micro_v1` negative; bar NOT met; ADR 0008
-Implemented). The previous push (5787d2e) is on `origin/main`. This step
-finalizes the close-out cleanly and sets up 3D, as **one atomic commit**
-designed to push with **no `WAIVE_DEPS` / `WAIVE_SCOPE`**.
+Phase 3's three accuracy levers (3A / 3B / 3X / 3C) are all `done` and
+all missed the ≥ 5 %-below-RBF bar on the clean OTM substrate. **Epic 3D
+(closing memo + RBF re-eval) is now `in_progress` and decomposed.**
 
 ## What was just completed (this commit, docs/planning only)
 
-1. **3C.8 `in_review → done`** (operator approved). Rewrote its
-   `## Dependencies` to the real satisfied set (3C.3 + 3X.14, both
-   `done`); cancelled 3C.6/3C.7 demoted to a prose note. This is what
-   lets the dependency gate pass without `WAIVE_DEPS`.
-2. **Folded in the post-push waiver-audit lines.** The `DEP/SCOPE WAIVER`
-   lines the pre-push hook appended to the 3C.8 spec during the 5787d2e
-   push are committed here (bundled with the promotion, never as a
-   standalone waiver-only commit).
-3. **3D.1 `backlog → todo` (readied, not executed).** Fixed the
-   ADR-number collision — production-selection ADR is **0009**, not 0008
-   — and wrote in the Phase 4 = RBF-prior hybrid / residual neural
-   framing. Running the decomposition (epic 3D → in_progress, child
-   specs 3D.2–3D.4) is the next step, deliberately not done here.
-4. **M1.6 filed (backlog)** — pre-push waivers must not mutate tracked
-   files after the pushed commit; write to a separate generated/untracked
-   audit log with a follow-up workflow.
-5. Synced BOARD / PHASE3_INDEX / roadmap §W13 / progress_log / STATUS.
+1. **Epic 3D → `in_progress`**; **3D.1 → `in_review`** (decomposition
+   executed).
+2. **Three atomic child stories drafted (`backlog`)**, all local CPU:
+   - **3D.2** — `scripts/generate_phase3_results_notebook.py` generator
+     scaffold + smoke test.
+   - **3D.3** — `docs/phase3_result_memo.md` (verdict vs RBF + vs 2D;
+     dirty + clean-OTM restatement; §5 acceptance map).
+   - **3D.4** — emit `notebooks/06_phase3_results.ipynb`, finalize ADR
+     0009, journal close-out, flip epic 3D `done` (+ optional Phase 4
+     placeholder).
+   Chain: `3D.2 ∥ 3D.3 → 3D.4`.
+3. **ADR 0009 skeleton** created
+   (`docs/decisions/0009_phase3_production_predictor_selection.md`,
+   `Proposed`): no pure conditional-neural predictor promoted; RBF stays
+   the accuracy baseline; reliability layer retained; **Phase 4 =
+   RBF-prior hybrid / residual neural**. Outcome filled by 3D.4.
+4. Synced BOARD / roadmap §W13 / PHASE3_INDEX / progress_log / STATUS.
 
-## Push plan (NO waivers)
+## Push readiness (designed zero-waiver — NOT yet pushed)
 
-- Scope gate: no changed spec is `in_progress`/`in_review` → no active
-  specs → PASS.
-- Dep gate: only 3C.8 (`done`) is active; deps now `done`-only → PASS.
-- PMR gate: docs-only → PASS.
-- **Do NOT set `WAIVE_DEPS` or `WAIVE_SCOPE` on this push.** If a gate
-  blocks, fix the doc to satisfy it rather than waiving (the whole point
-  of this step). The previous waiver-write-loop must not recur.
+- Scope gate: only 3D.1 is active; its `file_scope` covers every touched
+  path (`3D.*_*.md`, `0009_*.md`, BOARD, roadmap, index, progress_log,
+  `STATUS.md`). The child specs are `backlog` (not active). → PASS.
+- Dep gate: 3D.1 has no `## Dependencies` section. → PASS.
+- PMR gate: docs/planning only. → PASS.
+- **Do NOT set `WAIVE_DEPS` / `WAIVE_SCOPE` on this push.** All three
+  gates were verified standalone before commit.
 
 ## Next concrete action
 
-1. Commit atomically (commit-msg trailer required) and run all three
-   gates standalone to confirm PASS, then push with a clean env.
-2. After push: run the **3D.1 decomposition** (epic 3D → in_progress;
-   draft 3D.2/3D.3/3D.4; ADR 0009; roadmap §W13 + index).
-3. Schedule **M1.6** (waiver-hook fix) when convenient.
+- **Stopped before push for review** (per instruction). After approval:
+  push the commit with a clean env (no waiver vars).
+- Then: operator promotes 3D.1 → `done`; run 3D.2 ∥ 3D.3, then 3D.4 to
+  close epic 3D / Phase 3.
+- Backlog: **M1.6** (waiver-hook fix) when convenient.

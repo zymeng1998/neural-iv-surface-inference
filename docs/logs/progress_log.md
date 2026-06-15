@@ -4558,3 +4558,59 @@ Operator-approved finalize of 3C + setup for 3D, designed as a
   (notebook scaffold) / 3D.3 (memo) / 3D.4 (notebook + ADR 0009 + journal
   close-out); update roadmap §W13 + index with the concrete story list.
 - When convenient, schedule **M1.6** (waiver-hook fix).
+
+---
+
+## 2026-06-15 — 3D.1 executed: Phase 3D entered + decomposed + ADR 0009 skeleton
+
+### What was completed
+
+Ran the 3D.1 decomposition (docs/planning only):
+
+- **Epic 3D → `in_progress`.** Verified the Phase 3 evidence base is fully
+  committed before decomposing — `artifacts/runs/` has `3A, 3B4, 3B5,
+  3C3, 3X4, 3X6, 3X7, 3X8, 3X9, 3X10, 3X12`; `results/3/` has the dirty
+  `3a_*`/`3b_*` bundles and the clean-OTM `3x_*`/`rbf` bundles;
+  `results/2D/comparison_summary.csv` is the Phase 2D anchor. No missing
+  bundle → no escalation.
+- **Drafted three atomic child stories** (`backlog`), all local CPU, no
+  model/eval/data runs:
+  - **3D.2** — `scripts/generate_phase3_results_notebook.py` generator
+    scaffold + smoke test (the single code surface 3D may touch).
+  - **3D.3** — `docs/phase3_result_memo.md` (verdict vs RBF + vs 2D, on
+    both dirty and clean-OTM substrates, mapped to §5).
+  - **3D.4** — emit `notebooks/06_phase3_results.ipynb`, finalize ADR
+    0009, journal close-out, flip epic 3D `done`, optional Phase 4
+    placeholder.
+  Chain: `3D.2 ∥ 3D.3 → 3D.4` (3D.2/3D.3 parallel-safe; disjoint scope).
+- **Created the ADR 0009 skeleton**
+  (`docs/decisions/0009_phase3_production_predictor_selection.md`, status
+  `Proposed`): production-selection / Phase 3 verdict + Phase 4 RBF-prior
+  hybrid framing; candidate decision is "no pure conditional-neural
+  predictor promoted; RBF stays the accuracy baseline; reliability layer
+  retained; Phase 4 = residual hybrid". Outcome filled by 3D.4.
+- **3D.1 → `in_review`.** Synced BOARD, roadmap §W13 (concrete story
+  list), PHASE3_INDEX (live status + per-story checkpoints + conflict
+  matrix + 30-second orientation), STATUS.
+
+### Zero-waiver design (push readiness)
+
+- Only **3D.1** is `in_review`/active in this diff; its `file_scope`
+  covers every touched path (the new child specs match `3D.*_*.md`, ADR
+  0009 matches `0009_*.md`, and `STATUS.md` was added to scope with
+  precedent 3C.2/3C.3/3X.7/3X.8). The 3D.2/3D.3/3D.4 specs are `backlog`
+  (not active). → scope gate PASS, no `WAIVE_SCOPE`.
+- 3D.1 has no `## Dependencies` section → dep gate PASS, no `WAIVE_DEPS`.
+- Docs/planning only (no `src/`, `configs/`, `tests/`, `notebooks/`,
+  data, model) → PMR gate PASS.
+
+### Tests
+
+- No code / model / eval / data run. All three pre-push gates verified
+  standalone (no waiver env vars) before commit.
+
+### Next actions
+
+- Operator promotes 3D.1 → `done`.
+- Run **3D.2** (generator) and **3D.3** (memo) in parallel, then **3D.4**
+  to emit the notebook, finalize ADR 0009, and close epic 3D / Phase 3.

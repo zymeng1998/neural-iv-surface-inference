@@ -562,11 +562,12 @@ reserved. The full Phase 3 closing memo remains a 3D deliverable (Q3).
 
 ### W13 — Closing memo + re-evaluation (epic 3D)
 
-**Status (2026-06-14): 3D.1 readied and promoted to `todo` — all gating
-epics (3A / 3B / 3X / 3C) are `done`; running 3D.1 is the next action.**
-(Spec fix on readying: the production-selection ADR is **0009**, not
-0008 — 0008 is the microstructure freeze.) Pure synthesis on committed
-artifacts. Mirrors story 2D.10:
+**Status (2026-06-15): epic 3D entered (`in_progress`) and decomposed.**
+3D.1 executed: the three child stories below are drafted (`backlog`) and
+the **ADR 0009 skeleton** (production-selection / Phase 3 verdict +
+Phase 4 framing) is created (`Proposed`). All gating epics (3A / 3B / 3X
+/ 3C) are `done`. Pure synthesis on committed artifacts. Mirrors story
+2D.10:
 
 - `docs/phase3_result_memo.md` with the headline table (all 3A / 3B /
   3C variants versus RBF and versus Phase 2D close), stated on **both**
@@ -578,13 +579,26 @@ artifacts. Mirrors story 2D.10:
   `scripts/generate_phase3_results_notebook.py`.
 - Closing entry in `docs/experiments/experiment_journal.md`.
 - **ADR 0009 — Phase 3 production predictor selection** (the production
-  predictor ADR; note ADR 0008 is the microstructure-feature freeze, so
-  the production-selection record is 0009, not 0008 — the 3D.1 spec
-  predates this and still says "ADR 0008", to be fixed on 3D.1
-  execution). Records that no pure conditional-neural variant met the
-  bar and locks the forward direction.
+  predictor ADR; ADR 0008 is the microstructure-feature freeze, so the
+  production-selection record is 0009). Records that no pure
+  conditional-neural variant met the bar and locks the forward direction.
 
 No new training, no new eval runs.
+
+**Concrete story list (decomposed by 3D.1, 2026-06-15):**
+
+| Story | Mode | Deliverable | Depends on |
+|---|---|---|---|
+| [`3D.2`](../tasks/specs/3D.2_phase3_notebook_generator.md) | local CPU | `scripts/generate_phase3_results_notebook.py` generator scaffold + smoke test | 3D.1 |
+| [`3D.3`](../tasks/specs/3D.3_phase3_result_memo.md) | local CPU | `docs/phase3_result_memo.md` — verdict vs RBF + vs 2D, dirty + clean-OTM restatement, §5 acceptance map | 3D.1 |
+| [`3D.4`](../tasks/specs/3D.4_phase3_notebook_adr_journal_close.md) | local CPU | emit `notebooks/06_phase3_results.ipynb`, finalize ADR 0009, journal close-out, flip epic 3D `done` (+ optional Phase 4 placeholder) | 3D.2, 3D.3 |
+
+Chain: `3D.2 ∥ 3D.3 → 3D.4`. 3D.2 and 3D.3 are parallel-safe (disjoint
+`file_scope`). All three are atomic — one question, one artifact bundle,
+one acceptance check; all local CPU, no model/eval/data runs. The
+production-selection verdict and Phase 4 direction land in ADR 0009
+([skeleton committed](../decisions/0009_phase3_production_predictor_selection.md);
+Outcome filled by 3D.4).
 
 **Phase 4 direction (framed by 3D, opened after 3D closes).** Three
 independent attacks on the gap-to-RBF have now landed and each missed

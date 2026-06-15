@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-06-14T23:10:00-04:00
+last_updated_at: 2026-06-15T00:00:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -110,8 +110,11 @@ decomposition). The first story of any epic is always its decomposition story.
 | 3C.6 | Story | Remote: decision-layer eval on OTM with thresholds held constant against 3X.12 (Q2 invariant; mirrors 3X.12) | `cancelled` | `docs/tasks/specs/3C.6_remote_decision_layer_eval_micro.md` | 2026-06-14 |
 | 3C.7 | Story | Local: OTM-baseline vs OTM+`micro_v1` comparison tables (long + wide) on matched substrate (mirrors 3X.13) | `cancelled` | `docs/tasks/specs/3C.7_local_micro_vs_baseline_comparison.md` | 2026-06-14 |
 | 3C.8 | Story | Local: 3C closing addendum on §W12 + ADR 0008 → Implemented + journal/README sync (NOT full Phase 3 memo — 3D) — closed on 3C.3 training evidence alone after 3C.4–3C.7 cancelled | `done` | `docs/tasks/specs/3C.8_local_3c_closing_addendum.md` | 2026-06-14 |
-| 3D | Epic | Phase 3 — Closing memo + re-evaluation versus RBF (must include OTM-clean re-statement of 3B verdict) — **NEXT: all gating epics (3A/3B/3X/3C) now `done`; 3D frames Phase 4 = RBF-prior hybrid / residual neural model** | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W13 / §4) | 2026-06-14 |
-| 3D.1 | Story | Decompose Phase 3D — readied (spec fixed: production-selection ADR is **0009**, not 0008; Phase 4 = RBF-prior hybrid framing); **NEXT to run** | `todo` | `docs/tasks/specs/3D.1_decompose_phase_3d.md` | 2026-06-14 |
+| 3D | Epic | Phase 3 — Closing memo + re-evaluation versus RBF (must include OTM-clean re-statement of 3B verdict); frames Phase 4 = RBF-prior hybrid / residual neural model — entered + decomposed (3D.2–3D.4 + ADR 0009 skeleton) | `in_progress` | `docs/roadmaps/phase3_accuracy_push.md` (W13 / §4) | 2026-06-15 |
+| 3D.1 | Story | Decompose Phase 3D — executed: epic 3D entered, 3D.2/3D.3/3D.4 drafted, ADR 0009 skeleton created | `in_review` | `docs/tasks/specs/3D.1_decompose_phase_3d.md` | 2026-06-15 |
+| 3D.2 | Story | Local: `scripts/generate_phase3_results_notebook.py` generator scaffold + smoke test (mirrors generate_phase2_results_notebook.py) | `backlog` | `docs/tasks/specs/3D.2_phase3_notebook_generator.md` | 2026-06-15 |
+| 3D.3 | Story | Local: `docs/phase3_result_memo.md` — Phase 3 verdict vs RBF + vs 2D, dirty + clean-OTM restatement, §5 acceptance map | `backlog` | `docs/tasks/specs/3D.3_phase3_result_memo.md` | 2026-06-15 |
+| 3D.4 | Story | Local: emit `notebooks/06_phase3_results.ipynb`, finalize ADR 0009 (production selection), journal close-out, flip epic 3D done (+ optional Phase 4 placeholder) | `backlog` | `docs/tasks/specs/3D.4_phase3_notebook_adr_journal_close.md` | 2026-06-15 |
 | M1 | Epic | Meta — Multi-agent collaboration infrastructure (ADR 0007: AGENTS.md router + executable rule gates) — → 3 gates live (PMR + dep + scope) + commit-msg trailer; dep gate now inspects push range; M1.6 (waiver post-commit-mutation fix) backlogged | `done` | `docs/roadmaps/meta1_agent_collaboration.md` | 2026-06-14 |
 | M1.1 | Story | Decompose M1 + ADR 0007 + 4 sub-specs | `done` | `docs/tasks/specs/M1.1_decompose_m1.md` | 2026-05-30 |
 | M1.2 | Story | `AGENTS.md` router + `.cursor/rules/000-bootstrap.mdc` + CLAUDE.md re-point | `done` | `docs/tasks/specs/M1.2_agents_md_and_cursor_bootstrap.md` | 2026-05-30 |
