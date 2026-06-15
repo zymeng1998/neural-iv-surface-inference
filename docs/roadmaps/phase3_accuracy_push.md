@@ -562,8 +562,10 @@ reserved. The full Phase 3 closing memo remains a 3D deliverable (Q3).
 
 ### W13 — Closing memo + re-evaluation (epic 3D)
 
-**Status (2026-06-14): teed up — all gating epics (3A / 3B / 3X / 3C)
-are `done`; 3D is the next epic to enter.** Pure synthesis on committed
+**Status (2026-06-14): 3D.1 readied and promoted to `todo` — all gating
+epics (3A / 3B / 3X / 3C) are `done`; running 3D.1 is the next action.**
+(Spec fix on readying: the production-selection ADR is **0009**, not
+0008 — 0008 is the microstructure freeze.) Pure synthesis on committed
 artifacts. Mirrors story 2D.10:
 
 - `docs/phase3_result_memo.md` with the headline table (all 3A / 3B /

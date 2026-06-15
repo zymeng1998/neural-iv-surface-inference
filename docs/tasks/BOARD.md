@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-06-14T00:00:00-04:00
+last_updated_at: 2026-06-14T23:10:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -109,15 +109,16 @@ decomposition). The first story of any epic is always its decomposition story.
 | 3C.5 | Story | Local: calibrator re-fit on ANP+`micro_v1` val predictions (mirrors 3X.11 / 3B.6) | `cancelled` | `docs/tasks/specs/3C.5_local_calibrator_refit_micro.md` | 2026-06-14 |
 | 3C.6 | Story | Remote: decision-layer eval on OTM with thresholds held constant against 3X.12 (Q2 invariant; mirrors 3X.12) | `cancelled` | `docs/tasks/specs/3C.6_remote_decision_layer_eval_micro.md` | 2026-06-14 |
 | 3C.7 | Story | Local: OTM-baseline vs OTM+`micro_v1` comparison tables (long + wide) on matched substrate (mirrors 3X.13) | `cancelled` | `docs/tasks/specs/3C.7_local_micro_vs_baseline_comparison.md` | 2026-06-14 |
-| 3C.8 | Story | Local: 3C closing addendum on §W12 + ADR 0008 → Implemented + journal/README sync (NOT full Phase 3 memo — 3D) — closed on 3C.3 training evidence alone after 3C.4–3C.7 cancelled | `in_review` | `docs/tasks/specs/3C.8_local_3c_closing_addendum.md` | 2026-06-14 |
+| 3C.8 | Story | Local: 3C closing addendum on §W12 + ADR 0008 → Implemented + journal/README sync (NOT full Phase 3 memo — 3D) — closed on 3C.3 training evidence alone after 3C.4–3C.7 cancelled | `done` | `docs/tasks/specs/3C.8_local_3c_closing_addendum.md` | 2026-06-14 |
 | 3D | Epic | Phase 3 — Closing memo + re-evaluation versus RBF (must include OTM-clean re-statement of 3B verdict) — **NEXT: all gating epics (3A/3B/3X/3C) now `done`; 3D frames Phase 4 = RBF-prior hybrid / residual neural model** | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W13 / §4) | 2026-06-14 |
-| 3D.1 | Story | Decompose Phase 3D — **unblocked (promote `backlog → todo`)** | `backlog` | `docs/tasks/specs/3D.1_decompose_phase_3d.md` | 2026-06-14 |
-| M1 | Epic | Meta — Multi-agent collaboration infrastructure (ADR 0007: AGENTS.md router + executable rule gates) — → 3 gates live (PMR + dep + scope) + commit-msg trailer; dep gate now inspects push range; M1.6 waiver-timing refinement deferred | `done` | `docs/roadmaps/meta1_agent_collaboration.md` | 2026-05-30 |
+| 3D.1 | Story | Decompose Phase 3D — readied (spec fixed: production-selection ADR is **0009**, not 0008; Phase 4 = RBF-prior hybrid framing); **NEXT to run** | `todo` | `docs/tasks/specs/3D.1_decompose_phase_3d.md` | 2026-06-14 |
+| M1 | Epic | Meta — Multi-agent collaboration infrastructure (ADR 0007: AGENTS.md router + executable rule gates) — → 3 gates live (PMR + dep + scope) + commit-msg trailer; dep gate now inspects push range; M1.6 (waiver post-commit-mutation fix) backlogged | `done` | `docs/roadmaps/meta1_agent_collaboration.md` | 2026-06-14 |
 | M1.1 | Story | Decompose M1 + ADR 0007 + 4 sub-specs | `done` | `docs/tasks/specs/M1.1_decompose_m1.md` | 2026-05-30 |
 | M1.2 | Story | `AGENTS.md` router + `.cursor/rules/000-bootstrap.mdc` + CLAUDE.md re-point | `done` | `docs/tasks/specs/M1.2_agents_md_and_cursor_bootstrap.md` | 2026-05-30 |
 | M1.3 | Story | `scripts/check_story_dependencies.py` + tests + `install_hooks.sh` (gate that would have caught 3X.4) | `done` | `docs/tasks/specs/M1.3_check_story_dependencies.md` | 2026-05-30 |
 | M1.4 | Story | `scripts/check_file_scope.py` + tests + pre-push wiring | `done` | `docs/tasks/specs/M1.4_check_file_scope.md` | 2026-05-30 |
 | M1.5 | Story | `commit-msg` hook — agent-trailer enforcement (Claude / Cursor / Codex / Aider) | `done` | `docs/tasks/specs/M1.5_commit_msg_trailer_hook.md` | 2026-05-30 |
+| M1.6 | Story | Pre-push waivers must not mutate tracked files after the pushed commit (write to a separate generated/untracked audit log + follow-up workflow) — observed twice (3C.3, 5787d2e) | `backlog` | `docs/tasks/specs/M1.6_waiver_audit_no_post_commit_mutation.md` | 2026-06-14 |
 
 > When an epic is entered, set it to `in_progress`, add its decomposition story
 > (e.g. `2A.1`), then add the resulting stories as new rows. Do not delete or

@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-06-14T00:00:00-04:00
+last_updated_at: 2026-06-14T23:10:00-04:00
 ---
 
 > **Read this first if you are picking up Phase 3 work cold.** It mirrors
@@ -59,11 +59,12 @@ last_updated_at: 2026-06-14T00:00:00-04:00
   `micro_v1`, the downstream eval chain (**3C.4 ensemble / 3C.5
   calibrator / 3C.6 decision-layer / 3C.7 comparison**) on the same
   feature set is **no longer informative and was cancelled**; 3C.8
-  closed the epic on 3C.3's training evidence alone and flipped ADR 0008
-  → **Implemented**. The Phase 3 acceptance bar (≥ 5 % below RBF) is
-  **still NOT met**. **Next action: promote 3D.1 (`backlog → todo`) —
-  Phase 3 closing memo + RBF re-eval; Phase 4 is framed as an RBF-prior
-  hybrid / residual neural model.** Full narrative:
+  closed the epic on 3C.3's training evidence alone (now `done`) and
+  flipped ADR 0008 → **Implemented**. The Phase 3 acceptance bar
+  (≥ 5 % below RBF) is **still NOT met**. **3D.1 is now `todo`
+  (readied) — next action: run the 3D.1 decomposition** (Phase 3 closing
+  memo + RBF re-eval; production-selection ADR is **0009**; Phase 4 is
+  framed as an RBF-prior hybrid / residual neural model). Full narrative:
   [ADR 0006](decisions/0006_duplicate_coordinate_data_correction.md) +
   [methodology progression](research/duplicate_coordinate_methodology_progression.md) +
   [retrospective 0002](retrospectives/0002_call_put_duplicate_coordinate_discovery.md).
@@ -111,9 +112,9 @@ last_updated_at: 2026-06-14T00:00:00-04:00
 | 3C.5 | Story | Local: calibrator re-fit on ANP+`micro_v1` val predictions (mirrors 3X.11 / 3B.6) — **cancelled (see 3C.4)** | `cancelled` | [`3C.5`](tasks/specs/3C.5_local_calibrator_refit_micro.md) | 2026-06-14 |
 | 3C.6 | Story | Remote: decision-layer eval on OTM, thresholds held constant against 3X.12 (Q2; mirrors 3X.12) — **cancelled (see 3C.4)** | `cancelled` | [`3C.6`](tasks/specs/3C.6_remote_decision_layer_eval_micro.md) | 2026-06-14 |
 | 3C.7 | Story | Local: OTM-baseline vs OTM+`micro_v1` comparison tables on matched substrate (mirrors 3X.13) — **cancelled (see 3C.4)** | `cancelled` | [`3C.7`](tasks/specs/3C.7_local_micro_vs_baseline_comparison.md) | 2026-06-14 |
-| 3C.8 | Story | Local: 3C closing addendum + ADR 0008 → Implemented + journal/README sync (NOT full Phase 3 memo — 3D) — closed on 3C.3 training evidence alone | `in_review` | [`3C.8`](tasks/specs/3C.8_local_3c_closing_addendum.md) | 2026-06-14 |
+| 3C.8 | Story | Local: 3C closing addendum + ADR 0008 → Implemented + journal/README sync (NOT full Phase 3 memo — 3D) — closed on 3C.3 training evidence alone | `done` | [`3C.8`](tasks/specs/3C.8_local_3c_closing_addendum.md) | 2026-06-14 |
 | 3D | Epic | Closing memo + re-evaluation vs RBF — **must include OTM-clean re-statement; frames Phase 4 = RBF-prior hybrid / residual neural** — **NEXT (all gating epics done)** | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W13 | 2026-06-14 |
-| 3D.1 | Story | Decompose Phase 3D — **unblocked (promote `backlog → todo`)** | `backlog` | [`3D.1`](tasks/specs/3D.1_decompose_phase_3d.md) | 2026-06-14 |
+| 3D.1 | Story | Decompose Phase 3D — readied (production-selection ADR is **0009**, not 0008; Phase 4 RBF-prior hybrid framing); **NEXT to run** | `todo` | [`3D.1`](tasks/specs/3D.1_decompose_phase_3d.md) | 2026-06-14 |
 
 ## Parallel-safety matrix
 
@@ -599,8 +600,14 @@ only if neither writes to a path in the other's `file_scope`.
   journal / README. Pure docs; no model / eval / pipeline run. Verdict
   scoped to `random40_noiselow_otm` only (no-overclaim guardrail
   carried from 3X). NOT the full Phase 3 memo (that is 3D — Q3).
-- **Next concrete action:** operator promotes 3C.8 → `done`; then
-  promote 3D.1 (`backlog → todo`).
+- **2026-06-14 — `done` (operator approved).** Promoted `in_review →
+  done`. `## Dependencies` rewritten to its real satisfied set (3C.3 +
+  3X.14, both `done`); cancelled 3C.6/3C.7 demoted to a prose note so the
+  pre-push dep gate no longer treats 3C.8 as depending on non-`done`
+  stories — the next push needs **no `WAIVE_DEPS`**. The post-push
+  `DEP/SCOPE WAIVER` audit lines from the 5787d2e push were folded into
+  this promotion commit (no standalone waiver-only commit; no
+  waiver-write loop). Follow-up filed as [M1.6](tasks/specs/M1.6_waiver_audit_no_post_commit_mutation.md).
 - **Open blocker:** none.
 
 ### 3D.1 — Decompose Phase 3D
@@ -616,13 +623,16 @@ only if neither writes to a path in the other's `file_scope`.
   OTM substrate and frames **Phase 4 = RBF-prior hybrid / residual
   neural model** as the production direction now that every pure
   conditional-neural variant (architecture in 3B, data correction in 3X,
-  features in 3C) has missed the ≥ 5 %-below-RBF bar. Note: the 3D.1
-  spec still refers to "ADR 0008 — production predictor selection"; that
-  number is now taken by the microstructure freeze — the production
-  selection ADR is **ADR 0009** (roadmap §6). 3D.1 should fix this on
-  execution.
-- **Next concrete action:** operator promotes `3D.1` from `backlog →
-  todo` and runs the decomposition.
+  features in 3C) has missed the ≥ 5 %-below-RBF bar.
+- **2026-06-14 — readied; promoted `backlog → todo`.** Spec fixed: the
+  ADR-number collision is resolved (production-selection ADR is **0009**,
+  not 0008 — 0008 is the microstructure freeze) across Purpose,
+  `file_scope`, "Files likely to touch", and the 3D.4 skeleton; the
+  Phase 4 RBF-prior-hybrid framing is written into the spec. This was
+  preparation only — running 3D.1 still sets epic 3D `in_progress` and
+  drafts the 3D.2/3D.3/3D.4 child specs.
+- **Next concrete action:** run the 3D.1 decomposition (epic 3D →
+  `in_progress`; draft child stories; update roadmap §W13 + this index).
 - **Open blocker:** none.
 
 ## Resume snippet (copy-paste into a fresh session)

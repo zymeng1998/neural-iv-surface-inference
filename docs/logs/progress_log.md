@@ -4492,3 +4492,69 @@ directly.
 - Operator promotes 3C.8 → `done`; then promotes 3D.1 (`backlog → todo`)
   and runs the Phase 3D decomposition (closing memo + RBF re-eval; frame
   Phase 4 = RBF-prior hybrid).
+
+---
+
+## 2026-06-14 (late) — 3C.8 → done + 3D.1 readied to todo + M1.6 waiver-hook follow-up
+
+### What was completed
+
+Operator-approved finalize of 3C + setup for 3D, designed as a
+**zero-waiver** push (no `WAIVE_DEPS` / `WAIVE_SCOPE`):
+
+- **3C.8 `in_review → done`** (BOARD + spec). Its `## Dependencies` was
+  rewritten to its real, satisfied set — 3C.3 `done` + 3X.14 `done` —
+  with the cancelled 3C.6/3C.7 demoted to a prose `Note:` line. Because
+  the dep-gate regex only extracts an ID when a bullet *starts* with it,
+  this removes the only reason the gate treated 3C.8 as an active story
+  with non-`done` dependencies. No `WAIVE_DEPS` needed going forward.
+- **Post-push waiver-audit cleanup.** The three `DEP/SCOPE WAIVER` lines
+  the pre-push hook appended to `3C.8` during the 5787d2e push were
+  folded into this promotion commit — *not* a standalone "waiver-only"
+  commit (per operator instruction). With 3C.8 now `done` (not active for
+  the scope gate) and its deps `done`-only, committing them writes no new
+  audit line → no waiver-write loop.
+- **3D.1 `backlog → todo` (readied, not executed).** Fixed the
+  ADR-number collision: the production-selection ADR is **0009**, not
+  0008 (0008 is the microstructure-feature freeze, Implemented). Fixed in
+  the spec's Purpose, `file_scope` (`0008_*` → `0009_*`), "Files likely
+  to touch", and the 3D.4 skeleton; wrote in the **Phase 4 = RBF-prior
+  hybrid / residual neural** framing. Running the decomposition (epic 3D
+  → in_progress, child specs 3D.2–3D.4) remains the next step.
+- **M1.6 filed (backlog).** New story
+  `docs/tasks/specs/M1.6_waiver_audit_no_post_commit_mutation.md` +
+  BOARD row: the pre-push gates should not mutate tracked files *after*
+  the pushed commit; write waiver audit trails to a separate
+  generated/untracked log with an explicit follow-up workflow. Formalises
+  the previously-deferred "M1.6 waiver-timing refinement" on the M1 row.
+
+### Zero-waiver design (why no waiver this push)
+
+- **Scope gate** (active = {in_progress, in_review}): no changed spec is
+  in either status (3C.8 `done`, 3D.1 `todo`, M1.6 `backlog`) → gate sees
+  no active specs → trivially PASS.
+- **Dep gate** (active = {in_progress, in_review, done}): only 3C.8 is
+  active; its deps now resolve to `done`-only → PASS.
+- **PMR gate:** docs-only; no evidence-source change → PASS.
+
+### Files touched (docs/planning only)
+
+- `docs/tasks/specs/3C.8_local_3c_closing_addendum.md` (→ done; deps fix;
+  checkpoint; folded waiver lines)
+- `docs/tasks/specs/3D.1_decompose_phase_3d.md` (→ todo; ADR 0009 fix;
+  Phase 4 framing; checkpoint)
+- `docs/tasks/specs/M1.6_waiver_audit_no_post_commit_mutation.md` (new)
+- `docs/tasks/BOARD.md`, `docs/PHASE3_INDEX.md`, `docs/roadmaps/phase3_accuracy_push.md` (§W13 status)
+- `STATUS.md`, this log.
+
+### Tests
+
+- No code / model / eval / pipeline run (pure docs). All three pre-push
+  gates verified to PASS standalone before push (no waiver env vars).
+
+### Next actions
+
+- Run the **3D.1 decomposition**: epic 3D → `in_progress`; draft 3D.2
+  (notebook scaffold) / 3D.3 (memo) / 3D.4 (notebook + ADR 0009 + journal
+  close-out); update roadmap §W13 + index with the concrete story list.
+- When convenient, schedule **M1.6** (waiver-hook fix).
