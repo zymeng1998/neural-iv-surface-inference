@@ -2,9 +2,13 @@
 
 ## Status
 
-Accepted (2026-06-02). Locked by Phase 3C decomposition story
-[`3C.1`](../tasks/specs/3C.1_decompose_phase_3c.md). Will move to
-**Implemented** on 3C.8 close.
+**Implemented (2026-06-14).** Accepted 2026-06-02, locked by Phase 3C
+decomposition story [`3C.1`](../tasks/specs/3C.1_decompose_phase_3c.md);
+shipped behind the `feature_set ∈ {minimal, micro_v1}` flag in 3C.2 and
+trained on OTM in 3C.3. Moved to **Implemented** on the 3C.8 close — see
+the Outcome block below. **Result: negative — `micro_v1` worsened test
+MAE in all three heads vs the minimal baseline; the feature set is
+frozen as specified but is *not* adopted as a production feature set.**
 
 ## Date
 
@@ -230,10 +234,58 @@ for 3D / Phase 4.
 
 ---
 
-## Outcome (2026-MM-DD — recorded by 3C.8 on close)
+## Outcome (2026-06-14 — recorded by 3C.8 on close)
 
-To be filled by 3C.8 with: full-fold test MAE per head on
-`spy_phase1_random40_noiselow_otm`, ANP-vs-RBF delta vs the 3X.6 RBF
-floor (0.00613), ANP-vs-ANP delta vs the 3X.9 / 3X.10 OTM baselines,
-calibrated decision-layer numbers vs 3X.12 with thresholds held
-constant, and the Phase 3 bar verdict.
+**Negative result. `micro_v1` does not help; the Phase 3 bar remains
+NOT met.** 3C.3 trained the end-to-end DeepSets+ANP model with
+`feature_set: micro_v1` across all three heads on
+`spy_phase1_random40_noiselow_otm`, a faithful head-by-head restatement
+of 3X.9 whose only delta is the per-quote feature tuple. Evidence:
+`artifacts/runs/3C3/{gaussian,quantile,point}/manifest.json` +
+`training_curve.csv` (committed) and the 3C.3 `experiment_journal.md`
+entry.
+
+| Head | `micro_v1` test MAE (3C.3) | `minimal` test MAE (3X.9) | Δ (micro − minimal) | RBF-on-OTM floor (3X.6) |
+|---|---:|---:|---:|---:|
+| gaussian | 0.01634 | 0.01440 | **+0.00194** | 0.00613 |
+| quantile | 0.01362 | 0.01175 | **+0.00187** | 0.00613 |
+| point | 0.01439 | 0.00987 | **+0.00452** | 0.00613 |
+
+- **ANP-vs-ANP-baseline (vs 3X.9):** `micro_v1` is **worse** on test MAE
+  in every head. The regression is head-uniform.
+- **ANP-vs-RBF (vs the 3X.6 floor 0.00613):** every `micro_v1` head sits
+  well above the floor — `micro_v1` does not narrow the post-3X gap to
+  RBF (best `minimal` head 0.00987 was already +61 %; `micro_v1` widens
+  it). The Phase 3 ≥ 5 %-below-RBF bar is **NOT met**.
+- **No calibrated / decision-layer numbers.** Because the base-accuracy
+  result is already negative, the downstream chain that would have
+  produced calibrated-production + decision-layer numbers (3C.4 ensemble
+  / 3C.5 calibrator / 3C.6 Q2 decision-layer / 3C.7 comparison) was
+  **cancelled** as no longer informative; the verdict stands on 3C.3
+  alone. (Calibration/abstention reshape the reliability layer but
+  cannot pull base MAE below the model's own point predictions.)
+
+### Open questions (from the "deferred to 3C.8" block) — answered
+
+- **Feature-set-additive vs head-dependent?** Head-dependent is ruled
+  out: all three heads regressed by a similar margin, consistent with an
+  input-conditioning effect rather than a head interaction.
+- **Log-transform `volume` / `open_interest` before z-scoring?** 3C.3
+  flagged a pathological train-split tail (ask 691σ on a single ~$5000
+  quote, volume 922σ) — exactly the condition this ADR reserved for an
+  opt-in log-transform re-fit. It is **not pursued under 3C**: pure
+  feature expansion already missed the bar, so the higher-value forward
+  path is the Phase 4 RBF-prior hybrid, not a `micro_v1` rescue. The
+  log-transform remains available as an opt-in re-fit if a future epic
+  revisits microstructure features.
+- **A `micro_v2` with `vix` / `realized_vol` via a new data-source ADR?**
+  Not recommended now. Deferred indefinitely in favour of the Phase 4
+  hybrid direction (roadmap §W13).
+
+**No-overclaim guardrail:** scoped to the matched `random40_noiselow_otm`
+substrate only; no robustness claim across the other 10 OTM variants.
+
+The `micro_v1` feature list and `feature_set` flag remain frozen and
+available (default `minimal` keeps every legacy checkpoint reproducible
+byte-for-byte), but `micro_v1` is **not** adopted as a production feature
+set. Forward path recorded in the §W12 closing addendum and §W13.

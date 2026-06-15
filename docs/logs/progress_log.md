@@ -4424,3 +4424,71 @@ feature_set is now authoritative); paths repointed to `artifacts/runs/3C3/`.
 
 - Operator promotes 3C.3 `in_review → done`; then 3C.4 (ensemble) + 3C.5
   (calibrator refit on these val predictions).
+
+---
+
+## 2026-06-14 — 3C.8 closing addendum + epic 3C close (3C.4–3C.7 cancelled) + 3B/3D housekeeping
+
+### What was completed
+
+Closed epic **3C** on the strength of 3C.3's training evidence alone.
+3C.3 showed `micro_v1` *worsens* test MAE in all three heads vs the 3X.9
+minimal-feature OTM baseline (gauss +0.00194 / quant +0.00187 / point
++0.00452; all above the RBF-on-OTM floor 0.00613) — a clean negative
+that settles the headline 3C question against `micro_v1`. The Phase 3
+≥ 5 %-below-RBF bar is **NOT met**.
+
+Because base accuracy already regressed, the downstream eval chain on the
+same feature set is no longer informative, so **3C.4 (ensemble), 3C.5
+(calibrator), 3C.6 (decision-layer), 3C.7 (comparison) were cancelled**
+(operator-directed) rather than run — no Pod spend. 3C.8 closed the epic
+directly.
+
+### Course correction this entry records
+
+- **Cancellation, not failure:** 3C.4–3C.7 are `cancelled` with a
+  one-line rationale in each spec + the §W12 closing addendum. Ensembling
+  / calibration / abstention reshape the reliability layer but cannot
+  pull base test MAE below the model's own point predictions, so
+  re-running them on a known-worse feature set would only re-confirm the
+  negative.
+- **3B dirty-substrate verdict superseded:** the dangling 3B.1 / 3B.6 /
+  3B.7 `in_review` rows were promoted to `done` and epic 3B → `done`. The
+  original 3B verdict (ANP +2.7 % vs RBF on the dirty substrate) is
+  explicitly marked **superseded by the 3X clean-OTM restatement** (gap
+  widened to +61 % best head / +90 % calibrated production). The §W11
+  addendum is preserved for traceability.
+- **3D teed up:** all gating epics (3A / 3B / 3X / 3C) are now `done`;
+  3D is the next epic. Phase 4 is framed as an **RBF-prior hybrid /
+  residual neural model** (roadmap §W13).
+
+### Files touched (docs/planning only)
+
+- `docs/decisions/0008_microstructure_feature_set_freeze.md` — status →
+  **Implemented**; Outcome block filled; three deferred open questions
+  answered.
+- `docs/roadmaps/phase3_accuracy_push.md` — §W12 closing addendum;
+  3C.4–3C.7 marked cancelled; §W13 Phase 4 framing; status block update;
+  §W11.5 3X.7/3X.8 in_review→done drift fixed.
+- `docs/tasks/BOARD.md`, `docs/PHASE3_INDEX.md` — epic 3C → done; 3C.4–3C.7
+  → cancelled; 3C.8 → in_review; 3B.* → done; 3B/3C epic notes; 3D row
+  teed up; index per-story checkpoints + 30-second orientation + 3X.13
+  drift fix.
+- `docs/tasks/specs/3C.4–3C.7` → cancelled (rationale banners);
+  `docs/tasks/specs/3C.8` → in_review (executed checkpoint);
+  `docs/tasks/specs/3B.1, 3B.6, 3B.7` → done (promotion notes).
+- `docs/experiments/experiment_journal.md` — 3C close-out entry.
+- `README.md` — Current Phase callout, Phase 3 table, 3C closing-result
+  paragraph, Immediate Next Steps.
+- `STATUS.md` — refreshed (no longer claims 3C.3 in progress).
+
+### Tests
+
+- No code / model / eval / pipeline run (pure docs). PMR gate dry-run to
+  be run before any push.
+
+### Next actions
+
+- Operator promotes 3C.8 → `done`; then promotes 3D.1 (`backlog → todo`)
+  and runs the Phase 3D decomposition (closing memo + RBF re-eval; frame
+  Phase 4 = RBF-prior hybrid).

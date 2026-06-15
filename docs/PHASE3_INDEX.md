@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-06-02T22:30:00-04:00
+last_updated_at: 2026-06-14T00:00:00-04:00
 ---
 
 > **Read this first if you are picking up Phase 3 work cold.** It mirrors
@@ -46,22 +46,24 @@ last_updated_at: 2026-06-02T22:30:00-04:00
   wins on the clean OTM benchmark and the gap *widened* (best ANP head
   +2.7% dirty → +61% OTM; bar still NOT MET); the DeepSets→ANP
   architecture story survives (no Q5 reopen); ADR 0006 → Implemented.
-  **3C ENTERED 2026-06-02 — decomposition in_review.** Scope locked:
+  **3C CLOSED 2026-06-14 (3C.8).** Scope was
   **microstructure-only (`micro_v1`)** per
   [ADR 0008](decisions/0008_microstructure_feature_set_freeze.md) —
   six AV-native per-quote fields (`bid`, `ask`, `bid_ask_spread_rel`,
   `volume`, `open_interest`, `put_call_indicator`) → 9-dim context.
-  SVI / SSVI head deferred. Three-head sweep + K=5 ensemble + Q2
-  decision-layer invariant held; matched `random40_noiselow_otm` only.
-  Seven new stories (3C.2 … 3C.8), **all promoted to `todo`**
-  (2026-06-02) and 3C.1 closed `done`. **3C.2 implemented (2026-06-03,
-  `in_review`)** — the `feature_set ∈ {minimal, micro_v1}` flag is wired
-  through loader / encoder / model / predictor / training loop with the
-  default `minimal` preserving every legacy checkpoint byte-for-byte (16
-  new tests; full suite 417 passed). **Next action: operator promotes
-  3C.2 → `done`, then 3C.3 (remote three-head retrain consuming the
-  flag) — the strict chain 3C.2 → … → 3C.8.** The Phase 3 acceptance bar is unchanged but is
-  now adjudicated on the OTM-clean benchmark. Full narrative:
+  3C.3 ran the three-head ANP retrain and the result was a **clean
+  negative**: `micro_v1` WORSENED test MAE in every head vs the matched
+  3X.9 minimal-feature OTM baseline (gauss 0.01634 / quant 0.01362 /
+  point 0.01439 vs 0.01440 / 0.01175 / 0.00987; all above the RBF-on-OTM
+  floor 0.00613). Because that settles the headline 3C question against
+  `micro_v1`, the downstream eval chain (**3C.4 ensemble / 3C.5
+  calibrator / 3C.6 decision-layer / 3C.7 comparison**) on the same
+  feature set is **no longer informative and was cancelled**; 3C.8
+  closed the epic on 3C.3's training evidence alone and flipped ADR 0008
+  → **Implemented**. The Phase 3 acceptance bar (≥ 5 % below RBF) is
+  **still NOT met**. **Next action: promote 3D.1 (`backlog → todo`) —
+  Phase 3 closing memo + RBF re-eval; Phase 4 is framed as an RBF-prior
+  hybrid / residual neural model.** Full narrative:
   [ADR 0006](decisions/0006_duplicate_coordinate_data_correction.md) +
   [methodology progression](research/duplicate_coordinate_methodology_progression.md) +
   [retrospective 0002](retrospectives/0002_call_put_duplicate_coordinate_discovery.md).
@@ -78,14 +80,14 @@ last_updated_at: 2026-06-02T22:30:00-04:00
 | 3A.2 | Story | Local: Fourier-feature module + `coord_encoding` flag + unit / wiring tests | `done` | [`3A.2`](tasks/specs/3A.2_local_fourier_feature_module.md) | 2026-05-28 |
 | 3A.3 | Story | Remote: decoder-only retrain on frozen 2D.7 encoder (Fourier vs raw) | `done` | [`3A.3`](tasks/specs/3A.3_remote_decoder_only_retrain.md) | 2026-05-28 |
 | 3A.4 | Story | Local: eval of both variants vs 2D.9 baselines + journal + roadmap addendum | `done` | [`3A.4`](tasks/specs/3A.4_local_eval_and_addendum.md) | 2026-05-28 |
-| 3B | Epic | Cross-attention decoder (ANP picked per [ADR 0005](decisions/0005_cross_attention_architecture_choice.md); end-to-end DeepSets+ANP, raw `(k, τ)`) | `in_progress` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W11 | 2026-05-28 |
-| 3B.1 | Story | Decompose Phase 3B (ADR 0005 + 3B.2–3B.7 specs) | `in_review` | [`3B.1`](tasks/specs/3B.1_decompose_phase_3b.md) | 2026-05-28 |
+| 3B | Epic | Cross-attention decoder (ANP picked per [ADR 0005](decisions/0005_cross_attention_architecture_choice.md); end-to-end DeepSets+ANP, raw `(k, τ)`) — → bar NOT met (+2.7% dirty); **dirty-substrate verdict SUPERSEDED by 3X clean-OTM restatement** | `done` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W11 | 2026-06-14 |
+| 3B.1 | Story | Decompose Phase 3B (ADR 0005 + 3B.2–3B.7 specs) | `done` | [`3B.1`](tasks/specs/3B.1_decompose_phase_3b.md) | 2026-06-14 |
 | 3B.2 | Story | Local: ANP decoder module + `decoder_kind` flag + unit / smoke / integration tests | `done` | [`3B.2`](tasks/specs/3B.2_local_anp_cross_attention_decoder.md) | 2026-05-28 |
 | 3B.3 | Story | Local: ANP predictor-adapter wiring (evaluator parity test) | `done` | [`3B.3`](tasks/specs/3B.3_local_predictor_adapter.md) | 2026-05-28 |
 | 3B.4 | Story | Remote: full AV training of ANP across `head.kind ∈ {gaussian, quantile, point}` | `done` | [`3B.4`](tasks/specs/3B.4_remote_full_av_training.md) | 2026-05-28 |
 | 3B.5 | Story | Remote: K=5 deep ensemble of ANP point head on AV (parallels 2D.8) | `done` | [`3B.5`](tasks/specs/3B.5_remote_deep_ensemble.md) | 2026-05-29 |
-| 3B.6 | Story | Local: calibrator re-fit on ANP val predictions (parallels 2D.4) | `in_review` | [`3B.6`](tasks/specs/3B.6_local_calibrator_refit.md) | 2026-05-28 |
-| 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + closing addendum (ANP +2.7% vs RBF best-case; bar NOT met) | `in_review` | [`3B.7`](tasks/specs/3B.7_local_decision_layer_eval.md) | 2026-05-28 |
+| 3B.6 | Story | Local: calibrator re-fit on ANP val predictions (parallels 2D.4) | `done` | [`3B.6`](tasks/specs/3B.6_local_calibrator_refit.md) | 2026-06-14 |
+| 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + closing addendum (ANP +2.7% vs RBF best-case; bar NOT met — **superseded by 3X clean-OTM**) | `done` | [`3B.7`](tasks/specs/3B.7_local_decision_layer_eval.md) | 2026-06-14 |
 | 3X | Epic | **NEW** Data correction: OTM-restricted surface + paired masking + full model-family restatement on `random40_noiselow_otm` (ADR 0006) — **CLOSED** (3X.14): RBF wins, gap WIDENED on clean OTM; DeepSets→ANP survives; ADR 0006 Implemented | `done` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W11.5 | 2026-06-02 |
 | 3X.1 | Story | Decompose Phase 3X (ADR 0006 addendum + 3X.2–3X.14 specs) | `done` | [`3X.1`](tasks/specs/3X.1_decompose_phase_3x.md) | 2026-06-02 |
 | 3X.2 | Story | Local: OTM-surface builder + step-04 `--source` + ATM-band (D5) + residual handling (D7) + tests | `done` | [`3X.2`](tasks/specs/3X.2_local_otm_surface_builder.md) | 2026-05-30 |
@@ -99,19 +101,19 @@ last_updated_at: 2026-06-02T22:30:00-04:00
 | 3X.10 | Story | Remote (GPU): ANP K=5 ensemble-on-OTM — → ensemble test MAE **0.01220**, disagreement mean 0.00679 (~56% of dirty 3B.5) | `done` | [`3X.10`](tasks/specs/3X.10_remote_anp_ensemble_on_otm.md) | 2026-06-02 |
 | 3X.11 | Story | Local: calibrator re-fit on OTM val predictions — → val cov **0.9000**, T=1.005, ens_scale=1.91, val hi-conf MAE 0.00849 < no-abst 0.01349; test cov 0.866 (val→test drift ~3.4pp, > 3B.6 dirty) | `done` | [`3X.11`](tasks/specs/3X.11_local_calibration_on_otm.md) | 2026-06-02 |
 | 3X.12 | Story | Remote: decision-layer eval on OTM, thresholds held constant (Q2) — → test MAE **0.01162**, hi-conf MAE **0.00835**, cov@0.90 **0.9295**, mean_width **0.0538**, abstain 1.0, flag-viol **1814** (dirty 3B.7: 0.0813 / 0.0542 / 0.915 / 0.304 / 1.0 / 9007 — ~7× MAE, ~5.6× width, 20 % violations under unchanged thresholds) | `done` | [`3X.12`](tasks/specs/3X.12_remote_decision_layer_eval_on_otm.md) | 2026-06-02 |
-| 3X.13 | Story | Local: dirty-vs-OTM comparison tables (matched substrate) — → 11 family×head pairs, OTM beats dirty by **3.0×–10.8×** on test MAE (RBF widest, MLP narrowest); calibrated-fused 7.0× (0.0813 → 0.01162) | `in_review` | [`3X.13`](tasks/specs/3X.13_local_dirty_vs_otm_comparison.md) | 2026-06-02 |
+| 3X.13 | Story | Local: dirty-vs-OTM comparison tables (matched substrate) — → 11 family×head pairs, OTM beats dirty by **3.0×–10.8×** on test MAE (RBF widest, MLP narrowest); calibrated-fused 7.0× (0.0813 → 0.01162) | `done` | [`3X.13`](tasks/specs/3X.13_local_dirty_vs_otm_comparison.md) | 2026-06-02 |
 | 3X.14 | Story | Local: 3X closing addendum + methodology progression (Q3) — → verdict **RBF-vs-ANP unchanged in direction, gap WIDENED** (+2.7%→+61% best head; bar still NOT MET); **DeepSets→ANP story SURVIVES** (no Q5 reopen); ADR 0006 → Implemented; narrative committed | `done` | [`3X.14`](tasks/specs/3X.14_local_closing_addendum.md) | 2026-06-02 |
-| 3C | Epic | Feature & inductive-bias expansion (microstructure-only per 3C.1 / ADR 0008; SVI deferred) — on OTM clean substrate | `in_progress` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W12 | 2026-06-02 |
+| 3C | Epic | Feature & inductive-bias expansion (microstructure-only per 3C.1 / ADR 0008; SVI deferred) — on OTM clean substrate — → **CLOSED (3C.8): `micro_v1` WORSENED test MAE in all 3 heads vs 3X.9; bar NOT met; ADR 0008 Implemented; 3C.4–3C.7 cancelled** | `done` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W12 | 2026-06-14 |
 | 3C.1 | Story | Decompose Phase 3C (ADR 0008 + 3C.2–3C.8 specs; microstructure-only / `micro_v1` / 3-head / OTM) | `done` | [`3C.1`](tasks/specs/3C.1_decompose_phase_3c.md) | 2026-06-02 |
 | 3C.2 | Story | Local: microstructure feature pipeline + `feature_set ∈ {minimal, micro_v1}` flag on loader/encoder/model/predictor + tests (no training) | `done` | [`3C.2`](tasks/specs/3C.2_local_micro_feature_pipeline.md) | 2026-06-03 |
 | 3C.3 | Story | Remote (GPU): DeepSets+ANP retrain with `micro_v1` across `head.kind ∈ {gaussian, quantile, point}` on OTM (mirrors 3X.9). Ran; micro_v1 worse than 3X.9 on test MAE in all 3 heads | `done` | [`3C.3`](tasks/specs/3C.3_remote_anp_micro_three_head.md) | 2026-06-03 |
-| 3C.4 | Story | Remote (GPU): K=5 ANP+`micro_v1` point-head ensemble on OTM (mirrors 3X.10) | `todo` | [`3C.4`](tasks/specs/3C.4_remote_anp_micro_ensemble.md) | 2026-06-02 |
-| 3C.5 | Story | Local: calibrator re-fit on ANP+`micro_v1` val predictions (mirrors 3X.11 / 3B.6) | `todo` | [`3C.5`](tasks/specs/3C.5_local_calibrator_refit_micro.md) | 2026-06-02 |
-| 3C.6 | Story | Remote: decision-layer eval on OTM, thresholds held constant against 3X.12 (Q2; mirrors 3X.12) | `todo` | [`3C.6`](tasks/specs/3C.6_remote_decision_layer_eval_micro.md) | 2026-06-02 |
-| 3C.7 | Story | Local: OTM-baseline vs OTM+`micro_v1` comparison tables on matched substrate (mirrors 3X.13) | `todo` | [`3C.7`](tasks/specs/3C.7_local_micro_vs_baseline_comparison.md) | 2026-06-02 |
-| 3C.8 | Story | Local: 3C closing addendum + ADR 0008 → Implemented + journal/README sync (NOT full Phase 3 memo — 3D) | `todo` | [`3C.8`](tasks/specs/3C.8_local_3c_closing_addendum.md) | 2026-06-02 |
-| 3D | Epic | Closing memo + re-evaluation vs RBF — **must include OTM-clean re-statement** | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W13 | 2026-06-02 |
-| 3D.1 | Story | Decompose Phase 3D | `backlog` | [`3D.1`](tasks/specs/3D.1_decompose_phase_3d.md) | 2026-05-29 |
+| 3C.4 | Story | Remote (GPU): K=5 ANP+`micro_v1` point-head ensemble on OTM (mirrors 3X.10) — **cancelled: 3C.3 showed `micro_v1` worsens test MAE, so ensemble/calibration/eval on the same feature set is no longer informative** | `cancelled` | [`3C.4`](tasks/specs/3C.4_remote_anp_micro_ensemble.md) | 2026-06-14 |
+| 3C.5 | Story | Local: calibrator re-fit on ANP+`micro_v1` val predictions (mirrors 3X.11 / 3B.6) — **cancelled (see 3C.4)** | `cancelled` | [`3C.5`](tasks/specs/3C.5_local_calibrator_refit_micro.md) | 2026-06-14 |
+| 3C.6 | Story | Remote: decision-layer eval on OTM, thresholds held constant against 3X.12 (Q2; mirrors 3X.12) — **cancelled (see 3C.4)** | `cancelled` | [`3C.6`](tasks/specs/3C.6_remote_decision_layer_eval_micro.md) | 2026-06-14 |
+| 3C.7 | Story | Local: OTM-baseline vs OTM+`micro_v1` comparison tables on matched substrate (mirrors 3X.13) — **cancelled (see 3C.4)** | `cancelled` | [`3C.7`](tasks/specs/3C.7_local_micro_vs_baseline_comparison.md) | 2026-06-14 |
+| 3C.8 | Story | Local: 3C closing addendum + ADR 0008 → Implemented + journal/README sync (NOT full Phase 3 memo — 3D) — closed on 3C.3 training evidence alone | `in_review` | [`3C.8`](tasks/specs/3C.8_local_3c_closing_addendum.md) | 2026-06-14 |
+| 3D | Epic | Closing memo + re-evaluation vs RBF — **must include OTM-clean re-statement; frames Phase 4 = RBF-prior hybrid / residual neural** — **NEXT (all gating epics done)** | `backlog` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W13 | 2026-06-14 |
+| 3D.1 | Story | Decompose Phase 3D — **unblocked (promote `backlog → todo`)** | `backlog` | [`3D.1`](tasks/specs/3D.1_decompose_phase_3d.md) | 2026-06-14 |
 
 ## Parallel-safety matrix
 
@@ -547,48 +549,59 @@ only if neither writes to a path in the other's `file_scope`.
 
 - **2026-06-02** registered (not yet executed). Scope: clone the 3X.10
   ensemble config; flip `data.feature_set: micro_v1`; keep seeds
-  `[101, 202, 303, 404, 505]`; ~2 h Pod sweep. Best amortised in the
-  same Pod window as 3C.3.
-- **Next concrete action:** gate on 3C.3 close.
-- **Open blocker:** 3C.3.
+  `[101, 202, 303, 404, 505]`; ~2 h Pod sweep.
+- **2026-06-14 — CANCELLED.** 3C.3 settled the headline 3C question:
+  `micro_v1` worsens test MAE in all three heads vs the 3X.9 minimal
+  baseline. An ensemble of a feature set that already underperforms its
+  own single-model baseline cannot rehabilitate the verdict, so this
+  story is no longer informative. Cancelled rather than executed; no Pod
+  spend. Rationale recorded in the spec + §W12 closing addendum.
 
 ### 3C.5 — Local: calibrator re-fit on ANP+`micro_v1` val predictions
 
 - **2026-06-02** registered (not yet executed). Scope: clone the
-  3X.11 calibration config; re-point input val parquets at 3C.3 +
-  3C.4 outputs; produce `artifacts/calibration/3C5_anp_micro.json`.
-  CPU-only, ~5–10 min wall + tests.
-- **Next concrete action:** gate on 3C.3 + 3C.4 close + val parquets
-  pulled to local.
-- **Open blocker:** 3C.3, 3C.4.
+  3X.11 calibration config; re-point at 3C.3 / 3C.4 val parquets.
+- **2026-06-14 — CANCELLED.** Calibration/abstention reshapes the
+  reliability layer but cannot move base test MAE below the model's own
+  point predictions; with `micro_v1` already worse than the 3X.9
+  baseline (and 3C.4 cancelled), there is nothing informative to
+  calibrate against the bar. See 3C.4.
 
 ### 3C.6 — Remote: decision-layer eval on OTM with thresholds held constant
 
 - **2026-06-02** registered (not yet executed). Scope: clone the
-  3X.12 decision-layer config; flip predictor wiring at 3C.3 / 3C.4
-  / 3C.5 only; thresholds bit-for-bit identical to 3X.12 (Q2
-  invariant). Ships `results/3/spy_phase1_random40_noiselow_otm/3c_anp_micro/`.
-- **Next concrete action:** gate on 3C.5 close.
-- **Open blocker:** 3C.5.
+  3X.12 decision-layer config; thresholds bit-for-bit identical (Q2).
+- **2026-06-14 — CANCELLED.** The Q2 decision-layer eval exists to
+  adjudicate the production verdict for a feature set that improved (or
+  plausibly improved) base accuracy. `micro_v1` did not, so running it
+  would only re-confirm a known-worse result at Pod cost. See 3C.4.
 
 ### 3C.7 — Local: `micro_v1` vs OTM-baseline comparison tables
 
-- **2026-06-02** registered (not yet executed). Scope: assemble long +
-  wide comparison CSVs (matched substrate) from already-committed
-  3X.6 / 3X.9 / 3X.10 / 3X.12 / 3C.3 / 3C.4 / 3C.6 bundles. No
-  re-runs; provenance tests on every cell.
-- **Next concrete action:** gate on 3C.6 close.
-- **Open blocker:** 3C.6.
+- **2026-06-02** registered (not yet executed). Scope: long + wide
+  comparison CSVs from 3C.3 / 3C.4 / 3C.6 + 3X.* bundles.
+- **2026-06-14 — CANCELLED.** The 3C.3 journal entry already carries the
+  per-head `micro_v1`-vs-3X.9-vs-RBF comparison table that this story
+  would have formalised; with 3C.4 / 3C.6 cancelled there are no
+  additional ensemble / decision-layer cells to assemble. The §W12
+  closing addendum cites the 3C.3 numbers directly. See 3C.4.
 
 ### 3C.8 — Local: 3C closing addendum + ADR 0008 → Implemented
 
-- **2026-06-02** registered (not yet executed). Scope: §W12 closing
-  addendum + ADR 0008 status flip with filled Outcome block + BOARD
-  / PHASE3_INDEX / progress_log / journal / README sync. Pure docs.
-  NOT the full Phase 3 closing memo (that is 3D — Q3 carried from
-  3X).
-- **Next concrete action:** gate on 3C.7 close.
-- **Open blocker:** 3C.7.
+- **2026-06-02** registered (not yet executed).
+- **2026-06-14 — executed (`in_review`).** Closed epic 3C on **3C.3's
+  training evidence alone** (3C.4–3C.7 cancelled). Wrote the §W12
+  closing addendum (verdict: `micro_v1` worsens test MAE in all three
+  heads; Phase 3 bar still NOT met), flipped
+  [ADR 0008](decisions/0008_microstructure_feature_set_freeze.md) →
+  **Implemented** with the Outcome block filled and the three deferred
+  open questions answered, and synced BOARD / index / progress_log /
+  journal / README. Pure docs; no model / eval / pipeline run. Verdict
+  scoped to `random40_noiselow_otm` only (no-overclaim guardrail
+  carried from 3X). NOT the full Phase 3 memo (that is 3D — Q3).
+- **Next concrete action:** operator promotes 3C.8 → `done`; then
+  promote 3D.1 (`backlog → todo`).
+- **Open blocker:** none.
 
 ### 3D.1 — Decompose Phase 3D
 
@@ -598,9 +611,19 @@ only if neither writes to a path in the other's `file_scope`.
   numbers (and the 3A delta if material) on the substrate produced
   by 3X.2 / 3X.3, alongside the original `spy_phase1_random40_noiselow`
   numbers preserved for traceability.
-- **Next concrete action:** gate on 3A / 3B / 3X / 3C closing, then
-  human promotes `3D.1` to `todo`.
-- **Open blocker:** depends on 3A, 3B, **3X**, 3C closing.
+- **2026-06-14 — UNBLOCKED.** All gating epics (3A, 3B, 3X, 3C) are now
+  `done`. 3D synthesises the full Phase 3 ladder versus RBF on the clean
+  OTM substrate and frames **Phase 4 = RBF-prior hybrid / residual
+  neural model** as the production direction now that every pure
+  conditional-neural variant (architecture in 3B, data correction in 3X,
+  features in 3C) has missed the ≥ 5 %-below-RBF bar. Note: the 3D.1
+  spec still refers to "ADR 0008 — production predictor selection"; that
+  number is now taken by the microstructure freeze — the production
+  selection ADR is **ADR 0009** (roadmap §6). 3D.1 should fix this on
+  execution.
+- **Next concrete action:** operator promotes `3D.1` from `backlog →
+  todo` and runs the decomposition.
+- **Open blocker:** none.
 
 ## Resume snippet (copy-paste into a fresh session)
 

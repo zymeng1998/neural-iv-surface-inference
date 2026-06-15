@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-06-03T00:00:00-04:00
+last_updated_at: 2026-06-14T00:00:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -78,14 +78,14 @@ decomposition). The first story of any epic is always its decomposition story.
 | 3A.2 | Story | Local: Fourier-feature module + `coord_encoding` flag + unit tests + synthetic smoke | `done` | `docs/tasks/specs/3A.2_local_fourier_feature_module.md` | 2026-05-28 |
 | 3A.3 | Story | Remote: decoder-only retrain on frozen 2D.7 encoder — Fourier vs raw variants | `done` | `docs/tasks/specs/3A.3_remote_decoder_only_retrain.md` | 2026-05-28 |
 | 3A.4 | Story | Local: W1 evaluation of both variants vs 2D.9 baselines + journal + roadmap addendum | `done` | `docs/tasks/specs/3A.4_local_eval_and_addendum.md` | 2026-05-28 |
-| 3B | Epic | Phase 3 — Cross-attention decoder (ANP picked per ADR 0005; end-to-end DeepSets+ANP, raw `(k, τ)`) | `in_progress` | `docs/roadmaps/phase3_accuracy_push.md` (W11 / §4) | 2026-05-28 |
-| 3B.1 | Story | Decompose Phase 3B (ADR 0005 + 3B.2–3B.7 specs) | `in_review` | `docs/tasks/specs/3B.1_decompose_phase_3b.md` | 2026-05-28 |
+| 3B | Epic | Phase 3 — Cross-attention decoder (ANP picked per ADR 0005; end-to-end DeepSets+ANP, raw `(k, τ)`) — → ANP best-case +2.7% vs RBF on dirty substrate; bar NOT met; **dirty-substrate verdict SUPERSEDED by 3X clean-OTM restatement (gap widened to +61% best head)** | `done` | `docs/roadmaps/phase3_accuracy_push.md` (W11 / §4) | 2026-06-14 |
+| 3B.1 | Story | Decompose Phase 3B (ADR 0005 + 3B.2–3B.7 specs) | `done` | `docs/tasks/specs/3B.1_decompose_phase_3b.md` | 2026-06-14 |
 | 3B.2 | Story | Local: ANP cross-attention decoder module + `decoder_kind` flag + unit / smoke / integration tests | `done` | `docs/tasks/specs/3B.2_local_anp_cross_attention_decoder.md` | 2026-05-28 |
 | 3B.3 | Story | Local: ANP predictor-adapter wiring (evaluator parity test, ≤ minimal patch) | `done` | `docs/tasks/specs/3B.3_local_predictor_adapter.md` | 2026-05-28 |
 | 3B.4 | Story | Remote: full AV training of ANP across `head.kind ∈ {gaussian, quantile, point}` | `done` | `docs/tasks/specs/3B.4_remote_full_av_training.md` | 2026-05-28 |
 | 3B.5 | Story | Remote: K=5 deep ensemble of ANP point head on AV (mirrors 2D.8) | `done` | `docs/tasks/specs/3B.5_remote_deep_ensemble.md` | 2026-05-29 |
-| 3B.6 | Story | Local: calibrator re-fit on ANP val predictions (mirrors 2D.4) | `in_review` | `docs/tasks/specs/3B.6_local_calibrator_refit.md` | 2026-05-28 |
-| 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + journal + roadmap closing addendum (ANP +2.7% vs RBF best-case; bar NOT met) | `in_review` | `docs/tasks/specs/3B.7_local_decision_layer_eval.md` | 2026-05-28 |
+| 3B.6 | Story | Local: calibrator re-fit on ANP val predictions (mirrors 2D.4) | `done` | `docs/tasks/specs/3B.6_local_calibrator_refit.md` | 2026-06-14 |
+| 3B.7 | Story | Local: end-to-end decision-layer eval of ANP vs Phase 2D baselines + journal + roadmap closing addendum (ANP +2.7% vs RBF best-case; bar NOT met — **dirty-substrate verdict superseded by 3X clean-OTM restatement**) | `done` | `docs/tasks/specs/3B.7_local_decision_layer_eval.md` | 2026-06-14 |
 | 3X | Epic | Phase 3 — Data correction: OTM-restricted surface + paired-coordinate masking + full model-family restatement on `random40_noiselow_otm` (per ADR 0006) — **CLOSED**: RBF still wins, gap WIDENED on clean OTM (+2.7%→+61% best head); DeepSets→ANP architecture story survives; ADR 0006 Implemented | `done` | `docs/roadmaps/phase3_accuracy_push.md` (W11.5 / §4) | 2026-06-02 |
 | 3X.1 | Story | Decompose Phase 3X (ADR 0006 addendum + 3X.2–3X.14 specs) | `done` | `docs/tasks/specs/3X.1_decompose_phase_3x.md` | 2026-06-02 |
 | 3X.2 | Story | Local: OTM-surface builder `05_build_otm_surface.py` + step-04 `--source` flag + ATM-band (D5) + same-type residual handling (D7) + tests | `done` | `docs/tasks/specs/3X.2_local_otm_surface_builder.md` | 2026-05-30 |
@@ -101,17 +101,17 @@ decomposition). The first story of any epic is always its decomposition story.
 | 3X.12 | Story | Remote: decision-layer eval on OTM, thresholds held constant (Q2; mirror 3B.7) — → test MAE **0.01162** / hi-conf MAE **0.00835** / cov@0.90 **0.9295** / mean_width **0.0538** / abstain 1.0 / flag-viol **1814** (dirty 3B.7: 0.0813 / 0.0542 / 0.915 / 0.304 / 1.0 / 9007 — Q2 invariant held: thresholds unchanged) | `done` | `docs/tasks/specs/3X.12_remote_decision_layer_eval_on_otm.md` | 2026-06-02 |
 | 3X.13 | Story | Local: dirty-vs-OTM side-by-side comparison tables (matched `random40_noiselow`) — → 11 family×head pairs assembled; OTM beats dirty by **3.0×–10.8×** on test MAE (RBF 10.80×, calibrated-fused 7.00×, MLP 3.01×); long+wide tables cite committed bundles only | `done` | `docs/tasks/specs/3X.13_local_dirty_vs_otm_comparison.md` | 2026-06-02 |
 | 3X.14 | Story | Local: 3X closing addendum + methodology-progression narrative (NOT full Phase 3 memo — Q3) — → **verdict: RBF-vs-ANP unchanged in direction, gap WIDENED** (+2.7% dirty → +61% OTM best head, +90% calibrated; bar still NOT MET); DeepSets→ANP architecture story SURVIVES (ANP beats DeepSets all heads, 1.06–1.77×) → no Q5 reopen; ADR 0006 → Implemented | `done` | `docs/tasks/specs/3X.14_local_closing_addendum.md` | 2026-06-02 |
-| 3C | Epic | Phase 3 — Feature & inductive-bias expansion (microstructure-only per 3C.1 / ADR 0008; SVI deferred) — on OTM clean substrate | `in_progress` | `docs/roadmaps/phase3_accuracy_push.md` (W12 / §4) | 2026-06-02 |
+| 3C | Epic | Phase 3 — Feature & inductive-bias expansion (microstructure-only per 3C.1 / ADR 0008; SVI deferred) — on OTM clean substrate — → **CLOSED 2026-06-14 (3C.8): `micro_v1` WORSENED test MAE in all 3 heads (gauss +0.00194 / quant +0.00187 / point +0.00452 vs 3X.9); clean negative result, bar NOT met; ADR 0008 Implemented; downstream eval stories 3C.4–3C.7 cancelled as no longer informative** | `done` | `docs/roadmaps/phase3_accuracy_push.md` (W12 / §4) | 2026-06-14 |
 | 3C.1 | Story | Decompose Phase 3C (ADR 0008 + 3C.2–3C.8 specs; microstructure-only / `micro_v1` / 3-head sweep / OTM) | `done` | `docs/tasks/specs/3C.1_decompose_phase_3c.md` | 2026-06-02 |
 | 3C.2 | Story | Local: microstructure feature pipeline + `feature_set ∈ {minimal, micro_v1}` flag on loader/encoder/model/predictor + unit/integration tests (no training) | `done` | `docs/tasks/specs/3C.2_local_micro_feature_pipeline.md` | 2026-06-03 |
 | 3C.3 | Story | Remote (GPU): full AV retrain of DeepSets+ANP with `feature_set: micro_v1` across `head.kind ∈ {gaussian, quantile, point}` on OTM (mirrors 3X.9). Ran; micro_v1 WORSE than 3X.9 on test MAE in all 3 heads (gauss 0.01634 / quant 0.01362 / point 0.01439 vs 0.01440 / 0.01175 / 0.00987) | `done` | `docs/tasks/specs/3C.3_remote_anp_micro_three_head.md` | 2026-06-03 |
-| 3C.4 | Story | Remote (GPU): K=5 ANP+`micro_v1` point-head deep ensemble on OTM (mirrors 3X.10) | `todo` | `docs/tasks/specs/3C.4_remote_anp_micro_ensemble.md` | 2026-06-02 |
-| 3C.5 | Story | Local: calibrator re-fit on ANP+`micro_v1` val predictions (mirrors 3X.11 / 3B.6) | `todo` | `docs/tasks/specs/3C.5_local_calibrator_refit_micro.md` | 2026-06-02 |
-| 3C.6 | Story | Remote: decision-layer eval on OTM with thresholds held constant against 3X.12 (Q2 invariant; mirrors 3X.12) | `todo` | `docs/tasks/specs/3C.6_remote_decision_layer_eval_micro.md` | 2026-06-02 |
-| 3C.7 | Story | Local: OTM-baseline vs OTM+`micro_v1` comparison tables (long + wide) on matched substrate (mirrors 3X.13) | `todo` | `docs/tasks/specs/3C.7_local_micro_vs_baseline_comparison.md` | 2026-06-02 |
-| 3C.8 | Story | Local: 3C closing addendum on §W12 + ADR 0008 → Implemented + journal/README sync (NOT full Phase 3 memo — 3D) | `todo` | `docs/tasks/specs/3C.8_local_3c_closing_addendum.md` | 2026-06-02 |
-| 3D | Epic | Phase 3 — Closing memo + re-evaluation versus RBF (must include OTM-clean re-statement of 3B verdict) | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W13 / §4) | 2026-06-02 |
-| 3D.1 | Story | Decompose Phase 3D | `backlog` | `docs/tasks/specs/3D.1_decompose_phase_3d.md` | 2026-05-27 |
+| 3C.4 | Story | Remote (GPU): K=5 ANP+`micro_v1` point-head deep ensemble on OTM (mirrors 3X.10) | `cancelled` | `docs/tasks/specs/3C.4_remote_anp_micro_ensemble.md` | 2026-06-14 |
+| 3C.5 | Story | Local: calibrator re-fit on ANP+`micro_v1` val predictions (mirrors 3X.11 / 3B.6) | `cancelled` | `docs/tasks/specs/3C.5_local_calibrator_refit_micro.md` | 2026-06-14 |
+| 3C.6 | Story | Remote: decision-layer eval on OTM with thresholds held constant against 3X.12 (Q2 invariant; mirrors 3X.12) | `cancelled` | `docs/tasks/specs/3C.6_remote_decision_layer_eval_micro.md` | 2026-06-14 |
+| 3C.7 | Story | Local: OTM-baseline vs OTM+`micro_v1` comparison tables (long + wide) on matched substrate (mirrors 3X.13) | `cancelled` | `docs/tasks/specs/3C.7_local_micro_vs_baseline_comparison.md` | 2026-06-14 |
+| 3C.8 | Story | Local: 3C closing addendum on §W12 + ADR 0008 → Implemented + journal/README sync (NOT full Phase 3 memo — 3D) — closed on 3C.3 training evidence alone after 3C.4–3C.7 cancelled | `in_review` | `docs/tasks/specs/3C.8_local_3c_closing_addendum.md` | 2026-06-14 |
+| 3D | Epic | Phase 3 — Closing memo + re-evaluation versus RBF (must include OTM-clean re-statement of 3B verdict) — **NEXT: all gating epics (3A/3B/3X/3C) now `done`; 3D frames Phase 4 = RBF-prior hybrid / residual neural model** | `backlog` | `docs/roadmaps/phase3_accuracy_push.md` (W13 / §4) | 2026-06-14 |
+| 3D.1 | Story | Decompose Phase 3D — **unblocked (promote `backlog → todo`)** | `backlog` | `docs/tasks/specs/3D.1_decompose_phase_3d.md` | 2026-06-14 |
 | M1 | Epic | Meta — Multi-agent collaboration infrastructure (ADR 0007: AGENTS.md router + executable rule gates) — → 3 gates live (PMR + dep + scope) + commit-msg trailer; dep gate now inspects push range; M1.6 waiver-timing refinement deferred | `done` | `docs/roadmaps/meta1_agent_collaboration.md` | 2026-05-30 |
 | M1.1 | Story | Decompose M1 + ADR 0007 + 4 sub-specs | `done` | `docs/tasks/specs/M1.1_decompose_m1.md` | 2026-05-30 |
 | M1.2 | Story | `AGENTS.md` router + `.cursor/rules/000-bootstrap.mdc` + CLAUDE.md re-point | `done` | `docs/tasks/specs/M1.2_agents_md_and_cursor_bootstrap.md` | 2026-05-30 |

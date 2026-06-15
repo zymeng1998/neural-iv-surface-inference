@@ -2096,3 +2096,66 @@ input-conditioning problem rather than a head-specific one.
 - Operator promotes 3C.3 `in_review → done`. Then 3C.4 (K=5 ANP+`micro_v1`
   ensemble, same Pod window) and 3C.5 (calibrator refit on these val
   predictions).
+
+---
+
+## 3C.8 — epic 3C close-out (`micro_v1` negative; 3C.4–3C.7 cancelled) (2026-06-14)
+
+### Verdict
+
+Epic **3C closes with a clean negative result.** The `micro_v1`
+microstructure feature set (ADR 0008) did not improve — in fact
+*worsened* — conditional-model accuracy on the matched clean OTM
+substrate `spy_phase1_random40_noiselow_otm`. The Phase 3
+≥ 5 %-below-RBF acceptance bar remains **NOT met**.
+
+| Head | `micro_v1` test MAE (3C.3) | `minimal` test MAE (3X.9) | Δ | RBF floor (3X.6) |
+|---|---:|---:|---:|---:|
+| gaussian | 0.01634 | 0.01440 | **+0.00194** | 0.00613 |
+| quantile | 0.01362 | 0.01175 | **+0.00187** | 0.00613 |
+| point | 0.01439 | 0.00987 | **+0.00452** | 0.00613 |
+
+The regression is head-uniform — consistent with an input-conditioning
+effect (the AV-native microstructure tuple did not give the encoder a
+useful quote-reliability signal), not a head-specific interaction. Every
+`micro_v1` head sits well above the RBF-on-OTM floor, so the post-3X gap
+to RBF (~+61 % best head / ~+90 % production) is not narrowed.
+
+### Why this entry has no calibrated / decision-layer numbers
+
+3C.3's base-accuracy result is already negative. Ensembling (3C.4),
+calibration (3C.5), the Q2 decision-layer eval (3C.6), and the
+comparison tables (3C.7) reshape the reliability layer but cannot pull
+base test MAE below the model's own point predictions. Running them on a
+known-worse feature set would only re-confirm the negative at Pod cost,
+so they were **cancelled** (operator-directed). Epic 3C closed on 3C.3's
+training evidence alone (3C.8).
+
+### Decisions recorded
+
+- **ADR 0008 → Implemented.** Outcome block filled; the three deferred
+  open questions answered (head-uniform regression; log-transform
+  reserved as opt-in, not pursued; `micro_v2` deferred in favour of the
+  Phase 4 hybrid).
+- **3B dirty-substrate verdict superseded** by the 3X clean-OTM
+  restatement (housekeeping: 3B.1 / 3B.6 / 3B.7 in_review → done, epic
+  3B → done).
+- **Forward:** 3D (Phase 3 closing memo + RBF re-eval) is teed up; Phase
+  4 framed as an RBF-prior hybrid / residual neural model.
+
+### No-overclaim guardrail
+
+Scoped to the matched `random40_noiselow_otm` substrate only; no
+robustness claim across the other 10 OTM variants (carried from 3X).
+
+### Evidence
+
+- `artifacts/runs/3C3/{gaussian,quantile,point}/manifest.json` +
+  `training_curve.csv` (committed).
+- 3C.3 journal entry above; §W12 closing addendum in
+  `docs/roadmaps/phase3_accuracy_push.md`; ADR 0008 Outcome block.
+
+### Tests
+
+- No model / eval / pipeline run (pure docs synthesis). PMR gate dry-run
+  before push.
