@@ -4667,3 +4667,53 @@ Two atomic commits (docs/planning + one code surface):
 - Run **3D.3** (write `docs/phase3_result_memo.md`), then **3D.4** (run the
   generator to emit the committed notebook, finalize ADR 0009, journal
   close-out, flip epic 3D `done`).
+
+---
+
+## 2026-06-15 (evening) — 3D.2 pushed (separately) + 3D.3 closing memo written
+
+### What was completed
+
+- **Pushed the two prior commits separately** (operator-directed,
+  zero-waiver): `3f342eb` (chore 3D.1 → done) then `5605ea6` (feat 3D.2
+  generator). To make the pre-push hook's `origin/main..HEAD` range see one
+  commit at a time, the branch tip was moved to each commit in turn
+  (`reset --hard` between pushes; both SHAs already committed). origin/main:
+  `94b75dc → 3f342eb → 5605ea6`. PMR/DEP/SCOPE passed in both real hooks; no
+  `WAIVE_*`; 0 waiver-audit lines written.
+- **3D.3 — wrote `docs/phase3_result_memo.md`.** Executive Phase 3 verdict:
+  TL;DR, scope recap (W10→W12 + W11.5), the clean-OTM headline ladder
+  (RBF floor 0.00613; best ANP point head 0.00987 = **+61 %**; calibrated
+  production 0.01162 = **+90 %**), the dirty-vs-clean restatement (correcting
+  the call-put confound *widened* RBF's lead, +2.7 %→+61 %), the 3A + 3C
+  `micro_v1` negatives, the vs-Phase-2D section, the §5 acceptance-criteria
+  map, the explicit **negative verdict**, and the Phase 4 framing.
+
+### Key calls
+
+- **Negative, not partial success.** A dirty-only reading shows the gap
+  narrowing > 50 % (29 % → 2.7 %), which would qualify as §5 partial success;
+  but 3X invalidates that reading — on the well-posed clean substrate the gap
+  *widened*. The memo states this explicitly so the close is honest.
+- Reliability holds in direction (dirty coverage 0.9149 within ±2 pp; clean
+  0.9295 conservative/over-covering, hi-conf < no-abstention on both). Latency
+  (§5.3) not re-measured in Phase 3 (inherited from the 2D pipeline).
+
+### Tests / verification
+
+- Provenance audit: 15/15 cited bundle paths exist (`test -f`).
+- No-overclaim grep: only the matched-substrate guardrail sentence + path
+  references; no stray robustness claims.
+
+### Gates (3D.3 commit — zero-waiver by design)
+
+- DEP: 3D.3 dep 3D.1 = `done` → PASS. SCOPE: only active spec 3D.3; all
+  touched files in its `file_scope` (`STATUS.md` added per
+  3C.2/3C.3/3X.7/3X.8 precedent) → PASS. PMR: docs + progress_log → PASS.
+
+### Next actions
+
+- Operator promotes 3D.3 → `done`.
+- Run **3D.4**: `python3 scripts/generate_phase3_results_notebook.py` to emit
+  the committed `notebooks/06_phase3_results.ipynb`; finalize ADR 0009 from
+  the memo verdict; write the Phase 3 journal close-out; flip epic 3D `done`.

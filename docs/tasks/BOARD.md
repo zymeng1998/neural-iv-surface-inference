@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-06-15T13:00:00-04:00
+last_updated_at: 2026-06-15T21:45:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -113,7 +113,7 @@ decomposition). The first story of any epic is always its decomposition story.
 | 3D | Epic | Phase 3 — Closing memo + re-evaluation versus RBF (must include OTM-clean re-statement of 3B verdict); frames Phase 4 = RBF-prior hybrid / residual neural model — entered + decomposed (3D.2–3D.4 + ADR 0009 skeleton) | `in_progress` | `docs/roadmaps/phase3_accuracy_push.md` (W13 / §4) | 2026-06-15 |
 | 3D.1 | Story | Decompose Phase 3D — executed: epic 3D entered, 3D.2/3D.3/3D.4 drafted, ADR 0009 skeleton created | `done` | `docs/tasks/specs/3D.1_decompose_phase_3d.md` | 2026-06-15 |
 | 3D.2 | Story | Local: `scripts/generate_phase3_results_notebook.py` generator scaffold + smoke test (mirrors generate_phase2_results_notebook.py) — implemented: 19-cell build from committed bundles, 5 tests green, notebook deferred to 3D.4 | `in_review` | `docs/tasks/specs/3D.2_phase3_notebook_generator.md` | 2026-06-15 |
-| 3D.3 | Story | Local: `docs/phase3_result_memo.md` — Phase 3 verdict vs RBF + vs 2D, dirty + clean-OTM restatement, §5 acceptance map | `backlog` | `docs/tasks/specs/3D.3_phase3_result_memo.md` | 2026-06-15 |
+| 3D.3 | Story | Local: `docs/phase3_result_memo.md` — Phase 3 verdict vs RBF + vs 2D, dirty + clean-OTM restatement, §5 acceptance map — written: negative verdict (best clean-OTM head +61% vs RBF; bar NOT met) | `in_review` | `docs/tasks/specs/3D.3_phase3_result_memo.md` | 2026-06-15 |
 | 3D.4 | Story | Local: emit `notebooks/06_phase3_results.ipynb`, finalize ADR 0009 (production selection), journal close-out, flip epic 3D done (+ optional Phase 4 placeholder) | `backlog` | `docs/tasks/specs/3D.4_phase3_notebook_adr_journal_close.md` | 2026-06-15 |
 | M1 | Epic | Meta — Multi-agent collaboration infrastructure (ADR 0007: AGENTS.md router + executable rule gates) — → 3 gates live (PMR + dep + scope) + commit-msg trailer; dep gate now inspects push range; M1.6 (waiver post-commit-mutation fix) backlogged | `done` | `docs/roadmaps/meta1_agent_collaboration.md` | 2026-06-14 |
 | M1.1 | Story | Decompose M1 + ADR 0007 + 4 sub-specs | `done` | `docs/tasks/specs/M1.1_decompose_m1.md` | 2026-05-30 |

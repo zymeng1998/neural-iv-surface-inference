@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-06-15T13:00:00-04:00
+last_updated_at: 2026-06-15T21:45:00-04:00
 ---
 
 > **Read this first if you are picking up Phase 3 work cold.** It mirrors
@@ -65,7 +65,8 @@ last_updated_at: 2026-06-15T13:00:00-04:00
   (2026-06-15): 3D.1 `done`; 3D.2 (notebook generator) implemented and
   `in_review`; 3D.3 (closing memo) / 3D.4 (notebook emit + ADR 0009
   finalize + journal close) are `backlog`; the ADR 0009 skeleton is
-  committed. Next action: run 3D.3, then 3D.4** (Phase 3 closing memo +
+  committed; 3D.3 closing memo written (`in_review`). Next action: run
+  3D.4** (Phase 3 closing memo +
   RBF re-eval; production-selection ADR is **0009**; Phase 4 is framed as
   an RBF-prior hybrid / residual neural model). Full narrative:
   [ADR 0006](decisions/0006_duplicate_coordinate_data_correction.md) +
@@ -119,7 +120,7 @@ last_updated_at: 2026-06-15T13:00:00-04:00
 | 3D | Epic | Closing memo + re-evaluation vs RBF — **must include OTM-clean re-statement; frames Phase 4 = RBF-prior hybrid / residual neural** — entered + decomposed (3D.2–3D.4 + ADR 0009 skeleton) | `in_progress` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W13 | 2026-06-15 |
 | 3D.1 | Story | Decompose Phase 3D — executed: epic entered; 3D.2/3D.3/3D.4 drafted; ADR 0009 skeleton created | `done` | [`3D.1`](tasks/specs/3D.1_decompose_phase_3d.md) | 2026-06-15 |
 | 3D.2 | Story | Local: `scripts/generate_phase3_results_notebook.py` generator scaffold + smoke test — implemented (19-cell build, 5 tests green; notebook deferred to 3D.4) | `in_review` | [`3D.2`](tasks/specs/3D.2_phase3_notebook_generator.md) | 2026-06-15 |
-| 3D.3 | Story | Local: `docs/phase3_result_memo.md` — verdict vs RBF + vs 2D, dirty + clean-OTM restatement, §5 map | `backlog` | [`3D.3`](tasks/specs/3D.3_phase3_result_memo.md) | 2026-06-15 |
+| 3D.3 | Story | Local: `docs/phase3_result_memo.md` — verdict vs RBF + vs 2D, dirty + clean-OTM restatement, §5 map — written: negative verdict (+61% best head; bar NOT met) | `in_review` | [`3D.3`](tasks/specs/3D.3_phase3_result_memo.md) | 2026-06-15 |
 | 3D.4 | Story | Local: emit `notebooks/06_phase3_results.ipynb`, finalize ADR 0009, journal close-out, flip epic 3D `done` (+ optional Phase 4 placeholder) | `backlog` | [`3D.4`](tasks/specs/3D.4_phase3_notebook_adr_journal_close.md) | 2026-06-15 |
 
 ## Parallel-safety matrix
@@ -671,8 +672,14 @@ only if neither writes to a path in the other's `file_scope`.
   table (3A/3B/3X/3C vs RBF vs 2D), dirty-vs-clean-OTM restatement, §5
   acceptance-criteria map, open questions. Cites committed paths only;
   no-overclaim guardrail (matched substrate).
-- **Next concrete action:** gate on 3D.1 close; then write the memo.
-- **Open blocker:** 3D.1. Parallel-safe with 3D.2.
+- **2026-06-15 — written (`in_review`).** Memo committed with the
+  clean-OTM headline ladder (RBF floor 0.00613; best ANP head +61 %;
+  calibrated +90 %), the dirty-vs-clean restatement (+2.7 %→+61 %), the
+  3A + 3C negatives, the §5 acceptance-criteria map, the negative verdict,
+  and the Phase 4 framing. Provenance audit: 15/15 cited paths exist;
+  no-overclaim guardrail preserved.
+- **Next concrete action:** operator promotes 3D.3 → `done`; then 3D.4.
+- **Open blocker:** none.
 
 ### 3D.4 — Notebook + ADR 0009 finalize + journal close
 
