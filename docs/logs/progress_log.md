@@ -4614,3 +4614,56 @@ Ran the 3D.1 decomposition (docs/planning only):
 - Operator promotes 3D.1 → `done`.
 - Run **3D.2** (generator) and **3D.3** (memo) in parallel, then **3D.4**
   to emit the notebook, finalize ADR 0009, and close epic 3D / Phase 3.
+
+---
+
+## 2026-06-15 (afternoon) — 3D.1 → done + 3D.2 implemented (notebook generator)
+
+### What was completed
+
+Two atomic commits (docs/planning + one code surface):
+
+- **`chore(3D.1)`: promote in_review → done** (operator approved the
+  decomposition push 94b75dc + directed "start 3D.2"). Unblocks the 3D.2
+  dependency gate.
+- **`feat(3D.2)`: Phase 3 results notebook generator + smoke test.** Built
+  `scripts/generate_phase3_results_notebook.py` (mirrors
+  `generate_phase2_results_notebook.py`): a 19-cell notebook assembled from
+  committed Phase 3 bundles — clean-OTM ladder
+  (`3x_compare/comparison_wide.csv` + `comparison.csv`), 3A coord ablation,
+  3B/3X calibrated reliability layer + figures, the 3C `micro_v1` negative
+  (from `artifacts/runs/3C3/*/manifest.json`), representative training
+  curves, the §5 acceptance-criteria map, the Phase 2D anchor, and the
+  Phase 4 framing. `validate_paths()` checks all 21 referenced committed
+  artifacts and `main()` exits non-zero on any missing path; cell ids are
+  deterministic (`p3-NN`) so regeneration is byte-stable. Plus
+  `tests/test_generate_phase3_results_notebook.py` (5 tests).
+
+### Key decision
+
+- **The committed `notebooks/06_phase3_results.ipynb` was deliberately NOT
+  created** — that is 3D.4's deliverable. 3D.2 ships the generator + test
+  only; verification used a throwaway `--output /tmp/...` build. This keeps
+  the 3D.2 / 3D.4 split clean.
+
+### Tests / verification
+
+- `pytest tests/test_generate_phase3_results_notebook.py` → 5 passed.
+- `--help` exit 0; dry build to `/tmp/_3d2_check.ipynb` exit 0 (19 cells).
+- The idempotency test caught nbformat's random cell ids → fixed with
+  deterministic ids (valuable: 3D.4 regenerations won't churn).
+
+### Gates
+
+- 3D.2 touches `scripts/` + `tests/` (evidence-class), so the **PMR gate
+  is live** for the 3D.2 commit; progress_log (this entry) + the spec keep
+  coverage. DEP: 3D.2 dep 3D.1 = `done` (commit A) → PASS. SCOPE: 3D.2 is
+  the only active spec; `STATUS.md` added to its `file_scope` (precedent
+  3C.2/3C.3/3X.7/3X.8). Designed zero-waiver; verified standalone.
+
+### Next actions
+
+- Operator promotes 3D.2 → `done`.
+- Run **3D.3** (write `docs/phase3_result_memo.md`), then **3D.4** (run the
+  generator to emit the committed notebook, finalize ADR 0009, journal
+  close-out, flip epic 3D `done`).

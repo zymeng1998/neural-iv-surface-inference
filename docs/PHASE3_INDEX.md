@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-06-15T00:00:00-04:00
+last_updated_at: 2026-06-15T13:00:00-04:00
 ---
 
 > **Read this first if you are picking up Phase 3 work cold.** It mirrors
@@ -61,13 +61,13 @@ last_updated_at: 2026-06-15T00:00:00-04:00
   feature set is **no longer informative and was cancelled**; 3C.8
   closed the epic on 3C.3's training evidence alone (now `done`) and
   flipped ADR 0008 → **Implemented**. The Phase 3 acceptance bar
-  (≥ 5 % below RBF) is **still NOT met**. **Epic 3D is now
-  `in_progress` and decomposed (2026-06-15): 3D.1 executed; child stories
-  3D.2 (notebook generator) / 3D.3 (closing memo) / 3D.4 (notebook + ADR
-  0009 finalize + journal close) are `backlog`, and the ADR 0009 skeleton
-  is committed. Next action: run 3D.2 ∥ 3D.3, then 3D.4** (Phase 3 closing
-  memo + RBF re-eval; production-selection ADR is **0009**; Phase 4 is
-  framed as an RBF-prior hybrid / residual neural model). Full narrative:
+  (≥ 5 % below RBF) is **still NOT met**. **Epic 3D is `in_progress`
+  (2026-06-15): 3D.1 `done`; 3D.2 (notebook generator) implemented and
+  `in_review`; 3D.3 (closing memo) / 3D.4 (notebook emit + ADR 0009
+  finalize + journal close) are `backlog`; the ADR 0009 skeleton is
+  committed. Next action: run 3D.3, then 3D.4** (Phase 3 closing memo +
+  RBF re-eval; production-selection ADR is **0009**; Phase 4 is framed as
+  an RBF-prior hybrid / residual neural model). Full narrative:
   [ADR 0006](decisions/0006_duplicate_coordinate_data_correction.md) +
   [methodology progression](research/duplicate_coordinate_methodology_progression.md) +
   [retrospective 0002](retrospectives/0002_call_put_duplicate_coordinate_discovery.md).
@@ -117,8 +117,8 @@ last_updated_at: 2026-06-15T00:00:00-04:00
 | 3C.7 | Story | Local: OTM-baseline vs OTM+`micro_v1` comparison tables on matched substrate (mirrors 3X.13) — **cancelled (see 3C.4)** | `cancelled` | [`3C.7`](tasks/specs/3C.7_local_micro_vs_baseline_comparison.md) | 2026-06-14 |
 | 3C.8 | Story | Local: 3C closing addendum + ADR 0008 → Implemented + journal/README sync (NOT full Phase 3 memo — 3D) — closed on 3C.3 training evidence alone | `done` | [`3C.8`](tasks/specs/3C.8_local_3c_closing_addendum.md) | 2026-06-14 |
 | 3D | Epic | Closing memo + re-evaluation vs RBF — **must include OTM-clean re-statement; frames Phase 4 = RBF-prior hybrid / residual neural** — entered + decomposed (3D.2–3D.4 + ADR 0009 skeleton) | `in_progress` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W13 | 2026-06-15 |
-| 3D.1 | Story | Decompose Phase 3D — executed: epic entered; 3D.2/3D.3/3D.4 drafted; ADR 0009 skeleton created | `in_review` | [`3D.1`](tasks/specs/3D.1_decompose_phase_3d.md) | 2026-06-15 |
-| 3D.2 | Story | Local: `scripts/generate_phase3_results_notebook.py` generator scaffold + smoke test | `backlog` | [`3D.2`](tasks/specs/3D.2_phase3_notebook_generator.md) | 2026-06-15 |
+| 3D.1 | Story | Decompose Phase 3D — executed: epic entered; 3D.2/3D.3/3D.4 drafted; ADR 0009 skeleton created | `done` | [`3D.1`](tasks/specs/3D.1_decompose_phase_3d.md) | 2026-06-15 |
+| 3D.2 | Story | Local: `scripts/generate_phase3_results_notebook.py` generator scaffold + smoke test — implemented (19-cell build, 5 tests green; notebook deferred to 3D.4) | `in_review` | [`3D.2`](tasks/specs/3D.2_phase3_notebook_generator.md) | 2026-06-15 |
 | 3D.3 | Story | Local: `docs/phase3_result_memo.md` — verdict vs RBF + vs 2D, dirty + clean-OTM restatement, §5 map | `backlog` | [`3D.3`](tasks/specs/3D.3_phase3_result_memo.md) | 2026-06-15 |
 | 3D.4 | Story | Local: emit `notebooks/06_phase3_results.ipynb`, finalize ADR 0009, journal close-out, flip epic 3D `done` (+ optional Phase 4 placeholder) | `backlog` | [`3D.4`](tasks/specs/3D.4_phase3_notebook_adr_journal_close.md) | 2026-06-15 |
 
@@ -655,8 +655,14 @@ only if neither writes to a path in the other's `file_scope`.
   `scripts/generate_phase3_results_notebook.py` (mirrors the Phase 2
   generator) + a smoke test; references committed bundles only, fails
   loudly on a missing path. Delivers the script; 3D.4 runs it.
-- **Next concrete action:** gate on 3D.1 close; then implement.
-- **Open blocker:** 3D.1.
+- **2026-06-15 — implemented (`in_review`).** 19-cell generator built
+  from committed bundles; `validate_paths()` checks 21 committed
+  artifacts and `main()` exits non-zero on any missing path; deterministic
+  cell ids for byte-stable regeneration; 5 smoke tests green; `--help` +
+  dry build to `/tmp` exit 0. The committed `notebooks/06_phase3_results.ipynb`
+  is intentionally NOT created here — that is 3D.4.
+- **Next concrete action:** operator promotes 3D.2 → `done`; then 3D.3.
+- **Open blocker:** none.
 
 ### 3D.3 — Phase 3 closing memo
 
