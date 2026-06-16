@@ -21,21 +21,26 @@ predictions are trustworthy and abstains where they are not.
 
 ## Current Phase
 
-**Phase 3 — Accuracy Push: Beat RBF Without Losing Reliability — in
-progress (3A + 3B + 3X + 3C all closed; 3D — closing memo — is next).**
-Phase 2 (Reliability-Aware Surface Inference) closed on 2026-05-25 with
-both mandatory acceptance numbers green; Phase 3 attacks the remaining
-accuracy gap versus the per-date RBF interpolation baseline. Three
-independent attacks have now each missed the ≥ 5 %-below-RBF bar on the
-clean OTM substrate: the cross-attention decoder (**3B**, best head
-+2.7 % dirty → +61 % clean), the data correction (**3X closed
-2026-06-02**, which *widened* RBF's lead rather than closing it), and
-feature expansion (**3C closed 2026-06-14**, where the `micro_v1`
-microstructure feature set *worsened* test MAE in all three heads). The
-DeepSets→ANP architecture story survives, but pure conditional-neural
-iteration is out of cheap moves; **3D** synthesises the closing memo and
-frames **Phase 4 = RBF-prior hybrid / residual neural model** as the
-production direction.
+**Phase 3 — Accuracy Push: Beat RBF Without Losing Reliability — CLOSED
+2026-06-16, NEGATIVE on accuracy.** Phase 2 (Reliability-Aware Surface
+Inference) closed on 2026-05-25 with both mandatory acceptance numbers
+green; Phase 3 attacked the remaining accuracy gap versus the per-date
+RBF interpolation baseline. Three independent attacks each missed the
+≥ 5 %-below-RBF bar on the clean OTM substrate: the cross-attention
+decoder (**3B**, best head +2.7 % dirty → +61 % clean), the data
+correction (**3X**, which *widened* RBF's lead rather than closing it),
+and feature expansion (**3C**, where the `micro_v1` microstructure
+feature set *worsened* test MAE in all three heads). On the well-posed
+clean OTM benchmark RBF posts test MAE **0.00613** and the best neural
+head (ANP point) **0.00987** (+61 %); calibrated production +90 %. The
+DeepSets→ANP architecture story and the calibrated reliability layer
+survive, but no pure conditional-neural variant beats RBF on its own.
+**Verdict (3D / [ADR 0009](docs/decisions/0009_phase3_production_predictor_selection.md)):**
+RBF remains the production accuracy baseline; the forward direction is
+**Phase 4 = RBF-prior hybrid / residual neural model** (epic `4A`,
+backlog placeholder — not yet decomposed). Closing artifacts:
+[`docs/phase3_result_memo.md`](docs/phase3_result_memo.md) +
+`notebooks/06_phase3_results.ipynb`.
 
 > **2026-05-29 — Data-integrity finding.** A duplicate-coordinate audit
 > ([`docs/research/duplicate_coordinate_audit.md`](docs/research/duplicate_coordinate_audit.md))
@@ -78,7 +83,7 @@ production direction.
 | 3B | W11 — Cross-attention decoder (end-to-end DeepSets + ANP, raw `(k, τ)`) | `done` — **bar NOT met**: ANP best-case +2.7 % vs RBF (dirty); reliability holds. Restated on clean OTM in 3X. |
 | **3X** | **W11.5 — Data correction (OTM-restricted surface + paired-coordinate masking + re-audit + full model-family restatement + decision-layer re-eval)** | **`done` (2026-06-02)** — RBF still wins, gap WIDENED (+2.7 %→+61 % best head, +90 % calibrated; bar still NOT met); DeepSets→ANP survives; ADR 0006 Implemented |
 | 3C | W12 — Feature & inductive-bias expansion (microstructure-only `micro_v1`; SVI deferred) | `done` (2026-06-14) — **`micro_v1` WORSENED test MAE in all 3 heads vs 3X.9; bar NOT met; ADR 0008 Implemented; downstream eval stories 3C.4–3C.7 cancelled** |
-| 3D | W13 — Phase 3 closing memo + re-evaluation versus RBF (must include OTM-clean re-statement; frames Phase 4 = RBF-prior hybrid) | `backlog` — **NEXT** (all gating epics done; promote 3D.1 to `todo`) |
+| 3D | W13 — Phase 3 closing memo + re-evaluation versus RBF (OTM-clean re-statement; frames Phase 4) | `done` (2026-06-16) — **Phase 3 CLOSED, negative on accuracy**: memo + executed notebook + ADR 0009 (Accepted/Implemented) shipped; RBF stays production baseline |
 
 Acceptance bar: **test MAE ≤ 0.95 × RBF** on both the 2D.9 slice
 (≤ 0.0693) and the full 2D.4 fold (≤ 0.0629), with no reliability
@@ -275,18 +280,15 @@ docs/                              Project documentation (roadmaps, memos, tasks
 
 ## Immediate Next Steps
 
-All four Phase 3 gating epics (3A, 3B, 3X, 3C) are now `done`. The
-active next step is the decomposition story for **3D** (Phase 3 closing
-memo + RBF re-evaluation), which also frames Phase 4. See
-[`docs/PHASE3_INDEX.md`](docs/PHASE3_INDEX.md) for the full live status.
+**Phase 3 is closed** (2026-06-16, negative on accuracy — all of 3A / 3B
+/ 3X / 3C / 3D are `done`). The next two steps are infrastructure then
+research:
 
-| Story | Mode | Trigger condition |
+| Step | Mode | Trigger condition |
 |---|---|---|
-| `3A.1` Decompose Phase 3A | Plan | `done` |
-| `3B.1` Decompose Phase 3B | Plan | `done` |
-| `3X.1` Decompose Phase 3X (data correction) | Plan | `done` |
-| `3C.1` Decompose Phase 3C | Plan | `done` (epic 3C closed 2026-06-14; `micro_v1` negative) |
-| **`3D.1` Decompose Phase 3D** | **Plan** | **Unblocked — promote `backlog → todo`. Closing memo must include the OTM-clean re-statement of the 3B verdict and frame Phase 4 = RBF-prior hybrid / residual neural model** |
+| **`M1.6` Fix the pre-push waiver hook** | **Implement** | **NEXT — route waiver audit to a separate untracked log so the hook never mutates a tracked file after the pushed commit; do this before resuming GPU-heavy work** |
+| `4A` Phase 4 — RBF-prior hybrid / residual neural model | Plan → Implement | After M1.6. Backlog epic placeholder; author the Phase 4 roadmap + decomposition (`4A.1`) on entry. Reopens GPU/Pod spend. |
+| `2E` Phase 2 follow-ups (dormant) | — | Optional housekeeping: close or park (2E.2 done, 2E.3 cancelled). |
 
 Carried Phase 2 / 2E follow-ups (lower priority, do not gate Phase 3):
 

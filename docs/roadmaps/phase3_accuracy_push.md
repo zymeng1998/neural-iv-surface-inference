@@ -562,12 +562,18 @@ reserved. The full Phase 3 closing memo remains a 3D deliverable (Q3).
 
 ### W13 — Closing memo + re-evaluation (epic 3D)
 
-**Status (2026-06-15): epic 3D entered (`in_progress`) and decomposed.**
-3D.1 executed: the three child stories below are drafted (`backlog`) and
-the **ADR 0009 skeleton** (production-selection / Phase 3 verdict +
-Phase 4 framing) is created (`Proposed`). All gating epics (3A / 3B / 3X
-/ 3C) are `done`. Pure synthesis on committed artifacts. Mirrors story
-2D.10:
+**Status (2026-06-16): epic 3D `done` — PHASE 3 CLOSED.** All four
+stories (3D.1–3D.4) are `done`. The closing memo
+([`docs/phase3_result_memo.md`](../phase3_result_memo.md)), the executed
+notebook (`notebooks/06_phase3_results.ipynb`, 0 cell errors), and
+[ADR 0009](../decisions/0009_phase3_production_predictor_selection.md)
+(**Accepted/Implemented**) all shipped. **Verdict: Phase 3 NEGATIVE on
+accuracy** — no pure conditional-neural variant beat RBF on the clean OTM
+substrate (best head +61 %; bar NOT met). RBF stays the production
+accuracy baseline; the reliability layer is retained; forward direction
+is **Phase 4 = RBF-prior hybrid / residual neural model** (a `backlog`
+epic placeholder `4A` is on the BOARD, not yet decomposed). The original
+decomposition record (mirrors story 2D.10) follows:
 
 - `docs/phase3_result_memo.md` with the headline table (all 3A / 3B /
   3C variants versus RBF and versus Phase 2D close), stated on **both**

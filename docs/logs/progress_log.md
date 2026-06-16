@@ -4717,3 +4717,53 @@ Two atomic commits (docs/planning + one code surface):
 - Run **3D.4**: `python3 scripts/generate_phase3_results_notebook.py` to emit
   the committed `notebooks/06_phase3_results.ipynb`; finalize ADR 0009 from
   the memo verdict; write the Phase 3 journal close-out; flip epic 3D `done`.
+
+---
+
+## 2026-06-16 — 3D.4 executed: epic 3D + PHASE 3 CLOSED (negative on accuracy)
+
+### What was completed
+
+Closed epic 3D and Phase 3 in one clean commit (local, CPU; single
+"all-done" close so no active spec → zero-waiver push):
+
+- **Emitted the committed notebook.** `python3
+  scripts/generate_phase3_results_notebook.py` → `notebooks/06_phase3_results.ipynb`
+  (19 cells, no inline outputs). `jupyter nbconvert --to notebook --execute`
+  → exit 0, **0 cell errors**.
+- **Finalized [ADR 0009](decisions/...)** → **Accepted/Implemented**: Outcome
+  block filled with the clean-OTM ladder + the locked decision (no pure
+  neural predictor promoted; RBF stays the production accuracy baseline;
+  reliability layer retained; Phase 4 = RBF-prior hybrid / residual neural).
+- **Phase 3 close-out** entry added to `docs/experiments/experiment_journal.md`.
+- **Promoted 3D.2 + 3D.3 `in_review → done`; flipped 3D.4 + epic 3D →
+  `done`** (all in this commit → no `in_review`/`in_progress` spec remains,
+  so the scope gate passes trivially).
+- **Phase 4 epic placeholder `4A`** (backlog) added to the BOARD — RBF-prior
+  hybrid / residual neural; **not decomposed**.
+- Synced roadmap §W13 status block, README Phase 3 callout + Immediate Next
+  Steps, PHASE3_INDEX (live status + orientation + per-story checkpoints),
+  STATUS.
+
+### Verdict (Phase 3)
+
+NEGATIVE on accuracy. Clean OTM: RBF floor **0.00613**; best neural head
+(ANP point) **0.00987 = +61 %**; calibrated production **+90 %**; the
+≥ 5 %-below-RBF bar is NOT met. Reliability layer + DeepSets→ANP
+architecture story survive. No-overclaim guardrail: matched
+`random40_noiselow_otm` substrate only.
+
+### Gates (designed zero-waiver)
+
+- SCOPE: no active (`in_review`/`in_progress`) spec in the diff → trivial
+  PASS. DEP: every story's deps `done` → PASS. PMR: notebook + journal
+  (evidence) + docs/progress_log → live PASS.
+
+### Next actions
+
+- **M1.6** (waiver-hook fix) — operator-directed: do this *before* Phase 4
+  so the GPU-heavy cadence isn't slowed by post-commit waiver mutations /
+  sequenced pushes.
+- Then **Phase 4 (`4A`)**: author the roadmap + ADR for the hybrid design +
+  decomposition (`4A.1`). Reopens GPU/Pod spend — gated on operator go-ahead.
+- Optional: close/park the dormant 2E epic.

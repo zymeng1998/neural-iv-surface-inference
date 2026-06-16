@@ -2,19 +2,16 @@
 
 ## Status
 
-**Proposed — SKELETON (2026-06-15).** Created by Phase 3D decomposition
-story [`3D.1`](../tasks/specs/3D.1_decompose_phase_3d.md). To be moved to
-**Accepted / Implemented** by [`3D.4`](../tasks/specs/3D.4_phase3_notebook_adr_journal_close.md)
-once the Phase 3 closing memo ([`docs/phase3_result_memo.md`](../phase3_result_memo.md),
-3D.3) is committed and the verdict is finalised against the
-acceptance bar.
-
-> This is a decision *skeleton*: the structure, the candidate decision,
-> and the evidence pointers are laid down here so 3D.3 (memo) and 3D.4
-> (close) have a fixed target. Every numeric value below is a
-> **placeholder cite** to an already-committed bundle; 3D.4 confirms the
-> final numbers from the 3D.3 memo and flips the status. Do not treat
-> the Decision section as final until the status reads Accepted.
+**Accepted / Implemented (2026-06-16).** Proposed as a skeleton by 3D.1
+(2026-06-15); finalised by [`3D.4`](../tasks/specs/3D.4_phase3_notebook_adr_journal_close.md)
+on the Phase 3 close, against the verdict in the committed closing memo
+([`docs/phase3_result_memo.md`](../phase3_result_memo.md), 3D.3). The
+candidate Decision below is now the **locked decision**; the Outcome
+block at the foot records the final numbers. Phase 3 closed
+**negative on accuracy** (no pure conditional-neural variant beats RBF
+on the well-posed substrate); RBF remains the production accuracy
+baseline and the forward direction is **Phase 4 = RBF-prior hybrid /
+residual neural model**.
 
 ## Date
 
@@ -106,9 +103,41 @@ local weighting from data within the levers Phase 3 budgeted.
   value than the residual hybrid given pure feature expansion already
   regressed.
 
-## Outcome (filled by 3D.4 on close)
+## Outcome (2026-06-16 — recorded by 3D.4 on close)
 
-_To be filled by 3D.4 with: the final consolidated ladder numbers from
-`docs/phase3_result_memo.md`, the explicit acceptance-bar verdict, the
-locked production recommendation, and (if warranted) a pointer to the
-Phase 4 epic placeholder on the BOARD._
+**Phase 3 acceptance bar (test MAE ≤ 0.95 × RBF, model on its own): NOT
+met on any view.** Final consolidated ladder, clean OTM substrate
+`spy_phase1_random40_noiselow_otm` (test MAE; source
+[`docs/phase3_result_memo.md`](../phase3_result_memo.md) §"Headline
+ladder", from `results/3/spy_phase1_random40_noiselow_otm/3x_compare/comparison_wide.csv`):
+
+| Variant | OTM test MAE | vs RBF |
+|---|---:|---:|
+| **rbf (interp) — floor** | **0.00613** | — |
+| anp_single · point (best neural head) | 0.00987 | **+61 %** |
+| anp_calibrated · fused (production candidate) | 0.01162 | **+90 %** |
+| deepsets_single · point | 0.01752 | +186 % |
+| mlp · point | 0.03006 | +390 % |
+
+Supporting facts: the dirty-substrate gap (+2.7 %) was a call-put
+duplicate-coordinate confound — correcting it (3X) *widened* RBF's lead
+to +61 %; feature expansion (3C `micro_v1`) *worsened* test MAE in all
+three heads; the DeepSets→ANP architecture ranking survives (ANP beats
+DeepSets at every matched head). Reliability holds in direction (clean
+OTM coverage 0.9295, conservative; hi-conf MAE 0.00835 < no-abstention
+0.01162).
+
+**Locked decision (final):**
+1. **No pure conditional-neural predictor is promoted to production.**
+2. **RBF interpolation remains the production accuracy baseline.**
+3. **The calibrated ANP reliability layer is retained** as a complementary
+   trust/abstention signal, not as the surface estimator.
+4. **Phase 4 = RBF-prior hybrid / residual neural model** is the forward
+   direction (deployment fallback reserved by
+   [ADR 0004](0004_phase3_accuracy_push_framing.md)). A `backlog` **Phase 4
+   epic placeholder** is recorded on `docs/tasks/BOARD.md`; it is **not**
+   decomposed here.
+
+No-overclaim guardrail: all clean-substrate numbers are on the matched
+`random40_noiselow_otm` benchmark only; the all-11-variant robustness
+study remains deferred.

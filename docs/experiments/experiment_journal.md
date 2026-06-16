@@ -2159,3 +2159,58 @@ robustness claim across the other 10 OTM variants (carried from 3X).
 
 - No model / eval / pipeline run (pure docs synthesis). PMR gate dry-run
   before push.
+
+---
+
+## 3D — Phase 3 close-out (epic 3D done; Phase 3 closed) (2026-06-16)
+
+### Verdict
+
+**Phase 3 ("Accuracy Push — beat RBF without losing reliability") closes
+NEGATIVE on accuracy.** Across all four levers — 3A (coordinate
+representation), 3B (cross-attention ANP decoder), 3X (data correction),
+3C (microstructure features) — no pure conditional-neural variant met the
+≥ 5 %-below-RBF acceptance bar on the well-posed clean OTM substrate
+`spy_phase1_random40_noiselow_otm`.
+
+| Variant | OTM test MAE | vs RBF |
+|---|---:|---:|
+| rbf (interp) — floor | 0.00613 | — |
+| anp_single · point (best neural head) | 0.00987 | +61 % |
+| anp_calibrated · fused (production candidate) | 0.01162 | +90 % |
+| deepsets_single · point | 0.01752 | +186 % |
+| mlp · point | 0.03006 | +390 % |
+
+Source: `results/3/spy_phase1_random40_noiselow_otm/3x_compare/comparison_wide.csv`;
+full narrative in [`docs/phase3_result_memo.md`](../phase3_result_memo.md).
+
+### What survives / what was learned
+
+- The dirty-substrate gap (best ANP head +2.7 % over RBF) was a call-put
+  duplicate-coordinate confound; 3X's correction *widened* RBF's lead to
+  +61 %, so this is **not** §5 partial success.
+- 3C `micro_v1` microstructure features *worsened* test MAE in all three
+  heads (head-uniform).
+- The DeepSets→ANP architecture ranking holds (ANP beats DeepSets at every
+  matched head) and the calibrated reliability layer is intact (clean OTM
+  coverage 0.9295 conservative; hi-conf MAE < no-abstention).
+
+### Decisions / artifacts
+
+- [ADR 0009](../decisions/0009_phase3_production_predictor_selection.md) →
+  **Accepted/Implemented**: no pure neural predictor promoted; RBF stays
+  the production accuracy baseline; reliability layer retained; **Phase 4
+  = RBF-prior hybrid / residual neural model** (deployment fallback per
+  ADR 0004). A `backlog` Phase 4 epic placeholder is recorded on the BOARD.
+- Closing memo `docs/phase3_result_memo.md` (3D.3) and the regenerable
+  notebook `notebooks/06_phase3_results.ipynb` (3D.2 generator, 3D.4 emit)
+  shipped. Epic 3D and stories 3D.1–3D.4 are `done`.
+
+### Tests
+
+- `python3 scripts/generate_phase3_results_notebook.py` → exit 0 (19 cells).
+- `jupyter nbconvert --to notebook --execute notebooks/06_phase3_results.ipynb`
+  → exit 0, **0 cell errors**.
+- No new training / scoring / data run — pure synthesis on committed
+  artifacts. No-overclaim guardrail: matched `random40_noiselow_otm`
+  substrate only.

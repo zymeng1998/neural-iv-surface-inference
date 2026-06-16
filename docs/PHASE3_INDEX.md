@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-27T00:00:00-04:00
-last_updated_at: 2026-06-15T21:45:00-04:00
+last_updated_at: 2026-06-16T00:00:00-04:00
 ---
 
 > **Read this first if you are picking up Phase 3 work cold.** It mirrors
@@ -61,14 +61,16 @@ last_updated_at: 2026-06-15T21:45:00-04:00
   feature set is **no longer informative and was cancelled**; 3C.8
   closed the epic on 3C.3's training evidence alone (now `done`) and
   flipped ADR 0008 → **Implemented**. The Phase 3 acceptance bar
-  (≥ 5 % below RBF) is **still NOT met**. **Epic 3D is `in_progress`
-  (2026-06-15): 3D.1 `done`; 3D.2 (notebook generator) implemented and
-  `in_review`; 3D.3 (closing memo) / 3D.4 (notebook emit + ADR 0009
-  finalize + journal close) are `backlog`; the ADR 0009 skeleton is
-  committed; 3D.3 closing memo written (`in_review`). Next action: run
-  3D.4** (Phase 3 closing memo +
-  RBF re-eval; production-selection ADR is **0009**; Phase 4 is framed as
-  an RBF-prior hybrid / residual neural model). Full narrative:
+  (≥ 5 % below RBF) is **NOT met**. **PHASE 3 CLOSED 2026-06-16 (epic 3D
+  `done`; 3D.1–3D.4 all `done`):** the closing memo
+  (`docs/phase3_result_memo.md`), the executed notebook
+  (`notebooks/06_phase3_results.ipynb`, 0 cell errors), and
+  [ADR 0009](decisions/0009_phase3_production_predictor_selection.md)
+  (**Accepted/Implemented**) shipped. Verdict NEGATIVE on accuracy; RBF
+  stays the production baseline; reliability layer retained. **Next:
+  M1.6 (waiver-hook fix), then Phase 4 = RBF-prior hybrid / residual
+  neural model (epic `4A`, backlog placeholder — not decomposed).** Full
+  narrative:
   [ADR 0006](decisions/0006_duplicate_coordinate_data_correction.md) +
   [methodology progression](research/duplicate_coordinate_methodology_progression.md) +
   [retrospective 0002](retrospectives/0002_call_put_duplicate_coordinate_discovery.md).
@@ -117,11 +119,12 @@ last_updated_at: 2026-06-15T21:45:00-04:00
 | 3C.6 | Story | Remote: decision-layer eval on OTM, thresholds held constant against 3X.12 (Q2; mirrors 3X.12) — **cancelled (see 3C.4)** | `cancelled` | [`3C.6`](tasks/specs/3C.6_remote_decision_layer_eval_micro.md) | 2026-06-14 |
 | 3C.7 | Story | Local: OTM-baseline vs OTM+`micro_v1` comparison tables on matched substrate (mirrors 3X.13) — **cancelled (see 3C.4)** | `cancelled` | [`3C.7`](tasks/specs/3C.7_local_micro_vs_baseline_comparison.md) | 2026-06-14 |
 | 3C.8 | Story | Local: 3C closing addendum + ADR 0008 → Implemented + journal/README sync (NOT full Phase 3 memo — 3D) — closed on 3C.3 training evidence alone | `done` | [`3C.8`](tasks/specs/3C.8_local_3c_closing_addendum.md) | 2026-06-14 |
-| 3D | Epic | Closing memo + re-evaluation vs RBF — **must include OTM-clean re-statement; frames Phase 4 = RBF-prior hybrid / residual neural** — entered + decomposed (3D.2–3D.4 + ADR 0009 skeleton) | `in_progress` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W13 | 2026-06-15 |
+| 3D | Epic | Closing memo + re-evaluation vs RBF — **PHASE 3 CLOSED 2026-06-16, NEGATIVE on accuracy**: memo + executed notebook + ADR 0009 (Accepted/Implemented) shipped; RBF stays production baseline; forward = Phase 4 `4A` (backlog) | `done` | [`roadmaps/phase3_accuracy_push.md`](roadmaps/phase3_accuracy_push.md) §W13 | 2026-06-16 |
 | 3D.1 | Story | Decompose Phase 3D — executed: epic entered; 3D.2/3D.3/3D.4 drafted; ADR 0009 skeleton created | `done` | [`3D.1`](tasks/specs/3D.1_decompose_phase_3d.md) | 2026-06-15 |
-| 3D.2 | Story | Local: `scripts/generate_phase3_results_notebook.py` generator scaffold + smoke test — implemented (19-cell build, 5 tests green; notebook deferred to 3D.4) | `in_review` | [`3D.2`](tasks/specs/3D.2_phase3_notebook_generator.md) | 2026-06-15 |
-| 3D.3 | Story | Local: `docs/phase3_result_memo.md` — verdict vs RBF + vs 2D, dirty + clean-OTM restatement, §5 map — written: negative verdict (+61% best head; bar NOT met) | `in_review` | [`3D.3`](tasks/specs/3D.3_phase3_result_memo.md) | 2026-06-15 |
-| 3D.4 | Story | Local: emit `notebooks/06_phase3_results.ipynb`, finalize ADR 0009, journal close-out, flip epic 3D `done` (+ optional Phase 4 placeholder) | `backlog` | [`3D.4`](tasks/specs/3D.4_phase3_notebook_adr_journal_close.md) | 2026-06-15 |
+| 3D.2 | Story | Local: `scripts/generate_phase3_results_notebook.py` generator scaffold + smoke test — implemented (19-cell build, 5 tests green) | `done` | [`3D.2`](tasks/specs/3D.2_phase3_notebook_generator.md) | 2026-06-16 |
+| 3D.3 | Story | Local: `docs/phase3_result_memo.md` — verdict vs RBF + vs 2D, dirty + clean-OTM restatement, §5 map — negative verdict (+61% best head; bar NOT met) | `done` | [`3D.3`](tasks/specs/3D.3_phase3_result_memo.md) | 2026-06-16 |
+| 3D.4 | Story | Local: emit `notebooks/06_phase3_results.ipynb` (executed, 0 cell errors), finalize ADR 0009 (Accepted/Implemented), journal close-out, flip epic 3D done + Phase 4 placeholder | `done` | [`3D.4`](tasks/specs/3D.4_phase3_notebook_adr_journal_close.md) | 2026-06-16 |
+| 4A | Epic | **Phase 4 — RBF-prior hybrid / residual neural model** (per ADR 0004 / 0009) — backlog placeholder; not decomposed | `backlog` | [`ADR 0009`](decisions/0009_phase3_production_predictor_selection.md) | 2026-06-16 |
 
 ## Parallel-safety matrix
 
@@ -690,6 +693,13 @@ only if neither writes to a path in the other's `file_scope`.
   epic placeholder (do not decompose Phase 4).
 - **Next concrete action:** gate on 3D.2 + 3D.3 close; then run + close.
 - **Open blocker:** 3D.2, 3D.3.
+- **2026-06-16 — done; PHASE 3 CLOSED.** Generator emitted the committed
+  19-cell notebook; `nbconvert --execute` → 0 cell errors. ADR 0009 →
+  Accepted/Implemented (Outcome filled). Phase 3 journal close-out
+  written. Single-clean-close: 3D.2/3D.3/3D.4 + epic 3D all flipped to
+  `done` in one commit (no active spec → scope gate trivially passes;
+  zero-waiver). Phase 4 epic `4A` placeholder added (backlog). **Next:
+  M1.6, then Phase 4.**
 
 ## Resume snippet (copy-paste into a fresh session)
 
