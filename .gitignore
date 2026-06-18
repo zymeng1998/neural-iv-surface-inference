@@ -143,6 +143,10 @@ docs/neural_iv_surface_research_methodology_narrative.md
 # Project-memory review packets / local reports
 reports/project_memory/**
 
+# Pre-push waiver audit log — untracked sink written by the dep/scope gates
+# (M1.6 / ADR 0007); kept out of git so a waived push never dirties the tree.
+docs/audit/
+
 # Common local secret material
 .env
 .env.*

@@ -128,4 +128,28 @@ Operator runs it once per clone.
 
 - Epic `M1` on [`docs/tasks/BOARD.md`](../tasks/BOARD.md)
 - Roadmap [`docs/roadmaps/meta1_agent_collaboration.md`](../roadmaps/meta1_agent_collaboration.md)
-- Stories `M1.1` … `M1.5` under [`docs/tasks/specs/`](../tasks/specs/)
+- Stories `M1.1` … `M1.6` under [`docs/tasks/specs/`](../tasks/specs/)
+
+## Addendum (2026-06-17, story M1.6) — waiver audit trail is untracked
+
+**Problem observed.** The dep gate (M1.3) and scope gate (M1.4) originally
+recorded a documented `WAIVE_DEPS` / `WAIVE_SCOPE` bypass by appending an
+audit line to the affected story spec — a **tracked** file. Because the
+pre-push hook fires *after* the commit being pushed is created, this left
+the working tree dirty post-push with a mutation that was in no commit.
+It bit the project twice (the 3C.3 push and the 5787d2e 3C.8 closeout) and
+could re-trigger itself (a "waiver-write loop") if those lines were later
+committed and pushed.
+
+**Decision.** The gates now record the waiver audit trail to an
+**untracked, gitignored** log, `docs/audit/waiver_log.md` (shared helper
+`record_waiver_audit` in `check_story_dependencies.py`). The hook never
+modifies a tracked file, so a waived push leaves the tree clean.
+*When* a waiver is required and *which* paths/deps trigger a gate are
+**unchanged** — only the sink moved.
+
+**Follow-up workflow.** Review the log with `cat docs/audit/waiver_log.md`.
+If a waiver belongs in a story's permanent record, fold it into that
+spec's `## Last checkpoint` as a normal pre-commit edit — never let a gate
+write to a tracked file. The already-committed audit lines in the `3C.3` /
+`3C.8` specs are valid history and are left as-is.

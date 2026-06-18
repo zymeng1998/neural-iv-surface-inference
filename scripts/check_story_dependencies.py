@@ -18,9 +18,10 @@ Waiver
 ------
 Set ``WAIVE_DEPS`` to a comma-separated list of
 ``<story_id>:<actual_status>:<reason>`` entries to bypass the check
-for those specific (id, status) pairs. The waiver appends one audit
-line to the last ``### <timestamp>`` checkpoint block of every
-affected spec.
+for those specific (id, status) pairs. The waiver records one audit
+line per bypass to the untracked ``docs/audit/waiver_log.md`` (M1.6 /
+ADR 0007) — it never modifies a tracked file, so a waived push leaves
+the working tree clean.
 
 Usage
 -----
@@ -46,6 +47,12 @@ from typing import Dict, Iterable, List, Optional, Set, Tuple
 
 SPEC_DIR = Path("docs/tasks/specs")
 BOARD_PATH = Path("docs/tasks/BOARD.md")
+# Untracked (gitignored) sink for waiver audit trails. The pre-push gates
+# fire AFTER the commit being pushed is created, so writing the audit trail
+# into a tracked spec would leave the working tree dirty post-push (M1.6 /
+# ADR 0007). Writing here keeps the tree clean while preserving a durable,
+# operator-reviewable record. `docs/audit/` is gitignored.
+WAIVER_LOG = Path("docs/audit/waiver_log.md")
 
 STORY_ID_RE = re.compile(r"^[0-9A-Z]+\.[0-9]+$")
 DEP_LINE_RE = re.compile(r"^\s*-\s+`?([0-9A-Z]+\.[0-9]+)`?")
@@ -199,29 +206,45 @@ def parse_waiver(raw: Optional[str]) -> Dict[Tuple[str, str], str]:
     return out
 
 
-def append_audit_line(spec_path: Path, line: str) -> None:
-    """Append `line` under the last `### <timestamp> ...` checkpoint block."""
-    try:
-        text = spec_path.read_text(encoding="utf-8")
-    except OSError:
-        return
-    # Insert just before the next "### " heading after the last one, or at EOF.
-    matches = list(re.finditer(r"^### [^\n]*$", text, re.MULTILINE))
-    if not matches:
-        # No checkpoint section; append a fresh one.
-        suffix = (
-            f"\n\n### {datetime.now(TZ).strftime('%Y-%m-%dT%H:%M:%S%z')}"
-            f" — dep waiver appended\n\n{line}\n"
-        )
-        spec_path.write_text(text + suffix, encoding="utf-8")
-        return
-    last = matches[-1]
-    # Find end of that section (next "### " or EOF).
-    after = text[last.end():]
-    next_match = re.search(r"^### ", after, re.MULTILINE)
-    insert_at = last.end() + (next_match.start() if next_match else len(after))
-    new_text = text[:insert_at].rstrip() + "\n" + line + "\n\n" + text[insert_at:].lstrip()
-    spec_path.write_text(new_text, encoding="utf-8")
+_WAIVER_LOG_HEADER = (
+    "# Waiver audit log\n"
+    "\n"
+    "> **Untracked / gitignored.** Appended by the pre-push gates"
+    " (`check_story_dependencies.py`, `check_file_scope.py`) whenever a\n"
+    "> documented `WAIVE_DEPS` / `WAIVE_SCOPE` bypass fires. It lives here —"
+    " not in a tracked spec — so a waived push never leaves the working\n"
+    "> tree dirty (M1.6 / ADR 0007).\n"
+    ">\n"
+    "> **Follow-up workflow:** review with `cat docs/audit/waiver_log.md`."
+    " If a waiver belongs in a story's permanent record, fold it into that\n"
+    "> spec's `## Last checkpoint` as a *normal pre-commit edit* — never let"
+    " a gate write to a tracked file.\n"
+    "\n"
+)
+
+
+def record_waiver_audit(
+    entries: Iterable[Tuple[Path, str]],
+    *,
+    dry_run: bool = False,
+) -> Optional[Path]:
+    """Append waiver audit `entries` to the untracked `WAIVER_LOG`.
+
+    `entries` is an iterable of ``(related_spec_path, audit_line)``. Returns
+    the log path if anything was written, else ``None``. Never mutates a
+    tracked file — this is the whole point of M1.6.
+    """
+    entries = list(entries)
+    if not entries or dry_run:
+        return None
+    WAIVER_LOG.parent.mkdir(parents=True, exist_ok=True)
+    new_file = not WAIVER_LOG.exists()
+    with WAIVER_LOG.open("a", encoding="utf-8") as fh:
+        if new_file:
+            fh.write(_WAIVER_LOG_HEADER)
+        for spec_path, line in entries:
+            fh.write(f"{line}  [spec: {Path(spec_path).as_posix()}]\n")
+    return WAIVER_LOG
 
 
 # ---------------------------------------------------------------------------
@@ -306,13 +329,17 @@ def main(argv: Optional[List[str]] = None) -> int:
         spec_paths, board_status, waivers, verbose=args.verbose,
     )
 
-    for path, line in audit_writes:
+    if audit_writes:
         if args.dry_run:
-            print(f"[dep-gate] DRY-RUN would append to {path}: {line}")
+            for path, line in audit_writes:
+                print(f"[dep-gate] DRY-RUN would record waiver to {WAIVER_LOG}: {line}")
         else:
-            append_audit_line(path, line)
+            record_waiver_audit(audit_writes)
+            print(f"[dep-gate] recorded {len(audit_writes)} waiver(s) to "
+                  f"{WAIVER_LOG} (untracked — no tracked file modified)")
             if args.verbose:
-                print(f"[dep-gate] appended waiver audit line to {path}")
+                for path, line in audit_writes:
+                    print(f"[dep-gate]   {line}  [spec: {path.as_posix()}]")
 
     if violations:
         print("[dep-gate] BLOCKED — story dependency violations:", file=sys.stderr)

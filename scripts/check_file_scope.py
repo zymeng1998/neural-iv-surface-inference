@@ -17,9 +17,10 @@ Exit codes
 
 Waiver
 ------
-``WAIVE_SCOPE="<reason>"`` bypasses the check and appends an audit
-line listing the out-of-scope paths to each affected spec's last
-checkpoint block.
+``WAIVE_SCOPE="<reason>"`` bypasses the check and records an audit
+line listing the out-of-scope paths to the untracked
+``docs/audit/waiver_log.md`` (M1.6 / ADR 0007) — it never modifies a
+tracked file, so a waived push leaves the working tree clean.
 
 Stdlib only.
 """
@@ -39,8 +40,9 @@ from typing import Dict, Iterable, List, Optional, Tuple
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from check_story_dependencies import (  # noqa: E402
     SPEC_DIR,
+    WAIVER_LOG,
     changed_files_from_git,
-    append_audit_line,
+    record_waiver_audit,
 )
 
 ACTIVE_STATUSES = {"in_progress", "in_review"}
@@ -166,13 +168,17 @@ def main(argv: Optional[List[str]] = None) -> int:
         changed, active_specs, waiver_reason=waiver, verbose=args.verbose,
     )
 
-    for path, line in audit_writes:
+    if audit_writes:
         if args.dry_run:
-            print(f"[scope-gate] DRY-RUN would append to {path}: {line}")
+            for path, line in audit_writes:
+                print(f"[scope-gate] DRY-RUN would record waiver to {WAIVER_LOG}: {line}")
         else:
-            append_audit_line(path, line)
+            record_waiver_audit(audit_writes)
+            print(f"[scope-gate] recorded {len(audit_writes)} waiver(s) to "
+                  f"{WAIVER_LOG} (untracked — no tracked file modified)")
             if args.verbose:
-                print(f"[scope-gate] appended scope waiver to {path}")
+                for path, line in audit_writes:
+                    print(f"[scope-gate]   {line}  [spec: {path.as_posix()}]")
 
     if violations:
         print("[scope-gate] BLOCKED — file-scope violations:", file=sys.stderr)

@@ -148,12 +148,16 @@ def test_main_blocks_on_out_of_scope(tmp_path, monkeypatch, capsys):
     assert "BLOCKED" in capsys.readouterr().err
 
 
-def test_main_passes_with_waiver(tmp_path, monkeypatch):
+def test_main_passes_with_waiver_logs_untracked_and_leaves_spec_clean(tmp_path, monkeypatch):
     spec = write_spec(tmp_path, "M1.9", "in_progress", ["scripts/foo.py"])
+    spec_before = spec.read_text()
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("WAIVE_SCOPE", "urgent fix")
     rc = cs.main(["--files",
                   str(spec.relative_to(tmp_path)),
                   "src/data/sneaky.py", "scripts/foo.py"])
     assert rc == 0
-    assert "SCOPE WAIVER" in spec.read_text()
+    # M1.6: the waiver is recorded in the untracked log, NOT the spec.
+    assert "SCOPE WAIVER" in (tmp_path / cs.WAIVER_LOG).read_text()
+    assert "src/data/sneaky.py" in (tmp_path / cs.WAIVER_LOG).read_text()
+    assert spec.read_text() == spec_before

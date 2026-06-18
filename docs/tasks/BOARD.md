@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-06-16T00:00:00-04:00
+last_updated_at: 2026-06-17T00:00:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -116,13 +116,13 @@ decomposition). The first story of any epic is always its decomposition story.
 | 3D.3 | Story | Local: `docs/phase3_result_memo.md` — Phase 3 verdict vs RBF + vs 2D, dirty + clean-OTM restatement, §5 acceptance map — negative verdict (best clean-OTM head +61% vs RBF; bar NOT met) | `done` | `docs/tasks/specs/3D.3_phase3_result_memo.md` | 2026-06-16 |
 | 3D.4 | Story | Local: emit `notebooks/06_phase3_results.ipynb` (executed, 0 cell errors), finalize ADR 0009 (Accepted/Implemented), journal close-out, flip epic 3D done + Phase 4 placeholder | `done` | `docs/tasks/specs/3D.4_phase3_notebook_adr_journal_close.md` | 2026-06-16 |
 | 4A | Epic | **Phase 4 — RBF-prior hybrid / residual neural model** (deployment fallback per ADR 0004 / ADR 0009): RBF carries local interpolation; neural model learns the residual + the calibrated reliability/abstention layer. **PLACEHOLDER — not decomposed; roadmap + decomposition (4A.1) authored on entry.** Reopens GPU/Pod spend. | `backlog` | `docs/decisions/0009_phase3_production_predictor_selection.md` (roadmap TBD) | 2026-06-16 |
-| M1 | Epic | Meta — Multi-agent collaboration infrastructure (ADR 0007: AGENTS.md router + executable rule gates) — → 3 gates live (PMR + dep + scope) + commit-msg trailer; dep gate now inspects push range; M1.6 (waiver post-commit-mutation fix) backlogged | `done` | `docs/roadmaps/meta1_agent_collaboration.md` | 2026-06-14 |
+| M1 | Epic | Meta — Multi-agent collaboration infrastructure (ADR 0007: AGENTS.md router + executable rule gates) — → 3 gates live (PMR + dep + scope) + commit-msg trailer; dep gate inspects push range; M1.6 routes waiver audit to an untracked log (no post-commit tracked-file mutation) | `done` | `docs/roadmaps/meta1_agent_collaboration.md` | 2026-06-17 |
 | M1.1 | Story | Decompose M1 + ADR 0007 + 4 sub-specs | `done` | `docs/tasks/specs/M1.1_decompose_m1.md` | 2026-05-30 |
 | M1.2 | Story | `AGENTS.md` router + `.cursor/rules/000-bootstrap.mdc` + CLAUDE.md re-point | `done` | `docs/tasks/specs/M1.2_agents_md_and_cursor_bootstrap.md` | 2026-05-30 |
 | M1.3 | Story | `scripts/check_story_dependencies.py` + tests + `install_hooks.sh` (gate that would have caught 3X.4) | `done` | `docs/tasks/specs/M1.3_check_story_dependencies.md` | 2026-05-30 |
 | M1.4 | Story | `scripts/check_file_scope.py` + tests + pre-push wiring | `done` | `docs/tasks/specs/M1.4_check_file_scope.md` | 2026-05-30 |
 | M1.5 | Story | `commit-msg` hook — agent-trailer enforcement (Claude / Cursor / Codex / Aider) | `done` | `docs/tasks/specs/M1.5_commit_msg_trailer_hook.md` | 2026-05-30 |
-| M1.6 | Story | Pre-push waivers must not mutate tracked files after the pushed commit (write to a separate generated/untracked audit log + follow-up workflow) — observed twice (3C.3, 5787d2e) | `backlog` | `docs/tasks/specs/M1.6_waiver_audit_no_post_commit_mutation.md` | 2026-06-14 |
+| M1.6 | Story | Pre-push waivers must not mutate tracked files after the pushed commit — **implemented**: both gates record to untracked gitignored `docs/audit/waiver_log.md` via `record_waiver_audit`; 31 gate tests green; ADR 0007 addendum | `in_review` | `docs/tasks/specs/M1.6_waiver_audit_no_post_commit_mutation.md` | 2026-06-17 |
 
 > When an epic is entered, set it to `in_progress`, add its decomposition story
 > (e.g. `2A.1`), then add the resulting stories as new rows. Do not delete or

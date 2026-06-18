@@ -30,7 +30,7 @@ version: prose rules in `CLAUDE.md` and story specs get bent
 | M1.3 | `check_story_dependencies.py` + tests + `install_hooks.sh` | local | done |
 | M1.4 | `check_file_scope.py` + tests | local | done |
 | M1.5 | `commit-msg` trailer hook (agent-trailer enforcement) | local | done |
-| M1.6 | Waiver-recording timing fix (deferred — design comparison pending, see Known follow-ups #2) | local | deferred |
+| M1.6 | Waiver audit trail → untracked log (`docs/audit/waiver_log.md`); gates never mutate a tracked file post-push (ADR 0007 addendum) | local | in_review |
 
 All stories are `parallel_safe_with: ["3X.*", "3B.*", "3C.*", "3D.*"]`
 because they touch only workflow infra (`scripts/`, `docs/`,
@@ -79,16 +79,18 @@ Discovered while dogfooding the M1 gates on their own bootstrap push
    deliberately do **not** read the pre-push stdin, because the PMR gate
    runs first in the chained hook and drains it.
 
-2. **[OPEN] Waiver audit-line writes mutate the tree at push time.**
-   When a `WAIVE_DEPS` / `WAIVE_SCOPE` waiver fires, the gate appends an
-   audit line to the affected spec's checkpoint *during the pre-push
-   hook* — i.e. after the commit is built — leaving an uncommitted diff
-   in the working tree post-push. Options to evaluate: (a) write waivers
-   to a dedicated append-only log (`docs/logs/waiver_audit.md`) instead
-   of the spec; (b) emit to stderr only and rely on commit message +
-   operator shell history; (c) move the check to commit-msg/pre-commit
-   time so the audit can be part of the commit. Decide before the next
-   real waiver is needed.
+2. **[FIXED — M1.6, 2026-06-17] Waiver audit-line writes mutated the tree
+   at push time.** When a `WAIVE_DEPS` / `WAIVE_SCOPE` waiver fired, the
+   gate appended an audit line to the affected spec's checkpoint *during
+   the pre-push hook* — after the commit was built — leaving an
+   uncommitted diff post-push (bit us on the 3C.3 and 5787d2e pushes).
+   **Resolved (option a):** waivers now record to the untracked, gitignored
+   `docs/audit/waiver_log.md` via the shared `record_waiver_audit` helper;
+   the gates never modify a tracked file, so a waived push leaves the tree
+   clean. Trigger conditions unchanged. See the
+   [ADR 0007 addendum](../decisions/0007_multi_agent_handoff.md#addendum-2026-06-17-story-m16--waiver-audit-trail-is-untracked)
+   and the M1.6 spec. Regression tests assert the spec is byte-unchanged
+   on a waived run.
 
 3. **[OPEN] Scope gate only fires when a spec is in the diff.** Editing
    a story-scoped source file *without* touching that story's spec

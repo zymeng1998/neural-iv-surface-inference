@@ -158,17 +158,29 @@ def test_evaluate_dep_not_on_board_blocks(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# append_audit_line
+# record_waiver_audit (M1.6: write to the untracked log, never the spec)
 # ---------------------------------------------------------------------------
 
-def test_append_audit_line_lands_under_last_checkpoint(tmp_path):
+def test_record_waiver_audit_writes_untracked_log_not_spec(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     spec = write_spec(tmp_path, "M1.9", "in_progress", ["3X.2"])
-    line = "- DEP WAIVER (2026-05-30T13:30:00-0400): 3X.2 in_review → bypassed (test)"
-    cs.append_audit_line(spec, line)
-    text = spec.read_text()
-    assert line in text
-    # Audit line must appear after the "### ... — registered" heading.
-    assert text.index("### 2026-05-30T13:00:00-0400") < text.index(line)
+    before = spec.read_text()
+    line = "- DEP WAIVER (2026-06-17T13:30:00-0400): 3X.2 in_review → bypassed (test)"
+    log = cs.record_waiver_audit([(spec, line)])
+    # The waiver lands in the untracked log...
+    assert log == cs.WAIVER_LOG
+    log_text = (tmp_path / cs.WAIVER_LOG).read_text()
+    assert line in log_text
+    assert "M1.9.md" in log_text  # the spec ref is recorded for traceability
+    # ...and the tracked spec is left byte-for-byte unchanged.
+    assert spec.read_text() == before
+
+
+def test_record_waiver_audit_dry_run_writes_nothing(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    spec = write_spec(tmp_path, "M1.9", "in_progress", ["3X.2"])
+    assert cs.record_waiver_audit([(spec, "x")], dry_run=True) is None
+    assert not (tmp_path / cs.WAIVER_LOG).exists()
 
 
 # ---------------------------------------------------------------------------
@@ -211,15 +223,18 @@ def test_main_blocks_on_violation(tmp_path, monkeypatch, capsys):
     assert "BLOCKED" in err and "3X.2" in err
 
 
-def test_main_passes_with_waiver_and_writes_audit(tmp_path, monkeypatch):
+def test_main_passes_with_waiver_logs_untracked_and_leaves_spec_clean(tmp_path, monkeypatch):
     spec = write_spec(tmp_path, "M1.9", "in_progress", ["3X.2"])
     board = write_board(tmp_path, {"3X.2": "in_review"})
+    spec_before = spec.read_text()
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("WAIVE_DEPS", "3X.2:in_review:operator approved")
     rc = cs.main(["--files", str(spec.relative_to(tmp_path)),
                   "--board", str(board.relative_to(tmp_path))])
     assert rc == 0
-    assert "DEP WAIVER" in spec.read_text()
+    # M1.6: the waiver is recorded in the untracked log, NOT the spec.
+    assert "DEP WAIVER" in (tmp_path / cs.WAIVER_LOG).read_text()
+    assert spec.read_text() == spec_before
 
 
 # ---------------------------------------------------------------------------

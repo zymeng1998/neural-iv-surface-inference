@@ -4767,3 +4767,53 @@ architecture story survive. No-overclaim guardrail: matched
 - Then **Phase 4 (`4A`)**: author the roadmap + ADR for the hybrid design +
   decomposition (`4A.1`). Reopens GPU/Pod spend — gated on operator go-ahead.
 - Optional: close/park the dormant 2E epic.
+
+---
+
+## 2026-06-17 — M1.6: waiver audit routed to an untracked log (no post-commit tracked-file mutation)
+
+### What was completed
+
+Fixed the M1 design wart where a `WAIVE_DEPS` / `WAIVE_SCOPE` bypass made
+the pre-push gate append an audit line to a **tracked** spec *after* the
+pushed commit, leaving the tree dirty (bit us on the 3C.3 and 5787d2e
+pushes; also forced the sequenced two-push dance).
+
+- Added shared `record_waiver_audit(entries, *, dry_run)` + `WAIVER_LOG =
+  docs/audit/waiver_log.md` to `scripts/check_story_dependencies.py`;
+  removed the spec-mutating `append_audit_line`. `scripts/check_file_scope.py`
+  imports and uses the same helper. Both gates' `main()` now route waiver
+  entries to the untracked log and print its path; `--dry-run` preserved.
+- `.gitignore`: ignore `docs/audit/` (verified `git check-ignore`), so a
+  waived push records the trail without dirtying the tree.
+- `evaluate()` unchanged in both gates — only the audit *sink* moved;
+  *when*/*which* a gate fires is untouched (explicit non-goal).
+- Tests: replaced the obsolete append-to-spec tests with
+  `record_waiver_audit` coverage (writes the log; leaves the spec
+  byte-for-byte unchanged; dry-run writes nothing) and updated the two
+  `main`-with-waiver tests to assert spec-unchanged + log-written.
+  **31 passed** across the two gate suites.
+- Recorded the decision as an **ADR 0007 addendum**; updated the meta1
+  roadmap follow-up #2 → FIXED. `install_hooks.sh` untouched (hook
+  contract unchanged).
+
+### Why this matters
+
+Future waived pushes leave a clean tree and need no follow-up "what do I
+do with these lines?" decision — removing the friction before Phase 4's
+GPU-heavy cadence. (The already-committed 3C.3 / 3C.8 audit lines are
+valid history and left as-is.)
+
+### Gates (M1.6 commit)
+
+- Touches `scripts/` + `tests/` (evidence) → **live PMR** (progress_log +
+  spec keep coverage). SCOPE: only active spec M1.6; `.gitignore` +
+  `STATUS.md` added to its `file_scope` → PASS. DEP: M1.6 has no
+  `## Dependencies` deps that aren't `done` → PASS. Designed zero-waiver.
+
+### Next actions
+
+- Operator promotes M1.6 → `done`.
+- **Phase 4 (`4A`) kickoff**: author `docs/roadmaps/phase4_*.md` + the
+  hybrid-design ADR + the `4A.1` decomposition story. Reopens GPU/Pod
+  spend — gated on operator go-ahead; no training until then.
