@@ -30,7 +30,7 @@ version: prose rules in `CLAUDE.md` and story specs get bent
 | M1.3 | `check_story_dependencies.py` + tests + `install_hooks.sh` | local | done |
 | M1.4 | `check_file_scope.py` + tests | local | done |
 | M1.5 | `commit-msg` trailer hook (agent-trailer enforcement) | local | done |
-| M1.6 | Waiver audit trail → untracked log (`docs/audit/waiver_log.md`); gates never mutate a tracked file post-push (ADR 0007 addendum) | local | in_review |
+| M1.6 | Waiver audit trail → untracked log (`docs/audit/waiver_log.md`); gates never mutate a tracked file post-push (ADR 0007 addendum) | local | done |
 
 All stories are `parallel_safe_with: ["3X.*", "3B.*", "3C.*", "3D.*"]`
 because they touch only workflow infra (`scripts/`, `docs/`,

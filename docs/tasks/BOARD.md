@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-06-17T00:00:00-04:00
+last_updated_at: 2026-06-18T00:00:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -122,7 +122,7 @@ decomposition). The first story of any epic is always its decomposition story.
 | M1.3 | Story | `scripts/check_story_dependencies.py` + tests + `install_hooks.sh` (gate that would have caught 3X.4) | `done` | `docs/tasks/specs/M1.3_check_story_dependencies.md` | 2026-05-30 |
 | M1.4 | Story | `scripts/check_file_scope.py` + tests + pre-push wiring | `done` | `docs/tasks/specs/M1.4_check_file_scope.md` | 2026-05-30 |
 | M1.5 | Story | `commit-msg` hook — agent-trailer enforcement (Claude / Cursor / Codex / Aider) | `done` | `docs/tasks/specs/M1.5_commit_msg_trailer_hook.md` | 2026-05-30 |
-| M1.6 | Story | Pre-push waivers must not mutate tracked files after the pushed commit — **implemented**: both gates record to untracked gitignored `docs/audit/waiver_log.md` via `record_waiver_audit`; 31 gate tests green; ADR 0007 addendum | `in_review` | `docs/tasks/specs/M1.6_waiver_audit_no_post_commit_mutation.md` | 2026-06-17 |
+| M1.6 | Story | Pre-push waivers must not mutate tracked files after the pushed commit — both gates record to untracked gitignored `docs/audit/waiver_log.md` via `record_waiver_audit`; 31 gate tests green; ADR 0007 addendum | `done` | `docs/tasks/specs/M1.6_waiver_audit_no_post_commit_mutation.md` | 2026-06-18 |
 
 > When an epic is entered, set it to `in_progress`, add its decomposition story
 > (e.g. `2A.1`), then add the resulting stories as new rows. Do not delete or
