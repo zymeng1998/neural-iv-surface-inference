@@ -4918,3 +4918,53 @@ every committed Phase 2/3/3X checkpoint stays reproducible.
 - **4A.3** (remote CPU): build the full residual-target dataset on
   `random40_noiselow_otm`; audit finiteness + `mean|residual|` ≈ 3X.6 RBF MAE.
 - GPU stories (4A.4/4A.5) gated on a Pod go-ahead.
+
+---
+
+## 2026-06-19 — 4A.2 pushed/done + 4A.3 residual dataset built on the CPU pod
+
+### What was completed
+
+- **Pushed 4A.2** (`375b674`) and **promoted it to `done`** (`c64b5e9`) —
+  clean pushes, gates passed in the hook, no `WAIVE_*`, no audit-line
+  mutations.
+- **4A.3 executed on the RunPod CPU pod** (`venv-2e2`): materialised the full
+  OTM residual-target dataset. **4622 dates, 10,531,499 rows, 0 non-finite.**
+  Per-split mean|residual|: train 0.006659 / **val 0.006151 / test
+  0.006132** — val/test **match the 3X.6 RBF MAE byte-for-byte**, confirming
+  `rbf_pred` is the same RBF baseline and the residual target is correct.
+
+### Two pod frictions handled (worth remembering)
+
+1. **Pod can't `git fetch`** — `origin` is an SSH GitHub URL with no
+   authorized key on the pod (stuck at the 3X.3-era commit). Resolved by
+   **scp-ing** the two 4A.2 files; the builder only needs
+   `models/interpolation.py`, which exists at the pod's older checkout.
+2. **Container cgroup-capped at ~3.7 GB** (host shows 251 GB but the cgroup
+   `memory.max` is 4e9 B). The naive full-41-column read OOM-killed →
+   added a memory-safe `--columns` subset to `build_residual_targets.py`
+   (the 7 columns the residual build + `minimal`-feature 4A.4 training need);
+   peak RSS ~2.3 GB. Connected with the **`id_ed25519_runpod`** key (the
+   default `id_ed25519` was rejected).
+
+### Artifacts
+
+- Residual parquet (237 MB) on the **persistent `/workspace` volume**
+  (gitignored; not pulled to local — avoids a 237 MB round-trip; 4A.4 reads
+  it from the volume). Committed: `artifacts/runs/4A3/manifest.json` +
+  `residual_stats.csv`. **The CPU pod can be terminated now.**
+
+### Gates (4A.3 commit)
+
+- Touches `scripts/` (builder `--columns`) + `artifacts/runs/4A3/` (evidence)
+  → live PMR; journal + lineage + progress_log updated. DEP: 4A.3 dep 4A.2 =
+  `done` → PASS. SCOPE: only active spec 4A.3; `STATUS.md` added to its
+  `file_scope` → PASS. Designed zero-waiver.
+
+### Next actions
+
+- Operator promotes 4A.3 → `done`.
+- **4A.4** (remote GPU): train the residual hybrid (ANP-residual default,
+  `target_mode=residual`) on the OTM residual parquet across 3 heads — gated
+  on a GPU Pod go-ahead; the GPU pod must mount the same `/workspace` volume
+  (else pull the parquet to local + re-upload).

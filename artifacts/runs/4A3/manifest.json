@@ -1,0 +1,48 @@
+{
+  "story": "4A.3",
+  "dataset": "spy_phase1_random40_noiselow_otm",
+  "input": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm.parquet",
+  "output": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm_residual.parquet",
+  "builder": "scripts/build_residual_targets.py (origin c64b5e9, scp to pod)",
+  "columns_read": [
+    "date",
+    "log_moneyness",
+    "tau",
+    "implied_volatility",
+    "iv_clean",
+    "observed",
+    "split"
+  ],
+  "total_rows": 10531499,
+  "total_dates": 4622,
+  "n_nonfinite_rbf_total": 0,
+  "overall_mean_abs_residual": 0.006393019667871463,
+  "per_split": [
+    {
+      "split": "train",
+      "n": 5123586,
+      "mean_abs_residual": 0.006658759915395122,
+      "n_nonfinite_rbf": 0,
+      "n_nonfinite_resid": 0,
+      "rbf_ref_mae": ""
+    },
+    {
+      "split": "val",
+      "n": 2638892,
+      "mean_abs_residual": 0.006151118707710634,
+      "n_nonfinite_rbf": 0,
+      "n_nonfinite_resid": 0,
+      "rbf_ref_mae": 0.006151118707710642
+    },
+    {
+      "split": "test",
+      "n": 2769021,
+      "mean_abs_residual": 0.00613184703563501,
+      "n_nonfinite_rbf": 0,
+      "n_nonfinite_resid": 0,
+      "rbf_ref_mae": 0.006131847035635011
+    }
+  ],
+  "rbf_reference": "results/3/spy_phase1_random40_noiselow_otm/rbf/metrics_summary.csv (3X.6)",
+  "built_at": "2026-06-19T16:15:53.093137Z"
+}

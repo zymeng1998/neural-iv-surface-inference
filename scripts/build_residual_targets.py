@@ -46,13 +46,30 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--input", required=True, help="Input benchmark parquet.")
     parser.add_argument("--output", required=True, help="Output parquet with residual columns.")
     parser.add_argument(
+        "--columns", default=None,
+        help="Comma-separated column subset to read (memory-safe on capped "
+             "containers). Must include date, log_moneyness, tau, "
+             "implied_volatility, iv_clean, observed; include 'split' for the "
+             "per-split audit. Default reads all columns.",
+    )
+    parser.add_argument(
         "--max-dates", type=int, default=None,
         help="Smoke mode: only process the first N dates (chronological).",
     )
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args(argv)
 
-    df = pd.read_parquet(args.input)
+    columns = None
+    if args.columns:
+        columns = [c.strip() for c in args.columns.split(",") if c.strip()]
+        needed = {"date", "log_moneyness", "tau", "implied_volatility",
+                  "iv_clean", "observed"}
+        missing = needed - set(columns)
+        if missing:
+            print(f"[residual-build] --columns is missing required {sorted(missing)}",
+                  file=sys.stderr)
+            return 2
+    df = pd.read_parquet(args.input, columns=columns)
     if args.max_dates is not None:
         keep = sorted(df["date"].unique())[: args.max_dates]
         df = df[df["date"].isin(keep)].copy()

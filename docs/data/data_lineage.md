@@ -308,7 +308,11 @@ decision trail.
 *derived, model-input* columns, not part of the Step-1→Step-4 data pipeline.
 They are computed on demand from a committed benchmark + the existing RBF
 baseline (no new data source), behind the loader's `target_mode: residual`
-flag; the full-fold materialisation lives in story 4A.3.
+flag; the full-fold materialisation lives in story 4A.3. **Materialised
+2026-06-19 (4A.3)** for `random40_noiselow_otm` →
+`…/benchmarks/spy_phase1_random40_noiselow_otm_residual.parquet` (10.53M
+rows, 0 non-finite; per-split mean|residual| == the 3X.6 RBF MAE) on the
+persistent RunPod `/workspace` volume (gitignored).
 
 **Critical convention:** `spot = close` (unadjusted closing price), NOT `adjusted_close`. This is because option strikes are quoted against unadjusted prices; using adjusted close would distort moneyness computations. Documented in `docs/data_assumptions_and_cleaning.md`.
 

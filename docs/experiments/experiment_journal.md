@@ -2214,3 +2214,37 @@ full narrative in [`docs/phase3_result_memo.md`](../phase3_result_memo.md).
 - No new training / scoring / data run — pure synthesis on committed
   artifacts. No-overclaim guardrail: matched `random40_noiselow_otm`
   substrate only.
+
+---
+
+## 4A.3 — residual-target dataset built on OTM (2026-06-19)
+
+### Result
+
+Materialised the Phase 4 residual targets `r = iv_clean − rbf_pred` for the
+full `spy_phase1_random40_noiselow_otm` fold on a RunPod CPU pod (venv-2e2).
+**4622 dates, 10,531,499 rows, 0 non-finite.**
+
+| Split | n | mean\|residual\| | 3X.6 RBF MAE (ref) |
+|---|---:|---:|---:|
+| train | 5,123,586 | 0.006659 | — |
+| val | 2,638,892 | **0.006151** | 0.006151 |
+| test | 2,769,021 | **0.006132** | 0.006132 |
+
+The val/test mean|residual| **equals the 3X.6 RBF MAE byte-for-byte**,
+confirming `rbf_pred` is the same per-date RBF baseline (reused verbatim
+from `models.interpolation`) → the residual target is correct. This is the
+floor the Phase 4 hybrid's neural residual must improve on.
+
+### Artifacts / provenance
+
+- `data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm_residual.parquet`
+  (237 MB, 8 cols incl. `rbf_pred` + `residual_target`) — on the persistent
+  RunPod `/workspace` volume (gitignored; not pulled to local).
+- Committed: `artifacts/runs/4A3/manifest.json` + `residual_stats.csv`.
+
+### Notes
+
+- Pod frictions: no GitHub fetch on the pod → 4A.2 files scp'd; container
+  cgroup-capped ~3.7 GB → memory-safe `--columns` read (7 cols, ~2.3 GB
+  peak). No new RBF math; reuses the 3X.6 baseline. No GPU.

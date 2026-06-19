@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-06-18T00:00:00-04:00
-last_updated_at: 2026-06-18T22:00:00-04:00
+last_updated_at: 2026-06-19T00:00:00-04:00
 ---
 
 > Read this first if you are picking up Phase 4 work cold. Mirrors the
@@ -27,11 +27,12 @@ last_updated_at: 2026-06-18T22:00:00-04:00
   reliability preserved (coverage ±2 pp of 0.90; hi-conf < no-abstention;
   flags not worse than 3X.12). **Negative branch is acceptable:** if no
   significant gain, ship the calibrated reliability layer on RBF.
-- **Status:** epic 4A `in_progress`; 4A.1 `done`; **4A.2 `in_review`**
-  (residual-target builder + `target_mode` flag, 20 tests green); 4A.3–4A.8
-  `backlog`. **Next action: promote 4A.2 → `done`, then run 4A.3** (remote
-  CPU: build the full OTM residual dataset). GPU stories (4A.4/4A.5) gated on
-  operator Pod go-ahead.
+- **Status:** epic 4A `in_progress`; 4A.1 `done`; 4A.2 `done`; **4A.3
+  `in_review`** (residual dataset built on OTM: 10.53M rows, 0 non-finite,
+  val/test mean|residual| == the 3X.6 RBF MAE; parquet on persistent
+  `/workspace`). 4A.4–4A.8 `backlog`. **Next action: promote 4A.3 → `done`,
+  then 4A.4** — remote GPU residual-hybrid training, **gated on operator Pod
+  go-ahead**.
 
 ## Live status (sync with BOARD.md)
 
@@ -40,7 +41,7 @@ last_updated_at: 2026-06-18T22:00:00-04:00
 | 4A | Epic | RBF-prior residual hybrid | `in_progress` |
 | 4A.1 | Story | Decompose Phase 4A + ADR 0010 | `done` |
 | 4A.2 | Story | Residual-target builder + `target_mode` flag (local) | `done` |
-| 4A.3 | Story | Build full residual dataset on OTM (remote CPU) | `backlog` |
+| 4A.3 | Story | Build full residual dataset on OTM (remote CPU) | `in_review` |
 | 4A.4 | Story | Train residual hybrid, 3 heads (remote GPU) | `backlog` |
 | 4A.5 | Story | K=5 residual ensemble (remote GPU) | `backlog` |
 | 4A.6 | Story | Calibrator re-fit on hybrid val (local) | `backlog` |
@@ -60,5 +61,10 @@ share one Pod-GPU window; 4A.3 is a CPU pre-step.
   flag (absolute byte-identical) + `scripts/build_residual_targets.py` + tests
   (20 passed). **Next: operator promotes 4A.2 → `done`, then 4A.3** (remote
   CPU: build the full OTM residual dataset).
-- **4A.3–4A.8** — registered (`backlog`); not yet executed. See each spec.
+- **4A.3 — built (`in_review`, 2026-06-19).** Full OTM residual dataset on
+  the RunPod CPU pod: 10.53M rows, 0 non-finite, val/test mean|residual| ==
+  3X.6 RBF MAE (0.006151 / 0.006132). Parquet (237 MB) on persistent
+  `/workspace`; `artifacts/runs/4A3/{manifest.json,residual_stats.csv}`
+  committed. **Next: promote 4A.3 → `done`, then 4A.4** (GPU, Pod-gated).
+- **4A.4–4A.8** — registered (`backlog`); not yet executed. See each spec.
   GPU stories (4A.4/4A.5) gated on operator Pod go-ahead.
