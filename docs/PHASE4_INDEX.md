@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-06-18T00:00:00-04:00
-last_updated_at: 2026-06-18T00:00:00-04:00
+last_updated_at: 2026-06-18T21:00:00-04:00
 ---
 
 > Read this first if you are picking up Phase 4 work cold. Mirrors the
@@ -37,7 +37,7 @@ last_updated_at: 2026-06-18T00:00:00-04:00
 | ID | Type | Title | Status |
 |---|---|---|---|
 | 4A | Epic | RBF-prior residual hybrid | `in_progress` |
-| 4A.1 | Story | Decompose Phase 4A + ADR 0010 | `in_review` |
+| 4A.1 | Story | Decompose Phase 4A + ADR 0010 | `done` |
 | 4A.2 | Story | Residual-target builder + `target_mode` flag (local) | `backlog` |
 | 4A.3 | Story | Build full residual dataset on OTM (remote CPU) | `backlog` |
 | 4A.4 | Story | Train residual hybrid, 3 heads (remote GPU) | `backlog` |
@@ -51,8 +51,8 @@ share one Pod-GPU window; 4A.3 is a CPU pre-step.
 
 ## Per-story last checkpoint
 
-- **4A.1 — decompose (`in_review`, 2026-06-18).** Roadmap + ADR 0010
-  (Proposed) + 4A.2–4A.8 specs authored; epic entered. Backbone fork
-  (ANP-residual default vs MLP-residual ablation) open for the 4A.4 review.
-  Next: operator promotes 4A.1 → `done`, then run 4A.2.
+- **4A.1 — decompose (`done`, 2026-06-18).** Roadmap + ADR 0010 (Proposed)
+  + 4A.2–4A.8 specs authored; epic entered. Backbone fork (ANP-residual
+  default vs MLP-residual ablation) open for the 4A.4 review. **4A.2 is now
+  in progress** (residual-target builder + `target_mode` flag).
 - **4A.2–4A.8** — registered (`backlog`); not yet executed. See each spec.
