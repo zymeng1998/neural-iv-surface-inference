@@ -1,45 +1,49 @@
-# STATUS — M1.6 done (waiver-hook fix); next = Phase 4 (4A) kickoff
+# STATUS — Phase 4 (`4A`) kicked off & decomposed; next = run 4A.2
 
-**Updated:** 2026-06-17
+**Updated:** 2026-06-18
 **Branch:** main
 **Mode:** local, CPU only — no GPU, no model/eval/data run
 
 ## Where things stand
 
-Phase 3 is closed (negative on accuracy; RBF stays production baseline).
-**M1.6 (waiver-hook fix) is implemented** and `in_review`. Next is the
-**Phase 4 (`4A`) kickoff** (RBF-prior hybrid / residual neural) — planning
-only until the operator green-lights GPU spend.
+Phase 3 closed (negative on accuracy); **M1.6 (waiver-hook fix) is `done`
+and on origin** (`7f5a386`). **Phase 4 (epic `4A`) is now kicked off and
+fully decomposed** — roadmap + ADR 0010 + 4A.1 decomposition + the full
+4A.2–4A.8 child specs.
 
-origin/main is at **093adc9** (Phase 3 close). The M1.6 commit below is
-local, NOT yet pushed.
+origin/main is at **7f5a386**. The Phase 4 kickoff commit below is local,
+NOT yet pushed.
 
-## What was just completed (M1.6, one local commit)
+## What was just completed (this local commit — docs/planning only)
 
-- Both pre-push gates now record a fired `WAIVE_DEPS` / `WAIVE_SCOPE`
-  bypass to the **untracked, gitignored** `docs/audit/waiver_log.md` (via
-  the shared `record_waiver_audit` helper) instead of appending to a
-  tracked spec. A waived push no longer dirties the working tree.
-- Removed the spec-mutating `append_audit_line`; `evaluate()` unchanged
-  (only the audit sink moved). Trigger conditions untouched.
-- `.gitignore` ignores `docs/audit/`. ADR 0007 addendum + meta1 roadmap
-  follow-up #2 → FIXED. 31 gate tests green.
+- `docs/roadmaps/phase4_hybrid_residual.md` (new) — Phase 4 plan.
+- `docs/decisions/0010_rbf_prior_residual_hybrid.md` (new, **Proposed**) —
+  additive residual hybrid `σ̂ = RBF + f_θ(r=iv−rbf)`; reuse 3B/3X backbone
+  via a `target_mode: residual` flag; reuse the 3X.11 calibrator. Backbone
+  fork (ANP-residual vs MLP-residual) open for the 4A.4 review.
+- `4A.1` decomposition spec (`in_review`) + **4A.2–4A.8** child specs
+  (`backlog`, fully populated, each with Compute requirements). Chain mirrors
+  3X: builder → residual dataset → train 3 heads → K=5 ensemble → calibrator
+  → decision-layer eval + **bootstrap CI vs RBF** → comparison + close.
+- Epic 4A → `in_progress`; created `docs/PHASE4_INDEX.md`; updated README +
+  BOARD + progress_log.
 
-## Push readiness (M1.6 — designed zero-waiver, NOT pushed)
+**Operator decisions captured:** success bar = *any statistically meaningful
+gain over RBF (0.00613) + reliability preserved* (negative branch — ship the
+reliability layer on RBF — is acceptable); depth = full decomposition now.
 
-- **PMR:** touches `scripts/` + `tests/` (evidence-class) → live PMR;
-  progress_log + spec updated → PASS.
-- **SCOPE:** only active spec is M1.6; `.gitignore` + `STATUS.md` added to
-  its `file_scope` → PASS.
-- **DEP:** M1.6 has no non-`done` deps → PASS.
-- **Do NOT set `WAIVE_DEPS` / `WAIVE_SCOPE`.** (And M1.6 itself now makes
-  any future waiver tree-clean.)
+## Push readiness (kickoff commit — designed zero-waiver, NOT pushed)
+
+- **SCOPE:** only active spec is 4A.1; its `file_scope` covers every touched
+  path (roadmap, ADR 0010, `4A.*_*.md`, BOARD, PHASE4_INDEX, README, STATUS,
+  progress_log); 4A.2–4A.8 are `backlog` → PASS.
+- **DEP:** 4A.1 has no non-`done` deps → PASS.
+- **PMR:** docs/planning only → PASS.
+- **Do NOT set `WAIVE_DEPS` / `WAIVE_SCOPE`.**
 
 ## Next concrete action
 
-- **Verify all three gates standalone, stop before push for approval**
-  (established rhythm).
-- After approval: push (clean env). Then operator promotes M1.6 → `done`.
-- Then **Phase 4 (`4A`) kickoff** — roadmap + hybrid-design ADR + `4A.1`
-  decomposition; planning only, no training until operator go-ahead.
-- Optional: close/park the dormant 2E epic.
+- **Verify all three gates standalone, stop before push for approval.**
+- After approval: push (clean env). Then operator promotes 4A.1 → `done`.
+- Then run **4A.2** (residual-target builder + `target_mode` flag + tests),
+  local CPU. GPU stories (4A.4/4A.5) gated on a Pod go-ahead.

@@ -21,26 +21,24 @@ predictions are trustworthy and abstains where they are not.
 
 ## Current Phase
 
-**Phase 3 — Accuracy Push: Beat RBF Without Losing Reliability — CLOSED
-2026-06-16, NEGATIVE on accuracy.** Phase 2 (Reliability-Aware Surface
-Inference) closed on 2026-05-25 with both mandatory acceptance numbers
-green; Phase 3 attacked the remaining accuracy gap versus the per-date
-RBF interpolation baseline. Three independent attacks each missed the
-≥ 5 %-below-RBF bar on the clean OTM substrate: the cross-attention
-decoder (**3B**, best head +2.7 % dirty → +61 % clean), the data
-correction (**3X**, which *widened* RBF's lead rather than closing it),
-and feature expansion (**3C**, where the `micro_v1` microstructure
-feature set *worsened* test MAE in all three heads). On the well-posed
-clean OTM benchmark RBF posts test MAE **0.00613** and the best neural
-head (ANP point) **0.00987** (+61 %); calibrated production +90 %. The
-DeepSets→ANP architecture story and the calibrated reliability layer
-survive, but no pure conditional-neural variant beats RBF on its own.
-**Verdict (3D / [ADR 0009](docs/decisions/0009_phase3_production_predictor_selection.md)):**
-RBF remains the production accuracy baseline; the forward direction is
-**Phase 4 = RBF-prior hybrid / residual neural model** (epic `4A`,
-backlog placeholder — not yet decomposed). Closing artifacts:
-[`docs/phase3_result_memo.md`](docs/phase3_result_memo.md) +
-`notebooks/06_phase3_results.ipynb`.
+**Phase 4 — RBF-Prior Hybrid / Residual Neural Model — in progress
+(epic `4A`, kicked off 2026-06-18).** Phase 3 closed **negative on
+accuracy** (2026-06-16): on the clean OTM substrate RBF posts test MAE
+**0.00613** and the best pure-neural head (ANP point) **0.00987** (+61 %);
+no conditional-neural variant beat RBF on its own across 3A/3B/3X/3C
+([ADR 0009](docs/decisions/0009_phase3_production_predictor_selection.md);
+[`docs/phase3_result_memo.md`](docs/phase3_result_memo.md)). Phase 4 stops
+fighting RBF and **stands on it**: predict `σ̂ = RBF + f_θ(residual)`, with
+RBF carrying the local interpolation it already wins and the neural model
+learning the residual plus the calibrated reliability/abstention layer RBF
+lacks ([ADR 0010](docs/decisions/0010_rbf_prior_residual_hybrid.md)).
+**Success bar (operator-set):** any *statistically meaningful* accuracy gain
+over RBF (paired bootstrap CI on the per-query MAE delta excludes 0)
+**plus** preserved reliability — and the negative branch (ship the
+calibrated reliability layer on RBF if no significant gain) is explicitly
+acceptable. Epic 4A is decomposed into 4A.1–4A.8; see
+[`docs/roadmaps/phase4_hybrid_residual.md`](docs/roadmaps/phase4_hybrid_residual.md)
+and [`docs/PHASE4_INDEX.md`](docs/PHASE4_INDEX.md).
 
 > **2026-05-29 — Data-integrity finding.** A duplicate-coordinate audit
 > ([`docs/research/duplicate_coordinate_audit.md`](docs/research/duplicate_coordinate_audit.md))
@@ -280,14 +278,16 @@ docs/                              Project documentation (roadmaps, memos, tasks
 
 ## Immediate Next Steps
 
-**Phase 3 is closed** (2026-06-16, negative on accuracy — all of 3A / 3B
-/ 3X / 3C / 3D are `done`). The next two steps are infrastructure then
-research:
+**Phase 3 closed** (negative on accuracy) and **M1.6** (waiver-hook fix)
+landed. **Phase 4 (`4A`) is kicked off and decomposed.** Execution order:
 
 | Step | Mode | Trigger condition |
 |---|---|---|
-| **`M1.6` Fix the pre-push waiver hook** | **Implement** | **NEXT — route waiver audit to a separate untracked log so the hook never mutates a tracked file after the pushed commit; do this before resuming GPU-heavy work** |
-| `4A` Phase 4 — RBF-prior hybrid / residual neural model | Plan → Implement | After M1.6. Backlog epic placeholder; author the Phase 4 roadmap + decomposition (`4A.1`) on entry. Reopens GPU/Pod spend. |
+| `4A.1` Decompose Phase 4A | Plan | `in_review` — promote → `done` |
+| **`4A.2` Residual-target builder + `target_mode` flag** | **Implement** | **NEXT — local, CPU; builder + loader flag + tests; no full build/train** |
+| `4A.3` Build full residual dataset on OTM | Implement | After 4A.2. Remote CPU pod. |
+| `4A.4` / `4A.5` Train residual hybrid + ensemble | Implement | After 4A.3. **Remote GPU — gated on operator Pod go-ahead.** |
+| `4A.6`–`4A.8` Calibrate → eval (+CI) → close | Implement | After training; 4A.7 adjudicates the bar, 4A.8 closes. |
 | `2E` Phase 2 follow-ups (dormant) | — | Optional housekeeping: close or park (2E.2 done, 2E.3 cancelled). |
 
 Carried Phase 2 / 2E follow-ups (lower priority, do not gate Phase 3):

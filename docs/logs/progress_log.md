@@ -4817,3 +4817,55 @@ valid history and left as-is.)
 - **Phase 4 (`4A`) kickoff**: author `docs/roadmaps/phase4_*.md` + the
   hybrid-design ADR + the `4A.1` decomposition story. Reopens GPU/Pod
   spend — gated on operator go-ahead; no training until then.
+
+---
+
+## 2026-06-18 — M1.6 done (pushed) + Phase 4 (`4A`) kicked off and decomposed
+
+### What was completed
+
+- **M1.6 pushed + promoted to `done`** (origin `093adc9 → bead01c →
+  7f5a386`). Each push clean-env, gates passed in the hook, no `WAIVE_*`,
+  no waiver-audit lines, tree clean.
+- **Phase 4 kickoff (operator-directed).** Operator chose: success bar =
+  **any statistically meaningful gain over RBF + reliability preserved**
+  (not necessarily ≥5%); kickoff depth = **full decomposition now**. So
+  Phase 4 is framed *and* fully broken into atomic stories in one pass.
+  - `docs/roadmaps/phase4_hybrid_residual.md` (new) — goal, the reframed
+    bar (with the explicitly-acceptable negative branch), the 4A.2–4A.8
+    workstream chain, substrate + baselines.
+  - `docs/decisions/0010_rbf_prior_residual_hybrid.md` (new, **Proposed**)
+    — additive residual `σ̂ = RBF + f_θ(r=iv−rbf)`; reuse the 3B/3X
+    DeepSets+ANP backbone with `target_mode: residual`; reuse the 3X.11
+    calibrator; backbone fork (ANP-residual default vs MLP-residual
+    ablation) left open for the 4A.4 review.
+  - **4A.1 decomposition (`in_review`)** + fully-populated **4A.2–4A.8**
+    specs (`backlog`), each with a Compute requirements section. The
+    ladder mirrors 3X: builder (4A.2) → full residual dataset (4A.3) →
+    train 3 heads (4A.4) → K=5 ensemble (4A.5) → calibrator (4A.6) →
+    decision-layer eval + **paired bootstrap CI vs RBF** (4A.7, the bar
+    adjudication) → comparison + close + ADR 0010 Outcome (4A.8).
+  - Entered epic 4A (`in_progress`); created `docs/PHASE4_INDEX.md`;
+    updated README Current Phase + Immediate Next Steps; refreshed STATUS.
+
+### Design note
+
+The hybrid's only genuinely new code surface is the residual-target builder
+(4A.2/4A.3): per-date RBF predictions at query coords → `r = iv − rbf_pred`,
+behind a `target_mode ∈ {absolute, residual}` loader flag (mirrors the 3C.2
+`feature_set` flag). Everything downstream reuses the 3X machinery. GPU
+stories (4A.4/4A.5) are gated on an operator Pod go-ahead.
+
+### Gates (this kickoff commit — designed zero-waiver)
+
+- Only active spec is 4A.1 (`in_review`); its `file_scope` covers the
+  roadmap, ADR 0010, the `4A.*_*.md` specs, BOARD, PHASE4_INDEX, README,
+  STATUS, progress_log. 4A.2–4A.8 are `backlog` (not active). → SCOPE PASS.
+- 4A.1 has no non-`done` deps → DEP PASS. Docs-only → PMR PASS.
+
+### Next actions
+
+- Operator promotes 4A.1 → `done`.
+- Run **4A.2** (residual-target builder + `target_mode` flag + tests) — the
+  next concrete step, local CPU.
+- Before 4A.4: confirm the Pod-GPU window (reopens GPU spend).
