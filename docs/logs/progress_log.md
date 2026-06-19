@@ -4869,3 +4869,52 @@ stories (4A.4/4A.5) are gated on an operator Pod go-ahead.
 - Run **4A.2** (residual-target builder + `target_mode` flag + tests) — the
   next concrete step, local CPU.
 - Before 4A.4: confirm the Pod-GPU window (reopens GPU spend).
+
+---
+
+## 2026-06-18 (late) — 4A.1 pushed/done + 4A.2 residual-target builder implemented
+
+### What was completed
+
+- **Pushed Phase 4 kickoff** (`6442396`) and **promoted 4A.1 → done**
+  (`97d9299`) — clean-env pushes, gates passed in the hook, no `WAIVE_*`, no
+  waiver-audit lines, tree clean.
+- **4A.2 implemented (local, CPU):**
+  - `src/.../data/residual_targets.py` (new) — `rbf_predict_at_queries`
+    (thin reuse of `models.interpolation.interpolate_surface_date(method="rbf")`,
+    the 3X.6 baseline; **no new RBF math**), `residual_targets_for_date`,
+    `add_rbf_pred_column` (adds `rbf_pred` + `residual_target`). The
+    `models.interpolation` import is **lazy** to break a circular import via
+    `models.conditional_surface` → `data.conditional_loaders`.
+  - `ConditionalIVSurfaceDataset` gains `target_mode ∈ {absolute, residual}`
+    (default `absolute`, **byte-identical** legacy path; verified by
+    regression tests). `residual` subtracts the per-date RBF at query coords
+    (reads a pre-materialised `rbf_pred` column when present — 4A.3 — else
+    computes on the fly).
+  - `scripts/build_residual_targets.py` (new) — driver; fails loudly on
+    non-finite `rbf_pred`; full-fold run deferred to 4A.3.
+  - `tests/test_residual_targets.py` (6) + loader regression → **20 passed**;
+    builder smoke exit 0 (residual = iv − rbf, all finite).
+  - `data_lineage.md` records the derived `rbf_pred` / `residual_target`
+    columns (model-input, not pipeline; no new data source).
+
+### Course note
+
+The circular-import gotcha (new `data` module importing `models`) was caught
+by running the existing loader tests, not just the new ones — fixed with a
+lazy import. `absolute`-mode byte-identity is the key regression guarantee:
+every committed Phase 2/3/3X checkpoint stays reproducible.
+
+### Gates (4A.2 commit)
+
+- Touches `src/` + `scripts/` + `tests/` (evidence) → **live PMR**;
+  data_lineage + progress_log keep coverage. DEP: 4A.2 dep 4A.1 = `done` →
+  PASS. SCOPE: only active spec 4A.2; `STATUS.md` added to its `file_scope`
+  → PASS. Designed zero-waiver.
+
+### Next actions
+
+- Operator promotes 4A.2 → `done`.
+- **4A.3** (remote CPU): build the full residual-target dataset on
+  `random40_noiselow_otm`; audit finiteness + `mean|residual|` ≈ 3X.6 RBF MAE.
+- GPU stories (4A.4/4A.5) gated on a Pod go-ahead.

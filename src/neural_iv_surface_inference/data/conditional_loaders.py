@@ -23,6 +23,8 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 
+from .residual_targets import RBF_PRED_COLUMN, rbf_predict_at_queries
+
 
 # ── Feature-set contract (ADR 0008) ───────────────────────────────────────
 #
@@ -173,10 +175,30 @@ class ConditionalIVSurfaceDataset(Dataset):
         ``micro_v1`` appends the six frozen microstructure features for a
         9-dim context. The default preserves byte-for-byte behaviour for
         every committed checkpoint.
+    target_mode : {"absolute", "residual"}
+        ADR 0010 (Phase 4) target contract. ``absolute`` (default) trains on
+        ``iv_clean`` — byte-for-byte the legacy target. ``residual`` trains
+        on the additive residual ``iv_clean - rbf_pred`` (the RBF-prior
+        hybrid `f_theta` target). In ``residual`` mode the per-date RBF
+        prediction is read from an ``rbf_pred`` column when present
+        (pre-materialised by story 4A.3) and otherwise computed on the fly
+        via :mod:`data.residual_targets` (fine for small slices; pre-build
+        for the full fold). The default preserves all prior behaviour.
     """
 
-    def __init__(self, df: pd.DataFrame, feature_set: str = DEFAULT_FEATURE_SET):
+    def __init__(
+        self,
+        df: pd.DataFrame,
+        feature_set: str = DEFAULT_FEATURE_SET,
+        target_mode: str = "absolute",
+    ):
         self.feature_set = feature_set
+        if target_mode not in ("absolute", "residual"):
+            raise ValueError(
+                f"unknown target_mode {target_mode!r}; "
+                "expected 'absolute' or 'residual'"
+            )
+        self.target_mode = target_mode
         self.context_features = resolve_context_features(feature_set)
         self.context_in_features = len(self.context_features)
 
@@ -210,7 +232,7 @@ class ConditionalIVSurfaceDataset(Dataset):
 
             ctx_rows = group.loc[obs_mask, list(self.context_features)].to_numpy(dtype=np.float32)
             query_rows = group[list(_QUERY_FEATURES)].to_numpy(dtype=np.float32)
-            target_rows = group["iv_clean"].to_numpy(dtype=np.float32)
+            target_rows = self._target_rows_for_group(group)
             query_obs = obs_mask.astype(np.bool_)
 
             self.dates.append(pd.Timestamp(date))
@@ -218,6 +240,22 @@ class ConditionalIVSurfaceDataset(Dataset):
             self._queries.append(torch.from_numpy(query_rows))
             self._targets.append(torch.from_numpy(target_rows))
             self._query_observed.append(torch.from_numpy(query_obs))
+
+    def _target_rows_for_group(self, group: pd.DataFrame) -> np.ndarray:
+        """Per-date target vector for the query rows.
+
+        ``absolute`` → ``iv_clean`` (legacy). ``residual`` → ``iv_clean -
+        rbf_pred`` (ADR 0010), reading a pre-materialised ``rbf_pred`` column
+        when present, else computing the per-date RBF on the fly.
+        """
+        iv_clean = group["iv_clean"].to_numpy(dtype=np.float32)
+        if self.target_mode == "absolute":
+            return iv_clean
+        if RBF_PRED_COLUMN in group.columns:
+            rbf_pred = group[RBF_PRED_COLUMN].to_numpy(dtype=np.float32)
+        else:
+            rbf_pred = rbf_predict_at_queries(group).astype(np.float32)
+        return iv_clean - rbf_pred
 
     def __len__(self) -> int:
         return len(self.dates)

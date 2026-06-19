@@ -301,6 +301,14 @@ decision trail.
 | `tau` | `days_to_expiry / 365.0` | `03_build_spy_surface_table.py` |
 | `spot` | `close` (unadjusted) | `03_build_spy_surface_table.py`, `data_assumptions_and_cleaning.md` |
 | `log_moneyness` | `ln(strike / spot)` | `03_build_spy_surface_table.py`, `data_assumptions_and_cleaning.md` |
+| `rbf_pred` | per-date RBF baseline IV at each query `(log_moneyness, tau)` | `data/residual_targets.py` (reuses `models/interpolation.py`); materialised by `scripts/build_residual_targets.py` (Phase 4A / ADR 0010) |
+| `residual_target` | `iv_clean − rbf_pred` (the RBF-prior hybrid `f_θ` target) | `data/residual_targets.py` (Phase 4A / ADR 0010) |
+
+**Phase 4A note (residual targets):** `rbf_pred` / `residual_target` are
+*derived, model-input* columns, not part of the Step-1→Step-4 data pipeline.
+They are computed on demand from a committed benchmark + the existing RBF
+baseline (no new data source), behind the loader's `target_mode: residual`
+flag; the full-fold materialisation lives in story 4A.3.
 
 **Critical convention:** `spot = close` (unadjusted closing price), NOT `adjusted_close`. This is because option strikes are quoted against unadjusted prices; using adjusted close would distort moneyness computations. Documented in `docs/data_assumptions_and_cleaning.md`.
 
