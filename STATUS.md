@@ -1,53 +1,55 @@
-# STATUS — Phase 4 4A.3 (residual dataset) built on OTM; next = 4A.4 (GPU, Pod-gated)
+# STATUS — Phase 4 4A.4 trained: residual hybrid BEATS RBF; next = 4A.5
 
-**Updated:** 2026-06-19
+**Updated:** 2026-06-20
 **Branch:** main
-**Mode:** remote CPU work done; now local docs. No GPU spend yet.
+**Mode:** remote GPU work done; now local docs. Pod terminable.
 
 ## Where things stand
 
-Phase 4 (epic `4A`) in progress. 4A.1 `done`; 4A.2 `done` (origin
-`c64b5e9`); **4A.3 (residual-target dataset) built on the RunPod CPU pod and
-`in_review`.** Next is 4A.4 (remote GPU residual-hybrid training) — **gated
-on an operator Pod go-ahead.**
+Phase 4 (epic `4A`) in progress. 4A.1/4A.2/4A.3 `done` (origin `7b896e4`).
+**4A.4 (residual-hybrid training) done on the GPU pod and `in_review` — and
+the hybrid beats RBF** on the clean OTM substrate. Next is 4A.5 (K=5 residual
+point-head ensemble) — **gated on a Pod go-ahead**.
 
-origin/main is at **c64b5e9**. The 4A.3 commit below is local, NOT pushed.
+origin/main is at **7b896e4**. The 4A.4 commit below is local, NOT pushed.
 
-## 4A.3 result
+## 4A.4 result (headline)
 
-Full OTM residual targets `r = iv_clean − rbf_pred`: **4622 dates,
-10,531,499 rows, 0 non-finite.** Per-split mean|residual|: train 0.006659 /
-**val 0.006151 / test 0.006132** — val/test **match the 3X.6 RBF MAE
-byte-for-byte** (`rbf_pred` is the same RBF baseline; target validated).
+ANP-residual hybrid `σ̂ = rbf_pred + f_θ`, hybrid test MAE vs `iv_clean`
+(RBF floor 0.006132):
 
-- Residual parquet (237 MB) on the **persistent `/workspace` volume**
-  (gitignored; not pulled). Committed: `artifacts/runs/4A3/manifest.json` +
-  `residual_stats.csv`.
-- **⇒ The CPU pod can be terminated now** (parquet on persistent volume,
-  stats local).
+| head | hybrid | Δ vs RBF |
+|---|---:|---:|
+| gaussian | 0.006006 | −0.000126 |
+| **quantile** | **0.005906** | **−0.000225 (~3.7 %)** |
+| point | 0.006138 | +0.000006 (ties) |
 
-## Pod frictions handled (carry forward to 4A.4)
+**First neural-based predictor in the project to beat RBF on clean OTM**
+(gaussian + quantile below the floor; point ties; all ≪ 3X.9). qmono ok.
+**Caveat:** point estimates, small margins — **statistical significance is
+4A.7's bootstrap-CI job** (the formal bar). ADR 0010 backbone fork resolved:
+ANP-residual confirmed.
 
-- Connect with **`~/.ssh/id_ed25519_runpod`** (not the default key).
-- Pod **can't `git fetch`** (SSH origin, no GitHub key) → **scp** code to the
-  pod, or set up a deploy key.
-- Container **cgroup-capped ~3.7 GB** → memory-safe reads (the builder's
-  `--columns` subset). 4A.4 training must respect this if it runs on a
-  similarly capped pod.
+## Pod / artifacts
 
-## Push readiness (4A.3 — designed zero-waiver, NOT pushed)
+- GPU pod (RTX 4000 Ada) shares the `/workspace` volume with the 4A.3 CPU
+  pod (residual parquet already present). Connect with `id_ed25519_runpod`;
+  pod can't `git fetch` → scp'd loader + 4A.4 code.
+- 3 manifests pulled local (committed); curves + val/test prediction CSVs on
+  the persistent volume for 4A.5/4A.6/4A.7. **GPU pod terminable now.**
 
-- **PMR (live):** `scripts/` + `artifacts/runs/4A3/` touched; journal +
-  lineage + progress_log updated → PASS.
-- **DEP:** 4A.3 dep 4A.2 = `done` → PASS.
-- **SCOPE:** only active spec 4A.3; all touched files in its `file_scope`
+## Push readiness (4A.4 — designed zero-waiver, NOT pushed)
+
+- **PMR (live):** `configs/`+`scripts/`+`artifacts/runs/4A4/`; journal +
+  progress_log updated → PASS.
+- **DEP:** 4A.4 dep 4A.3 = `done` → PASS.
+- **SCOPE:** only active spec 4A.4; all touched files in its `file_scope`
   (`STATUS.md` added) → PASS. **No `WAIVE_*`.**
 
 ## Next concrete action
 
-- **Verify gates standalone, stop before push for review.**
-- After approval: push (clean env); promote 4A.3 → `done`.
-- **4A.4** (remote GPU) on operator go-ahead: train the residual hybrid on
-  the OTM residual parquet (ANP-residual default, `target_mode=residual`),
-  3 heads; report summed σ̂ MAE vs RBF 0.00613 + 3X.9. Ensure the GPU pod
-  mounts the same `/workspace` volume.
+- **Verify gates standalone, stop before push for review** (4A.4 ships new
+  configs + a training driver — operator reviews before push).
+- After approval: push; promote 4A.4 → `done`.
+- **4A.5** (remote GPU, Pod-gated): K=5 residual point-head ensemble
+  (seeds 101..505), mirror 3X.10. Then 4A.6 → 4A.7 (the bar) → 4A.8 close.

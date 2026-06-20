@@ -4968,3 +4968,58 @@ every committed Phase 2/3/3X checkpoint stays reproducible.
   `target_mode=residual`) on the OTM residual parquet across 3 heads — gated
   on a GPU Pod go-ahead; the GPU pod must mount the same `/workspace` volume
   (else pull the parquet to local + re-upload).
+
+---
+
+## 2026-06-20 — 4A.3 pushed/done + 4A.4 residual hybrid trained: HYBRID BEATS RBF
+
+### What was completed
+
+- **Pushed 4A.3** (`71c2da4`) and **promoted it to `done`** (`7b896e4`).
+- **4A.4 executed on a RunPod GPU pod** (RTX 4000 Ada; the same `/workspace`
+  network volume as the 4A.3 CPU pod, so the residual parquet was already
+  there). Trained the **ANP-residual hybrid** (`σ̂ = rbf_pred + f_θ`,
+  `target_mode: residual`) across 3 heads, ~11 min/head.
+
+### Result — first neural predictor to beat RBF on clean OTM
+
+Hybrid test MAE vs `iv_clean` (RBF floor 0.006132, 3X.6):
+
+| head | hybrid | Δ vs RBF | vs 3X.9 (iv_true) |
+|---|---:|---:|---:|
+| gaussian | 0.006006 | −0.000126 | ≪ (0.01440) |
+| quantile | **0.005906** | **−0.000225** (~3.7 %) | ≪ (0.01175) |
+| point | 0.006138 | +0.000006 (ties) | ≪ (0.00987) |
+
+Gaussian + quantile hybrids are **below** the RBF floor (point ties); all
+three are far below pure-neural 3X.9. The Phase 4 bet works directionally:
+RBF carries the surface, the neural residual shaves ~2–4 % off. **Caveat:**
+point estimates only; small absolute margins → **4A.7's bootstrap CI**
+decides statistical significance (the formal bar). ADR 0010 backbone fork
+resolved: **ANP-residual confirmed** (no MLP ablation needed).
+
+### How (pod mechanics, carry forward)
+
+- Same shared `/workspace` volume across CPU(4A.3)/GPU(4A.4) pods — no data
+  transfer. Connect with `id_ed25519_runpod`. Pod can't `git fetch` → scp'd
+  `conditional_loaders.py` (target_mode) + 4A.4 configs/driver (the ANP +
+  training stack was already at the pod's 3X.3-era checkout). New 4A.4
+  driver `run_4a4_residual.py` reconstructs `σ̂ = rbf_pred + μ_residual`
+  (shifts quantile bands by rbf_pred) and scores vs both iv_clean (RBF-
+  comparable) and iv_true (3X.9-comparable). Smoke passed before the run.
+- Artifacts: 3 manifests committed (pulled local); curves + val/test
+  prediction CSVs on the persistent volume for 4A.5/4A.6/4A.7. **GPU pod
+  terminable now.**
+
+### Gates (4A.4 commit)
+
+- Touches `configs/` + `scripts/` + `artifacts/runs/4A4/` → live PMR;
+  journal + progress_log updated. DEP: 4A.4 dep 4A.3 = `done` → PASS.
+  SCOPE: only active spec 4A.4; `STATUS.md` added → PASS. Zero-waiver.
+
+### Next actions
+
+- Operator promotes 4A.4 → `done`.
+- **4A.5** (remote GPU): K=5 deep ensemble of the residual point head
+  (seeds 101..505), mirror 3X.10 — gated on a Pod go-ahead. Then 4A.6
+  (calibrator) → 4A.7 (decision-layer + bootstrap CI — the bar) → 4A.8 close.

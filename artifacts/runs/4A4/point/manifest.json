@@ -1,0 +1,41 @@
+{
+  "story": "4A.4",
+  "head_kind": "point",
+  "target_mode": "residual",
+  "hybrid": "sigma_hat = rbf_pred + f_theta(residual)",
+  "decoder_kind": "anp",
+  "anp": {
+    "n_heads": 4,
+    "d_head": null,
+    "mlp_hidden": 128,
+    "include_z_in_decoder": true
+  },
+  "coord_encoding": {
+    "kind": "raw"
+  },
+  "seed": 42,
+  "git_sha": "5570b7daa3f352d9fddf806c9a6a433736bd71c2",
+  "config_hash": "13608a56815d8957",
+  "benchmark_file": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm_residual.parquet",
+  "splits": {
+    "train_rows": 5123586,
+    "val_rows": 2638892,
+    "test_rows": 2769021
+  },
+  "epochs_completed": 50,
+  "final_train_loss": 0.0001257166521670525,
+  "final_val_loss": 0.00010000649953409183,
+  "best_val_loss": 0.00010000649953409183,
+  "val_mae_mu": 0.006157558411359787,
+  "test_mae_mu": 0.0061381603591144085,
+  "val_mae_vs_iv_true": 0.006927029229700565,
+  "test_mae_vs_iv_true": 0.0069189779460430145,
+  "rbf_floor_test_mae": 0.006131847035635011,
+  "delta_vs_rbf_test": 6.31332347939776e-06,
+  "anp_3x9_test_mae": 0.00987,
+  "delta_vs_3x9_test_ivtrue": -0.0029510220539569858,
+  "quantile_monotonicity_ok": true,
+  "train_wall_clock_s": 674.5027179718018,
+  "score_wall_clock_s": 4.3506529331207275,
+  "device": "cuda"
+}

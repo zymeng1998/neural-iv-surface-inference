@@ -2248,3 +2248,48 @@ floor the Phase 4 hybrid's neural residual must improve on.
 - Pod frictions: no GitHub fetch on the pod → 4A.2 files scp'd; container
   cgroup-capped ~3.7 GB → memory-safe `--columns` read (7 cols, ~2.3 GB
   peak). No new RBF math; reuses the 3X.6 baseline. No GPU.
+
+---
+
+## 4A.4 — RBF-prior residual hybrid trained on OTM (2026-06-20) — HYBRID BEATS RBF
+
+### Result
+
+Trained the ANP-residual hybrid (`σ̂ = rbf_pred + f_θ`, `target_mode:
+residual`) across three heads on `spy_phase1_random40_noiselow_otm` (RunPod
+RTX 4000 Ada, ~11 min/head). Hybrid test MAE vs **`iv_clean`** (the
+RBF-comparable target; RBF floor **0.006132**, 3X.6):
+
+| head | hybrid test MAE | Δ vs RBF | hybrid vs `iv_true` | 3X.9 (iv_true) |
+|---|---:|---:|---:|---:|
+| gaussian | 0.006006 | **−0.000126** | 0.006788 | 0.01440 |
+| **quantile** | **0.005906** | **−0.000225** (~3.7 %) | 0.006691 | 0.01175 |
+| point | 0.006138 | +0.000006 (ties) | 0.006919 | 0.00987 |
+
+**This is the first neural-based predictor in the project to beat RBF on the
+clean OTM substrate.** Gaussian + quantile hybrids are below the RBF floor on
+the point estimate; point ties. All three are far below pure-neural 3X.9
+(which was +61 %–+135 % above RBF). Quantile monotone on test, all heads.
+
+### Interpretation
+
+The Phase 4 bet works directionally: RBF carries the local surface and the
+neural model learns a small structured residual that shaves ~2–4 % off RBF
+(quantile best). This is consistent with the Phase 3 finding that RBF is a
+strong local interpolator — the neural model only had to find the residual.
+
+### Caveat / next
+
+The deltas are **point estimates** (absolute margins are small: −0.0001 to
+−0.0002 on a 0.0061 floor). Whether the gain is **statistically meaningful**
+is adjudicated by **4A.7**'s paired bootstrap CI on the per-query MAE
+difference (hybrid − RBF) — the formal Phase 4 bar. ADR 0010 §Decision 3
+backbone fork resolved: **ANP-residual (default) confirmed**; the
+MLP-residual ablation is not needed.
+
+### Artifacts
+
+- `artifacts/runs/4A4/{gaussian,quantile,point}/manifest.json` (committed).
+- Training curves + val/test prediction CSVs on the persistent `/workspace`
+  volume (gitignored) for 4A.5/4A.6/4A.7.
+- No-overclaim guardrail: matched `random40_noiselow_otm` substrate only.
