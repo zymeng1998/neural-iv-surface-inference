@@ -44,7 +44,7 @@ last_updated_at: 2026-06-20T00:00:00-04:00
 | 4A.2 | Story | Residual-target builder + `target_mode` flag (local) | `done` |
 | 4A.3 | Story | Build full residual dataset on OTM (remote CPU) | `done` |
 | 4A.4 | Story | Train residual hybrid, 3 heads (remote GPU) — **hybrid BEATS RBF (gaussian/quantile below floor; point ties)** | `done` |
-| 4A.5 | Story | K=5 residual ensemble (remote GPU) — ties RBF (0.006141); disagreement 0.000209 | `in_review` |
+| 4A.5 | Story | K=5 residual ensemble (remote GPU) — ties RBF (0.006141); disagreement 0.000209 | `done` |
 | 4A.6 | Story | Calibrator re-fit on hybrid val (local) | `backlog` |
 | 4A.7 | Story | Decision-layer eval + bootstrap CI vs RBF | `backlog` |
 | 4A.8 | Story | Comparison + closing memo + ADR 0010 Outcome | `backlog` |
