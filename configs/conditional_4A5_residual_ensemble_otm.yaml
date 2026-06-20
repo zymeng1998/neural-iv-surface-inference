@@ -1,0 +1,51 @@
+# 4A.5 — K=5 deep ensemble of the RESIDUAL point head on OTM (ADR 0010).
+# Faithful clone of configs/conditional_3X10_anp_ensemble_otm.yaml; the ONLY
+# deltas are data.benchmark_file → the residual parquet and
+# data.target_mode: residual. Each member fits the residual; the driver
+# reconstructs σ̂ = rbf_pred + mean_k(f_θ^k) and reports disagreement on the
+# residual. Same seeds / recipe / K as 3X.10 — do NOT change.
+
+seed: 42
+
+data:
+  benchmark_file: data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm_residual.parquet
+  target_mode: residual
+  batch_size: 32
+  num_workers: 0
+
+conditional:
+  context_dim: 3
+  coord_dim: 2
+  hidden_dim: 128
+  latent_dim: 64
+  n_elem_layers: 2
+  n_post_layers: 1
+  n_decoder_layers: 3
+
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  epochs: 50
+  patience: 10
+
+  decoder_kind: anp
+  anp:
+    n_heads: 4
+    d_head: null
+    mlp_hidden: 128
+    include_z_in_decoder: true
+  coord_encoding:
+    kind: raw
+  freeze_encoder: false
+
+  head:
+    kind: point
+    quantiles: [0.05, 0.5, 0.95]
+
+ensemble:
+  size: 5
+  seeds: [101, 202, 303, 404, 505]
+
+paths:
+  checkpoint_dir: artifacts/runs/4A5/checkpoints
+  log_dir: artifacts/runs/4A5/logs
+  results_dir: artifacts/runs/4A5

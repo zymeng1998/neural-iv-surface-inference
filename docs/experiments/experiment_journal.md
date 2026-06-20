@@ -2293,3 +2293,36 @@ MLP-residual ablation is not needed.
 - Training curves + val/test prediction CSVs on the persistent `/workspace`
   volume (gitignored) for 4A.5/4A.6/4A.7.
 - No-overclaim guardrail: matched `random40_noiselow_otm` substrate only.
+
+---
+
+## 4A.5 — K=5 residual point-head ensemble on OTM (2026-06-20)
+
+### Result
+
+Trained a K=5 deep ensemble of the **residual point head** (seeds
+[101,202,303,404,505], `target_mode: residual`) on the same GPU pod as 4A.4.
+Ensemble hybrid `σ̂ = rbf_pred + mean_k(f_θ^k)`:
+
+| metric | value | reference |
+|---|---:|---|
+| ensemble test MAE (vs `iv_clean`) | **0.006141** | RBF floor 0.006132 → Δ **+0.000009 (ties)** |
+| ensemble test MAE (vs `iv_true`) | 0.006921 | — |
+| 4A.4 single point (vs iv_clean) | 0.006138 | Δ vs ensemble +3e-06 |
+| disagreement_std (mean) | **0.000209** | all positive |
+
+**Ensembling the point head does not shift accuracy** — it already tied RBF
+as a single model (4A.4), and the ensemble ties too. The ensemble's role is
+the **disagreement uncertainty signal** (mean 0.000209, all > 0) consumed by
+the 4A.6 calibrator and the 4A.7 decision layer. The headline Phase 4
+accuracy win remains the 4A.4 **gaussian (0.006006) / quantile (0.005906)**
+heads, which are *below* the RBF floor; whether that beat is statistically
+significant is adjudicated by **4A.7**'s paired bootstrap CI.
+
+### Artifacts
+
+- `artifacts/runs/4A5/manifest.json` committed; `training_curves.csv` +
+  `val/test_predictions.csv` (with `disagreement_std`) on the persistent
+  `/workspace` volume for 4A.6/4A.7.
+- **4A.5 is the last GPU run in Phase 4**; 4A.6/4A.7/4A.8 are local.
+- No-overclaim guardrail: matched `random40_noiselow_otm` substrate only.

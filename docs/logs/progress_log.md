@@ -5023,3 +5023,49 @@ resolved: **ANP-residual confirmed** (no MLP ablation needed).
 - **4A.5** (remote GPU): K=5 deep ensemble of the residual point head
   (seeds 101..505), mirror 3X.10 — gated on a Pod go-ahead. Then 4A.6
   (calibrator) → 4A.7 (decision-layer + bootstrap CI — the bar) → 4A.8 close.
+
+---
+
+## 2026-06-20 — 4A.4 pushed/done + 4A.5 residual ensemble trained
+
+### What was completed
+
+- **Pushed 4A.4** (`1cb787e`) + **promoted it `done`** (`01d3b9b`).
+- **4A.5 executed** on the same GPU pod (still up; residual parquet present).
+  K=5 ensemble of the residual point head (seeds [101..505],
+  `target_mode: residual`), ~50 min. Ensemble hybrid test MAE (vs iv_clean)
+  **0.006141** vs RBF floor 0.006132 → **Δ +0.000009 (ties)**; matches the
+  4A.4 single point head (0.006138). **Ensembling the point head does not
+  shift accuracy** — its value is the **disagreement signal** (mean 0.000209,
+  all positive) for the 4A.6 calibrator / 4A.7 decision layer.
+
+### Phase 4 accuracy picture (pre-significance)
+
+The accuracy win is the **4A.4 gaussian (0.006006) / quantile (0.005906)**
+heads, both *below* the RBF floor 0.006132. The point head (single + K=5
+ensemble) ties. Whether the gaussian/quantile beat is **statistically
+significant** is the job of **4A.7**'s paired bootstrap CI (the formal bar).
+
+### Mechanics
+
+- New `run_4a5_ensemble.py` reuses the validated 4A.4 `_score_split` per
+  member (handles negative residuals); ensemble σ̂ = rbf_pred + mean_k(resid),
+  disagreement = std_k(resid). 2-member smoke validated `_score_ensemble`
+  before the run. Config + driver scp'd to the pod.
+- `artifacts/runs/4A5/manifest.json` committed; curves + val/test predictions
+  (with `disagreement_std`) on the persistent volume for 4A.6/4A.7.
+- **4A.5 was the last GPU run in Phase 4 — pod terminable.**
+
+### Gates (4A.5 commit)
+
+- `configs/`+`scripts/`+`artifacts/runs/4A5/` → live PMR; journal +
+  progress_log updated. DEP: 4A.5 dep 4A.4 = `done` → PASS. SCOPE: only
+  active spec 4A.5; `STATUS.md` added → PASS. Zero-waiver.
+
+### Next actions
+
+- Operator promotes 4A.5 → `done`.
+- **4A.6** (local): re-fit the 3X.11 calibrator on the hybrid val predictions
+  (4A.4 gaussian/quantile + 4A.5 disagreement) → `4A6_hybrid.json`. Then
+  **4A.7** (decision-layer eval + the **bootstrap CI** that decides the Phase
+  4 bar) → **4A.8** close. All local.

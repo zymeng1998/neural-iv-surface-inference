@@ -1,0 +1,82 @@
+{
+  "story": "4A.5",
+  "head_kind": "point",
+  "target_mode": "residual",
+  "hybrid": "sigma_hat = rbf_pred + mean_k(f_theta^k residual)",
+  "decoder_kind": "anp",
+  "anp": {
+    "n_heads": 4,
+    "d_head": null,
+    "mlp_hidden": 128,
+    "include_z_in_decoder": true
+  },
+  "git_sha": "5570b7daa3f352d9fddf806c9a6a433736bd71c2",
+  "config_hash": "3161e6f551a8722e",
+  "benchmark_file": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm_residual.parquet",
+  "splits": {
+    "train_rows": 5123586,
+    "val_rows": 2638892,
+    "test_rows": 2769021
+  },
+  "ensemble_size": 5,
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "members": [
+    {
+      "seed": 101,
+      "val_loss": 0.00010019080268234988,
+      "checkpoint": "seed_101/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 671.1894941329956
+    },
+    {
+      "seed": 202,
+      "val_loss": 0.00010033162470790558,
+      "checkpoint": "seed_202/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 652.3597042560577
+    },
+    {
+      "seed": 303,
+      "val_loss": 0.00010005398557537278,
+      "checkpoint": "seed_303/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 652.6436116695404
+    },
+    {
+      "seed": 404,
+      "val_loss": 9.988715382033578e-05,
+      "checkpoint": "seed_404/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 654.1767220497131
+    },
+    {
+      "seed": 505,
+      "val_loss": 9.99916135862639e-05,
+      "checkpoint": "seed_505/best_conditional.pt",
+      "epochs": 50,
+      "wall_clock_s": 654.3096961975098
+    }
+  ],
+  "ensemble_val_mae": 0.006159937009215355,
+  "ensemble_test_mae": 0.0061405496671795845,
+  "ensemble_test_mae_vs_iv_true": 0.006921200547367334,
+  "rbf_floor_test_mae": 0.006131847035635011,
+  "delta_vs_rbf_test": 8.70263154457377e-06,
+  "delta_vs_4a4_single_point": 2.5496671795842765e-06,
+  "anp_3x10_ensemble_test_mae_ivtrue": 0.012200304307043552,
+  "disagreement_test_stats": {
+    "min": 0.0002061116392724216,
+    "mean": 0.00020921976829413325,
+    "max": 0.00022540029021911323,
+    "any_positive": true
+  },
+  "train_total_wall_clock_s": 3284.6792283058167,
+  "score_wall_clock_s": 21.82456874847412,
+  "device": "cuda"
+}

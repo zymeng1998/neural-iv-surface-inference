@@ -27,13 +27,13 @@ last_updated_at: 2026-06-20T00:00:00-04:00
   reliability preserved (coverage ±2 pp of 0.90; hi-conf < no-abstention;
   flags not worse than 3X.12). **Negative branch is acceptable:** if no
   significant gain, ship the calibrated reliability layer on RBF.
-- **Status:** epic 4A `in_progress`; 4A.1/4A.2/4A.3 `done`; **4A.4
-  `in_review` — the residual hybrid BEATS RBF** on the clean OTM substrate
-  (test MAE vs iv_clean: gaussian 0.006006 / quantile **0.005906** vs RBF
-  floor 0.006132; point 0.006138 ties; all ≪ 3X.9). First neural-based
-  predictor to beat RBF here. **Statistical significance is adjudicated by
-  4A.7** (paired bootstrap CI). 4A.5–4A.8 `backlog`. **Next action: promote
-  4A.4 → `done`, then 4A.5** (K=5 residual point-head ensemble) — Pod-gated.
+- **Status:** epic 4A `in_progress`; 4A.1–4A.4 `done`; **4A.5 `in_review`**
+  (K=5 residual point-head ensemble: ties RBF at 0.006141, like the 4A.4
+  single point; disagreement mean 0.000209 for the calibrator). **The Phase 4
+  accuracy win is the 4A.4 gaussian (0.006006) / quantile (0.005906) heads —
+  below the RBF floor 0.006132; significance adjudicated by 4A.7.** 4A.5 was
+  the last GPU run; 4A.6/4A.7/4A.8 are local. 4A.6–4A.8 `backlog`. **Next
+  action: promote 4A.5 → `done`, then 4A.6** (calibrator re-fit, local).
 
 ## Live status (sync with BOARD.md)
 
@@ -44,7 +44,7 @@ last_updated_at: 2026-06-20T00:00:00-04:00
 | 4A.2 | Story | Residual-target builder + `target_mode` flag (local) | `done` |
 | 4A.3 | Story | Build full residual dataset on OTM (remote CPU) | `done` |
 | 4A.4 | Story | Train residual hybrid, 3 heads (remote GPU) — **hybrid BEATS RBF (gaussian/quantile below floor; point ties)** | `done` |
-| 4A.5 | Story | K=5 residual ensemble (remote GPU) | `backlog` |
+| 4A.5 | Story | K=5 residual ensemble (remote GPU) — ties RBF (0.006141); disagreement 0.000209 | `in_review` |
 | 4A.6 | Story | Calibrator re-fit on hybrid val (local) | `backlog` |
 | 4A.7 | Story | Decision-layer eval + bootstrap CI vs RBF | `backlog` |
 | 4A.8 | Story | Comparison + closing memo + ADR 0010 Outcome | `backlog` |
@@ -72,5 +72,9 @@ share one Pod-GPU window; 4A.3 is a CPU pre-step.
   quantile 0.005906 (Δ −0.000225) / point 0.006138 (ties); RBF floor
   0.006132. All ≪ 3X.9. qmono ok. Backbone fork resolved: ANP-residual
   confirmed (no MLP ablation). Point-estimate gain → 4A.7 tests significance.
-- **4A.5–4A.8** — registered (`backlog`); not yet executed. See each spec.
-  4A.5 (GPU ensemble) gated on operator Pod go-ahead.
+- **4A.5 — trained (`in_review`, 2026-06-20).** K=5 residual point-head
+  ensemble: test MAE 0.006141 (ties RBF, like the 4A.4 single point);
+  disagreement mean 0.000209 (all positive) — the uncertainty signal for
+  4A.6/4A.7. Last GPU run; pod terminable.
+- **4A.6–4A.8** — registered (`backlog`); local (no GPU). 4A.6 calibrator →
+  4A.7 decision-layer + **bootstrap CI (the bar)** → 4A.8 close.
