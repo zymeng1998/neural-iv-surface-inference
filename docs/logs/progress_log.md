@@ -5069,3 +5069,41 @@ significant** is the job of **4A.7**'s paired bootstrap CI (the formal bar).
   (4A.4 gaussian/quantile + 4A.5 disagreement) → `4A6_hybrid.json`. Then
   **4A.7** (decision-layer eval + the **bootstrap CI** that decides the Phase
   4 bar) → **4A.8** close. All local.
+
+---
+
+## 2026-06-20 — 4A.5 pushed/done + pod-access recovery + 4A.6 calibrator fit
+
+### What was completed
+
+- **Pushed 4A.5** (`e8d454e`) + **promoted it `done`** (`125ff32`).
+- **Pod-access recovery.** The prior GPU pod had been terminated before I
+  pulled the hybrid prediction CSVs (a real miss — I'd only pulled the
+  manifests). The operator provided a fresh pod (213.173.110.22) mounting
+  the **same persistent `/workspace` volume**, so the CSVs were intact. I
+  **pulled the gaussian + ensemble val/test CSVs to local** (gitignored,
+  ~1.5 GB) so 4A.6/4A.7/4A.8 run fully locally — **no further pod needed.**
+  Lesson: pull (or otherwise persist locally) every artifact a downstream
+  story consumes before declaring a pod terminable.
+- **4A.6 calibrator re-fit (local CPU).** `configs/calibration_4A6_hybrid.yaml`
+  clones the 3X.11 recipe, re-pointed at the 4A.4 gaussian + 4A.5 ensemble
+  predictions; `run_calibration_fit.py` (no torch) fit: **T=1.147,
+  ens_scale=438.4, held-out test coverage 0.9181** (within ±2 pp of 0.90),
+  error↔uncertainty corr +0.46. `target_col=iv_true` (3X.11/3X.12
+  convention → 4A.7 reliability comparable to 3X.12).
+  `tests/test_calibration_hybrid.py` (4 passed). Calibrator JSON is
+  gitignored (regenerable, like 3X.11/3B.6).
+
+### Gates (4A.6 commit)
+
+- `configs/` + `tests/` (evidence) → live PMR; progress_log + spec updated.
+  DEP: 4A.6 dep 4A.4 + 4A.5 = `done` → PASS. SCOPE: only active spec 4A.6;
+  `STATUS.md` added → PASS. Zero-waiver.
+
+### Next actions
+
+- Operator promotes 4A.6 → `done`.
+- **4A.7** (local): apply the 4A6 calibrator to the hybrid test predictions
+  with 3X.12 thresholds held; compute coverage/hi-conf/abstain/flags + the
+  **paired bootstrap 95% CI on the per-query MAE delta (hybrid − rbf_pred)
+  vs iv_clean** — the formal Phase 4 accuracy bar. Then **4A.8** close.

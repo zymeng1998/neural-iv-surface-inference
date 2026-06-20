@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-06-18T00:00:00-04:00
-last_updated_at: 2026-06-20T00:00:00-04:00
+last_updated_at: 2026-06-20T13:30:00-04:00
 ---
 
 > Read this first if you are picking up Phase 4 work cold. Mirrors the
@@ -45,7 +45,7 @@ last_updated_at: 2026-06-20T00:00:00-04:00
 | 4A.3 | Story | Build full residual dataset on OTM (remote CPU) | `done` |
 | 4A.4 | Story | Train residual hybrid, 3 heads (remote GPU) — **hybrid BEATS RBF (gaussian/quantile below floor; point ties)** | `done` |
 | 4A.5 | Story | K=5 residual ensemble (remote GPU) — ties RBF (0.006141); disagreement 0.000209 | `done` |
-| 4A.6 | Story | Calibrator re-fit on hybrid val (local) | `backlog` |
+| 4A.6 | Story | Calibrator re-fit on hybrid val (local) — fitted; test coverage 0.9181 | `in_review` |
 | 4A.7 | Story | Decision-layer eval + bootstrap CI vs RBF | `backlog` |
 | 4A.8 | Story | Comparison + closing memo + ADR 0010 Outcome | `backlog` |
 
@@ -76,5 +76,11 @@ share one Pod-GPU window; 4A.3 is a CPU pre-step.
   ensemble: test MAE 0.006141 (ties RBF, like the 4A.4 single point);
   disagreement mean 0.000209 (all positive) — the uncertainty signal for
   4A.6/4A.7. Last GPU run; pod terminable.
-- **4A.6–4A.8** — registered (`backlog`); local (no GPU). 4A.6 calibrator →
-  4A.7 decision-layer + **bootstrap CI (the bar)** → 4A.8 close.
+- **4A.6 — fitted (`in_review`, 2026-06-20).** Calibrator re-fit on the
+  hybrid val predictions (recipe unchanged from 3X.11): T=1.147,
+  ens_scale=438; held-out test coverage 0.9181 (within ±2 pp). 4 tests
+  green. Prediction CSVs pulled local (gitignored) from a fresh
+  volume-mounted pod (213.173.110.22) after the prior pod was terminated —
+  **4A.7/4A.8 now run fully locally, no pod needed.**
+- **4A.7–4A.8** — registered (`backlog`); local. 4A.7 decision-layer +
+  **bootstrap CI (the bar)** → 4A.8 close.

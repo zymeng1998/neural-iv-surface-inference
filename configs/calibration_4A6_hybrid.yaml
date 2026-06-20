@@ -1,0 +1,37 @@
+# Calibration fit configuration — Phase 4A / story 4A.6 (RBF-prior hybrid).
+#
+# Faithful restatement of the 3X.11 / 3B.6 / 2D.4 calibration recipe with the
+# input bundle re-pointed at the residual-hybrid runs (ADR 0010):
+#   * primary head          <- 4A.4 gaussian residual-hybrid run (OTM)
+#   * ensemble disagreement <- 4A.5 K=5 residual point-head ensemble (OTM)
+#
+# The prediction CSVs carry the *summed hybrid* prediction (mu = rbf_pred +
+# f_theta) and the residual-scale sigma (unchanged by the additive shift);
+# the disagreement is the std of the per-member residual prediction (= std of
+# sigma_hat). Fusion formula, temperature-scaling / split-conformal paths, and
+# all numerical hyperparameters are inherited unchanged from 2D.4 / 3X.11 —
+# only the input bundle changes. Pure CPU; no torch, no model load.
+
+head_kind: gaussian
+
+sources:
+  gaussian:
+    val:  artifacts/runs/4A4/gaussian/val_predictions.csv
+    test: artifacts/runs/4A4/gaussian/test_predictions.csv
+  quantile:
+    val:  artifacts/runs/4A4/quantile/val_predictions.csv
+    test: artifacts/runs/4A4/quantile/test_predictions.csv
+
+ensemble:
+  val:  artifacts/runs/4A5/val_predictions.csv
+  test: artifacts/runs/4A5/test_predictions.csv
+
+# Ground-truth column to score against — `iv_true` matches the 3X.11 / 3X.12
+# evaluator convention, so the 4A.7 reliability numbers are comparable to the
+# 3X.12 reference with thresholds held constant.
+target_col: iv_true
+
+nominal_alpha: 0.9
+tolerance: 0.02
+
+output_path: artifacts/calibration/4A6_hybrid.json

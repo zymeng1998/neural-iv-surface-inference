@@ -1,49 +1,48 @@
-# STATUS — Phase 4 4A.5 ensemble done; next = 4A.6 (local, no GPU)
+# STATUS — Phase 4 4A.6 calibrator fit done; next = 4A.7 (the bar)
 
 **Updated:** 2026-06-20
 **Branch:** main
-**Mode:** GPU runs complete for Phase 4; remaining stories are local/CPU.
+**Mode:** local CPU. No GPU / pod needed for the rest of Phase 4.
 
 ## Where things stand
 
-Phase 4 (epic `4A`) in progress. 4A.1–4A.4 `done` (origin `01d3b9b`).
-**4A.5 (K=5 residual ensemble) done on the GPU pod and `in_review`.** 4A.5
-was the **last GPU run**; 4A.6/4A.7/4A.8 are local. **The GPU pod can be
-terminated now.**
+Phase 4 (epic `4A`) in progress. 4A.1–4A.5 `done` (origin `125ff32`).
+**4A.6 (calibrator re-fit) done locally and `in_review`.** Next is 4A.7
+(decision-layer eval + bootstrap CI — the formal Phase 4 bar), then 4A.8
+close. **All remaining work is local — no pod needed.**
 
-origin/main is at **01d3b9b**. The 4A.5 commit below is local, NOT pushed.
+origin/main is at **125ff32**. The 4A.6 commit below is local, NOT pushed.
 
-## Phase 4 accuracy picture (significance pending 4A.7)
+## 4A.6 result
 
-Hybrid test MAE vs `iv_clean`, RBF floor **0.006132**:
+Re-fit the 3X.11 calibrator (recipe unchanged) on the hybrid val predictions
+(4A.4 gaussian + 4A.5 ensemble disagreement): **T=1.147, ens_scale=438.4,
+held-out test coverage 0.9181** (within ±2 pp of 0.90), error↔uncertainty
+corr +0.46. `target_col=iv_true` (matches 3X.11/3X.12 so 4A.7 reliability is
+comparable to 3X.12). 4 tests green. Calibrator JSON gitignored (regenerable).
 
-| variant | test MAE | Δ vs RBF |
-|---|---:|---:|
-| 4A.4 gaussian | 0.006006 | −0.000126 |
-| **4A.4 quantile** | **0.005906** | **−0.000225** |
-| 4A.4 point | 0.006138 | +0.000006 (ties) |
-| 4A.5 ensemble (point) | 0.006141 | +0.000009 (ties) |
+## Data-access recovery (resolved)
 
-**The win is the gaussian/quantile heads (below the floor).** Point head
-(single + ensemble) ties. The ensemble's role is the disagreement signal
-(mean 0.000209) for the calibrator/decision-layer. **4A.7's bootstrap CI
-decides whether the gaussian/quantile beat is statistically significant —
-that is the formal Phase 4 bar.**
+The prior GPU pod was terminated before I pulled the hybrid prediction CSVs
+(I'd only pulled manifests — a miss). A fresh volume-mounted pod
+(213.173.110.22) was provided; the gaussian + ensemble val/test CSVs are now
+**pulled to local** (gitignored, ~1.5 GB). **4A.7/4A.8 run fully locally;
+the pod can be released.**
 
-## Push readiness (4A.5 — designed zero-waiver, NOT pushed)
+## Push readiness (4A.6 — designed zero-waiver, NOT pushed)
 
-- **PMR (live):** `configs/`+`scripts/`+`artifacts/runs/4A5/`; journal +
-  progress_log updated → PASS.
-- **DEP:** 4A.5 dep 4A.4 = `done` → PASS.
-- **SCOPE:** only active spec 4A.5; touched files in its `file_scope`
+- **PMR (live):** `configs/` + `tests/`; progress_log + spec updated → PASS.
+- **DEP:** 4A.6 dep 4A.4 + 4A.5 = `done` → PASS.
+- **SCOPE:** only active spec 4A.6; touched files in its `file_scope`
   (`STATUS.md` added) → PASS. **No `WAIVE_*`.**
 
 ## Next concrete action
 
 - **Verify gates standalone, stop before push for review.**
-- After approval: push; promote 4A.5 → `done`.
-- **4A.6** (local, no GPU): re-fit the 3X.11 calibrator on the hybrid val
-  predictions (4A.4 gaussian/quantile + 4A.5 disagreement) →
-  `artifacts/calibration/4A6_hybrid.json`. Then **4A.7** (decision-layer +
-  bootstrap CI — the bar) → **4A.8** close. The val/test prediction CSVs are
-  on the persistent `/workspace` volume (pull to local for 4A.6/4A.7).
+- After approval: push; promote 4A.6 → `done`.
+- **4A.7** (local): apply the 4A6 calibrator to the hybrid test predictions,
+  3X.12 thresholds held; compute coverage / hi-conf / abstain / flag
+  metrics + the **paired bootstrap 95% CI on the per-query MAE delta
+  (hybrid − rbf_pred) vs iv_clean** — decides whether the Phase 4 accuracy
+  gain (gaussian 0.006006 / quantile 0.005906 vs RBF 0.006132) is
+  statistically significant. Then **4A.8** close + ADR 0010 outcome.
