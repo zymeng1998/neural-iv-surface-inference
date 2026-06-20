@@ -41,7 +41,7 @@ last_updated_at: 2026-06-19T00:00:00-04:00
 | 4A | Epic | RBF-prior residual hybrid | `in_progress` |
 | 4A.1 | Story | Decompose Phase 4A + ADR 0010 | `done` |
 | 4A.2 | Story | Residual-target builder + `target_mode` flag (local) | `done` |
-| 4A.3 | Story | Build full residual dataset on OTM (remote CPU) | `in_review` |
+| 4A.3 | Story | Build full residual dataset on OTM (remote CPU) | `done` |
 | 4A.4 | Story | Train residual hybrid, 3 heads (remote GPU) | `backlog` |
 | 4A.5 | Story | K=5 residual ensemble (remote GPU) | `backlog` |
 | 4A.6 | Story | Calibrator re-fit on hybrid val (local) | `backlog` |
