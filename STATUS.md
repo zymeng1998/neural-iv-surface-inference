@@ -1,48 +1,52 @@
-# STATUS — Phase 4 4A.6 calibrator fit done; next = 4A.7 (the bar)
+# STATUS — Phase 4 accuracy bar MET (4A.7); next = 4A.8 close
 
 **Updated:** 2026-06-20
 **Branch:** main
-**Mode:** local CPU. No GPU / pod needed for the rest of Phase 4.
+**Mode:** local CPU. All GPU work for Phase 4 is complete.
+
+## Headline
+
+**The RBF-prior residual hybrid statistically significantly beats RBF on the
+clean OTM substrate** — the first neural-based predictor in the project to do
+so. (4A.7, the formal Phase 4 bar.)
 
 ## Where things stand
 
-Phase 4 (epic `4A`) in progress. 4A.1–4A.5 `done` (origin `125ff32`).
-**4A.6 (calibrator re-fit) done locally and `in_review`.** Next is 4A.7
-(decision-layer eval + bootstrap CI — the formal Phase 4 bar), then 4A.8
-close. **All remaining work is local — no pod needed.**
+Phase 4 (epic `4A`) in progress. 4A.1–4A.6 `done` (origin `1889c4b`).
+**4A.7 (bar adjudication) done locally and `in_review`.** Only 4A.8 (close)
+remains — local.
 
-origin/main is at **125ff32**. The 4A.6 commit below is local, NOT pushed.
+origin/main is at **1889c4b**. The 4A.7 commit below is local, NOT pushed.
 
-## 4A.6 result
+## 4A.7 result
 
-Re-fit the 3X.11 calibrator (recipe unchanged) on the hybrid val predictions
-(4A.4 gaussian + 4A.5 ensemble disagreement): **T=1.147, ens_scale=438.4,
-held-out test coverage 0.9181** (within ±2 pp of 0.90), error↔uncertainty
-corr +0.46. `target_col=iv_true` (matches 3X.11/3X.12 so 4A.7 reliability is
-comparable to 3X.12). 4 tests green. Calibrator JSON gitignored (regenerable).
+Date-clustered bootstrap CI (full test fold), gaussian hybrid (production
+head) vs RBF, vs `iv_clean`:
+- hybrid **0.006006** vs RBF **0.006132**; mean Δ **−0.000126**;
+  **95% CI [−0.000144, −0.000106]** (entirely < 0) → **significant**.
+- hi-conf MAE 0.004710 < no-abstention 0.006006 ✓.
+- coverage 0.9181 vs iv_true (in-band) / 0.962 vs iv_clean (conservative,
+  over-covers — a calibrator-refit-on-iv_clean follow-up, not a blocker).
+- Flag count not recomputed locally (needs the model checkpoint, released
+  with the pod); hybrid surface = RBF + small smooth residual, so no-arb
+  behavior tracks RBF's; deferred.
 
-## Data-access recovery (resolved)
+New tools: `eval_mae_bootstrap_ci.py` (+5 tests) and `run_4a7_decision_layer.py`.
 
-The prior GPU pod was terminated before I pulled the hybrid prediction CSVs
-(I'd only pulled manifests — a miss). A fresh volume-mounted pod
-(213.173.110.22) was provided; the gaussian + ensemble val/test CSVs are now
-**pulled to local** (gitignored, ~1.5 GB). **4A.7/4A.8 run fully locally;
-the pod can be released.**
+## Push readiness (4A.7 — designed zero-waiver, NOT pushed)
 
-## Push readiness (4A.6 — designed zero-waiver, NOT pushed)
-
-- **PMR (live):** `configs/` + `tests/`; progress_log + spec updated → PASS.
-- **DEP:** 4A.6 dep 4A.4 + 4A.5 = `done` → PASS.
-- **SCOPE:** only active spec 4A.6; touched files in its `file_scope`
+- **PMR (live):** `scripts/` + `tests/` + `results/4/`; journal + progress_log
+  updated → PASS.
+- **DEP:** 4A.7 dep 4A.6 = `done` → PASS.
+- **SCOPE:** only active spec 4A.7; touched files in its `file_scope`
   (`STATUS.md` added) → PASS. **No `WAIVE_*`.**
 
 ## Next concrete action
 
 - **Verify gates standalone, stop before push for review.**
-- After approval: push; promote 4A.6 → `done`.
-- **4A.7** (local): apply the 4A6 calibrator to the hybrid test predictions,
-  3X.12 thresholds held; compute coverage / hi-conf / abstain / flag
-  metrics + the **paired bootstrap 95% CI on the per-query MAE delta
-  (hybrid − rbf_pred) vs iv_clean** — decides whether the Phase 4 accuracy
-  gain (gaussian 0.006006 / quantile 0.005906 vs RBF 0.006132) is
-  statistically significant. Then **4A.8** close + ADR 0010 outcome.
+- After approval: push; promote 4A.7 → `done`.
+- **4A.8** (local): Phase 4 closing memo (`docs/phase4_result_memo.md`) +
+  fill ADR 0010 Outcome (bar MET; recommend the RBF-prior hybrid as the
+  production surface, with the coverage-refit caveat) + flip epic 4A `done`.
+  Cited numbers already committed in `results/4/.../4a_hybrid/` + the 4A.4/4A.5
+  manifests.

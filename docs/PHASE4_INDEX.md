@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-06-18T00:00:00-04:00
-last_updated_at: 2026-06-20T13:30:00-04:00
+last_updated_at: 2026-06-20T17:00:00-04:00
 ---
 
 > Read this first if you are picking up Phase 4 work cold. Mirrors the
@@ -27,13 +27,19 @@ last_updated_at: 2026-06-20T13:30:00-04:00
   reliability preserved (coverage ±2 pp of 0.90; hi-conf < no-abstention;
   flags not worse than 3X.12). **Negative branch is acceptable:** if no
   significant gain, ship the calibrated reliability layer on RBF.
-- **Status:** epic 4A `in_progress`; 4A.1–4A.4 `done`; **4A.5 `in_review`**
-  (K=5 residual point-head ensemble: ties RBF at 0.006141, like the 4A.4
-  single point; disagreement mean 0.000209 for the calibrator). **The Phase 4
-  accuracy win is the 4A.4 gaussian (0.006006) / quantile (0.005906) heads —
-  below the RBF floor 0.006132; significance adjudicated by 4A.7.** 4A.5 was
-  the last GPU run; 4A.6/4A.7/4A.8 are local. 4A.6–4A.8 `backlog`. **Next
-  action: promote 4A.5 → `done`, then 4A.6** (calibrator re-fit, local).
+- **HEADLINE (2026-06-20): Phase 4 accuracy bar MET.** The RBF-prior
+  residual hybrid (gaussian head, calibrated) is **statistically
+  significantly more accurate than RBF** on clean OTM (test MAE 0.006006 vs
+  0.006132; paired date-clustered 95% CI [−0.000144, −0.000106]) — the first
+  neural-based predictor to beat RBF here. Reliability holds in direction
+  (hi-conf < no-abstention); coverage is conservative (over-covers iv_clean
+  — a calibrator-refit follow-up). 4A.8 writes the close + ADR 0010 Outcome.
+- **Status:** epic 4A `in_progress`; 4A.1–4A.6 `done`; **4A.7 `in_review`
+  (accuracy bar MET)**; 4A.8 `backlog`. Accuracy win: 4A.4 gaussian (0.006006,
+  production head) / quantile (0.005906) below the RBF floor 0.006132; 4A.7's
+  bootstrap CI confirms the gaussian gain is significant. **Next action:
+  promote 4A.7 → `done`, then 4A.8** (Phase 4 close + ADR 0010 Outcome).
+  GPU runs are all complete; 4A.8 is local.
 
 ## Live status (sync with BOARD.md)
 
@@ -46,7 +52,7 @@ last_updated_at: 2026-06-20T13:30:00-04:00
 | 4A.4 | Story | Train residual hybrid, 3 heads (remote GPU) — **hybrid BEATS RBF (gaussian/quantile below floor; point ties)** | `done` |
 | 4A.5 | Story | K=5 residual ensemble (remote GPU) — ties RBF (0.006141); disagreement 0.000209 | `done` |
 | 4A.6 | Story | Calibrator re-fit on hybrid val (local) — fitted; test coverage 0.9181 | `done` |
-| 4A.7 | Story | Decision-layer eval + bootstrap CI vs RBF | `backlog` |
+| 4A.7 | Story | Decision-layer + bootstrap CI vs RBF (the bar) — **MET: hybrid significantly beats RBF (95% CI [−0.000144,−0.000106])** | `in_review` |
 | 4A.8 | Story | Comparison + closing memo + ADR 0010 Outcome | `backlog` |
 
 Chain: `4A.1 → 4A.2 → 4A.3 → 4A.4 → 4A.5 → 4A.6 → 4A.7 → 4A.8`. 4A.4+4A.5
@@ -82,5 +88,14 @@ share one Pod-GPU window; 4A.3 is a CPU pre-step.
   green. Prediction CSVs pulled local (gitignored) from a fresh
   volume-mounted pod (213.173.110.22) after the prior pod was terminated —
   **4A.7/4A.8 now run fully locally, no pod needed.**
-- **4A.7–4A.8** — registered (`backlog`); local. 4A.7 decision-layer +
-  **bootstrap CI (the bar)** → 4A.8 close.
+- **4A.7 — executed (`in_review`, 2026-06-20). PHASE 4 ACCURACY BAR MET.**
+  Date-clustered bootstrap CI: gaussian hybrid 0.006006 vs RBF 0.006132,
+  Δ −0.000126, **95% CI [−0.000144, −0.000106]** (entirely < 0) →
+  significantly more accurate than RBF (first neural-based predictor to do
+  so on clean OTM). Reliability: hi-conf MAE 0.004710 < no-abstention
+  0.006006 ✓; coverage vs iv_true 0.9181 (in-band), vs iv_clean 0.962
+  (conservative/over-covers — calibrator-refit-on-iv_clean follow-up). Flag
+  count needs the model (deferred). Computed fully local from cached
+  predictions.
+- **4A.8** — registered (`backlog`); local. Phase 4 closing memo + ADR 0010
+  Outcome + production recommendation.

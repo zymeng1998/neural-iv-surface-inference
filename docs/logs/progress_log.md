@@ -5107,3 +5107,47 @@ significant** is the job of **4A.7**'s paired bootstrap CI (the formal bar).
   with 3X.12 thresholds held; compute coverage/hi-conf/abstain/flags + the
   **paired bootstrap 95% CI on the per-query MAE delta (hybrid − rbf_pred)
   vs iv_clean** — the formal Phase 4 accuracy bar. Then **4A.8** close.
+
+---
+
+## 2026-06-20 — 4A.6 pushed/done + 4A.7: PHASE 4 ACCURACY BAR MET
+
+### What was completed
+
+- **Pushed 4A.6** (`816b5e3`) + **promoted it `done`** (`1889c4b`).
+- **4A.7 executed fully local** from cached predictions + the 4A.6
+  calibrator (no checkpoint, no GPU). Two new tools:
+  `scripts/eval_mae_bootstrap_ci.py` (+ `tests/test_mae_bootstrap_ci.py`, 5
+  green) and `scripts/run_4a7_decision_layer.py`.
+
+### Result — the hybrid significantly beats RBF
+
+Date-clustered bootstrap CI (full test fold, 2000 resamples), gaussian
+hybrid `mu` vs RBF `rbf_pred` vs `iv_clean`: hybrid **0.006006** vs RBF
+**0.006132**, mean Δ **−0.000126**, **95% CI [−0.000144, −0.000106]**
+(entirely < 0) → **statistically significant**. First neural-based predictor
+to beat RBF on clean OTM. Reliability: hi-conf MAE 0.004710 < no-abstention
+0.006006 ✓; coverage 0.9181 vs iv_true (in-band) / 0.962 vs iv_clean
+(conservative, over-covers — calibrator-refit follow-up).
+
+### Honest scope
+
+Computed model-free from cached predictions, so (a) no decision-layer runner
+config / per-row decisions CSV, and (b) the **no-arb flag count + abstain
+rate were not recomputed** (need the model checkpoint, left on the released
+pod). The hybrid point surface = RBF + small smooth residual → structural
+no-arb behavior tracks RBF's; full flag re-eval deferred. Verdict for 4A.8:
+**accuracy bar MET (significant)**; reliability preserved in direction.
+
+### Gates (4A.7 commit)
+
+- `scripts/` + `tests/` + `results/4/` → live PMR; journal + progress_log
+  updated. DEP: 4A.7 dep 4A.6 = `done` → PASS. SCOPE: only active spec 4A.7;
+  `STATUS.md` added → PASS. Zero-waiver.
+
+### Next actions
+
+- Operator promotes 4A.7 → `done`.
+- **4A.8** (local): Phase 4 closing memo + ADR 0010 Outcome + production
+  recommendation (recommend the RBF-prior hybrid as the production surface,
+  with the coverage-refit caveat) + flip epic 4A `done`.

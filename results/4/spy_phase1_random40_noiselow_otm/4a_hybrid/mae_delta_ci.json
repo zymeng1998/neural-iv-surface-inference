@@ -1,0 +1,16 @@
+{
+  "mean_delta": -0.00012564305355575135,
+  "ci_low": -0.00014379542638150552,
+  "ci_high": -0.00010566958411868487,
+  "ci_level": 0.95,
+  "n_boot": 2000,
+  "n_groups": 694,
+  "n_rows": 2769021,
+  "significant": true,
+  "mae_model": 0.006006203981517655,
+  "mae_baseline": 0.006131847035073404,
+  "pred_csv": "artifacts/runs/4A4/gaussian/test_predictions.csv",
+  "pred_col": "mu",
+  "baseline_col": "rbf_pred",
+  "target_col": "iv_clean"
+}

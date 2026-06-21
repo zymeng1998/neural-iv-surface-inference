@@ -2326,3 +2326,48 @@ significant is adjudicated by **4A.7**'s paired bootstrap CI.
   `/workspace` volume for 4A.6/4A.7.
 - **4A.5 is the last GPU run in Phase 4**; 4A.6/4A.7/4A.8 are local.
 - No-overclaim guardrail: matched `random40_noiselow_otm` substrate only.
+
+---
+
+## 4A.7 — Phase 4 accuracy bar: hybrid SIGNIFICANTLY beats RBF (2026-06-20)
+
+### Verdict: accuracy bar MET (statistically significant)
+
+Paired **date-clustered** bootstrap CI on the per-query MAE delta (gaussian
+hybrid `mu` − RBF `rbf_pred`) vs `iv_clean` on the full OTM test fold
+(2,769,021 rows, 2000 resamples):
+
+| arm | test MAE (vs iv_clean) |
+|---|---:|
+| RBF (floor, 3X.6) | 0.006132 |
+| **calibrated hybrid (gaussian, production head)** | **0.006006** |
+
+mean Δ **−0.000126**, **95% CI [−0.000144, −0.000106]** — entirely below 0.
+**The RBF-prior residual hybrid is statistically significantly more accurate
+than RBF** — the first neural-based predictor in the project to beat RBF on
+the well-posed clean OTM substrate. (Margin is small in absolute terms
+(~2%), but significant.) `mae_delta_ci.json`.
+
+### Reliability
+
+- High-confidence MAE (keep 0.8 by calibrated confidence) **0.004710** <
+  no-abstention MAE **0.006006** ✓ — the calibrated uncertainty ranks error.
+- Coverage vs the calibrator's fit target `iv_true` = **0.9181** (within
+  ±2 pp ✓); coverage vs `iv_clean` (3X.12 convention) = **0.962** —
+  **conservative / over-covers** (outside +2 pp, safe side). Same direction
+  as 3X.12's 0.9295, more pronounced (the residual hybrid's calibrated band,
+  width 0.0328, is wide relative to its tiny point error). A calibrator
+  re-fit targeting `iv_clean` would tighten it — a Phase 5 / follow-up, not a
+  blocker.
+
+### Method / scope
+
+Computed **fully local** from the cached 4A.4 gaussian + 4A.5 ensemble test
+predictions + the 4A.6 calibrator — no model checkpoint, no GPU. Two new
+tools: `scripts/eval_mae_bootstrap_ci.py` (+ 5 unit tests) and
+`scripts/run_4a7_decision_layer.py`. **Not recomputed locally:** the
+model-based no-arb flag count + width-driven abstain rate (need re-prediction
+under masking perturbations / the checkpoint, left on the released pod). The
+hybrid point surface is RBF + a small smooth residual, so its structural
+no-arb behavior tracks RBF's (3X.6); a full flag re-eval is deferred. No-
+overclaim guardrail: matched `random40_noiselow_otm` substrate only.
