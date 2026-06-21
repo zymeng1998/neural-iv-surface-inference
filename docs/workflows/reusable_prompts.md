@@ -31,7 +31,7 @@ Read first (only these):
 - docs/workflows/session_protocol.md
 - docs/tasks/README.md
 - docs/tasks/_template.md
-- docs/roadmaps/phase2_reliability_aware_surface_inference.md  (workstream <WORKSTREAM> / Phase <EPIC>)
+- the roadmap for the phase you are entering, e.g. docs/roadmaps/phase4_hybrid_residual.md  (workstream <WORKSTREAM> / Phase <EPIC>)
 
 Then orient: run git status --short and git log --oneline -5.
 
