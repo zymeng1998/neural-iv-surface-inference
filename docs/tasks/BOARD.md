@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-05-22T00:00:00-04:00
-last_updated_at: 2026-06-18T00:00:00-04:00
+last_updated_at: 2026-06-21T00:00:00-04:00
 ---
 
 The single canonical board for all work on this project. Every epic and story
@@ -124,6 +124,18 @@ decomposition). The first story of any epic is always its decomposition story.
 | 4A.6 | Story | Local: calibrator re-fit on hybrid val predictions (mirror 3X.11) — fitted: T=1.147, ens_scale=438; test coverage 0.9181 (within ±2pp); 4 tests green | `done` | `docs/tasks/specs/4A.6_local_calibrator_refit_hybrid.md` | 2026-06-20 |
 | 4A.7 | Story | Local: bootstrap CI on MAE-delta vs RBF + reliability from cached predictions (bar adjudication) — **ACCURACY BAR MET: hybrid 0.006006 vs RBF 0.006132, 95% CI [−0.000144,−0.000106] significant; hi-conf<no-abst; coverage conservative (over-covers iv_clean)** | `done` | `docs/tasks/specs/4A.7_decision_layer_eval_and_ci.md` | 2026-06-20 |
 | 4A.8 | Story | Local: hybrid-vs-RBF-vs-neural comparison + Phase 4 closing memo + ADR 0010 Outcome + journal; flip epic 4A done — **bar MET; hybrid adopted; ADR 0010 Implemented; memo + `4a_compare/` bundle shipped** | `done` | `docs/tasks/specs/4A.8_local_phase4_close.md` | 2026-06-20 |
+| 4B | Epic | **Phase 4 follow-up — sparsity-sweep diagnostic** (accuracy-survival gate per ADR 0011): RBF vs RBF-prior hybrid over increasing sparsity / thin wings / missing maturities. Decision gate — edge grows under sparsity ⇒ accuracy story lives; stays ~0–2 % ⇒ pivot fully to reliability. Decomposed: staged eval-first, 4 regimes (4B.2–4B.7). | `in_progress` | `docs/roadmaps/phase4b_sparsity_sweep.md` | 2026-06-21 |
+| 4B.1 | Story | Decompose Phase 4B — staged eval-first; 4 regimes (fewer quotes / thin wings / missing maturities / combined); gate at 4B.5; retrain escalation conditional (4B.7) | `done` | `docs/tasks/specs/4B.1_decompose_phase_4b.md` | 2026-06-21 |
+| 4B.2 | Story | Local: sparsity-sweep harness (fixed-query / shrinking-context) + 4 regimes + unit/smoke tests (no full build, no checkpoint) | `backlog` | `docs/tasks/specs/4B.2_local_sparsity_sweep_harness.md` | 2026-06-21 |
+| 4B.3 | Story | Remote (CPU): materialize swept eval inputs on full OTM — per-rung RBF at fixed query coords + finiteness/MAE-sanity audit | `backlog` | `docs/tasks/specs/4B.3_remote_build_swept_eval_inputs.md` | 2026-06-21 |
+| 4B.4 | Story | Remote: run the 4A hybrid checkpoint forward across all rungs → σ̂ predictions (eval-time; only checkpoint-dependent story) | `backlog` | `docs/tasks/specs/4B.4_remote_hybrid_forward_sweep.md` | 2026-06-21 |
+| 4B.5 | Story | Local: edge-vs-sparsity trajectory + date-clustered bootstrap CIs (mirror 4A.7) + ADR 0011 gate adjudication | `backlog` | `docs/tasks/specs/4B.5_local_trajectory_and_gate.md` | 2026-06-21 |
+| 4B.6 | Story | Local: Phase 4B closing addendum + ADR 0011 Outcome + journal; flip epic 4B done | `backlog` | `docs/tasks/specs/4B.6_local_phase4b_close.md` | 2026-06-21 |
+| 4B.7 | Story | Remote (GPU): **CONDITIONAL** per-regime retrain escalation — only if 4B.5 returns `ambiguous`; else `cancelled` | `backlog` | `docs/tasks/specs/4B.7_remote_conditional_retrain_escalation.md` | 2026-06-21 |
+| 5A | Epic | **Phase 5 — reliability-first surface inference / quote-risk layer** (per ADR 0011): formalize calibrated uncertainty, abstention, surface confidence, no-arb/risk flags, quote/no-quote logic, spread / model-risk-reserve suggestions. Primary contribution if 4B negative; worth building regardless. **Not yet entered.** | `backlog` | `docs/roadmaps/phase5_reliability_first_surface_inference.md` | 2026-06-21 |
+| 5A.1 | Story | Decompose Phase 5A (reliability-first capability map + child specs) | `backlog` | `docs/tasks/specs/5A.1_decompose_phase_5a.md` | 2026-06-21 |
+| 6A | Epic | **Phase 6 — structured-product pricing / FCN monetization demo** (per ADR 0011): sell-side framing — constrained FCN-like demo propagating surface uncertainty into fair-value intervals, sensitivities, quote-risk diagnostics. NOT a full FCN pricer; surface is one pricing input, not the whole stack. **Not yet entered.** | `backlog` | `docs/roadmaps/phase6_structured_product_pricing.md` | 2026-06-21 |
+| 6A.1 | Story | Decompose Phase 6A (FCN payoff scope + fixed-input assumptions + cross-check protocol + child specs) | `backlog` | `docs/tasks/specs/6A.1_decompose_phase_6a.md` | 2026-06-21 |
 | M1 | Epic | Meta — Multi-agent collaboration infrastructure (ADR 0007: AGENTS.md router + executable rule gates) — → 3 gates live (PMR + dep + scope) + commit-msg trailer; dep gate inspects push range; M1.6 routes waiver audit to an untracked log (no post-commit tracked-file mutation) | `done` | `docs/roadmaps/meta1_agent_collaboration.md` | 2026-06-17 |
 | M1.1 | Story | Decompose M1 + ADR 0007 + 4 sub-specs | `done` | `docs/tasks/specs/M1.1_decompose_m1.md` | 2026-05-30 |
 | M1.2 | Story | `AGENTS.md` router + `.cursor/rules/000-bootstrap.mdc` + CLAUDE.md re-point | `done` | `docs/tasks/specs/M1.2_agents_md_and_cursor_bootstrap.md` | 2026-05-30 |

@@ -5201,3 +5201,93 @@ hi-conf MAE 0.004710 < no-abstention 0.006006; width 0.0328 (< 3X.12's
 - Operator review; on approval, push the 4A.8 close.
 - No open Phase 4 work. Phase 5 (if opened) starts from the three deferred
   follow-ups above.
+
+---
+
+## 2026-06-21 — Forward-strategy planning: ADR 0011 + 4B / 5A / 6A roadmap
+
+### What was completed
+
+- **Planning/decomposition pass only (docs; no code, no experiment run).**
+  Set the staged direction after the Phase 4 close, given that the 4A win over
+  RBF is statistically real but economically small (≈ 2 % relative MAE).
+- Authored
+  [ADR 0011](decisions/0011_forward_strategy_accuracy_reliability_pricing.md)
+  (**Accepted**): adopt Phase 4A as the production point estimator on current
+  evidence, but **stop optimizing the same dense clean SPY benchmark**. 4B is
+  the accuracy-survival gate; if negative, Phase 5 reliability-first inference
+  becomes the primary contribution; Phase 6 connects to sell-side
+  structured-product pricing (FCN-first, constrained demo).
+- Created three planning roadmaps: `phase4b_sparsity_sweep.md`,
+  `phase5_reliability_first_surface_inference.md`,
+  `phase6_structured_product_pricing.md`.
+- Added decomposition specs `4B.1`, `5A.1`, `6A.1` (all `backlog`) and the
+  forward epic/story rows `4B / 4B.1 / 5A / 5A.1 / 6A / 6A.1` (all `backlog`)
+  to the BOARD.
+- Updated README: new **Next Direction** section (`4B → 5A → 6A`), reframed
+  Current Phase / Immediate Next Steps so 4A no longer reads as the final
+  destination, and added the new ADR + roadmaps to the Documentation Map.
+
+### Notes
+
+- This is forward planning, not execution. **No experiment was run and no
+  experiment-journal entry was added** (PMR policy: journal is for runs only).
+  The Phase 4A result is unchanged and remains the implemented production
+  recommendation (ADR 0010).
+- Decision gate is explicit: 4B's edge-vs-sparsity trajectory determines
+  whether accuracy stays a core story. Accuracy is **not** declared dead — that
+  verdict is gated on 4B running.
+- Wording guardrails honored: no monetization overclaim; the model does **not**
+  price FCNs today; the IV surface is one pricing input (rates / dividends /
+  funding-issuer spread / correlation / barriers / liquidity / hedging stay out
+  of scope).
+
+### Next actions
+
+- Operator green-lights whichever phase to enter first (likely `4B`); the
+  matching `*.1` decomposition story then authors the atomic child stories.
+- No GPU / data / config / test / artifact work in this planning pass.
+
+---
+
+## 2026-06-21 (update 2) — 4B.1: Phase 4B decomposed (epic 4B entered)
+
+### What was completed
+
+- **Picked up story 4B.1** (Phase 4B decomposition; docs only). Operator chose
+  the **staged (eval-first)** diagnostic approach over **all four** sparsity
+  regimes (`fewer_quotes`, `thin_wings`, `missing_maturities`,
+  `combined_quotes_wings`).
+- Authored six atomic child specs **4B.2–4B.7** (all `backlog`) and added their
+  BOARD rows; entered epic 4B (`in_progress`); set 4B.1 → `in_review`.
+- Refined `docs/roadmaps/phase4b_sparsity_sweep.md` (resolved forks + a
+  Workstreams table); refreshed STATUS.
+
+### Design (chain `4B.2 → … → 4B.6`, conditional `4B.7`)
+
+- `4B.2` sweep harness (fixed-query / shrinking-context, 4 regimes) + tests —
+  local CPU.
+- `4B.3` materialize swept eval inputs (per-rung RBF at fixed query coords) —
+  remote CPU.
+- `4B.4` run the 4A hybrid checkpoint **forward** across rungs → σ̂ — remote
+  (the only checkpoint-dependent story; eval-time, with the documented
+  full-context-trained / sparse-context-evaluated fairness caveat).
+- `4B.5` edge-vs-sparsity trajectory + date-clustered bootstrap CIs (mirror
+  4A.7) + **ADR 0011 gate adjudication** (pre-registered threshold) — local CPU.
+- `4B.6` close + ADR 0011 Outcome + journal — local CPU.
+- `4B.7` per-regime retrain — **conditional**, runs only on an `ambiguous` 4B.5
+  verdict, else `cancelled` (no Pod spend).
+
+### Notes
+
+- Still planning, not execution. **No experiment run; no experiment-journal
+  entry.** The Phase 4A result and ADR 0010 are unchanged. Accuracy is **not**
+  pre-judged — 4B.5 adjudicates the gate on measured evidence.
+- The four sparsity regimes are *parameters* of the shared 4B.2–4B.5 chain, not
+  separate stories, to avoid duplicating the harness ×4.
+
+### Next actions
+
+- Operator promotes 4B.1 → `done`; then 4B.2 (sparsity-sweep harness + tests,
+  local CPU). Remote stories gated on Pod go-ahead; 4B.4 needs the 4A
+  checkpoint volume.

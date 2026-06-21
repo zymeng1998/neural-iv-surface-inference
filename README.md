@@ -44,6 +44,41 @@ See also
 [`docs/roadmaps/phase4_hybrid_residual.md`](docs/roadmaps/phase4_hybrid_residual.md)
 and [`docs/PHASE4_INDEX.md`](docs/PHASE4_INDEX.md).
 
+### Next Direction (staged, planned — not yet entered)
+
+Phase 4A is the adopted production point estimator on current evidence — but
+it is **not the project's destination**. The win over RBF is statistically
+real yet economically small (≈ 2 % relative MAE), so the project will not keep
+optimizing the same dense, clean SPY benchmark. The forward direction is
+staged ([ADR 0011](docs/decisions/0011_forward_strategy_accuracy_reliability_pricing.md)):
+
+1. **`4B` — sparsity-sweep diagnostic (the decision gate).** Run RBF vs the
+   RBF-prior hybrid over increasing sparsity / thin wings / missing maturities.
+   If the hybrid's edge **grows materially** as observations become sparse, the
+   accuracy story survives; if it stays ~**0–2 %**, stop accuracy chasing and
+   pivot fully to reliability.
+   ([`docs/roadmaps/phase4b_sparsity_sweep.md`](docs/roadmaps/phase4b_sparsity_sweep.md))
+2. **`5A` — reliability-first surface inference / quote-risk layer.** Formalize
+   the durable Phase 2–4 asset — calibrated uncertainty, abstention,
+   surface-level confidence, no-arb / risk flags, quote/no-quote logic, and
+   spread / model-risk-reserve suggestions — into a sell-side-desk-consumable
+   system. Becomes the primary contribution if 4B is negative; worth building
+   regardless.
+   ([`docs/roadmaps/phase5_reliability_first_surface_inference.md`](docs/roadmaps/phase5_reliability_first_surface_inference.md))
+3. **`6A` — structured-product pricing / FCN monetization demo.** A *sell-side*
+   framing (bank desk using the model for pricing confidence, model-risk
+   reserves, hedge-risk diagnostics — not retail, not the operator issuing
+   notes): a **constrained** demo propagating surface uncertainty into
+   fair-value intervals, sensitivities, and quote-risk diagnostics for an
+   FCN-like payoff. It does **not** price FCNs today — structured notes are
+   debt + embedded derivatives, so the IV surface is one critical pricing
+   input, not the whole pricer (rates, dividends, funding/issuer spread,
+   correlation, barriers, liquidity, and hedging stay out of scope).
+   ([`docs/roadmaps/phase6_structured_product_pricing.md`](docs/roadmaps/phase6_structured_product_pricing.md))
+
+These are **planned** (`backlog`); none is in flight. The decision gate is 4B —
+it determines whether accuracy remains a core story.
+
 > **2026-05-29 — Data-integrity finding.** A duplicate-coordinate audit
 > ([`docs/research/duplicate_coordinate_audit.md`](docs/research/duplicate_coordinate_audit.md))
 > found that **93.61 %** of strict-table rows live inside a
@@ -242,6 +277,9 @@ Evidence:
 - [`docs/PHASE3_INDEX.md`](docs/PHASE3_INDEX.md) — Phase 3 fresh-session entry point (per-story checkpoints, conflict matrix)
 - [`docs/roadmaps/phase4_hybrid_residual.md`](docs/roadmaps/phase4_hybrid_residual.md) — Phase 4 plan: RBF-prior residual hybrid, success bar, workstreams 4A.1–4A.8 (closed positive)
 - [`docs/PHASE4_INDEX.md`](docs/PHASE4_INDEX.md) — Phase 4 fresh-session entry point (per-story checkpoints)
+- [`docs/roadmaps/phase4b_sparsity_sweep.md`](docs/roadmaps/phase4b_sparsity_sweep.md) — Phase 4B plan: sparsity-sweep diagnostic (accuracy-survival gate; planned)
+- [`docs/roadmaps/phase5_reliability_first_surface_inference.md`](docs/roadmaps/phase5_reliability_first_surface_inference.md) — Phase 5 plan: reliability-first surface inference / quote-risk layer (planned)
+- [`docs/roadmaps/phase6_structured_product_pricing.md`](docs/roadmaps/phase6_structured_product_pricing.md) — Phase 6 plan: structured-product pricing / FCN monetization demo (planned)
 - [`docs/phase1_result_memo.md`](docs/phase1_result_memo.md) — Phase 1 baseline results and analysis
 - [`docs/phase2_result_memo.md`](docs/phase2_result_memo.md) — Phase 2 closing memo (acceptance map, vs Phase 1 / 2C deltas, open questions)
 - [`docs/phase3_result_memo.md`](docs/phase3_result_memo.md) — Phase 3 closing memo (negative on accuracy; RBF floor vs neural ladder; frames Phase 4)
@@ -272,6 +310,7 @@ Evidence:
 - [`docs/decisions/0008_microstructure_feature_set_freeze.md`](docs/decisions/0008_microstructure_feature_set_freeze.md) — Phase 3C feature-set ADR: `micro_v1` freeze (Implemented; negative result)
 - [`docs/decisions/0009_phase3_production_predictor_selection.md`](docs/decisions/0009_phase3_production_predictor_selection.md) — Phase 3 close ADR: RBF stays the accuracy baseline; reliability layer retained
 - [`docs/decisions/0010_rbf_prior_residual_hybrid.md`](docs/decisions/0010_rbf_prior_residual_hybrid.md) — Phase 4 ADR: RBF-prior residual hybrid (**Implemented** — hybrid adopted as production accuracy surface)
+- [`docs/decisions/0011_forward_strategy_accuracy_reliability_pricing.md`](docs/decisions/0011_forward_strategy_accuracy_reliability_pricing.md) — forward-strategy ADR (**Accepted**): adopt 4A as production estimator, stop benchmark grinding; 4B accuracy-survival gate → 5A reliability-first → 6A structured-product pricing demo
 - [`docs/retrospectives/0002_call_put_duplicate_coordinate_discovery.md`](docs/retrospectives/0002_call_put_duplicate_coordinate_discovery.md) — discovery retrospective for the duplicate-coordinate finding
 
 ## Repository Structure
@@ -294,8 +333,13 @@ docs/                              Project documentation (roadmaps, memos, tasks
 residual hybrid is adopted as the production accuracy surface (first predictor
 to statistically significantly beat RBF; [ADR 0010](docs/decisions/0010_rbf_prior_residual_hybrid.md)
 Implemented). All epics through Phase 4 are `done`; **no phase is currently
-in flight.** The deferred follow-ups below are backlog placeholders only — none
-are decomposed or gated, and a Phase 5 (if opened) would start here:
+in flight.** The forward direction is staged as `4B → 5A → 6A`
+([ADR 0011](docs/decisions/0011_forward_strategy_accuracy_reliability_pricing.md);
+see **Next Direction** above) — all `backlog`, with **4B the decision gate**
+for whether accuracy stays a core story. The deferred follow-ups below are
+backlog placeholders that fold into those phases (the all-11-variant sweep into
+4B's robustness framing; the calibrator-refit and no-arb audit into 5A's
+reliability layer):
 
 | Follow-up | Mode | Notes |
 |---|---|---|

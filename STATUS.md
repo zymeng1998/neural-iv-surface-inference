@@ -1,60 +1,71 @@
-# STATUS — Phase 4 CLOSED POSITIVE (epic 4A done); 4A.8 pushed
+# STATUS — Phase 4 closed; 4B decomposed (4B.1 done); starting 4B.2 harness
 
-**Updated:** 2026-06-20
+**Updated:** 2026-06-21
 **Branch:** main
-**Mode:** local CPU. All GPU work for Phase 4 is complete.
+**Mode:** local CPU. Docs/planning only — no GPU, no data/code/config/test edits.
 
 ## Headline
 
-**Phase 4 closes POSITIVE on accuracy.** The RBF-prior residual hybrid is the
-first predictor in the project to statistically significantly beat RBF on the
-clean OTM substrate. Epic 4A (4A.1–4A.8) is `done`; ADR 0010 is Implemented.
+Phase 4 is **closed positive** (epic 4A `done`; RBF-prior gaussian hybrid is
+the adopted production estimator; ADR 0010 Implemented). The win over RBF is
+**statistically real but economically small** (≈ 2 % relative MAE on the dense
+clean OTM benchmark), so the project will **not** keep grinding that benchmark.
+The forward direction is staged and recorded in
+[ADR 0011](docs/decisions/0011_forward_strategy_accuracy_reliability_pricing.md)
+(**Accepted**):
+
+- **`4B` — sparsity-sweep diagnostic (the decision gate).** RBF vs hybrid over
+  increasing sparsity / thin wings / missing maturities. Edge grows under
+  sparsity ⇒ accuracy story lives; stays ~0–2 % ⇒ pivot fully to reliability.
+- **`5A` — reliability-first surface inference / quote-risk layer.** Primary
+  contribution if 4B is negative; worth building regardless.
+- **`6A` — structured-product pricing / FCN monetization demo.** Sell-side
+  framing; constrained demo, not a full FCN pricer.
 
 ## Where things stand
 
-- origin/main is at **8cff7d5** — 4A.7 pushed + promoted (`cf30a7c`) and the
-  **4A.8 Phase 4 close is committed + PUSHED** (`8cff7d5`).
-- All gates passed at push (PMR / scope / dep / provenance / no-overclaim),
-  zero-waiver. Working tree clean apart from this STATUS note.
-- **No open Phase 4 work.** Phase 4 is fully closed.
+- Forward-strategy planning pass committed to the working tree: ADR 0011 +
+  three roadmaps (`phase4b_sparsity_sweep`, `phase5_reliability_first_*`,
+  `phase6_structured_product_pricing`) + decomposition specs `4B.1 / 5A.1 /
+  6A.1` (all `backlog`) + BOARD rows `4B / 4B.1 / 5A / 5A.1 / 6A / 6A.1` +
+  README Next Direction + progress_log entry.
+- PMR gate dry-run: **PASS** (0 evidence-source files; docs-only).
+- No experiment was run; the Phase 4A result is unchanged.
 
-## 4A.8 deliverables (this session, uncommitted)
+## Current task — 4B.1 DONE; starting 4B.2 (sparsity-sweep harness)
 
-- `scripts/run_4a8_comparison.py` — provenance-checked assembler; asserts every
-  cited source exists and that the reported delta + RBF floor match the
-  committed 4A.7 `mae_delta_ci.json` (no drift). Run → exit 0, `bar_met=True`.
-- `results/4/spy_phase1_random40_noiselow_otm/4a_compare/` — `comparison.csv`,
-  `comparison_wide.md`, `headline.json`.
-- `docs/phase4_result_memo.md` — Phase 4 verdict memo (positive; production
-  recommendation + caveats).
-- ADR 0010 → **Implemented** (Outcome filled); roadmap `status: done` + close
-  block; journal close-out; progress_log entry; BOARD + PHASE4_INDEX epic 4A +
-  4A.8 → `done`; README Phase 4 callout → CLOSED POSITIVE.
+**Story 4B.1** decomposed Phase 4B into atomic child stories; promoted → `done`
+(operator approved at push). Epic 4B is `in_progress`. **Next: 4B.2** —
+sparsity-sweep harness (fixed-query / shrinking-context, 4 regimes) + unit/smoke
+tests, local CPU, no checkpoint. Spec:
+[`docs/tasks/specs/4B.2_local_sparsity_sweep_harness.md`](docs/tasks/specs/4B.2_local_sparsity_sweep_harness.md).
 
-## The verdict (cited)
+Spec: [`docs/tasks/specs/4B.1_decompose_phase_4b.md`](docs/tasks/specs/4B.1_decompose_phase_4b.md).
+Roadmap: [`docs/roadmaps/phase4b_sparsity_sweep.md`](docs/roadmaps/phase4b_sparsity_sweep.md).
 
-- Accuracy: hybrid **0.006006** vs RBF **0.006132**; mean Δ **−0.000126**,
-  **95 % CI [−0.000144, −0.000106]** (excludes 0) → significant.
-  (`results/4/.../4a_hybrid/mae_delta_ci.json`)
-- Reliability: coverage **0.9181** vs iv_true (±2 pp ✓); hi-conf MAE
-  **0.004710** < no-abstention **0.006006**; width **0.0328**.
-  (`results/4/.../4a_hybrid/metrics_summary.json`)
-- No-arb flag count NOT recomputed (needs the checkpoint; hybrid = RBF + small
-  smooth residual → no-arb tracks RBF's). Deferred caveat, not a blocker.
+## Resolved design forks (operator, 2026-06-21)
 
-## Push readiness (4A.8 — designed zero-waiver)
+1. **Approach → staged (eval-first).** Eval-time sweep on the existing 4A
+   checkpoint first; per-regime retraining held as a *conditional* escalation
+   (4B.7) only if the read is ambiguous.
+2. **Axes → all four regimes:** `fewer_quotes`, `thin_wings`,
+   `missing_maturities`, `combined_quotes_wings` (operator-added). Parameters of
+   the sweep, not separate stories.
+3. **Gate threshold** pre-registered inside 4B.5 before the trajectory is
+   computed.
 
-- **PMR (live):** `scripts/` + `results/4/` + memo; journal + progress_log +
-  ADR + roadmap + BOARD + index updated → expected PASS.
-- **DEP:** 4A.8 dep 4A.7 = `done` → PASS.
-- **SCOPE:** only active spec 4A.8; all touched files in its `file_scope`.
-  No `WAIVE_*`.
+## Child stories authored (all `backlog`)
+
+`4B.2` harness+tests (local CPU) → `4B.3` build swept inputs (remote CPU) →
+`4B.4` hybrid forward sweep (remote; needs the 4A checkpoint volume) → `4B.5`
+trajectory + CIs + **gate verdict** (local CPU) → `4B.6` close + ADR 0011
+Outcome (local CPU). `4B.7` per-regime retrain is **conditional** off 4B.5
+(`ambiguous` → run; else `cancelled`) — no Pod spend unless triggered.
 
 ## Next concrete action
 
-- Operator review; on approval: commit 4A.8 close, push, promote 4A.8 →
-  already `done` on the spec/BOARD (no separate promote needed — closing story).
-- No open Phase 4 work. Deferred follow-ups (backlog placeholders only):
-  (1) calibrator re-fit on iv_clean to tighten conservative coverage;
-  (2) no-arb flag-count audit on the hybrid checkpoint;
-  (3) all-11-OTM-variant robustness study.
+- Operator promotes 4B.1 → `done`, then picks up **4B.2** (sparsity-sweep
+  harness + tests, local CPU). Remote stories (4B.3 / 4B.4 / conditional 4B.7)
+  gated on operator Pod go-ahead; 4B.4 requires the 4A checkpoint volume.
+- All edits this session are docs/planning; PMR gate dry-run PASS (0
+  evidence-source files).
