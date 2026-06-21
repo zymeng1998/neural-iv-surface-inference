@@ -21,22 +21,26 @@ predictions are trustworthy and abstains where they are not.
 
 ## Current Phase
 
-**Phase 4 — RBF-Prior Hybrid / Residual Neural Model — in progress
-(epic `4A`, kicked off 2026-06-18).** Phase 3 closed **negative on
-accuracy** (2026-06-16): on the clean OTM substrate RBF posts test MAE
-**0.00613** and the best pure-neural head (ANP point) **0.00987** (+61 %);
-no conditional-neural variant beat RBF on its own across 3A/3B/3X/3C
-([ADR 0009](docs/decisions/0009_phase3_production_predictor_selection.md);
-[`docs/phase3_result_memo.md`](docs/phase3_result_memo.md)). Phase 4 stops
-fighting RBF and **stands on it**: predict `σ̂ = RBF + f_θ(residual)`, with
-RBF carrying the local interpolation it already wins and the neural model
-learning the residual plus the calibrated reliability/abstention layer RBF
-lacks ([ADR 0010](docs/decisions/0010_rbf_prior_residual_hybrid.md)).
-**Success bar (operator-set):** any *statistically meaningful* accuracy gain
-over RBF (paired bootstrap CI on the per-query MAE delta excludes 0)
-**plus** preserved reliability — and the negative branch (ship the
-calibrated reliability layer on RBF if no significant gain) is explicitly
-acceptable. Epic 4A is decomposed into 4A.1–4A.8; see
+**Phase 4 — RBF-Prior Hybrid / Residual Neural Model — CLOSED POSITIVE
+(epic `4A` done, 2026-06-20).** Phase 3 had closed **negative on accuracy**:
+no pure conditional-neural variant beat RBF on its own (best ANP point head
++61 %; [ADR 0009](docs/decisions/0009_phase3_production_predictor_selection.md)),
+so Phase 4 stopped fighting RBF and **stood on it**: predict
+`σ̂ = RBF + f_θ(residual)`, RBF carrying the local interpolation it wins and
+the neural model learning the residual plus the calibrated reliability/
+abstention layer RBF lacks ([ADR 0010](docs/decisions/0010_rbf_prior_residual_hybrid.md),
+now Implemented). **The bar was MET:** the calibrated gaussian hybrid posts
+clean-OTM test MAE **0.006006** vs the RBF floor **0.006132** — mean Δ
+**−0.000126**, date-clustered paired-bootstrap **95 % CI [−0.000144,
+−0.000106]** (excludes 0) → the **first predictor in the project to
+statistically significantly beat RBF** on the well-posed substrate.
+Reliability preserved/tightened (coverage 0.9181 vs iv_true; hi-conf MAE
+0.004710 < no-abstention; width 0.0328). **Production recommendation: adopt
+the RBF-prior gaussian hybrid** (caveats: an iv_clean coverage-refit and a
+deferred no-arb flag-count audit). Full synthesis:
+[`docs/phase4_result_memo.md`](docs/phase4_result_memo.md); comparison bundle
+[`results/4/spy_phase1_random40_noiselow_otm/4a_compare/`](results/4/spy_phase1_random40_noiselow_otm/4a_compare/comparison_wide.md).
+See also
 [`docs/roadmaps/phase4_hybrid_residual.md`](docs/roadmaps/phase4_hybrid_residual.md)
 and [`docs/PHASE4_INDEX.md`](docs/PHASE4_INDEX.md).
 

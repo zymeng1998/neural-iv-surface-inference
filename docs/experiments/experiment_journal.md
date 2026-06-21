@@ -2371,3 +2371,73 @@ under masking perturbations / the checkpoint, left on the released pod). The
 hybrid point surface is RBF + a small smooth residual, so its structural
 no-arb behavior tracks RBF's (3X.6); a full flag re-eval is deferred. No-
 overclaim guardrail: matched `random40_noiselow_otm` substrate only.
+
+---
+
+## 4A.8 — Phase 4 close-out (epic 4A done; Phase 4 closed POSITIVE) (2026-06-20)
+
+### Verdict
+
+**Phase 4 ("RBF-prior residual hybrid") closes POSITIVE on accuracy.** The
+calibrated gaussian hybrid (`σ̂ = RBF + f_θ(residual)`, ANP-residual backbone)
+is the **first predictor in the project to statistically significantly beat
+RBF** on the well-posed clean OTM substrate `spy_phase1_random40_noiselow_otm`.
+
+| Family / head | OTM test MAE | vs RBF |
+|---|---:|---:|
+| **rbf_prior_hybrid · gaussian (Phase 4 production)** | **0.006006** | **−2.0 %** |
+| rbf (interp) — floor | 0.006132 | — |
+| anp_single · point (best pure-neural) | 0.009871 | +61 % |
+| anp_calibrated · fused (3X.12 production) | 0.011618 | +89.5 % |
+
+The bar (ADR 0010 §5): mean Δ **−0.000126**, date-clustered paired-bootstrap
+**95 % CI [−0.000144, −0.000106]** (excludes 0). Reliability preserved and
+tightened: coverage **0.9181** vs iv_true (±2 pp ✓); hi-conf MAE **0.004710**
+< no-abstention **0.006006**; mean width **0.0328** (vs 3X.12's 0.0538).
+Source: `results/4/.../4a_compare/comparison_wide.md` + `headline.json`; full
+narrative in [`docs/phase4_result_memo.md`](../phase4_result_memo.md).
+
+### What survives / what was learned
+
+- The Phase 3 lesson held and was reframed, not re-fought: an amortized neural
+  model does not re-derive RBF's local weighting (ADR 0009), but it *can*
+  learn the small residual RBF leaves behind. The same DeepSets→ANP backbone
+  that was +61 % standalone nets **−2.0 %** once RBF carries the bulk signal.
+- The advance is in **problem formulation**, not architecture; the calibrated
+  reliability layer (the durable Phase 2/3 contribution) ships intact and
+  strictly better than the 3X.12 pure-neural production on every axis.
+- The accuracy win is small in absolute terms but real and significant —
+  exactly the margin ADR 0010 §5 defined as success.
+
+### Decisions / artifacts
+
+- [ADR 0010](../decisions/0010_rbf_prior_residual_hybrid.md) →
+  **Implemented**: bar MET; backbone = ANP-residual (option (a), no MLP
+  ablation needed, no residual transform); **production recommendation —
+  adopt the RBF-prior gaussian hybrid**, retaining the calibrated reliability
+  layer.
+- Closing memo `docs/phase4_result_memo.md` (4A.8) + comparison bundle
+  `results/4/.../4a_compare/` (`comparison.csv`, `comparison_wide.md`,
+  `headline.json`) emitted by `scripts/run_4a8_comparison.py`. Epic 4A and
+  stories 4A.1–4A.8 are `done`.
+
+### Caveats / deferred follow-ups (backlog placeholders only)
+
+- Coverage vs `iv_clean` over-covers (0.962) — a calibrator-refit-on-iv_clean
+  would tighten the conservative side.
+- No-arb forbidden-flag count not recomputed (needs the checkpoint; hybrid =
+  RBF + small smooth residual → no-arb tracks RBF's).
+- All-11-OTM-variant robustness study remains deferred.
+
+### Tests
+
+- `python3 scripts/run_4a8_comparison.py` → exit 0; `bar_met=True`,
+  `accuracy_significant=True`, `coverage_in_band=True`, `hi_conf_below=True`.
+  The assembler asserts every cited source exists and that the
+  metrics-summary delta + RBF floor match the committed 4A.7 `mae_delta_ci.json`
+  (no drift).
+- No new training / scoring / data run — pure synthesis on committed
+  artifacts. No-overclaim guardrail: matched `random40_noiselow_otm`
+  substrate only.
+
+---

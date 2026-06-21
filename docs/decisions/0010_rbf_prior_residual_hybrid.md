@@ -2,10 +2,13 @@
 
 ## Status
 
-**Proposed (2026-06-18).** Created by the Phase 4 kickoff / decomposition
-story [`4A.1`](../tasks/specs/4A.1_decompose_phase_4a.md). Moves to
-**Implemented** on the 4A.8 close, with the Outcome block filled from the
-4A.7 decision-layer numbers.
+**Implemented (2026-06-20).** Created Proposed by the Phase 4 kickoff /
+decomposition story [`4A.1`](../tasks/specs/4A.1_decompose_phase_4a.md);
+moved to Implemented on the [`4A.8`](../tasks/specs/4A.8_local_phase4_close.md)
+close. The Outcome block below is filled from the 4A.7 decision-layer numbers.
+**Verdict: the success bar (§5) is MET** — the calibrated RBF-prior gaussian
+hybrid statistically significantly beats RBF on the matched clean OTM
+substrate.
 
 > Skeleton + candidate decision: the residual formulation, backbone options,
 > and the success bar are fixed here so 4A.2–4A.8 have a target. The
@@ -114,7 +117,41 @@ what RBF gets wrong**.
 
 ## Outcome (filled by 4A.8 on close)
 
-_To be filled by 4A.8 with: the calibrated hybrid test MAE vs the RBF floor
-(0.00613) with the paired-bootstrap CI on the delta, the reliability numbers
-vs 3X.12, the backbone chosen, and the production recommendation (hybrid
-adopted / reliability-layer-on-RBF only)._
+**The success bar (§5) is MET.** Full synthesis:
+[`docs/phase4_result_memo.md`](../phase4_result_memo.md); comparison bundle:
+[`results/4/spy_phase1_random40_noiselow_otm/4a_compare/`](../../results/4/spy_phase1_random40_noiselow_otm/4a_compare/comparison_wide.md).
+
+- **Accuracy (the gating bar).** On the matched clean OTM substrate
+  `spy_phase1_random40_noiselow_otm`, the calibrated **gaussian** hybrid
+  (the production head) posts test MAE **0.006006** vs the RBF floor
+  **0.006132** — mean Δ **−0.000126**, date-clustered paired-bootstrap
+  **95 % CI [−0.000144, −0.000106]** (n = 2,769,021 rows / 694 date groups,
+  2000 resamples), entirely below 0 → **statistically significant**. First
+  predictor in the project to beat RBF on the well-posed substrate. Source:
+  `…/4a_hybrid/mae_delta_ci.json`.
+
+- **Reliability (preserved and tightened).** Coverage **0.9181** vs iv_true
+  (within ±2 pp of 0.90); hi-conf MAE **0.004710** < no-abstention
+  **0.006006**; mean band width **0.032810** (vs 3X.12's 0.053824). Every
+  reliability axis is at least as good as the 3X.12 pure-neural production.
+  Source: `…/4a_hybrid/metrics_summary.json`. **Caveat:** the no-arb
+  forbidden-flag count was not recomputed locally (needs the checkpoint; the
+  hybrid = RBF + small smooth residual, so no-arb behavior tracks RBF's) —
+  deferred per the 4A.7 spec, not a blocker.
+
+- **Backbone chosen.** Option (a) **ANP-residual** (§Decision item 3) — the
+  DeepSets encoder + ANP cross-attention decoder with the residual target,
+  trained at 4A.4. The MLP-residual ablation (b) was not needed: (a) cleared
+  the bar. No residual transform was required (the residual distribution was
+  well-behaved at 4A.4). Region-gating remains a deferred follow-up.
+
+- **Production recommendation.** **Adopt the RBF-prior gaussian residual
+  hybrid** (`σ̂ = RBF + f_θ(residual)`, calibrated per 4A.6) as the production
+  accuracy surface, retaining the calibrated reliability / abstention layer.
+  Two documented follow-ups (neither a blocker): (1) calibrator re-fit on
+  `iv_clean` to tighten the conservative coverage side (coverage vs iv_clean
+  over-covers at 0.962); (2) no-arb flag-count audit on the checkpoint.
+
+- **No-overclaim guardrail.** Every number is on the matched
+  `random40_noiselow_otm` substrate; the all-11-variant robustness study stays
+  deferred (carried from 3X).

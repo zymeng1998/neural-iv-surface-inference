@@ -2,9 +2,20 @@
 
 ---
 created_at: 2026-06-18T00:00:00-04:00
-last_updated_at: 2026-06-18T00:00:00-04:00
-status: in_progress
+last_updated_at: 2026-06-20T12:00:00-04:00
+status: done
 ---
+
+> **CLOSED 2026-06-20 — bar MET (positive on accuracy).** The calibrated
+> RBF-prior gaussian hybrid posts OTM test MAE **0.006006** vs the RBF floor
+> **0.006132**; date-clustered paired-bootstrap **95 % CI [−0.000144,
+> −0.000106]** (excludes 0) → first predictor to statistically significantly
+> beat RBF on the clean OTM substrate. Reliability preserved (coverage 0.9181
+> vs iv_true; hi-conf MAE 0.004710 < no-abstention; width 0.0328). Production
+> recommendation: **adopt the hybrid** (caveats: iv_clean coverage-refit +
+> deferred no-arb flag-count audit). Full synthesis:
+> [`docs/phase4_result_memo.md`](../phase4_result_memo.md); verdict recorded
+> in [ADR 0010](../decisions/0010_rbf_prior_residual_hybrid.md) (Implemented).
 
 > Phase 4 is the deployment-engineering direction reserved by
 > [ADR 0004](../decisions/0004_phase3_accuracy_push_framing.md) and

@@ -5151,3 +5151,53 @@ no-arb behavior tracks RBF's; full flag re-eval deferred. Verdict for 4A.8:
 - **4A.8** (local): Phase 4 closing memo + ADR 0010 Outcome + production
   recommendation (recommend the RBF-prior hybrid as the production surface,
   with the coverage-refit caveat) + flip epic 4A `done`.
+
+## 2026-06-20 — 4A.7 pushed/done + 4A.8: PHASE 4 CLOSED POSITIVE (epic 4A done)
+
+### What was completed
+
+- Pushed the 4A.7 bar-adjudication commit (`16a58dc`) and promoted 4A.7 →
+  `done` (`cf30a7c`).
+- **4A.8 — Phase 4 close (local, CPU).** Assembled the Phase 4 comparison,
+  wrote the closing memo, filled the ADR 0010 Outcome, and flipped epic 4A →
+  `done`. Phase 4 closes **positive on accuracy**.
+
+### Result — Phase 4 verdict
+
+The calibrated RBF-prior **gaussian** hybrid posts OTM test MAE **0.006006**
+vs the RBF floor **0.006132** — mean Δ **−0.000126**, date-clustered paired-
+bootstrap **95 % CI [−0.000144, −0.000106]** (excludes 0) → first predictor
+to statistically significantly beat RBF on the clean OTM substrate.
+Reliability preserved/tightened: coverage 0.9181 vs iv_true (±2 pp ✓);
+hi-conf MAE 0.004710 < no-abstention 0.006006; width 0.0328 (< 3X.12's
+0.0538). **Production recommendation: adopt the hybrid.**
+
+### Artifacts
+
+- `scripts/run_4a8_comparison.py` (provenance-checked assembler; asserts the
+  reported delta + RBF floor match the committed 4A.7 `mae_delta_ci.json`).
+- `results/4/.../4a_compare/`: `comparison.csv` + `comparison_wide.md` +
+  `headline.json` (`bar_met=True`).
+- `docs/phase4_result_memo.md` (new — the Phase 4 verdict memo).
+- ADR 0010 → **Implemented** (Outcome filled); roadmap `status: done` +
+  close block; journal close-out; BOARD / PHASE4_INDEX epic + 4A.8 → `done`.
+
+### Caveats (deferred, backlog placeholders only)
+
+- Coverage vs iv_clean over-covers (0.962) → calibrator-refit-on-iv_clean.
+- No-arb flag count not recomputed (needs checkpoint; hybrid = RBF + small
+  smooth residual → no-arb tracks RBF's).
+- All-11-OTM-variant robustness study deferred.
+
+### Gates (4A.8 commit)
+
+- `scripts/` + `results/4/` + memo → live PMR; journal + progress_log +
+  ADR + roadmap + BOARD + index updated. DEP: 4A.8 dep 4A.7 = `done` → PASS.
+  SCOPE: only active spec 4A.8; all touched files in its `file_scope`.
+  Zero-waiver.
+
+### Next actions
+
+- Operator review; on approval, push the 4A.8 close.
+- No open Phase 4 work. Phase 5 (if opened) starts from the three deferred
+  follow-ups above.

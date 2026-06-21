@@ -1,0 +1,22 @@
+{
+  "substrate": "spy_phase1_random40_noiselow_otm",
+  "rbf_floor_mae": 0.006131847035635011,
+  "hybrid_mae_vs_iv_clean": 0.006006203981517655,
+  "delta_vs_rbf": -0.00012564305355575135,
+  "ci_low": -0.00014379542638150552,
+  "ci_high": -0.00010566958411868487,
+  "ci_level": 0.95,
+  "n_groups": 694,
+  "n_rows": 2769021,
+  "accuracy_significant": true,
+  "coverage_90_vs_iv_true": 0.918099934958962,
+  "coverage_in_band_pm2pp": true,
+  "hi_conf_mae_keep0.8": 0.004709914719952944,
+  "hi_conf_below_no_abstention": true,
+  "best_pure_neural_point_mae": 0.009871306829154491,
+  "calibrated_production_mae": 0.011618361451152538,
+  "bar_met": true,
+  "flag_count_recomputed": false,
+  "flag_count_note": "Hybrid no-arb flag count not recomputed locally (needs the model checkpoint); hybrid surface = RBF + small smooth residual, so no-arb behavior tracks RBF's. Deferred per 4A.7 spec.",
+  "production_recommendation": "Adopt the RBF-prior gaussian residual hybrid as the production accuracy surface (first predictor to significantly beat RBF on the clean OTM substrate), retaining the calibrated reliability layer. Caveats: coverage vs iv_clean over-covers (0.962) \u2014 a calibrator-refit-on-iv_clean follow-up; no-arb flag count audit deferred."
+}

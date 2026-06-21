@@ -2,7 +2,7 @@
 
 ---
 created_at: 2026-06-18T00:00:00-04:00
-last_updated_at: 2026-06-20T17:00:00-04:00
+last_updated_at: 2026-06-20T12:30:00-04:00
 ---
 
 > Read this first if you are picking up Phase 4 work cold. Mirrors the
@@ -34,18 +34,20 @@ last_updated_at: 2026-06-20T17:00:00-04:00
   neural-based predictor to beat RBF here. Reliability holds in direction
   (hi-conf < no-abstention); coverage is conservative (over-covers iv_clean
   — a calibrator-refit follow-up). 4A.8 writes the close + ADR 0010 Outcome.
-- **Status:** epic 4A `in_progress`; 4A.1–4A.7 `done` (**4A.7 accuracy bar
-  MET**); 4A.8 `in_progress`. Accuracy win: 4A.4 gaussian (0.006006,
-  production head) / quantile (0.005906) below the RBF floor 0.006132; 4A.7's
-  bootstrap CI confirms the gaussian gain is significant. **Next action:
-  4A.8** (Phase 4 close + ADR 0010 Outcome). GPU runs are all complete;
-  4A.8 is local.
+- **Status:** epic 4A **`done` — Phase 4 CLOSED positive (2026-06-20).** All
+  stories 4A.1–4A.8 `done`. Accuracy win: 4A.4 gaussian (0.006006, production
+  head) below the RBF floor 0.006132; 4A.7's bootstrap CI confirms the gain is
+  significant (95% CI [−0.000144,−0.000106]); 4A.8 closed with the comparison
+  bundle + memo + ADR 0010 Outcome (Implemented). **Production recommendation:
+  adopt the RBF-prior gaussian hybrid.** No open Phase 4 work; follow-ups
+  (iv_clean coverage-refit, no-arb flag-count audit, all-11-variant study) are
+  backlog placeholders only.
 
 ## Live status (sync with BOARD.md)
 
 | ID | Type | Title | Status |
 |---|---|---|---|
-| 4A | Epic | RBF-prior residual hybrid | `in_progress` |
+| 4A | Epic | RBF-prior residual hybrid — **CLOSED positive (bar MET; hybrid adopted; ADR 0010 Implemented)** | `done` |
 | 4A.1 | Story | Decompose Phase 4A + ADR 0010 | `done` |
 | 4A.2 | Story | Residual-target builder + `target_mode` flag (local) | `done` |
 | 4A.3 | Story | Build full residual dataset on OTM (remote CPU) | `done` |
@@ -53,7 +55,7 @@ last_updated_at: 2026-06-20T17:00:00-04:00
 | 4A.5 | Story | K=5 residual ensemble (remote GPU) — ties RBF (0.006141); disagreement 0.000209 | `done` |
 | 4A.6 | Story | Calibrator re-fit on hybrid val (local) — fitted; test coverage 0.9181 | `done` |
 | 4A.7 | Story | Decision-layer + bootstrap CI vs RBF (the bar) — **MET: hybrid significantly beats RBF (95% CI [−0.000144,−0.000106])** | `done` |
-| 4A.8 | Story | Comparison + closing memo + ADR 0010 Outcome | `backlog` |
+| 4A.8 | Story | Comparison + closing memo + ADR 0010 Outcome — **Phase 4 closed positive; memo + `4a_compare/` shipped** | `done` |
 
 Chain: `4A.1 → 4A.2 → 4A.3 → 4A.4 → 4A.5 → 4A.6 → 4A.7 → 4A.8`. 4A.4+4A.5
 share one Pod-GPU window; 4A.3 is a CPU pre-step.
@@ -97,5 +99,10 @@ share one Pod-GPU window; 4A.3 is a CPU pre-step.
   (conservative/over-covers — calibrator-refit-on-iv_clean follow-up). Flag
   count needs the model (deferred). Computed fully local from cached
   predictions.
-- **4A.8** — in progress (`in_progress`, 2026-06-20); local. Phase 4 closing
-  memo + ADR 0010 Outcome + production recommendation; flips epic 4A `done`.
+- **4A.8** — closed (`done`, 2026-06-20); local. Assembled the
+  hybrid-vs-RBF-vs-pure-neural comparison (`results/4/.../4a_compare/`:
+  `comparison.csv` + `comparison_wide.md` + `headline.json`, emitted by
+  `scripts/run_4a8_comparison.py` with a drift check against the 4A.7 CI),
+  wrote `docs/phase4_result_memo.md` (positive verdict + production
+  recommendation + caveats), filled ADR 0010 Outcome → Implemented, closed the
+  roadmap + journal. **Epic 4A flipped `done`; Phase 4 closed positive.**
