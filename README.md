@@ -77,7 +77,7 @@ and [`docs/PHASE4_INDEX.md`](docs/PHASE4_INDEX.md).
 > Phase 2 reopen and ADR 0006 → **Implemented**. Narrative:
 > [methodology progression](docs/research/duplicate_coordinate_methodology_progression.md).
 
-### Phase 3 (current)
+### Phase 3 (complete, 2026-06-16 — negative on accuracy; superseded by Phase 4)
 
 | Epic | Workstream | Status |
 |---|---|---|
@@ -240,8 +240,12 @@ Evidence:
 - [`docs/roadmaps/phase2_followups.md`](docs/roadmaps/phase2_followups.md) — Phase 2E follow-ups (capacity diagnostics, calibration drift placeholders)
 - [`docs/roadmaps/phase3_accuracy_push.md`](docs/roadmaps/phase3_accuracy_push.md) — Phase 3 plan: workstreams W10–W13, acceptance bar versus RBF
 - [`docs/PHASE3_INDEX.md`](docs/PHASE3_INDEX.md) — Phase 3 fresh-session entry point (per-story checkpoints, conflict matrix)
+- [`docs/roadmaps/phase4_hybrid_residual.md`](docs/roadmaps/phase4_hybrid_residual.md) — Phase 4 plan: RBF-prior residual hybrid, success bar, workstreams 4A.1–4A.8 (closed positive)
+- [`docs/PHASE4_INDEX.md`](docs/PHASE4_INDEX.md) — Phase 4 fresh-session entry point (per-story checkpoints)
 - [`docs/phase1_result_memo.md`](docs/phase1_result_memo.md) — Phase 1 baseline results and analysis
 - [`docs/phase2_result_memo.md`](docs/phase2_result_memo.md) — Phase 2 closing memo (acceptance map, vs Phase 1 / 2C deltas, open questions)
+- [`docs/phase3_result_memo.md`](docs/phase3_result_memo.md) — Phase 3 closing memo (negative on accuracy; RBF floor vs neural ladder; frames Phase 4)
+- [`docs/phase4_result_memo.md`](docs/phase4_result_memo.md) — Phase 4 closing memo (**positive**: RBF-prior hybrid beats RBF; production recommendation)
 - [`notebooks/04_phase2c_results.ipynb`](notebooks/04_phase2c_results.ipynb) — Phase 2C interactive results notebook
 - [`notebooks/05_phase2_results.ipynb`](notebooks/05_phase2_results.ipynb) — Phase 2 closing interactive notebook
 - [`docs/experiments/experiment_journal.md`](docs/experiments/experiment_journal.md) — chronological experiment journal (raw evidence per run)
@@ -264,6 +268,10 @@ Evidence:
 - [`docs/decisions/0004_phase3_accuracy_push_framing.md`](docs/decisions/0004_phase3_accuracy_push_framing.md) — Phase 3 framing ADR: locality + inductive bias, not capacity
 - [`docs/decisions/0005_cross_attention_architecture_choice.md`](docs/decisions/0005_cross_attention_architecture_choice.md) — Phase 3B architecture ADR: Attentive Neural Process (ANP)
 - [`docs/decisions/0006_duplicate_coordinate_data_correction.md`](docs/decisions/0006_duplicate_coordinate_data_correction.md) — Phase 3X data-correction ADR: OTM-restricted surface + paired masking
+- [`docs/decisions/0007_multi_agent_handoff.md`](docs/decisions/0007_multi_agent_handoff.md) — multi-agent handoff ADR: git-hook-enforced PMR / dep / scope / trailer gates
+- [`docs/decisions/0008_microstructure_feature_set_freeze.md`](docs/decisions/0008_microstructure_feature_set_freeze.md) — Phase 3C feature-set ADR: `micro_v1` freeze (Implemented; negative result)
+- [`docs/decisions/0009_phase3_production_predictor_selection.md`](docs/decisions/0009_phase3_production_predictor_selection.md) — Phase 3 close ADR: RBF stays the accuracy baseline; reliability layer retained
+- [`docs/decisions/0010_rbf_prior_residual_hybrid.md`](docs/decisions/0010_rbf_prior_residual_hybrid.md) — Phase 4 ADR: RBF-prior residual hybrid (**Implemented** — hybrid adopted as production accuracy surface)
 - [`docs/retrospectives/0002_call_put_duplicate_coordinate_discovery.md`](docs/retrospectives/0002_call_put_duplicate_coordinate_discovery.md) — discovery retrospective for the duplicate-coordinate finding
 
 ## Repository Structure
@@ -272,29 +280,31 @@ Evidence:
 src/neural_iv_surface_inference/   Python package (data, features, models, training, eval, diagnostics)
 scripts/                           Entry-point scripts (data prep, training, eval runners, notebook generation)
 configs/                           YAML configuration files (training, calibration, decision layer, runner configs)
-notebooks/                         Jupyter notebooks (Phase 1 surface gallery, Phase 2C results, Phase 2 closing notebook)
+notebooks/                         Jupyter notebooks (Phase 1 surface gallery, Phase 2C / Phase 2 closing, Phase 3 results)
 tests/                             Test suite
 data/                              Data directories (raw, interim, processed, samples) — gitignored
 artifacts/                         Output artifacts (figures, tables, checkpoints, run manifests)
-results/                           Committed evidence artifacts (e.g. results/2D/)
+results/                           Committed evidence artifacts (results/2D/, results/3/, results/4/)
 docs/                              Project documentation (roadmaps, memos, tasks, decisions, experiments)
 ```
 
 ## Immediate Next Steps
 
-**Phase 3 closed** (negative on accuracy) and **M1.6** (waiver-hook fix)
-landed. **Phase 4 (`4A`) is kicked off and decomposed.** Execution order:
+**Phase 4 (`4A`) closed POSITIVE (2026-06-20):** the RBF-prior gaussian
+residual hybrid is adopted as the production accuracy surface (first predictor
+to statistically significantly beat RBF; [ADR 0010](docs/decisions/0010_rbf_prior_residual_hybrid.md)
+Implemented). All epics through Phase 4 are `done`; **no phase is currently
+in flight.** The deferred follow-ups below are backlog placeholders only — none
+are decomposed or gated, and a Phase 5 (if opened) would start here:
 
-| Step | Mode | Trigger condition |
+| Follow-up | Mode | Notes |
 |---|---|---|
-| `4A.1` Decompose Phase 4A | Plan | `in_review` — promote → `done` |
-| **`4A.2` Residual-target builder + `target_mode` flag** | **Implement** | **NEXT — local, CPU; builder + loader flag + tests; no full build/train** |
-| `4A.3` Build full residual dataset on OTM | Implement | After 4A.2. Remote CPU pod. |
-| `4A.4` / `4A.5` Train residual hybrid + ensemble | Implement | After 4A.3. **Remote GPU — gated on operator Pod go-ahead.** |
-| `4A.6`–`4A.8` Calibrate → eval (+CI) → close | Implement | After training; 4A.7 adjudicates the bar, 4A.8 closes. |
-| `2E` Phase 2 follow-ups (dormant) | — | Optional housekeeping: close or park (2E.2 done, 2E.3 cancelled). |
+| Calibrator re-fit on `iv_clean` | Implement | Tighten the conservative coverage side (hybrid over-covers iv_clean at 0.962; iv_true coverage 0.9181 is in-band). Local, CPU. |
+| No-arb flag-count audit on the hybrid checkpoint | Implement | Confirm forbidden-flag behavior tracks RBF's; needs the released-pod checkpoint. Deferred per the 4A.7 spec. |
+| All-11-OTM-variant robustness study | Plan → Implement | Every Phase 3/4 number is scoped to the matched `random40_noiselow_otm` substrate only; the broader sweep stays deferred. |
+| Region-gated / multiplicative residual variants | Plan | ADR 0010 alternatives — only if a larger accuracy margin is wanted. |
 
-Carried Phase 2 / 2E follow-ups (lower priority, do not gate Phase 3):
+Carried Phase 2 / 2E follow-ups (dormant, lower priority):
 
 - Re-tune `configs/decision_layer.yaml` operating point (current
   `max_relative_width = 0.5` is tighter than the calibrated Gaussian
@@ -303,8 +313,7 @@ Carried Phase 2 / 2E follow-ups (lower priority, do not gate Phase 3):
   and noise regimes (current evidence is `random40_noiselow` only).
 - Conformal calibration under the chronological split under-covers by
   ≈ 4.3 pp due to exchangeability violation — document or address.
-- Story 2E.3 `latent_dim` sweep (validates the 2E.2 finding; not on
-  Phase 3 critical path).
+- Story 2E.3 `latent_dim` sweep (validates the 2E.2 finding; dormant).
 
 ## Security Note
 

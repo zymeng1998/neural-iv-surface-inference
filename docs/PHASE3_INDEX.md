@@ -124,7 +124,7 @@ last_updated_at: 2026-06-16T00:00:00-04:00
 | 3D.2 | Story | Local: `scripts/generate_phase3_results_notebook.py` generator scaffold + smoke test — implemented (19-cell build, 5 tests green) | `done` | [`3D.2`](tasks/specs/3D.2_phase3_notebook_generator.md) | 2026-06-16 |
 | 3D.3 | Story | Local: `docs/phase3_result_memo.md` — verdict vs RBF + vs 2D, dirty + clean-OTM restatement, §5 map — negative verdict (+61% best head; bar NOT met) | `done` | [`3D.3`](tasks/specs/3D.3_phase3_result_memo.md) | 2026-06-16 |
 | 3D.4 | Story | Local: emit `notebooks/06_phase3_results.ipynb` (executed, 0 cell errors), finalize ADR 0009 (Accepted/Implemented), journal close-out, flip epic 3D done + Phase 4 placeholder | `done` | [`3D.4`](tasks/specs/3D.4_phase3_notebook_adr_journal_close.md) | 2026-06-16 |
-| 4A | Epic | **Phase 4 — RBF-prior hybrid / residual neural model** (per ADR 0004 / 0009) — backlog placeholder; not decomposed | `backlog` | [`ADR 0009`](decisions/0009_phase3_production_predictor_selection.md) | 2026-06-16 |
+| 4A | Epic | **Phase 4 — RBF-prior hybrid / residual neural model** (per ADR 0004 / 0009 / 0010) — **since CLOSED POSITIVE 2026-06-20: hybrid beats RBF, adopted as production; see [`PHASE4_INDEX.md`](PHASE4_INDEX.md)** | `done` | [`ADR 0010`](decisions/0010_rbf_prior_residual_hybrid.md) | 2026-06-20 |
 
 ## Parallel-safety matrix
 

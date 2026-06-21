@@ -1,4 +1,4 @@
-# STATUS — Phase 4 CLOSED POSITIVE (epic 4A done); 4A.8 ready to push
+# STATUS — Phase 4 CLOSED POSITIVE (epic 4A done); 4A.8 pushed
 
 **Updated:** 2026-06-20
 **Branch:** main
@@ -12,9 +12,11 @@ clean OTM substrate. Epic 4A (4A.1–4A.8) is `done`; ADR 0010 is Implemented.
 
 ## Where things stand
 
-- origin/main is at **cf30a7c** (4A.7 pushed + promoted to `done`).
-- **4A.8 (Phase 4 close) is done locally, NOT yet committed/pushed** — awaiting
-  operator review, then commit + push.
+- origin/main is at **8cff7d5** — 4A.7 pushed + promoted (`cf30a7c`) and the
+  **4A.8 Phase 4 close is committed + PUSHED** (`8cff7d5`).
+- All gates passed at push (PMR / scope / dep / provenance / no-overclaim),
+  zero-waiver. Working tree clean apart from this STATUS note.
+- **No open Phase 4 work.** Phase 4 is fully closed.
 
 ## 4A.8 deliverables (this session, uncommitted)
 
