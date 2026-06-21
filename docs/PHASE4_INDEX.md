@@ -34,12 +34,12 @@ last_updated_at: 2026-06-20T17:00:00-04:00
   neural-based predictor to beat RBF here. Reliability holds in direction
   (hi-conf < no-abstention); coverage is conservative (over-covers iv_clean
   — a calibrator-refit follow-up). 4A.8 writes the close + ADR 0010 Outcome.
-- **Status:** epic 4A `in_progress`; 4A.1–4A.6 `done`; **4A.7 `in_review`
-  (accuracy bar MET)**; 4A.8 `backlog`. Accuracy win: 4A.4 gaussian (0.006006,
+- **Status:** epic 4A `in_progress`; 4A.1–4A.7 `done` (**4A.7 accuracy bar
+  MET**); 4A.8 `in_progress`. Accuracy win: 4A.4 gaussian (0.006006,
   production head) / quantile (0.005906) below the RBF floor 0.006132; 4A.7's
   bootstrap CI confirms the gaussian gain is significant. **Next action:
-  promote 4A.7 → `done`, then 4A.8** (Phase 4 close + ADR 0010 Outcome).
-  GPU runs are all complete; 4A.8 is local.
+  4A.8** (Phase 4 close + ADR 0010 Outcome). GPU runs are all complete;
+  4A.8 is local.
 
 ## Live status (sync with BOARD.md)
 
@@ -52,7 +52,7 @@ last_updated_at: 2026-06-20T17:00:00-04:00
 | 4A.4 | Story | Train residual hybrid, 3 heads (remote GPU) — **hybrid BEATS RBF (gaussian/quantile below floor; point ties)** | `done` |
 | 4A.5 | Story | K=5 residual ensemble (remote GPU) — ties RBF (0.006141); disagreement 0.000209 | `done` |
 | 4A.6 | Story | Calibrator re-fit on hybrid val (local) — fitted; test coverage 0.9181 | `done` |
-| 4A.7 | Story | Decision-layer + bootstrap CI vs RBF (the bar) — **MET: hybrid significantly beats RBF (95% CI [−0.000144,−0.000106])** | `in_review` |
+| 4A.7 | Story | Decision-layer + bootstrap CI vs RBF (the bar) — **MET: hybrid significantly beats RBF (95% CI [−0.000144,−0.000106])** | `done` |
 | 4A.8 | Story | Comparison + closing memo + ADR 0010 Outcome | `backlog` |
 
 Chain: `4A.1 → 4A.2 → 4A.3 → 4A.4 → 4A.5 → 4A.6 → 4A.7 → 4A.8`. 4A.4+4A.5
@@ -88,7 +88,7 @@ share one Pod-GPU window; 4A.3 is a CPU pre-step.
   green. Prediction CSVs pulled local (gitignored) from a fresh
   volume-mounted pod (213.173.110.22) after the prior pod was terminated —
   **4A.7/4A.8 now run fully locally, no pod needed.**
-- **4A.7 — executed (`in_review`, 2026-06-20). PHASE 4 ACCURACY BAR MET.**
+- **4A.7 — executed (`done`, 2026-06-20). PHASE 4 ACCURACY BAR MET.**
   Date-clustered bootstrap CI: gaussian hybrid 0.006006 vs RBF 0.006132,
   Δ −0.000126, **95% CI [−0.000144, −0.000106]** (entirely < 0) →
   significantly more accurate than RBF (first neural-based predictor to do
@@ -97,5 +97,5 @@ share one Pod-GPU window; 4A.3 is a CPU pre-step.
   (conservative/over-covers — calibrator-refit-on-iv_clean follow-up). Flag
   count needs the model (deferred). Computed fully local from cached
   predictions.
-- **4A.8** — registered (`backlog`); local. Phase 4 closing memo + ADR 0010
-  Outcome + production recommendation.
+- **4A.8** — in progress (`in_progress`, 2026-06-20); local. Phase 4 closing
+  memo + ADR 0010 Outcome + production recommendation; flips epic 4A `done`.
