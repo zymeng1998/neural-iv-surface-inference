@@ -5440,3 +5440,31 @@ hi-conf MAE 0.004710 < no-abstention 0.006006; width 0.0328 (< 3X.12's
   the wing-collapse OOD ambiguity, or (b) accept the ambiguous-leaning-negative
   read, mark 4B.7 `cancelled`, and go straight to **4B.6** (Phase 4B close +
   ADR 0011 Outcome) → pivot to Phase 5 reliability-first.
+
+## 2026-06-21 (update 7) — 4B.6: Phase 4B closed; accuracy retired; epic 4B done
+
+### What was completed
+
+- Promoted 4B.5 → `done` (committed `18b9f5d`, pushed).
+- **Operator decision:** declined 4B.7 (GPU fair retrain) → chose 4B.6 close +
+  pivot. **4B.7 `cancelled`.**
+- **4B.6 (docs-only close):** filled ADR 0011 §Outcome + Status (verdict
+  `ambiguous` → accuracy retired on this substrate); added roadmap §7 close
+  block; rewrote README Next Direction (4B closed → Phase 5 reliability-first
+  primary); appended journal close. **Flipped epic 4B → `done`** (4B.1–4B.6
+  `done`, 4B.7 `cancelled`).
+
+### Result
+
+- Phase 4B verdict: the RBF-prior hybrid's relative edge over RBF does **not**
+  survive realistic sparsity (collapses to 0.3–0.5 % under wing/maturity stress;
+  grows only to ~4 % under benign thinning). Accuracy retired as the primary
+  forward story; **ADR 0010 unchanged** (hybrid stays the adopted estimator).
+- Reliability collapse (coverage 0.96→0.35 under sparsity) makes **Phase 5A**
+  reliability-first the primary contribution.
+
+### Next actions
+
+- Enter **Phase 5A** (reliability-first surface inference / quote-risk layer) —
+  see `docs/roadmaps/phase5_reliability_first_surface_inference.md` and the
+  `5A.1` decomposition spec. No pod needed to start. Phase 4 / 4B are closed.

@@ -112,3 +112,37 @@ joint stress (operator-requested) — all share the 4B.2–4B.5 chain.
 - [ADR 0011](../decisions/0011_forward_strategy_accuracy_reliability_pricing.md)
   — forward strategy + the 4B accuracy-survival gate. The 4B Outcome feeds
   ADR 0011's Outcome block.
+
+## 7) Close (2026-06-21) — verdict `ambiguous`; accuracy retired; pivot to Phase 5
+
+Phase 4B executed the staged eval-first diagnostic (4B.2–4B.5) and closed.
+Full result + provenance: story 4B.5 and
+`results/4/spy_phase1_random40_noiselow_otm/4b_sweep/`
+(`trajectory.csv`, `trajectory_wide.md`, `gate_verdict.json`).
+
+**Relative edge `(RBF − hybrid)/RBF` (overall test MAE; all deltas significant
+by date-clustered 95 % bootstrap CI):**
+
+| regime | r0 dense | r1 | r2 | r3 | r4 sparse |
+|---|---|---|---|---|---|
+| fewer_quotes | +2.05 % | +2.61 % | +3.18 % | +3.80 % | **+4.32 %** |
+| missing_maturities | +2.05 % | +2.73 % | +3.10 % | +2.49 % | +1.56 % |
+| thin_wings | +2.05 % | +0.77 % | +0.16 % | +0.11 % | **+0.31 %** |
+| combined_quotes_wings | +2.05 % | +0.96 % | +0.30 % | +0.26 % | **+0.46 %** |
+
+- The hybrid's **relative** edge over RBF **does not survive** the wing /
+  maturity stresses (it collapses to 0.3–0.5 %); it grows only under benign
+  random thinning, and only to ~4 % (sub-5 % survive bar).
+- Verdict `ambiguous` (pre-registered rule, 4B.5): a trend exists but the
+  wing-sensitive regimes don't clear the bar, and the wing collapse is confounded
+  by an eval-time OOD caveat (full-context checkpoint on wing-less context).
+- **4B.7 declined** (`cancelled`): the fair-retrain upside is economically
+  marginal (~2–4 % relative on a ×14-inflated base). → **accuracy retired on
+  this substrate**; the RBF-prior hybrid stays the adopted estimator (ADR 0010
+  unchanged).
+- **Reliability collapse (secondary):** dense-calibrated 90 % coverage falls
+  0.962 → 0.35–0.39 (wing regimes) — reliability degrades faster than accuracy,
+  making **Phase 5 reliability-first** the primary forward contribution.
+
+Outcome recorded in [ADR 0011 §Outcome](../decisions/0011_forward_strategy_accuracy_reliability_pricing.md).
+Epic 4B `done`; child stories 4B.1–4B.6 `done`, 4B.7 `cancelled`.

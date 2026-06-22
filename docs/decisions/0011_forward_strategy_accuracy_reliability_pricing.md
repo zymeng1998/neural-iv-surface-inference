@@ -2,12 +2,14 @@
 
 ## Status
 
-**Accepted (2026-06-21).** Forward-strategy decision taken at the Phase 4
-close. Sets the staged direction for Phase 4B, Phase 5, and Phase 6 and the
-**decision gate** (Phase 4B) that governs whether raw accuracy remains a core
-project story. No implementation has run against this ADR yet; 4B/5A/6A are
-**planned**, not executed. The Outcome block is a placeholder to be filled
-when Phase 4B closes.
+**Accepted (2026-06-21); Phase 4B gate resolved (2026-06-21).** Forward-strategy
+decision taken at the Phase 4 close. Sets the staged direction for Phase 4B,
+Phase 5, and Phase 6 and the **decision gate** (Phase 4B) that governs whether
+raw accuracy remains a core project story. **Phase 4B has now executed and
+closed** — the gate returned `ambiguous`, the conditional 4B.7 fair-retrain
+escalation was **declined** on economic grounds, and the accuracy story is
+**retired on this substrate**; the forward direction pivots to **Phase 5
+reliability-first**. See the **Outcome** block below.
 
 > This ADR does not reopen or revise the Phase 4 verdict
 > ([ADR 0010](0010_rbf_prior_residual_hybrid.md), Implemented). It decides
@@ -168,9 +170,55 @@ pricing stack held fixed / stubbed and clearly labeled as such.
 - The FCN payoff variant, fixed-input assumptions, and quote cross-check
   protocol for the Phase 6 demo — fixed by `6A.1`.
 
-## Outcome (to be filled when Phase 4B closes)
+## Outcome (Phase 4B closed, 2026-06-21)
 
-_Pending._ Phase 4B will record whether the accuracy story survives (edge
-grows under sparsity → accuracy remains core) or is retired (edge stays
-~0–2 % → pivot fully to reliability). This block, ADR status, and the
-downstream roadmap emphasis are updated on that close.
+**Gate verdict: `ambiguous` → escalation declined → accuracy retired on this
+substrate. Forward direction pivots to Phase 5 reliability-first.**
+
+Phase 4B ran the staged eval-first diagnostic (4B.2–4B.5): a fixed-query /
+shrinking-context sparsity sweep over four regimes (`fewer_quotes`,
+`thin_wings`, `missing_maturities`, `combined_quotes_wings`) × five rungs
+(intensity 0→0.8), comparing RBF vs the 4A RBF-prior hybrid on the
+`random40_noiselow_otm` test split (694 dates, 2.769 M rows). Source:
+`results/4/spy_phase1_random40_noiselow_otm/4b_sweep/gate_verdict.json` +
+`trajectory.csv` (story 4B.5).
+
+**What the trajectory showed (relative edge `(RBF − hybrid)/RBF`, overall test
+MAE; every delta significant by date-clustered 95 % bootstrap CI):**
+
+- `fewer_quotes` (benign random thinning): edge **grows** 2.05 → 4.32 %, but
+  never reaches the pre-registered 5 % "material survival" bar.
+- `missing_maturities`: peaks ~3.1 % mid-ladder, falls to 1.56 % at the sparsest.
+- `thin_wings`: **collapses** 2.05 → 0.31 %.
+- `combined_quotes_wings`: **collapses** 2.05 → 0.46 %.
+
+The hybrid's relative edge over RBF **does not survive the sparsity stresses
+that matter** (thinned wings, dropped maturities); it grows only under benign
+random thinning. Under the pre-registered rule this is `ambiguous` rather than a
+clean `retired`, because (a) `fewer_quotes` exceeds the 2 % dense band, and
+(b) the wing collapse is **confounded by an eval-time OOD caveat** — the 4A
+checkpoint was trained on full context and scored here on wing-less / maturity-
+less context it never saw. Only a fair per-regime retrain (the conditional
+**4B.7**, GPU) could disambiguate a fundamental ceiling from that artifact.
+
+**Escalation decision:** 4B.7 was **declined** (`cancelled`). Even under the most
+favourable fair-retrain scenario the upside is economically marginal — a few-%
+relative edge on wing/maturity errors that are themselves ×14 inflated, plus a
+sub-5 % edge in the one benign regime. The expected value of the GPU spend does
+not justify chasing it.
+
+**Therefore the accuracy story is retired on this substrate.** This does **not**
+revise [ADR 0010](0010_rbf_prior_residual_hybrid.md): the RBF-prior gaussian
+hybrid remains the **adopted production estimator** (it is at worst tied with RBF
+and modestly better everywhere). "Retired" means raw reconstruction accuracy is
+no longer a *primary forward contribution* on this benchmark — not that the
+hybrid is worthless.
+
+**Reinforcing signal → Phase 5.** A secondary, non-gating read found the
+dense-calibrated 90 % band's coverage **collapses** under sparsity (0.962 →
+0.35–0.39 for the wing regimes): **reliability degrades faster than accuracy.**
+This independently makes the **Phase 5 reliability-first / quote-risk** layer
+(calibrated uncertainty, abstention, per-regime recalibration, no-arb/risk
+flags) the project's primary forward contribution. Phase 6 (structured-product
+pricing demo) remains the downstream monetization framing. Epic 4B is `done`;
+4B.7 is `cancelled`.

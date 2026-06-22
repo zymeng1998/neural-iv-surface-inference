@@ -2630,3 +2630,38 @@ Phase 5 reliability-first / per-regime-recalibration direction regardless of the
   close / ADR Outcome (4B.6). Thresholds were frozen before the trajectory.
 
 ---
+
+## 4B.6 — Phase 4B close: accuracy retired on this substrate; pivot to Phase 5 (2026-06-21)
+
+### Decision
+
+- 4B.5 returned `accuracy_survives = ambiguous`. The operator **declined** the
+  conditional 4B.7 fair-retrain escalation on economic grounds (the upside —
+  ~2–4 % relative edge on a ×14-inflated wing base — does not justify the GPU
+  spend). Phase 4B therefore closes with the **accuracy story retired on this
+  substrate**; the forward direction pivots to **Phase 5 reliability-first**.
+
+### What this does / does not change
+
+- **Does not** revise ADR 0010: the RBF-prior gaussian hybrid remains the adopted
+  production estimator (at worst tied with RBF, modestly better everywhere).
+  "Retired" = raw reconstruction accuracy is no longer the *primary forward
+  story* on this benchmark, not that the hybrid is discarded.
+- **Reinforces Phase 5:** the 4B.5 secondary finding (dense-calibrated coverage
+  collapses 0.962 → 0.35–0.39 under wing sparsity) shows reliability degrades
+  faster than accuracy — Phase 5A (calibrated uncertainty, abstention, per-regime
+  recalibration, quote-risk) becomes the project's main contribution.
+
+### Artifacts (docs-only close)
+
+- ADR 0011 §Outcome filled + Status updated; `phase4b_sparsity_sweep.md` §7
+  close block; README Next Direction rewritten (4B closed → Phase 5 primary);
+  BOARD: epic 4B `done`, 4B.6 `done`, 4B.7 `cancelled`. No code / data / model
+  touched. Every claim traces to `results/4/.../4b_sweep/` (4B.5).
+
+### Epic 4B — final status
+
+`done`. Children: 4B.1–4B.6 `done`; 4B.7 `cancelled`. Verdict: accuracy retired
+on the `random40_noiselow_otm` substrate; reliability-first is the forward story.
+
+---

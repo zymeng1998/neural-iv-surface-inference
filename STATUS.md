@@ -1,8 +1,8 @@
-# STATUS — Phase 4 closed; 4B.5 gate = AMBIGUOUS; operator decides 4B.7 vs 4B.6
+# STATUS — Phase 4B CLOSED (accuracy retired); next: Phase 5A reliability-first
 
-**Updated:** 2026-06-21
+**Updated:** 2026-06-22
 **Branch:** main
-**Mode:** local CPU. Docs/planning only — no GPU, no data/code/config/test edits.
+**Mode:** Phase 4B closed. Next work (Phase 5A) is local CPU; no pod required.
 
 ## Headline
 
@@ -10,56 +10,51 @@ Phase 4 is **closed positive** (epic 4A `done`; RBF-prior gaussian hybrid is
 the adopted production estimator; ADR 0010 Implemented). The win over RBF is
 **statistically real but economically small** (≈ 2 % relative MAE on the dense
 clean OTM benchmark), so the project will **not** keep grinding that benchmark.
-The forward direction is staged and recorded in
+The forward direction is recorded in
 [ADR 0011](docs/decisions/0011_forward_strategy_accuracy_reliability_pricing.md)
-(**Accepted**):
+(**Accepted; 4B gate resolved**):
 
-- **`4B` — sparsity-sweep diagnostic (the decision gate).** RBF vs hybrid over
-  increasing sparsity / thin wings / missing maturities. Edge grows under
-  sparsity ⇒ accuracy story lives; stays ~0–2 % ⇒ pivot fully to reliability.
-- **`5A` — reliability-first surface inference / quote-risk layer.** Primary
-  contribution if 4B is negative; worth building regardless.
+- **`4B` — sparsity-sweep diagnostic (the decision gate). ✅ CLOSED 2026-06-21.**
+  Verdict `ambiguous` → accuracy **retired on this substrate** (relative edge
+  collapses under wing/maturity sparsity; grows only mildly under benign
+  thinning). 4B.7 fair-retrain **declined**. Hybrid stays adopted (ADR 0010).
+- **`5A` — reliability-first surface inference / quote-risk layer. ← NOW PRIMARY.**
+  The 4B coverage collapse (0.96→0.35 under sparsity) makes this the main story.
 - **`6A` — structured-product pricing / FCN monetization demo.** Sell-side
-  framing; constrained demo, not a full FCN pricer.
+  framing; constrained demo, not a full FCN pricer. Downstream of 5A.
 
 ## Where things stand
 
-- Forward-strategy planning pass committed to the working tree: ADR 0011 +
-  three roadmaps (`phase4b_sparsity_sweep`, `phase5_reliability_first_*`,
-  `phase6_structured_product_pricing`) + decomposition specs `4B.1 / 5A.1 /
-  6A.1` (all `backlog`) + BOARD rows `4B / 4B.1 / 5A / 5A.1 / 6A / 6A.1` +
-  README Next Direction + progress_log entry.
-- PMR gate dry-run: **PASS** (0 evidence-source files; docs-only).
-- No experiment was run; the Phase 4A result is unchanged.
+- **Phase 4B fully closed** (epic 4B `done`; 4B.1–4B.6 `done`; 4B.7 `cancelled`).
+  ADR 0011 §Outcome filled; roadmap §7 close; README pivoted to Phase 5A.
+- Phase 4A result unchanged; RBF-prior hybrid remains the adopted estimator.
+- Next phase: **5A** (reliability-first) — decomposition spec `5A.1` is the entry
+  (`backlog`); roadmap `docs/roadmaps/phase5_reliability_first_surface_inference.md`.
 
-## Current task — 4B.5 done (gate = AMBIGUOUS); operator decides 4B.7 vs 4B.6
+## Current task — Phase 4B CLOSED (4B.6 done); next Phase 5A
 
-**4B.1**→**4B.2**→**4B.3**→**4B.4**→**4B.5** all `done`. Epic 4B `in_progress`.
-**4B.5** (decision-bearing, local) computed the edge-vs-sparsity trajectory +
-date-clustered bootstrap CIs + ADR 0011 gate verdict.
+**Epic 4B `done`.** 4B.1–4B.6 `done`; **4B.7 `cancelled`** (operator declined the
+GPU fair-retrain escalation on economic grounds). 4B.5 gate returned
+`ambiguous`; 4B.6 closed the phase with **accuracy retired on this substrate**.
 
-### Gate verdict: `accuracy_survives = ambiguous` → triggers 4B.7
+### Phase 4B verdict (final)
 
-- Relative edge (RBF−hybrid)/RBF, overall MAE: `fewer_quotes` grows 2.05→4.32 %
-  (sub-5 % bar); `missing_maturities` 2.05→1.56 % (peaks ~3 %); `thin_wings`
-  collapses 2.05→0.31 %; `combined` collapses 2.05→0.46 %. **All deltas
-  significant**, but the relative edge does **not** survive the wing/maturity
-  stresses — it grows only under benign random thinning.
-- Wing collapse is confounded by the **eval-time OOD caveat** (full-context
-  checkpoint scored on wing-less context); only a fair retrain (4B.7) can
-  disambiguate → rule lands on `ambiguous`.
-- Secondary: calibrated coverage collapses 0.962 → 0.35–0.39 (wings) — Phase 5
-  reliability motivation.
-- Dense provenance exact (rbf 0.006132 / hybrid 0.006006 / Δ −0.000126 / CI
-  [−1.44e-4,−1.06e-4] all == 4A.7).
-- Artifacts: `results/4/spy_phase1_random40_noiselow_otm/4b_sweep/{trajectory.csv,
-  trajectory_wide.md, gate_verdict.json}` + `artifacts/runs/4B5/manifest.json`.
+- The RBF-prior hybrid's **relative** edge over RBF does **not** survive realistic
+  sparsity: collapses to 0.3–0.5 % under wing/maturity stress; grows only to
+  ~4 % under benign random thinning (sub-5 % bar). All deltas significant; dense
+  ties 4A exactly.
+- **ADR 0010 unchanged** — the hybrid stays the adopted estimator. "Retired" =
+  accuracy is no longer the primary forward *story*, not that the hybrid is
+  discarded.
+- Secondary: calibrated coverage collapses 0.962 → 0.35–0.39 under wing sparsity
+  → reliability degrades faster than accuracy → **Phase 5A is now primary**.
+- Recorded in ADR 0011 §Outcome, roadmap §7, README, journal. Artifacts:
+  `results/4/spy_phase1_random40_noiselow_otm/4b_sweep/`.
 
 ### Pod status
 
-**Pod terminable now.** 4B.7 (if chosen) needs a **GPU** pod (per-regime retrain),
-not this CPU pod — so terminate the current pod regardless; rent GPU only if you
-choose 4B.7. Old pod: `213.173.111.74:34574`, key `~/.ssh/id_ed25519_runpod`.
+**No pod needed.** The current CPU pod is fully terminable (all 4B remote work is
+done and pulled local; 4B.7 cancelled). Phase 5A starts local.
 
 Spec: [`docs/tasks/specs/4B.1_decompose_phase_4b.md`](docs/tasks/specs/4B.1_decompose_phase_4b.md).
 Roadmap: [`docs/roadmaps/phase4b_sparsity_sweep.md`](docs/roadmaps/phase4b_sparsity_sweep.md).
@@ -75,25 +70,19 @@ Roadmap: [`docs/roadmaps/phase4b_sparsity_sweep.md`](docs/roadmaps/phase4b_spars
 3. **Gate threshold** pre-registered inside 4B.5 before the trajectory is
    computed.
 
-## Child stories authored (all `backlog`)
+## Phase 4B chain (final)
 
-`4B.2` harness+tests (local CPU) → `4B.3` build swept inputs (remote CPU) →
-`4B.4` hybrid forward sweep (remote; needs the 4A checkpoint volume) → `4B.5`
-trajectory + CIs + **gate verdict** (local CPU) → `4B.6` close + ADR 0011
-Outcome (local CPU). `4B.7` per-regime retrain is **conditional** off 4B.5
-(`ambiguous` → run; else `cancelled`) — no Pod spend unless triggered.
+`4B.1` decompose → `4B.2` harness → `4B.3` swept RBF (remote) → `4B.4` hybrid
+forward (remote) → `4B.5` trajectory + gate (`ambiguous`) → `4B.6` close — all
+`done`. `4B.7` per-regime retrain **`cancelled`** (operator declined the GPU
+escalation). Epic 4B `done`.
 
-## Next concrete action — operator decision (GPU spend)
+## Next concrete action — enter Phase 5A (reliability-first)
 
-The gate is `ambiguous`. Two principled paths (the gate is informational; the
-GPU spend is the operator's call):
-
-- **(a) Run 4B.7** (remote **GPU**, conditional escalation): per-regime fair
-  retrain to test whether the wing-collapse is a fundamental ceiling or just the
-  eval-time OOD artifact. Resolves the ambiguity; costs a GPU pod.
-- **(b) Cancel 4B.7, go to 4B.6** (local close): accept the
-  ambiguous-leaning-negative read (relative edge doesn't survive the stresses
-  that matter; even a fair retrain's upside looks economically marginal at ~2–4 %
-  on a ×14-inflated base), mark 4B.7 `cancelled`, write the Phase 4B close +
-  ADR 0011 Outcome, and pivot to **Phase 5 reliability-first** (which the
-  coverage collapse independently motivates).
+- Phase 4 and 4B are closed. Begin **Phase 5A**: the reliability-first surface
+  inference / quote-risk layer (calibrated uncertainty, abstention, surface
+  confidence, **per-regime recalibration** — directly motivated by the 4B
+  coverage collapse — no-arb/risk flags, quote/no-quote logic). Entry is the
+  `5A.1` decomposition spec (`docs/tasks/specs/5A.1_decompose_phase_5a.md`) +
+  roadmap `docs/roadmaps/phase5_reliability_first_surface_inference.md`. Starts
+  local; no pod required. Next step is to decompose 5A into atomic stories.
