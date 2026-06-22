@@ -1,7 +1,9 @@
 {
-  "story": "4B.5",
-  "accuracy_survives": "ambiguous",
-  "reason": "a trend is present (relative edge exceeds the 2% dense band in at least one regime) but the wing-sensitive regimes do not clear the >=5% survive bar; the eval-time fairness caveat (full-context checkpoint scored on thinner, partly OOD context) clouds the wing read -> trigger the conditional fair-retrain escalation 4B.7.",
+  "story": "4B.7 (resolves 4B.5)",
+  "accuracy_survives": "true",
+  "reason": "wing-sensitive regimes show a growing, significant, >=5% relative edge at the sparse end \u2014 accuracy survives sparsity.",
+  "resolved_by": "full fair per-(regime,rung) retrain (4B.7); eval-time read was confounded by OOD",
+  "eval_time_verdict": "ambiguous",
   "preregistered_rule": {
     "text": "survives: for every wing-sensitive regime {thin_wings, combined_quotes_wings} the relative edge INCREASES dense->sparse by >= EDGE_GROWTH_MIN_PP, the sparse-end 95% CI is entirely < 0, and the sparse-end relative edge >= REL_EDGE_SURVIVE_PCT. retired: the relative edge stays within the dense band (<= REL_EDGE_DENSE_BAND_PCT) across ALL regimes x rungs (no material growth anywhere). ambiguous: anything else (trend present but below the survive bar, or CIs do not separate, or the eval-time fairness caveat clouds the wing read) -> triggers the conditional retrain escalation 4B.7.",
     "rel_edge_dense_band_pct": 2.0,
@@ -12,53 +14,40 @@
       "combined_quotes_wings"
     ]
   },
-  "per_regime": {
+  "per_regime_fair": {
     "fewer_quotes": {
       "edge_dense_pct": 2.0490163919793334,
-      "edge_sparse_pct": 4.318301159845854,
-      "grows": true,
-      "sparse_significant": true,
+      "edge_sparse_pct": 0.06527741733025613,
+      "grows": false,
+      "sparse_significant": false,
       "sparse_material": false,
-      "max_edge_pct": 4.318301159845854
+      "max_edge_pct": 2.792297837032017
     },
     "thin_wings": {
       "edge_dense_pct": 2.0490163919793334,
-      "edge_sparse_pct": 0.30937882957797874,
-      "grows": false,
+      "edge_sparse_pct": 16.565867912461414,
+      "grows": true,
       "sparse_significant": true,
-      "sparse_material": false,
-      "max_edge_pct": 2.0490163919793334
+      "sparse_material": true,
+      "max_edge_pct": 16.565867912461414
     },
     "missing_maturities": {
       "edge_dense_pct": 2.0490163919793334,
-      "edge_sparse_pct": 1.558454925869665,
-      "grows": false,
+      "edge_sparse_pct": 37.06902159105978,
+      "grows": true,
       "sparse_significant": true,
-      "sparse_material": false,
-      "max_edge_pct": 3.1012982112995697
+      "sparse_material": true,
+      "max_edge_pct": 37.06902159105978
     },
     "combined_quotes_wings": {
       "edge_dense_pct": 2.0490163919793334,
-      "edge_sparse_pct": 0.46364827571831974,
-      "grows": false,
+      "edge_sparse_pct": 15.99288541398723,
+      "grows": true,
       "sparse_significant": true,
-      "sparse_material": false,
-      "max_edge_pct": 2.0490163919793334
+      "sparse_material": true,
+      "max_edge_pct": 15.99288541398723
     }
   },
-  "dense_provenance": {
-    "dense_rbf_mae": 0.006131847058698476,
-    "dense_hybrid_mae": 0.0060062045073346415,
-    "dense_abs_delta": -0.0001256425513638344,
-    "rbf_floor_ref": 0.006131847035635011,
-    "hybrid_floor_ref": 0.006006201729178429,
-    "delta_4a7_ref": -0.00012564530645658208,
-    "rbf_matches": true,
-    "hybrid_matches": true,
-    "delta_matches_4a7": true
-  },
-  "fairness_caveat": "eval-time only: a full-context-trained checkpoint is scored on thinner, partly-OOD context; a fair per-regime retrain is 4B.7 (fired iff verdict == ambiguous).",
-  "triggers_4b7": true,
-  "n_boot": 2000,
-  "seed": 0
+  "fairness_note": "each cell trains a separate model on that regime\u00d7rung's sparse context \u2014 demonstrates the architecture CAN exploit structured sparsity when trained for it; a single mixed-sparsity model is the production-realistic follow-up.",
+  "n_cells": 16
 }

@@ -169,6 +169,87 @@ def run_cell(df_all, regime, intensity, *, cond_cfg, batch_size, mask_seed,
     }
 
 
+# Dense-rung anchor (intensity 0 = 4A.4 full-context; not retrained). Relative
+# edge and significance come from 4B.5 (== the committed 4A.7 read).
+DENSE_REL_EDGE_PCT = 2.0490163919793334
+_INTENSITY_TO_RUNG = {0.2: 1, 0.4: 2, 0.6: 3, 0.8: 4}
+
+
+def _aggregate(outdir: Path, results_dir: Path) -> int:
+    """Assemble the fair trajectory from cell JSONs and resolve the gate verdict
+    with the frozen 4B.5 rule (imported, so the rule is byte-identical)."""
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+    import run_4b5_trajectory as r5  # noqa: E402
+
+    cell_files = sorted((outdir / "cells").glob("*.json"))
+    cells = [json.loads(p.read_text()) for p in cell_files]
+    rows = []
+    regimes = sorted({c["regime"] for c in cells})
+    for regime in regimes:
+        rows.append({"regime": regime, "rung_index": 0, "intensity": 0.0,
+                     "rel_edge_pct": DENSE_REL_EDGE_PCT, "significant": True,
+                     "rbf_mae": r5.RBF_FLOOR, "hybrid_fair_mae": r5.HYBRID_FLOOR,
+                     "ci_low": float("nan"), "ci_high": float("nan")})
+        for c in (c for c in cells if c["regime"] == regime):
+            rows.append({"regime": regime,
+                         "rung_index": _INTENSITY_TO_RUNG[round(c["intensity"], 1)],
+                         "intensity": c["intensity"], "rel_edge_pct": c["rel_edge_pct"],
+                         "significant": c["significant"], "rbf_mae": c["rbf_mae"],
+                         "hybrid_fair_mae": c["hybrid_fair_mae"],
+                         "ci_low": c["ci_low"], "ci_high": c["ci_high"]})
+    traj = pd.DataFrame(rows).sort_values(["regime", "rung_index"]).reset_index(drop=True)
+
+    verdict, reason, per_regime = r5.adjudicate(traj)
+
+    results_dir.mkdir(parents=True, exist_ok=True)
+    traj.to_csv(results_dir / "fair_trajectory.csv", index=False)
+
+    # eval-vs-fair comparison (read 4B.5 eval-time trajectory if present)
+    eval_path = results_dir / "trajectory.csv"
+    lines = ["# 4B.7 fair retrain — relative edge % (RBF − hybrid)/RBF vs the 4B.5 eval-time read",
+             "", "Positive = hybrid better. Rung 0 = dense (4A.4 anchor, not retrained).", ""]
+    if eval_path.exists():
+        ev = pd.read_csv(eval_path)
+        lines += ["| regime | rung | eval-time edge | **fair edge** | fair sig |",
+                  "|---|---|---|---|---|"]
+        for _, r in traj.iterrows():
+            e = ev[(ev["regime"] == r["regime"]) & (ev["rung_index"] == r["rung_index"])]
+            ev_edge = f"{e['rel_edge_pct'].iloc[0]:+.2f}%" if len(e) else "—"
+            lines.append(f"| {r['regime']} | r{int(r['rung_index'])} (i={r['intensity']:.1f}) | "
+                         f"{ev_edge} | **{r['rel_edge_pct']:+.2f}%** | {bool(r['significant'])} |")
+    lines += ["", f"**Resolved gate verdict (was `ambiguous` eval-time):** "
+              f"`accuracy_survives = {verdict}`", "", reason, ""]
+    (results_dir / "fair_trajectory_wide.md").write_text("\n".join(lines))
+
+    # update the resolved gate verdict (preserve eval-time history)
+    gv_path = results_dir / "gate_verdict.json"
+    prior = json.loads(gv_path.read_text()) if gv_path.exists() else {}
+    resolved = {
+        "story": "4B.7 (resolves 4B.5)",
+        "accuracy_survives": verdict,
+        "reason": reason,
+        "resolved_by": "full fair per-(regime,rung) retrain (4B.7); eval-time read was confounded by OOD",
+        "eval_time_verdict": prior.get("accuracy_survives", "ambiguous"),
+        "preregistered_rule": prior.get("preregistered_rule"),
+        "per_regime_fair": per_regime,
+        "fairness_note": ("each cell trains a separate model on that regime×rung's sparse "
+                          "context — demonstrates the architecture CAN exploit structured "
+                          "sparsity when trained for it; a single mixed-sparsity model is the "
+                          "production-realistic follow-up."),
+        "n_cells": len(cells),
+    }
+    gv_path.write_text(json.dumps(resolved, indent=2))
+
+    print(f"[4b7-agg] resolved verdict: accuracy_survives = {verdict}")
+    print(f"[4b7-agg] {reason}")
+    for regime in regimes:
+        s = traj[traj["regime"] == regime].sort_values("rung_index")
+        seq = ", ".join(f"{e:+.2f}%" for e in s["rel_edge_pct"])
+        print(f"  {regime:<22} [{seq}]")
+    print(f"[4b7-agg] wrote {results_dir}/fair_trajectory.csv + fair_trajectory_wide.md + gate_verdict.json")
+    return 0
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="4B.7 fair per-(regime,rung) retrain sweep.")
     ap.add_argument("--config", default=str(REPO_ROOT / "configs/conditional_4B7_retrain_gaussian_otm.yaml"))
@@ -179,7 +260,15 @@ def main(argv=None):
     ap.add_argument("--only-regime", default=None, help="Restrict to one regime (debug).")
     ap.add_argument("--only-intensity", type=float, default=None, help="Restrict to one rung (debug).")
     ap.add_argument("--max-dates", type=int, default=None, help="Smoke: first N dates per split.")
+    ap.add_argument("--aggregate", action="store_true",
+                    help="Skip training; assemble the fair trajectory from cell JSONs and "
+                         "resolve the gate verdict (reuses the frozen 4B.5 rule).")
+    ap.add_argument("--results-dir",
+                    default=str(REPO_ROOT / "results/4/spy_phase1_random40_noiselow_otm/4b_sweep"))
     args = ap.parse_args(argv)
+
+    if args.aggregate:
+        return _aggregate(Path(args.outdir), Path(args.results_dir))
 
     cfg = load_config(args.config)
     cond_cfg = dict(cfg["conditional"]); cond_cfg.setdefault("seed", cfg.get("seed", 42))

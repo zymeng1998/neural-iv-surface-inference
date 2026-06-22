@@ -1,0 +1,29 @@
+{
+  "story": "4B.7",
+  "input": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm_residual.parquet",
+  "config": "configs/conditional_4B7_retrain_gaussian_otm.yaml",
+  "regimes": [
+    "fewer_quotes",
+    "thin_wings",
+    "missing_maturities",
+    "combined_quotes_wings"
+  ],
+  "intensities": [
+    0.2,
+    0.4,
+    0.6,
+    0.8
+  ],
+  "mask_seed": 4023,
+  "n_cells": 16,
+  "wall_seconds": 22759.6,
+  "rbf_floor_ref": 0.006131847035635011,
+  "hybrid_floor_ref": 0.006006201729178429,
+  "note": "fair per-(regime,rung) retrain; dense rung = 4A.4 anchor (not retrained). Trajectory recompute + gate resolution: aggregate vs eval-time 4B.5.",
+  "versions": {
+    "python": "3.10.12",
+    "torch": "2.11.0+cu128",
+    "numpy": "2.2.6",
+    "pandas": "2.3.3"
+  }
+}

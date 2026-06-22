@@ -1,9 +1,9 @@
-# STATUS — Phase 4B REOPENED; running full fair retrain (4B.7, GPU)
+# STATUS — Phase 4B CLOSED POSITIVE (accuracy SURVIVES); next Phase 5A (parallel)
 
 **Updated:** 2026-06-22
 **Branch:** main
-**Mode:** 4B reopened — full fair retrain (4B.7) on a fresh GPU pod (16 cells).
-The 4B.6 close + ADR 0011 retired-verdict are provisional pending this.
+**Mode:** 4B fully closed (gate `true`). Next work (Phase 5A) is local; pod
+terminable.
 
 ## Headline
 
@@ -15,67 +15,58 @@ The forward direction is recorded in
 [ADR 0011](docs/decisions/0011_forward_strategy_accuracy_reliability_pricing.md)
 (**Accepted; 4B gate resolved**):
 
-- **`4B` — sparsity-sweep diagnostic (the decision gate). ✅ CLOSED 2026-06-21.**
-  Verdict `ambiguous` → accuracy **retired on this substrate** (relative edge
-  collapses under wing/maturity sparsity; grows only mildly under benign
-  thinning). 4B.7 fair-retrain **declined**. Hybrid stays adopted (ADR 0010).
-- **`5A` — reliability-first surface inference / quote-risk layer. ← NOW PRIMARY.**
-  The 4B coverage collapse (0.96→0.35 under sparsity) makes this the main story.
+- **`4B` — sparsity-sweep diagnostic (the decision gate). ✅ CLOSED POSITIVE
+  2026-06-22.** Gate `ambiguous` (eval-time) → **`true` (accuracy survives)**
+  after the full fair retrain (4B.7). Trained on sparse context, the hybrid's
+  edge over RBF grows under structured sparsity (thin_wings +16.6%,
+  missing_maturities +37.1%, combined +16.0% at sparsest; all sig); the
+  eval-time wing collapse was an OOD artifact. Accuracy stays a core story.
+- **`5A` — reliability-first surface inference / quote-risk layer. ← proceeds in
+  parallel.** Coverage collapse 0.96→0.35 under sparsity + the per-regime
+  accuracy result both motivate **per-regime recalibration**.
 - **`6A` — structured-product pricing / FCN monetization demo.** Sell-side
   framing; constrained demo, not a full FCN pricer. Downstream of 5A.
 
 ## Where things stand
 
-- **Phase 4B fully closed** (epic 4B `done`; 4B.1–4B.6 `done`; 4B.7 `cancelled`).
-  ADR 0011 §Outcome filled; roadmap §7 close; README pivoted to Phase 5A.
+- **Phase 4B fully closed POSITIVE** (epic 4B `done`; **4B.1–4B.7 all `done`**).
+  Gate resolved `true`; ADR 0011 §Outcome rewritten; roadmap §7 + README updated.
 - Phase 4A result unchanged; RBF-prior hybrid remains the adopted estimator.
-- Next phase: **5A** (reliability-first) — decomposition spec `5A.1` is the entry
-  (`backlog`); roadmap `docs/roadmaps/phase5_reliability_first_surface_inference.md`.
+- Next phase: **5A** (reliability-first, in parallel with the now-alive accuracy
+  story) — decomposition spec `5A.1` is the entry (`backlog`); roadmap
+  `docs/roadmaps/phase5_reliability_first_surface_inference.md`.
 
-## Current task — 4B REOPENED; full fair retrain (4B.7) in progress
+## Current task — 4B closed positive; 4B.7 done
 
-**Epic 4B `in_progress` (reopened 2026-06-22).** 4B.1–4B.5 `done`; **4B.6
-reopened to `in_progress`** (the close was provisional); **4B.7 `in_progress`**
-— the operator reversed the earlier decline and chose the **full fair retrain**
-(all 4 regimes × 4 non-dense rungs = 16 cells) to resolve the eval-time OOD
-ambiguity from 4B.5.
+**Epic 4B `done` (closed positive 2026-06-22).** 4B.1–4B.7 all `done`. The full
+16-cell fair retrain (4B.7, RTX 4000 Ada, 6.3 h GPU) resolved the gate
+`ambiguous → true`: the eval-time wing collapse was an OOD artifact; trained
+fairly the hybrid's relative edge over RBF grows under structured sparsity
+(missing_maturities +37.1%, thin_wings +16.6%, combined +16.0% at the sparsest
+rung — all significant; fewer_quotes → ~0, random thinning where RBF interpolates
+fine). Caveat: per-cell models trained for each exact sparsity; a single
+mixed-sparsity model is the production-realistic follow-up.
 
-### 4B.7 plan (full fair retrain)
+- Artifacts: `artifacts/runs/4B7/{manifest.json, fair_retrain_stats.csv,
+  cells/*.json}` + `results/4/.../4b_sweep/{fair_trajectory.csv,
+  fair_trajectory_wide.md, gate_verdict.json (resolved)}` — all local + committed.
+- **Pod terminable** (4B.7 done, artifacts pulled). Pod-side checkpoints/preds
+  gitignored + regenerable.
 
-Per (regime, rung): re-derive the rung's sparse mask on **all splits** (4B.2
-harness, seed 4023 — test masking matches 4B.4 exactly), rebuild residual
-targets with RBF re-fit on the **sparse** context, retrain the hybrid mirroring
-4A.4 exactly (anp decoder, hidden 128 / latent 64, gaussian head, 50 epochs,
-seed 42), score the sparse test context → σ̂, recompute the cell's edge + a
-date-clustered CI. Dense rung (intensity 0) needs no retrain (= 4A.4 anchor).
-Then refresh the contested trajectory rows and resolve `gate_verdict.json` to
-`true`/`false`, hand back to 4B.6 for the (now real) close.
+### Phase 4B verdict (final) — `accuracy_survives = true`
 
-- Harness: `scripts/run_4b7_retrain_sweep.py` (+ `.sh`) + config
-  `configs/conditional_4B7_retrain_gaussian_otm.yaml`.
-- **Needs a fresh GPU pod** (operator spinning up; the prior pod was CPU-only).
-  Reuses the residual parquet + OTM data on the volume (re-sync if new volume).
+- The eval-time read (4B.5) was `ambiguous` (wing edge collapsed). The full fair
+  retrain (4B.7) **reverses it**: trained on sparse context, the hybrid's
+  relative edge over RBF **grows** under structured sparsity — sparsest rung
+  thin_wings +16.6 %, missing_maturities +37.1 %, combined +16.0 % (all sig);
+  fewer_quotes → ~0 (random thinning, RBF interpolates fine). Both wing-sensitive
+  regimes clear the survive bar → **accuracy survives**.
+- **ADR 0010 unchanged** — RBF-prior hybrid stays the adopted estimator.
+- Reliability finding still holds: calibrated coverage collapses 0.962 → 0.35
+  under sparsity → **Phase 5A reliability-first proceeds in parallel** (per-regime
+  recalibration now doubly motivated).
+- Recorded in ADR 0011 §Outcome (rewritten), roadmap §7, README, journal.
 
-### Phase 4B verdict (final)
-
-- The RBF-prior hybrid's **relative** edge over RBF does **not** survive realistic
-  sparsity: collapses to 0.3–0.5 % under wing/maturity stress; grows only to
-  ~4 % under benign random thinning (sub-5 % bar). All deltas significant; dense
-  ties 4A exactly.
-- **ADR 0010 unchanged** — the hybrid stays the adopted estimator. "Retired" =
-  accuracy is no longer the primary forward *story*, not that the hybrid is
-  discarded.
-- Secondary: calibrated coverage collapses 0.962 → 0.35–0.39 under wing sparsity
-  → reliability degrades faster than accuracy → **Phase 5A is now primary**.
-- Recorded in ADR 0011 §Outcome, roadmap §7, README, journal. Artifacts:
-  `results/4/spy_phase1_random40_noiselow_otm/4b_sweep/`.
-
-### Pod status
-
-**No pod needed.** The current CPU pod is fully terminable (all 4B remote work is
-done and pulled local; 4B.7 cancelled). Phase 5A starts local.
-
-Spec: [`docs/tasks/specs/4B.1_decompose_phase_4b.md`](docs/tasks/specs/4B.1_decompose_phase_4b.md).
 Roadmap: [`docs/roadmaps/phase4b_sparsity_sweep.md`](docs/roadmaps/phase4b_sparsity_sweep.md).
 
 ## Resolved design forks (operator, 2026-06-21)
@@ -89,20 +80,20 @@ Roadmap: [`docs/roadmaps/phase4b_sparsity_sweep.md`](docs/roadmaps/phase4b_spars
 3. **Gate threshold** pre-registered inside 4B.5 before the trajectory is
    computed.
 
-## Phase 4B chain
+## Phase 4B chain (final)
 
 `4B.1` decompose → `4B.2` harness → `4B.3` swept RBF → `4B.4` hybrid forward →
-`4B.5` trajectory + gate (`ambiguous`) all `done`. `4B.6` close **reopened**
-(`in_progress`). `4B.7` full fair retrain **`in_progress`** (16 cells, GPU).
+`4B.5` trajectory + gate (`ambiguous`) → `4B.7` full fair retrain (gate → `true`)
+→ `4B.6` close (positive) — **all `done`. Epic 4B `done`.**
 
-## Next concrete action — run 4B.7 on the GPU pod
+## Next concrete action — enter Phase 5A (reliability-first)
 
-1. Build/commit the retrain harness (`run_4b7_retrain_sweep.py` + `.sh` +
-   config) — ready before the pod is up.
-2. Operator provides the fresh GPU pod SSH string → scp harness + verify the
-   residual parquet / OTM data are on the volume (re-sync if new).
-3. Run the 16-cell fair retrain (~3–5 h GPU): per cell, sparse-context residual
-   rebuild → retrain (mirror 4A.4) → score → edge + CI. Pull fair predictions
-   local.
-4. Recompute the fair trajectory vs the eval-time one; resolve
-   `gate_verdict.json` to `true`/`false`; hand to 4B.6 for the real close.
+- Phase 4 + 4B closed (positive). Begin **Phase 5A**: reliability-first surface
+  inference / quote-risk layer (calibrated uncertainty, abstention, surface
+  confidence, **per-regime recalibration** — now doubly motivated by the 4B
+  coverage collapse *and* the per-regime accuracy result — no-arb/risk flags,
+  quote/no-quote logic). Entry is the `5A.1` decomposition spec
+  (`docs/tasks/specs/5A.1_decompose_phase_5a.md`) + roadmap
+  `docs/roadmaps/phase5_reliability_first_surface_inference.md`. Local; no pod.
+- Possible accuracy follow-up (noted): a single model trained on *mixed*
+  sparsity (production-realistic vs 4B.7's per-cell models).

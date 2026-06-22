@@ -1,0 +1,16 @@
+{
+  "regime": "thin_wings",
+  "intensity": 0.2,
+  "rbf_mae": 0.017256803525779556,
+  "hybrid_fair_mae": 0.016955570213438725,
+  "abs_delta": -0.0003012333123408317,
+  "rel_edge_pct": 1.7455915974869038,
+  "ci_low": -0.0003467641860328694,
+  "ci_high": -0.0002543038543357923,
+  "significant": true,
+  "n_context": 888345,
+  "n_test_rows": 2769021,
+  "epochs": 46,
+  "best_val_loss": -4.120298580689863,
+  "wall_seconds": 2363.6
+}

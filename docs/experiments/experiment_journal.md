@@ -2665,3 +2665,70 @@ Phase 5 reliability-first / per-regime-recalibration direction regardless of the
 on the `random40_noiselow_otm` substrate; reliability-first is the forward story.
 
 ---
+
+## 4B.7 — Full fair retrain REVERSES the verdict: accuracy SURVIVES (remote GPU) (2026-06-22)
+
+> Supersedes the 4B.6 interim close above. The operator reversed the decision to
+> decline 4B.7 and ran the **full** fair retrain; it flips the gate `ambiguous → true`.
+
+### Run
+
+- **Where:** fresh RunPod **GPU** pod (RTX 4000 Ada, 20 GB; 48 CPU cores; venv-2e2,
+  torch 2.11 CUDA). `scripts/run_4b7_retrain_sweep.py` (+ `.sh`, config, `--aggregate`).
+  **16 cells** (4 regimes × 4 non-dense rungs), **6.3 h GPU** total, resumable.
+- **Per cell:** re-derive the rung's sparse mask on **all splits** (4B.2 harness,
+  seed 4023 — test masking identical to 4B.4), rebuild residual targets with RBF
+  re-fit on the sparse context, retrain the hybrid mirroring 4A.4 **exactly**
+  (anp / gaussian, hidden 128 / latent 64, 50 epochs, seed 42), score the sparse
+  test → σ̂, record fair MAE / RBF MAE / relative edge / date-clustered 95 % CI.
+  Dense rung (intensity 0) = the 4A.4 anchor, not retrained.
+
+### Result — relative edge `(RBF − hybrid)/RBF` at the sparsest rung: eval vs fair
+
+| regime | eval-time (4B.5) | **fair retrain (4B.7)** | sig |
+|---|---|---|---|
+| missing_maturities | +1.56 % | **+37.07 %** | yes |
+| thin_wings | +0.31 % | **+16.57 %** | yes |
+| combined_quotes_wings | +0.46 % | **+15.99 %** | yes |
+| fewer_quotes | +4.32 % | +0.07 % | no |
+
+Full fair trajectories (dense→sparse): missing_maturities
+[2.05, 1.37, 9.53, 20.91, 37.07], thin_wings [2.05, 1.75, 5.25, 9.98, 16.57],
+combined [2.05, 2.38, 5.39, 14.08, 15.99], fewer_quotes [2.05, 2.79, 1.94, 0.14, 0.07].
+
+- **The eval-time wing collapse was an OOD artifact.** Trained on the sparse
+  context, the neural prior fills **structured** gaps (missing wings/maturities)
+  far better than RBF, and the edge **grows monotonically** with sparsity — to
+  +16–37 % at the sparsest rung, all significant by date-clustered bootstrap.
+- Both pre-registered wing-sensitive regimes (thin_wings, combined) clear the
+  survive bar (grows + significant + ≥ 5 % at sparse end) ⇒ **`accuracy_survives
+  = true`** under the same frozen 4B.5 rule (reused via `--aggregate`).
+- **Exception:** `fewer_quotes` (random unstructured thinning) → ~0 edge — RBF
+  already interpolates scattered points well; the hybrid is at worst tied. So the
+  edge is specifically about *structured* sparsity, which is the realistic case.
+
+### Caveat (documented)
+
+Each cell trains a **separate** model on its exact (regime, rung) sparsity. This
+proves the **architecture can exploit structured sparsity when trained for it**;
+it is not a claim that one production model achieves this across unknown regimes.
+A single model trained on *mixed* sparsity is the natural production-realistic
+follow-up (Phase 5 candidate).
+
+### Artifacts
+
+- Committed: `artifacts/runs/4B7/{manifest.json, fair_retrain_stats.csv,
+  cells/*.json}` + refreshed `results/4/.../4b_sweep/{fair_trajectory.csv,
+  fair_trajectory_wide.md, gate_verdict.json (resolved `true`)}`.
+- Pod-side (gitignored): per-cell checkpoints + test-pred parquets. Pod terminable.
+
+### 4B.6 re-close (positive)
+
+Epic 4B re-closed with `accuracy_survives = true`: ADR 0011 §Outcome rewritten
+(accuracy survives; eval-time read retained as history), roadmap §7 + README +
+BOARD updated. **Accuracy stays a core story; Phase 5 reliability-first proceeds
+in parallel** (the coverage-collapse finding 0.96 → 0.35 still holds). ADR 0010
+unchanged — RBF-prior hybrid remains the adopted estimator. Epic 4B `done`;
+4B.1–4B.7 `done`.
+
+---

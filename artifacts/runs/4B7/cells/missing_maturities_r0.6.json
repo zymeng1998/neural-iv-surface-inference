@@ -1,0 +1,16 @@
+{
+  "regime": "missing_maturities",
+  "intensity": 0.6,
+  "rbf_mae": 0.013766014491598685,
+  "hybrid_fair_mae": 0.010887321808893189,
+  "abs_delta": -0.0028786926827054967,
+  "rel_edge_pct": 20.91159125585946,
+  "ci_low": -0.0032442406169279846,
+  "ci_high": -0.0025349204977661577,
+  "significant": true,
+  "n_context": 445340,
+  "n_test_rows": 2769021,
+  "epochs": 50,
+  "best_val_loss": -3.998923735185103,
+  "wall_seconds": 1292.4
+}

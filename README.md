@@ -44,34 +44,35 @@ See also
 [`docs/roadmaps/phase4_hybrid_residual.md`](docs/roadmaps/phase4_hybrid_residual.md)
 and [`docs/PHASE4_INDEX.md`](docs/PHASE4_INDEX.md).
 
-### Next Direction (Phase 4B closed → reliability-first is primary)
+### Next Direction (Phase 4B closed → accuracy survives; reliability-first in parallel)
 
-Phase 4A is the adopted production point estimator on current evidence — but
-it is **not the project's destination**. The win over RBF is statistically
-real yet economically small (≈ 2 % relative MAE), so the project will not keep
-optimizing the same dense, clean SPY benchmark. The forward direction is
-staged ([ADR 0011](docs/decisions/0011_forward_strategy_accuracy_reliability_pricing.md)):
+Phase 4A is the adopted production point estimator. On the dense, clean
+benchmark the win over RBF is small (≈ 2 % relative MAE) — but Phase 4B asked
+the sharper question: does that edge **survive sparsity**? The forward direction
+is staged ([ADR 0011](docs/decisions/0011_forward_strategy_accuracy_reliability_pricing.md)):
 
-1. **`4B` — sparsity-sweep diagnostic (the decision gate). 🔄 Gate reopened
-   2026-06-22 — eval-time verdict `ambiguous`; full fair retrain (4B.7) in
-   progress.** RBF vs the RBF-prior hybrid over four sparsity regimes × five
-   rungs. In the **eval-time** read (a full-context checkpoint scored on sparse
-   context), the hybrid's **relative** edge over RBF grows only under benign
-   random thinning (to ~4 %, sub-5 % bar) and **collapses** to 0.3–0.5 % under
-   the wing / maturity stresses that matter. Because that read is confounded by
-   an out-of-distribution caveat, the operator is running the **full fair retrain
-   (4B.7)** — retraining the hybrid on each rung's sparse context — to settle
-   whether the collapse is fundamental or an artifact. A secondary finding —
-   calibrated coverage collapses 0.96 → 0.35 under sparsity — already shows
-   **reliability degrades faster than accuracy**. The RBF-prior hybrid remains
-   the adopted estimator (ADR 0010 unchanged) regardless of the gate outcome.
+1. **`4B` — sparsity-sweep diagnostic (the decision gate). ✅ Closed 2026-06-22 —
+   verdict `ambiguous` → `true` (accuracy survives) after the fair retrain.**
+   RBF vs the RBF-prior hybrid over four sparsity regimes × five rungs. The
+   *eval-time* read (a full-context checkpoint scored on sparse context) showed
+   the hybrid's relative edge **collapsing** under thinned wings / dropped
+   maturities — but that was an out-of-distribution artifact. The **full fair
+   retrain (4B.7)** — retraining the hybrid on each rung's sparse context —
+   **reverses it**: the relative edge over RBF grows sharply with structured
+   sparsity (thin wings **+16.6 %**, missing maturities **+37.1 %**, combined
+   **+16.0 %** at the sparsest rung; all significant), while random unstructured
+   thinning is where neither method has an edge. So raw accuracy **survives** and
+   stays a core story. (Caveat: each cell trains a model for its specific
+   sparsity; a single mixed-sparsity model is the production-realistic follow-up.)
+   A parallel reliability finding — calibrated coverage collapses 0.96 → 0.35
+   under sparsity — shows reliability degrades even faster, motivating Phase 5.
    ([`docs/roadmaps/phase4b_sparsity_sweep.md`](docs/roadmaps/phase4b_sparsity_sweep.md))
-2. **`5A` — reliability-first surface inference / quote-risk layer (now the
-   primary contribution).** Formalize the durable Phase 2–4 asset — calibrated
-   uncertainty, abstention, surface-level confidence, **per-regime
-   recalibration**, no-arb / risk flags, quote/no-quote logic, and spread /
-   model-risk-reserve suggestions — into a sell-side-desk-consumable system. The
-   4B coverage-collapse result makes this the project's main forward story.
+2. **`5A` — reliability-first surface inference / quote-risk layer (proceeds in
+   parallel).** Formalize the durable Phase 2–4 asset — calibrated uncertainty,
+   abstention, surface-level confidence, **per-regime recalibration**, no-arb /
+   risk flags, quote/no-quote logic, and spread / model-risk-reserve suggestions
+   — into a sell-side-desk-consumable system. The 4B coverage-collapse result
+   makes this a high-value forward story alongside the (now alive) accuracy work.
    ([`docs/roadmaps/phase5_reliability_first_surface_inference.md`](docs/roadmaps/phase5_reliability_first_surface_inference.md))
 3. **`6A` — structured-product pricing / FCN monetization demo.** A *sell-side*
    framing (bank desk using the model for pricing confidence, model-risk

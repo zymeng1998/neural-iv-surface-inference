@@ -1,0 +1,16 @@
+{
+  "regime": "combined_quotes_wings",
+  "intensity": 0.2,
+  "rbf_mae": 0.017382750289720167,
+  "hybrid_fair_mae": 0.016969865628165992,
+  "abs_delta": -0.0004128846615541748,
+  "rel_edge_pct": 2.375255092966198,
+  "ci_low": -0.0004659221926310565,
+  "ci_high": -0.0003605472412681975,
+  "significant": true,
+  "n_context": 710488,
+  "n_test_rows": 2769021,
+  "epochs": 50,
+  "best_val_loss": -4.0869762680747295,
+  "wall_seconds": 1935.8
+}

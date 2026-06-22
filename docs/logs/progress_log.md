@@ -5500,3 +5500,38 @@ hi-conf MAE 0.004710 < no-abstention 0.006006; width 0.0328 (< 3X.12's
   16-cell sweep (~3–5 h GPU). Pull fair predictions local; recompute the fair
   trajectory vs the eval-time 4B.5 read; resolve `gate_verdict.json` to
   `true`/`false`; hand to 4B.6 for the (now real) close.
+
+## 2026-06-22 (update 9) — 4B.7 fair retrain → gate `true`; 4B closed POSITIVE
+
+### What was completed
+
+- **4B.7 (remote GPU, done):** ran the full 16-cell fair retrain on an RTX 4000
+  Ada pod (6.3 h GPU). Per cell: sparse-mask all splits → rebuild residual
+  targets (sparse RBF) → retrain mirroring 4A.4 → score → edge + CI. Added an
+  `--aggregate` mode that resolves the gate with the frozen 4B.5 rule.
+- **Gate resolved `ambiguous` → `true`.** The eval-time wing collapse was an OOD
+  artifact: trained fairly, the hybrid's relative edge over RBF GROWS with
+  structured sparsity — sparsest rung thin_wings **+16.6 %**, missing_maturities
+  **+37.1 %**, combined **+16.0 %** (all significant); fewer_quotes → ~0 (random
+  thinning, RBF interpolates fine). Both wing-sensitive regimes clear the survive
+  bar → accuracy SURVIVES.
+- **4B.6 re-closed POSITIVE:** rewrote ADR 0011 §Outcome (survives; eval-time
+  read kept as history), roadmap §7, README, BOARD; flipped epic 4B + all
+  children `done`. Accuracy stays a core story; **Phase 5 reliability-first
+  proceeds in parallel** (coverage collapse 0.96→0.35 still holds). ADR 0010
+  unchanged.
+
+### Result / artifacts
+
+- `artifacts/runs/4B7/{manifest.json, fair_retrain_stats.csv, cells/*.json}` +
+  `results/4/.../4b_sweep/{fair_trajectory.csv, fair_trajectory_wide.md,
+  gate_verdict.json (resolved)}`. Pod-side checkpoints/preds gitignored. Pod
+  terminable.
+- Caveat: per-cell models trained for each exact sparsity; single mixed-sparsity
+  model is the production-realistic follow-up.
+
+### Next actions
+
+- **Phase 4 + 4B fully closed (positive).** Begin **Phase 5A** reliability-first
+  (per-regime recalibration is now doubly motivated — coverage collapse + the
+  per-regime accuracy result). Decompose 5A via `5A.1`. No pod needed.

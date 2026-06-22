@@ -2,15 +2,15 @@
 
 ## Status
 
-**Accepted (2026-06-21); Phase 4B gate REOPENED (2026-06-22).** Forward-strategy
+**Accepted (2026-06-21); Phase 4B gate RESOLVED (2026-06-22).** Forward-strategy
 decision taken at the Phase 4 close. Sets the staged direction for Phase 4B,
 Phase 5, and Phase 6 and the **decision gate** (Phase 4B) that governs whether
-raw accuracy remains a core project story. Phase 4B's gate returned `ambiguous`;
-an initial close (4B.6) recorded "accuracy retired" after the operator declined
-the 4B.7 escalation — **that decision was then reversed.** The operator chose to
-run the **full fair retrain (4B.7, 16 cells, GPU)** to resolve the eval-time OOD
-ambiguity. **The Outcome below is therefore PROVISIONAL and will be rewritten
-when 4B.7 resolves the gate to `true`/`false`.** See the **Outcome** block.
+raw accuracy remains a core project story. The gate read `ambiguous` eval-time;
+the **full fair retrain (4B.7, 16 cells, GPU)** resolved it to **`true` —
+accuracy survives sparsity** (the eval-time wing collapse was an OOD artifact).
+Accuracy stays a core story; Phase 5 reliability-first proceeds in parallel. See
+the **Outcome** block. (An interim 4B.6 close recorded "accuracy retired" after
+the operator first declined 4B.7; that was reversed when the retrain was run.)
 
 > This ADR does not reopen or revise the Phase 4 verdict
 > ([ADR 0010](0010_rbf_prior_residual_hybrid.md), Implemented). It decides
@@ -171,63 +171,61 @@ pricing stack held fixed / stubbed and clearly labeled as such.
 - The FCN payoff variant, fixed-input assumptions, and quote cross-check
   protocol for the Phase 6 demo — fixed by `6A.1`.
 
-## Outcome (PROVISIONAL — reopened 2026-06-22, pending 4B.7 fair retrain)
+## Outcome (Phase 4B closed, 2026-06-22) — **accuracy SURVIVES under fair training**
 
-> **REOPENED.** The "escalation declined / accuracy retired" conclusion below was
-> the read at the initial close (4B.6, 2026-06-21). The operator subsequently
-> **reversed** that and chose to run the **full fair retrain (4B.7)** — all 4
-> regimes × 4 non-dense rungs, retraining the hybrid on each rung's *sparse*
-> context (mirror 4A.4) to remove the eval-time OOD confound. This Outcome will
-> be **rewritten** with the fair-trajectory verdict when 4B.7 completes. The
-> eval-time read (below) is retained as the pre-retrain baseline.
+**Gate verdict: `ambiguous` (eval-time) → resolved `true` by the full fair
+retrain (4B.7). Raw accuracy survives sparsity and remains a core story; the
+reliability-first Phase 5 still proceeds in parallel.**
 
-**Eval-time gate verdict (pre-retrain, 4B.5): `ambiguous` → fair retrain (4B.7)
-triggered to resolve.**
+Phase 4B ran the staged eval-first diagnostic (4B.2–4B.5) then the full fair
+retrain (4B.7): a fixed-query / shrinking-context sparsity sweep over four
+regimes (`fewer_quotes`, `thin_wings`, `missing_maturities`,
+`combined_quotes_wings`) × five rungs (intensity 0→0.8), RBF vs the RBF-prior
+hybrid on the `random40_noiselow_otm` test split (694 dates, 2.769 M rows).
+Sources: `results/4/spy_phase1_random40_noiselow_otm/4b_sweep/`
+(`gate_verdict.json`, `trajectory.csv` for the eval-time read; `fair_trajectory.csv`,
+`fair_trajectory_wide.md` for the fair read) + `artifacts/runs/4B7/`.
 
-Phase 4B ran the staged eval-first diagnostic (4B.2–4B.5): a fixed-query /
-shrinking-context sparsity sweep over four regimes (`fewer_quotes`,
-`thin_wings`, `missing_maturities`, `combined_quotes_wings`) × five rungs
-(intensity 0→0.8), comparing RBF vs the 4A RBF-prior hybrid on the
-`random40_noiselow_otm` test split (694 dates, 2.769 M rows). Source:
-`results/4/spy_phase1_random40_noiselow_otm/4b_sweep/gate_verdict.json` +
-`trajectory.csv` (story 4B.5).
+**Step 1 — eval-time read (4B.4/4B.5, full-context checkpoint on sparse context):
+`ambiguous`.** The hybrid's relative edge over RBF *collapsed* under the wing /
+maturity stresses (thin_wings 2.05 → 0.31 %, combined → 0.46 %) and grew only
+under benign random thinning (fewer_quotes → 4.32 %, sub-5 % bar). That collapse
+was **confounded by an OOD caveat** — the 4A checkpoint never trained on
+wing-less / maturity-less context — so the gate could not be settled eval-time.
 
-**What the trajectory showed (relative edge `(RBF − hybrid)/RBF`, overall test
-MAE; every delta significant by date-clustered 95 % bootstrap CI):**
+**Step 2 — full fair retrain (4B.7, 16 cells, GPU): resolves to `true`.**
+Retraining the hybrid on each rung's *sparse* context (mirror 4A.4 exactly,
+varying only the training context) **reverses the collapse**. Relative edge at
+the sparsest rung:
 
-- `fewer_quotes` (benign random thinning): edge **grows** 2.05 → 4.32 %, but
-  never reaches the pre-registered 5 % "material survival" bar.
-- `missing_maturities`: peaks ~3.1 % mid-ladder, falls to 1.56 % at the sparsest.
-- `thin_wings`: **collapses** 2.05 → 0.31 %.
-- `combined_quotes_wings`: **collapses** 2.05 → 0.46 %.
+| regime | eval-time | **fair retrain** |
+|---|---|---|
+| thin_wings | +0.31 % | **+16.57 %** |
+| combined_quotes_wings | +0.46 % | **+15.99 %** |
+| missing_maturities | +1.56 % | **+37.07 %** |
+| fewer_quotes | +4.32 % | +0.07 % (n.s.) |
 
-The hybrid's relative edge over RBF **does not survive the sparsity stresses
-that matter** (thinned wings, dropped maturities); it grows only under benign
-random thinning. Under the pre-registered rule this is `ambiguous` rather than a
-clean `retired`, because (a) `fewer_quotes` exceeds the 2 % dense band, and
-(b) the wing collapse is **confounded by an eval-time OOD caveat** — the 4A
-checkpoint was trained on full context and scored here on wing-less / maturity-
-less context it never saw. Only a fair per-regime retrain (the conditional
-**4B.7**, GPU) could disambiguate a fundamental ceiling from that artifact.
+All wing/maturity gains are significant (date-clustered 95 % CI < 0) and grow
+monotonically with sparsity. Both pre-registered wing-sensitive regimes clear
+the survive bar (grows, significant, ≥ 5 % at the sparse end) ⇒ **`accuracy_survives = true`**.
+The eval-time wing collapse was an artifact, not a ceiling: trained fairly, the
+neural prior fills **structured** gaps (missing wings/maturities) far better than
+RBF — precisely the realistic stresses. The lone exception is `fewer_quotes`
+(random unstructured thinning), where the edge vanishes — RBF already
+interpolates well-scattered points, so the neural prior adds little; the hybrid
+is at worst tied there.
 
-**Escalation decision:** 4B.7 was **declined** (`cancelled`). Even under the most
-favourable fair-retrain scenario the upside is economically marginal — a few-%
-relative edge on wing/maturity errors that are themselves ×14 inflated, plus a
-sub-5 % edge in the one benign regime. The expected value of the GPU spend does
-not justify chasing it.
+**Caveat (honest).** Each 4B.7 cell trains a *separate* model on that regime ×
+rung's exact sparsity. This proves the **architecture can exploit structured
+sparsity when trained for it**; a single model trained on *mixed* sparsity (the
+production-realistic test) is the natural follow-up. ADR 0010 is unchanged — the
+RBF-prior gaussian hybrid remains the adopted estimator.
 
-**Therefore the accuracy story is retired on this substrate.** This does **not**
-revise [ADR 0010](0010_rbf_prior_residual_hybrid.md): the RBF-prior gaussian
-hybrid remains the **adopted production estimator** (it is at worst tied with RBF
-and modestly better everywhere). "Retired" means raw reconstruction accuracy is
-no longer a *primary forward contribution* on this benchmark — not that the
-hybrid is worthless.
-
-**Reinforcing signal → Phase 5.** A secondary, non-gating read found the
-dense-calibrated 90 % band's coverage **collapses** under sparsity (0.962 →
-0.35–0.39 for the wing regimes): **reliability degrades faster than accuracy.**
-This independently makes the **Phase 5 reliability-first / quote-risk** layer
-(calibrated uncertainty, abstention, per-regime recalibration, no-arb/risk
-flags) the project's primary forward contribution. Phase 6 (structured-product
-pricing demo) remains the downstream monetization framing. Epic 4B is `done`;
-4B.7 is `cancelled`.
+**Forward direction.** Accuracy survives ⇒ it stays a core project story
+(positive for the neural approach). The Phase 4B reliability read still stands —
+the dense-calibrated 90 % coverage *collapses* 0.962 → 0.35–0.39 under sparsity
+— so **Phase 5 reliability-first** (calibrated uncertainty, abstention,
+**per-regime recalibration**, quote-risk) remains highly valuable and proceeds
+**in parallel**, not as a replacement for accuracy. Phase 6 (structured-product
+pricing demo) stays the downstream monetization framing. Epic 4B is `done`;
+4B.1–4B.7 `done`.

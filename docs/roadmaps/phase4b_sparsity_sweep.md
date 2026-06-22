@@ -113,36 +113,41 @@ joint stress (operator-requested) — all share the 4B.2–4B.5 chain.
   — forward strategy + the 4B accuracy-survival gate. The 4B Outcome feeds
   ADR 0011's Outcome block.
 
-## 7) Close (2026-06-21) — verdict `ambiguous`; accuracy retired; pivot to Phase 5
+## 7) Close (2026-06-22) — verdict `ambiguous` → **`true` (accuracy survives)** after fair retrain
 
-Phase 4B executed the staged eval-first diagnostic (4B.2–4B.5) and closed.
-Full result + provenance: story 4B.5 and
-`results/4/spy_phase1_random40_noiselow_otm/4b_sweep/`
-(`trajectory.csv`, `trajectory_wide.md`, `gate_verdict.json`).
+Phase 4B executed the staged eval-first diagnostic (4B.2–4B.5) **and** the full
+fair retrain (4B.7). Provenance: `results/4/spy_phase1_random40_noiselow_otm/4b_sweep/`
+(`trajectory.csv` eval-time; `fair_trajectory.csv` / `fair_trajectory_wide.md`
+fair; `gate_verdict.json` resolved) + `artifacts/runs/4B7/`.
 
-**Relative edge `(RBF − hybrid)/RBF` (overall test MAE; all deltas significant
-by date-clustered 95 % bootstrap CI):**
+**Eval-time read (4B.5) was `ambiguous`** — a full-context checkpoint scored on
+sparse context: relative edge `(RBF−hybrid)/RBF` **collapsed** for the wing
+regimes (thin_wings 2.05 → 0.31 %, combined → 0.46 %), grew only for benign
+random thinning (fewer_quotes → 4.32 %). Confounded by an eval-time OOD caveat.
 
-| regime | r0 dense | r1 | r2 | r3 | r4 sparse |
-|---|---|---|---|---|---|
-| fewer_quotes | +2.05 % | +2.61 % | +3.18 % | +3.80 % | **+4.32 %** |
-| missing_maturities | +2.05 % | +2.73 % | +3.10 % | +2.49 % | +1.56 % |
-| thin_wings | +2.05 % | +0.77 % | +0.16 % | +0.11 % | **+0.31 %** |
-| combined_quotes_wings | +2.05 % | +0.96 % | +0.30 % | +0.26 % | **+0.46 %** |
+**Fair retrain (4B.7) resolves it to `true`** — retraining the hybrid on each
+rung's sparse context reverses the collapse. Relative edge (overall test MAE;
+all wing/maturity gains significant, date-clustered 95 % CI < 0):
 
-- The hybrid's **relative** edge over RBF **does not survive** the wing /
-  maturity stresses (it collapses to 0.3–0.5 %); it grows only under benign
-  random thinning, and only to ~4 % (sub-5 % survive bar).
-- Verdict `ambiguous` (pre-registered rule, 4B.5): a trend exists but the
-  wing-sensitive regimes don't clear the bar, and the wing collapse is confounded
-  by an eval-time OOD caveat (full-context checkpoint on wing-less context).
-- **4B.7 declined** (`cancelled`): the fair-retrain upside is economically
-  marginal (~2–4 % relative on a ×14-inflated base). → **accuracy retired on
-  this substrate**; the RBF-prior hybrid stays the adopted estimator (ADR 0010
-  unchanged).
-- **Reliability collapse (secondary):** dense-calibrated 90 % coverage falls
-  0.962 → 0.35–0.39 (wing regimes) — reliability degrades faster than accuracy,
-  making **Phase 5 reliability-first** the primary forward contribution.
+| regime | r0 dense | r1 | r2 | r3 | r4 sparse | eval-time r4 |
+|---|---|---|---|---|---|---|
+| missing_maturities | +2.05 % | +1.37 % | +9.53 % | +20.91 % | **+37.07 %** | (+1.56 %) |
+| thin_wings | +2.05 % | +1.75 % | +5.25 % | +9.98 % | **+16.57 %** | (+0.31 %) |
+| combined_quotes_wings | +2.05 % | +2.38 % | +5.39 % | +14.08 % | **+15.99 %** | (+0.46 %) |
+| fewer_quotes | +2.05 % | +2.79 % | +1.94 % | +0.14 % | +0.07 % (n.s.) | (+4.32 %) |
+
+- Both wing-sensitive regimes clear the pre-registered survive bar (grows,
+  significant, ≥ 5 % at the sparse end) ⇒ **`accuracy_survives = true`**. The
+  eval-time wing collapse was an OOD artifact; trained fairly, the neural prior
+  fills **structured** gaps (wings/maturities) far better than RBF.
+- Exception: `fewer_quotes` (random thinning) → ~0 — RBF interpolates scattered
+  points fine; the hybrid is at worst tied.
+- **Caveat:** each cell trains a separate model on its exact sparsity regime
+  (proves the architecture *can* exploit structured sparsity); a single
+  mixed-sparsity model is the production-realistic follow-up.
+- **Reliability still stands (secondary):** dense-calibrated 90 % coverage falls
+  0.962 → 0.35–0.39 (wing regimes) — so **Phase 5 reliability-first** remains
+  highly valuable and proceeds **in parallel** with the (now alive) accuracy story.
 
 Outcome recorded in [ADR 0011 §Outcome](../decisions/0011_forward_strategy_accuracy_reliability_pricing.md).
-Epic 4B `done`; child stories 4B.1–4B.6 `done`, 4B.7 `cancelled`.
+Epic 4B `done`; child stories 4B.1–4B.7 `done`.
