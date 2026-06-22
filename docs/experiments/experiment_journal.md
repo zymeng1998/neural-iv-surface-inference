@@ -2441,3 +2441,55 @@ narrative in [`docs/phase4_result_memo.md`](../phase4_result_memo.md).
   substrate only.
 
 ---
+
+## 4B.3 — Swept eval inputs: per-rung RBF on full OTM test (remote CPU) (2026-06-21)
+
+### Run
+
+- **Where:** RunPod CPU pod (2 cores, `venv-2e2`, py3.10 / numpy 2.2.6 /
+  pandas 2.3.3). Driver `scripts/run_4b3_build_swept_inputs.py` via
+  `scripts/run_4b3_build_swept_inputs.sh`. Wall **707.6 s** (~12 min), seed 4023.
+- **Input:** `data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm_residual.parquet`,
+  **test split** — 694 dates, 2,769,021 rows (1,661,166 fixed-query / unobserved).
+- **Sweep:** 4 regimes (`fewer_quotes`, `thin_wings`, `missing_maturities`,
+  `combined_quotes_wings`) × 5 rungs (intensity 0.0/0.2/0.4/0.6/0.8). Per
+  (date, regime, rung) the RBF (`models/interpolation.py`, verbatim) is re-fit
+  on the rung's sparser observed context (4B.2 harness) and predicted at the
+  full fixed query grid. Dense rung (intensity 0) computed once per date and
+  reused across regimes (identical full-context fit).
+
+### Result (RBF MAE vs `iv_clean`, overall test)
+
+| regime | r0 (dense) | r1 | r2 | r3 | r4 (sparsest) |
+|---|---|---|---|---|---|
+| fewer_quotes | 0.006132 | 0.006503 | 0.007011 | 0.007795 | 0.009414 |
+| missing_maturities | 0.006132 | 0.007170 | 0.009028 | 0.013766 | 0.030274 |
+| thin_wings | 0.006132 | 0.017257 | 0.040089 | 0.059443 | 0.086687 |
+| combined_quotes_wings | 0.006132 | 0.017383 | 0.039226 | 0.060587 | 0.088515 |
+
+- **Provenance anchor MET:** dense-rung overall MAE = 0.0061318470356350 ==
+  the committed 3X.6/4A RBF floor (`|err|` 5.2e-18); dense query-only MAE
+  0.0065238 == the committed `unobserved_mae`. Both exact.
+- **0 non-finite** across all 20 (regime × rung) cells.
+- **Monotone non-decreasing** RBF MAE as context thins — all 4 regimes
+  (sanity floor satisfied). Wing removal is by far the most punishing (RBF MAE
+  ×14 at the sparsest `thin_wings` / `combined` rung); random quote thinning is
+  the mildest (×1.5). `n_query` held fixed at 1,661,166 across every rung.
+
+### Artifacts
+
+- Committed: `artifacts/runs/4B3/{manifest.json, rbf_sweep_stats.csv}`.
+- Pod-side handoff (gitignored, regenerable): `artifacts/runs/4B3/swept_rbf_test.parquet`
+  (~492 MB zstd, long-form per-rung RBF + context masks) — input to 4B.4.
+
+### Notes / scope
+
+- This is the **RBF sanity substrate only**. The hybrid is NOT run here (4B.4)
+  and the edge-vs-sparsity **gate verdict** is NOT computed here (4B.5). 4B.3
+  proves the swept inputs are valid, finite, and floor-anchored.
+- Memory: the first full run was OOM-killed mid-loop (container is cgroup-capped
+  below the host's 251 GB); fixed by **streaming** the handoff parquet to disk
+  one date at a time (pyarrow `ParquetWriter`) instead of accumulating ~55M
+  rows in memory.
+
+---

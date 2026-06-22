@@ -1,4 +1,4 @@
-# STATUS — Phase 4 closed; 4B.2 harness done; next 4B.3 (remote CPU)
+# STATUS — Phase 4 closed; 4B.3 swept inputs done; next 4B.4 (remote hybrid)
 
 **Updated:** 2026-06-21
 **Branch:** main
@@ -32,16 +32,26 @@ The forward direction is staged and recorded in
 - PMR gate dry-run: **PASS** (0 evidence-source files; docs-only).
 - No experiment was run; the Phase 4A result is unchanged.
 
-## Current task — 4B.2 done (committed); next 4B.3
+## Current task — 4B.3 done (remote); next 4B.4
 
-**Story 4B.1** decomposed Phase 4B; promoted → `done` and pushed (`0b5de5f`).
-**Story 4B.2** (sparsity-sweep harness) is **`done` — committed and pushed**.
-Operator reviewed and approved (2026-06-21). All claims re-verified this
-session: `diagnostics/sparsity_sweep.py` + tests + smoke green (26 harness
-tests; 465 full suite); smoke emits `artifacts/runs/4B2/manifest.json`; PMR
-gate PASS. Epic 4B remains `in_progress`.
+**4B.1** decomposed Phase 4B (`done`, `0b5de5f`). **4B.2** sparsity-sweep harness
+(`done`, `27b1c79`). **4B.3** swept eval inputs (`done`) — ran on the RunPod CPU
+pod: per-rung RBF re-fit over 4 regimes × 5 rungs on the OTM **test split** (694
+dates, 2.769M rows, wall 12 min). Epic 4B `in_progress`.
 
-- Run tests with `PYTHONPATH=src python3 -m pytest tests/test_sparsity_sweep.py`.
+- **Audit MET:** 0 non-finite; RBF MAE monotone non-decreasing per regime; dense
+  rung overall MAE == 4A RBF floor 0.0061318 exactly (|err| 5.2e-18); dense
+  query-only == committed `unobserved_mae`. Sparsest-rung degradation: combined
+  ×14.4 / thin_wings ×14.1 / missing_maturities ×4.9 / fewer_quotes ×1.5.
+- Committed: `artifacts/runs/4B3/{manifest.json, rbf_sweep_stats.csv}`.
+  Pod handoff (gitignored): `artifacts/runs/4B3/swept_rbf_test.parquet` (~492 MB).
+
+### Pod status (IMPORTANT)
+
+**Keep the Pod up.** The 492 MB swept parquet lives on `/workspace` and is the
+input to 4B.4; 4B.4 also needs the 4A checkpoint volume. Pod: `213.173.111.74:34574`,
+key `~/.ssh/id_ed25519_runpod`, interpreter `/workspace/venv-2e2/bin/python`,
+repo `/workspace/Neural-IV-Surface-inference` (updated via scp — no GitHub access).
 
 Spec: [`docs/tasks/specs/4B.1_decompose_phase_4b.md`](docs/tasks/specs/4B.1_decompose_phase_4b.md).
 Roadmap: [`docs/roadmaps/phase4b_sparsity_sweep.md`](docs/roadmaps/phase4b_sparsity_sweep.md).
@@ -67,9 +77,9 @@ Outcome (local CPU). `4B.7` per-regime retrain is **conditional** off 4B.5
 
 ## Next concrete action
 
-- **4B.3** (remote CPU): materialize swept eval inputs on the full OTM test
-  split — per regime × rung, re-fit RBF on the sparser observed context and
-  predict at the fixed query coords; finiteness + monotone-MAE sanity audit.
-  Dense rung must reproduce the 4A RBF floor **0.006132**. Remote stories
-  (4B.3 / 4B.4 / conditional 4B.7) gated on operator Pod go-ahead; 4B.4
-  requires the 4A checkpoint volume.
+- **4B.4** (remote): run the 4A RBF-prior hybrid checkpoint **forward** across
+  all regime × rung swept inputs (`artifacts/runs/4B3/swept_rbf_test.parquet`)
+  → σ̂ = RBF_rung + f_θ(residual). Eval-time only (no retrain); the only
+  checkpoint-dependent story — needs the 4A checkpoint volume on the Pod. Then
+  **4B.5** (local) computes the edge-vs-sparsity trajectory + date-clustered
+  bootstrap CIs and adjudicates the ADR 0011 gate.

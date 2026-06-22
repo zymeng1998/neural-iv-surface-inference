@@ -5328,3 +5328,42 @@ hi-conf MAE 0.004710 < no-abstention 0.006006; width 0.0328 (< 3X.12's
 
 - Operator review of 4B.2; on approval promote → `done`, then 4B.3 (remote CPU:
   per-rung RBF at the fixed query coords on the full OTM test split).
+
+## 2026-06-21 (update 4) — 4B.3: swept eval inputs built on full OTM test (remote, CPU)
+
+### What was completed
+
+- Promoted 4B.2 → `done` (committed `27b1c79`, pushed).
+- **4B.3 (remote CPU, RunPod):** new driver
+  `scripts/run_4b3_build_swept_inputs.py` (+ `.sh`). For 4 regimes × 5 rungs
+  (intensity 0→0.8) of the 4B.2 sparsity sweep, re-fit the per-date RBF
+  (`models/interpolation.py`, verbatim) on each sparser observed context and
+  predicted at the full fixed query grid over the OTM **test split** (694 dates,
+  2.769M rows). Streamed the long-form per-rung RBF/context table to a Pod
+  parquet (~492 MB, gitignored) — the 4B.4 handoff.
+
+### Result
+
+- **Dense rung reproduces the 4A RBF floor exactly**: overall test MAE
+  0.0061318470 vs floor 0.0061318470 (`|err|` 5.2e-18); dense query-only MAE
+  0.0065238 == committed `unobserved_mae`. **0 non-finite**; RBF MAE
+  **monotone non-decreasing** as context thins for all 4 regimes.
+- Degradation ranking (sparsest rung): `combined` ×14.4 / `thin_wings` ×14.1 /
+  `missing_maturities` ×4.9 / `fewer_quotes` ×1.5. Wing removal hurts RBF most.
+- Audit committed: `artifacts/runs/4B3/{manifest.json, rbf_sweep_stats.csv}`.
+  Wall 707.6 s; seed 4023.
+
+### Notes
+
+- First full run OOM-killed mid-loop (container cgroup cap below the host's
+  251 GB visible in `/proc/meminfo`); fixed by streaming the parquet per date
+  via pyarrow `ParquetWriter` (flat memory). Pod env: `venv-2e2` (py3.10,
+  numpy 2.2.6, pandas 2.3.3); repo updated via scp (Pod has no GitHub access).
+- Scope: RBF sanity substrate only — the hybrid (4B.4) and the gate verdict
+  (4B.5) are **not** computed here.
+
+### Next actions
+
+- **Keep the Pod up** — the 492 MB swept parquet lives on `/workspace` and is
+  the input to 4B.4. Next: 4B.4 (remote) runs the 4A hybrid checkpoint forward
+  across all rungs → σ̂ (needs the 4A checkpoint volume).

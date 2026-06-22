@@ -314,6 +314,26 @@ flag; the full-fold materialisation lives in story 4A.3. **Materialised
 rows, 0 non-finite; per-split mean|residual| == the 3X.6 RBF MAE) on the
 persistent RunPod `/workspace` volume (gitignored).
 
+**Phase 4B note (swept eval inputs — story 4B.3):** the Phase 4B
+sparsity-survival diagnostic (ADR 0011) sub-masks the same residual benchmark
+into a *fixed-query / shrinking-context* ladder (the 4B.2 harness) and re-fits
+the per-date RBF on each sparser context. `scripts/run_4b3_build_swept_inputs.py`
+(remote CPU) reads the residual parquet's **test split** (694 dates, 2.769M
+rows), and for each of 4 regimes × 5 rungs (intensity 0→0.8) predicts RBF at
+the full fixed query grid. Output: a streamed long-form parquet
+`artifacts/runs/4B3/swept_rbf_test.parquet` (~492 MB zstd, columns
+`date, regime, rung_index, intensity, log_moneyness, tau, iv_clean,
+observed_base, observed_rung, is_query_fixed, rbf_pred`) on the Pod volume
+(gitignored) — the handoff to 4B.4 (hybrid forward sweep). The committed audit
+is `artifacts/runs/4B3/{manifest.json, rbf_sweep_stats.csv}`. **Materialised
+2026-06-21 (4B.3):** 0 non-finite; per-regime RBF MAE monotone non-decreasing
+as context thins; the dense rung (intensity 0 = full observed context)
+reproduces the 4A RBF floor exactly (overall test MAE 0.0061318, |err| 5.2e-18;
+query-only 0.0065238 == the committed `unobserved_mae`). No new data source; the
+RBF is reused verbatim from `models/interpolation.py`. The RBF *gate verdict*
+(edge vs sparsity) is **not** computed here — that needs the hybrid (4B.4) and
+is adjudicated in 4B.5.
+
 **Critical convention:** `spot = close` (unadjusted closing price), NOT `adjusted_close`. This is because option strikes are quoted against unadjusted prices; using adjusted close would distort moneyness computations. Documented in `docs/data_assumptions_and_cleaning.md`.
 
 ---

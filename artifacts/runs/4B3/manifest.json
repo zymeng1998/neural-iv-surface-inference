@@ -1,0 +1,52 @@
+{
+  "story": "4B.3",
+  "input": "data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm_residual.parquet",
+  "split": "test",
+  "regimes": [
+    "fewer_quotes",
+    "thin_wings",
+    "missing_maturities",
+    "combined_quotes_wings"
+  ],
+  "intensities": [
+    0.0,
+    0.2,
+    0.4,
+    0.6,
+    0.8
+  ],
+  "seed": 4023,
+  "n_dates": 694,
+  "n_rows": 2769021,
+  "rbf_floor_ref": 0.006131847035635011,
+  "dense_rung_mae_overall": 0.0061318470356350055,
+  "dense_rung_floor_abs_err": 5.204170427930421e-18,
+  "dense_rung_reproduces_floor": true,
+  "floor_tol": 5e-05,
+  "total_nonfinite": 0,
+  "monotone_overall": {
+    "fewer_quotes": {
+      "non_decreasing": true,
+      "max_decrease": 0.0
+    },
+    "thin_wings": {
+      "non_decreasing": true,
+      "max_decrease": 0.0
+    },
+    "missing_maturities": {
+      "non_decreasing": true,
+      "max_decrease": 0.0
+    },
+    "combined_quotes_wings": {
+      "non_decreasing": true,
+      "max_decrease": 0.0
+    }
+  },
+  "wall_seconds": 707.6,
+  "parquet_out": "artifacts/runs/4B3/swept_rbf_test.parquet",
+  "versions": {
+    "python": "3.10.18",
+    "numpy": "2.2.6",
+    "pandas": "2.3.3"
+  }
+}
