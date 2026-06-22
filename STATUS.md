@@ -1,8 +1,9 @@
-# STATUS — Phase 4B CLOSED (accuracy retired); next: Phase 5A reliability-first
+# STATUS — Phase 4B REOPENED; running full fair retrain (4B.7, GPU)
 
 **Updated:** 2026-06-22
 **Branch:** main
-**Mode:** Phase 4B closed. Next work (Phase 5A) is local CPU; no pod required.
+**Mode:** 4B reopened — full fair retrain (4B.7) on a fresh GPU pod (16 cells).
+The 4B.6 close + ADR 0011 retired-verdict are provisional pending this.
 
 ## Headline
 
@@ -31,11 +32,29 @@ The forward direction is recorded in
 - Next phase: **5A** (reliability-first) — decomposition spec `5A.1` is the entry
   (`backlog`); roadmap `docs/roadmaps/phase5_reliability_first_surface_inference.md`.
 
-## Current task — Phase 4B CLOSED (4B.6 done); next Phase 5A
+## Current task — 4B REOPENED; full fair retrain (4B.7) in progress
 
-**Epic 4B `done`.** 4B.1–4B.6 `done`; **4B.7 `cancelled`** (operator declined the
-GPU fair-retrain escalation on economic grounds). 4B.5 gate returned
-`ambiguous`; 4B.6 closed the phase with **accuracy retired on this substrate**.
+**Epic 4B `in_progress` (reopened 2026-06-22).** 4B.1–4B.5 `done`; **4B.6
+reopened to `in_progress`** (the close was provisional); **4B.7 `in_progress`**
+— the operator reversed the earlier decline and chose the **full fair retrain**
+(all 4 regimes × 4 non-dense rungs = 16 cells) to resolve the eval-time OOD
+ambiguity from 4B.5.
+
+### 4B.7 plan (full fair retrain)
+
+Per (regime, rung): re-derive the rung's sparse mask on **all splits** (4B.2
+harness, seed 4023 — test masking matches 4B.4 exactly), rebuild residual
+targets with RBF re-fit on the **sparse** context, retrain the hybrid mirroring
+4A.4 exactly (anp decoder, hidden 128 / latent 64, gaussian head, 50 epochs,
+seed 42), score the sparse test context → σ̂, recompute the cell's edge + a
+date-clustered CI. Dense rung (intensity 0) needs no retrain (= 4A.4 anchor).
+Then refresh the contested trajectory rows and resolve `gate_verdict.json` to
+`true`/`false`, hand back to 4B.6 for the (now real) close.
+
+- Harness: `scripts/run_4b7_retrain_sweep.py` (+ `.sh`) + config
+  `configs/conditional_4B7_retrain_gaussian_otm.yaml`.
+- **Needs a fresh GPU pod** (operator spinning up; the prior pod was CPU-only).
+  Reuses the residual parquet + OTM data on the volume (re-sync if new volume).
 
 ### Phase 4B verdict (final)
 
@@ -70,19 +89,20 @@ Roadmap: [`docs/roadmaps/phase4b_sparsity_sweep.md`](docs/roadmaps/phase4b_spars
 3. **Gate threshold** pre-registered inside 4B.5 before the trajectory is
    computed.
 
-## Phase 4B chain (final)
+## Phase 4B chain
 
-`4B.1` decompose → `4B.2` harness → `4B.3` swept RBF (remote) → `4B.4` hybrid
-forward (remote) → `4B.5` trajectory + gate (`ambiguous`) → `4B.6` close — all
-`done`. `4B.7` per-regime retrain **`cancelled`** (operator declined the GPU
-escalation). Epic 4B `done`.
+`4B.1` decompose → `4B.2` harness → `4B.3` swept RBF → `4B.4` hybrid forward →
+`4B.5` trajectory + gate (`ambiguous`) all `done`. `4B.6` close **reopened**
+(`in_progress`). `4B.7` full fair retrain **`in_progress`** (16 cells, GPU).
 
-## Next concrete action — enter Phase 5A (reliability-first)
+## Next concrete action — run 4B.7 on the GPU pod
 
-- Phase 4 and 4B are closed. Begin **Phase 5A**: the reliability-first surface
-  inference / quote-risk layer (calibrated uncertainty, abstention, surface
-  confidence, **per-regime recalibration** — directly motivated by the 4B
-  coverage collapse — no-arb/risk flags, quote/no-quote logic). Entry is the
-  `5A.1` decomposition spec (`docs/tasks/specs/5A.1_decompose_phase_5a.md`) +
-  roadmap `docs/roadmaps/phase5_reliability_first_surface_inference.md`. Starts
-  local; no pod required. Next step is to decompose 5A into atomic stories.
+1. Build/commit the retrain harness (`run_4b7_retrain_sweep.py` + `.sh` +
+   config) — ready before the pod is up.
+2. Operator provides the fresh GPU pod SSH string → scp harness + verify the
+   residual parquet / OTM data are on the volume (re-sync if new).
+3. Run the 16-cell fair retrain (~3–5 h GPU): per cell, sparse-context residual
+   rebuild → retrain (mirror 4A.4) → score → edge + CI. Pull fair predictions
+   local.
+4. Recompute the fair trajectory vs the eval-time one; resolve
+   `gate_verdict.json` to `true`/`false`; hand to 4B.6 for the real close.

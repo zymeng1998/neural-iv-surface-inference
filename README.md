@@ -52,18 +52,19 @@ real yet economically small (≈ 2 % relative MAE), so the project will not keep
 optimizing the same dense, clean SPY benchmark. The forward direction is
 staged ([ADR 0011](docs/decisions/0011_forward_strategy_accuracy_reliability_pricing.md)):
 
-1. **`4B` — sparsity-sweep diagnostic (the decision gate). ✅ Closed
-   2026-06-21 — verdict `ambiguous`, accuracy retired on this substrate.** RBF
-   vs the RBF-prior hybrid over four sparsity regimes × five rungs. The hybrid's
-   **relative** edge over RBF grows only under benign random thinning (to ~4 %,
-   sub-5 % bar) and **collapses** to 0.3–0.5 % under the wing / maturity stresses
-   that matter — it does not survive sparsity. The conditional fair-retrain
-   (4B.7) was declined on economic grounds. A secondary finding — calibrated
-   coverage collapses 0.96 → 0.35 under sparsity — shows **reliability degrades
-   faster than accuracy**, making the reliability layer the primary forward
-   contribution. The RBF-prior hybrid stays the adopted estimator (ADR 0010
-   unchanged); "retired" means accuracy is no longer the primary *story*, not
-   that the hybrid is worthless.
+1. **`4B` — sparsity-sweep diagnostic (the decision gate). 🔄 Gate reopened
+   2026-06-22 — eval-time verdict `ambiguous`; full fair retrain (4B.7) in
+   progress.** RBF vs the RBF-prior hybrid over four sparsity regimes × five
+   rungs. In the **eval-time** read (a full-context checkpoint scored on sparse
+   context), the hybrid's **relative** edge over RBF grows only under benign
+   random thinning (to ~4 %, sub-5 % bar) and **collapses** to 0.3–0.5 % under
+   the wing / maturity stresses that matter. Because that read is confounded by
+   an out-of-distribution caveat, the operator is running the **full fair retrain
+   (4B.7)** — retraining the hybrid on each rung's sparse context — to settle
+   whether the collapse is fundamental or an artifact. A secondary finding —
+   calibrated coverage collapses 0.96 → 0.35 under sparsity — already shows
+   **reliability degrades faster than accuracy**. The RBF-prior hybrid remains
+   the adopted estimator (ADR 0010 unchanged) regardless of the gate outcome.
    ([`docs/roadmaps/phase4b_sparsity_sweep.md`](docs/roadmaps/phase4b_sparsity_sweep.md))
 2. **`5A` — reliability-first surface inference / quote-risk layer (now the
    primary contribution).** Formalize the durable Phase 2–4 asset — calibrated

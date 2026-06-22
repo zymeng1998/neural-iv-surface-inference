@@ -2,14 +2,15 @@
 
 ## Status
 
-**Accepted (2026-06-21); Phase 4B gate resolved (2026-06-21).** Forward-strategy
+**Accepted (2026-06-21); Phase 4B gate REOPENED (2026-06-22).** Forward-strategy
 decision taken at the Phase 4 close. Sets the staged direction for Phase 4B,
 Phase 5, and Phase 6 and the **decision gate** (Phase 4B) that governs whether
-raw accuracy remains a core project story. **Phase 4B has now executed and
-closed** — the gate returned `ambiguous`, the conditional 4B.7 fair-retrain
-escalation was **declined** on economic grounds, and the accuracy story is
-**retired on this substrate**; the forward direction pivots to **Phase 5
-reliability-first**. See the **Outcome** block below.
+raw accuracy remains a core project story. Phase 4B's gate returned `ambiguous`;
+an initial close (4B.6) recorded "accuracy retired" after the operator declined
+the 4B.7 escalation — **that decision was then reversed.** The operator chose to
+run the **full fair retrain (4B.7, 16 cells, GPU)** to resolve the eval-time OOD
+ambiguity. **The Outcome below is therefore PROVISIONAL and will be rewritten
+when 4B.7 resolves the gate to `true`/`false`.** See the **Outcome** block.
 
 > This ADR does not reopen or revise the Phase 4 verdict
 > ([ADR 0010](0010_rbf_prior_residual_hybrid.md), Implemented). It decides
@@ -170,10 +171,18 @@ pricing stack held fixed / stubbed and clearly labeled as such.
 - The FCN payoff variant, fixed-input assumptions, and quote cross-check
   protocol for the Phase 6 demo — fixed by `6A.1`.
 
-## Outcome (Phase 4B closed, 2026-06-21)
+## Outcome (PROVISIONAL — reopened 2026-06-22, pending 4B.7 fair retrain)
 
-**Gate verdict: `ambiguous` → escalation declined → accuracy retired on this
-substrate. Forward direction pivots to Phase 5 reliability-first.**
+> **REOPENED.** The "escalation declined / accuracy retired" conclusion below was
+> the read at the initial close (4B.6, 2026-06-21). The operator subsequently
+> **reversed** that and chose to run the **full fair retrain (4B.7)** — all 4
+> regimes × 4 non-dense rungs, retraining the hybrid on each rung's *sparse*
+> context (mirror 4A.4) to remove the eval-time OOD confound. This Outcome will
+> be **rewritten** with the fair-trajectory verdict when 4B.7 completes. The
+> eval-time read (below) is retained as the pre-retrain baseline.
+
+**Eval-time gate verdict (pre-retrain, 4B.5): `ambiguous` → fair retrain (4B.7)
+triggered to resolve.**
 
 Phase 4B ran the staged eval-first diagnostic (4B.2–4B.5): a fixed-query /
 shrinking-context sparsity sweep over four regimes (`fewer_quotes`,

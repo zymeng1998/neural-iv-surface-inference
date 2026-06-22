@@ -1,0 +1,50 @@
+# 4B.7 — fair per-(regime,rung) retrain recipe. EXACT mirror of
+# configs/conditional_4A4_residual_gaussian_otm.yaml (same seed / architecture /
+# hparams / head) — the ONLY thing that varies across the sweep is the per-cell
+# *training context* (each split is sub-masked to the rung's sparse context and
+# its residual targets are rebuilt with RBF re-fit on that sparse context).
+# Do NOT change the architecture / bar — that would break the apples-to-apples
+# comparison with 4A.4 and the eval-time 4B.4 read.
+
+seed: 42
+
+data:
+  benchmark_file: data_processed/spy/benchmarks/spy_phase1_random40_noiselow_otm_residual.parquet
+  target_mode: residual
+  batch_size: 32
+  num_workers: 0
+
+conditional:
+  context_dim: 3
+  coord_dim: 2
+  hidden_dim: 128
+  latent_dim: 64
+  n_elem_layers: 2
+  n_post_layers: 1
+  n_decoder_layers: 3
+
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  epochs: 50
+  patience: 10
+
+  decoder_kind: anp
+  anp:
+    n_heads: 4
+    d_head: null
+    mlp_hidden: 128
+    include_z_in_decoder: true
+  coord_encoding:
+    kind: raw
+  freeze_encoder: false
+
+  head:
+    kind: gaussian
+    quantiles: [0.05, 0.5, 0.95]
+
+# Sweep parameters (4B.7-specific; consumed by run_4b7_retrain_sweep.py).
+sweep:
+  intensities: [0.2, 0.4, 0.6, 0.8]   # non-dense rungs; dense (0.0) = 4A.4 anchor
+  regimes: [fewer_quotes, thin_wings, missing_maturities, combined_quotes_wings]
+  mask_seed: 4023                      # matches 4B.3 / 4B.4 (test masking identical)
+  maturity_col: tau

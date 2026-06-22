@@ -5468,3 +5468,35 @@ hi-conf MAE 0.004710 < no-abstention 0.006006; width 0.0328 (< 3X.12's
 - Enter **Phase 5A** (reliability-first surface inference / quote-risk layer) —
   see `docs/roadmaps/phase5_reliability_first_surface_inference.md` and the
   `5A.1` decomposition spec. No pod needed to start. Phase 4 / 4B are closed.
+
+## 2026-06-22 (update 8) — 4B REOPENED: full fair retrain (4B.7) — harness built
+
+### What was completed
+
+- **Decision reversed:** the operator chose to run the **full fair retrain**
+  (4B.7) after all, to resolve the 4B.5 eval-time OOD ambiguity definitively.
+- **Reopened statuses:** epic 4B `done`→`in_progress`; 4B.6 `done`→`in_progress`
+  (provisional close reversed); 4B.7 `cancelled`→`in_progress`. ADR 0011
+  Status + Outcome marked **provisional / reopened**; README + BOARD softened
+  from "closed/retired" to "gate reopened, fair retrain in progress".
+- **Built the 4B.7 retrain harness** (`scripts/run_4b7_retrain_sweep.py` + `.sh`
+  + `configs/conditional_4B7_retrain_gaussian_otm.yaml`). Per (regime, rung):
+  re-derive the rung's sparse mask on all splits (4B.2 harness, seed 4023 — test
+  masking matches 4B.4), rebuild residual targets (RBF re-fit on sparse context),
+  retrain the hybrid mirroring 4A.4 exactly, score the sparse test → σ̂, record
+  fair MAE / RBF MAE / relative edge / date-clustered CI. Resumable (per-cell
+  JSON skip). Full sweep = 4 regimes × 4 non-dense rungs = 16 cells.
+
+### Result
+
+- Local CPU smoke (synthetic, 2 cells incl. `missing_maturities` maturity path +
+  resume-skip): orchestration green — sparse-split build, retrain + early-stop,
+  σ̂ scoring, edge + CI + per-cell JSON + stats.csv all work.
+
+### Next actions
+
+- Operator provides a **fresh GPU pod** SSH string → scp the harness, verify the
+  residual parquet / OTM data are on the volume (re-sync if new), then run the
+  16-cell sweep (~3–5 h GPU). Pull fair predictions local; recompute the fair
+  trajectory vs the eval-time 4B.5 read; resolve `gate_verdict.json` to
+  `true`/`false`; hand to 4B.6 for the (now real) close.
