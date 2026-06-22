@@ -5367,3 +5367,41 @@ hi-conf MAE 0.004710 < no-abstention 0.006006; width 0.0328 (< 3X.12's
 - **Keep the Pod up** — the 492 MB swept parquet lives on `/workspace` and is
   the input to 4B.4. Next: 4B.4 (remote) runs the 4A hybrid checkpoint forward
   across all rungs → σ̂ (needs the 4A checkpoint volume).
+
+## 2026-06-21 (update 5) — 4B.4: hybrid checkpoint forward across the sweep (remote)
+
+### What was completed
+
+- Promoted 4B.3 → `done` (committed `03e9364`, pushed).
+- **4B.4 (remote):** new driver `scripts/run_4b4_hybrid_forward_sweep.py` (+ `.sh`).
+  Ran the 4A gaussian residual-hybrid checkpoint + the 5-seed point ensemble
+  **forward** (no retrain) over 4 regimes × 5 rungs of the 4B.2 sweep on the OTM
+  test split (694 dates, 2.769M rows). `σ̂ = RBF_rung + f_θ(sparse context)`.
+  Emits raw σ̂/σ/ensemble-disagreement; calibrator applied in 4B.5.
+
+### Result
+
+- **Dense rung reproduces the 4A hybrid floor exactly**: hybrid test MAE
+  0.0060062045 == 4A.4 gaussian `test_mae_mu` (`|err|` 2.8e-9). **0 non-finite**;
+  hybrid MAE **monotone non-decreasing** for all 4 regimes.
+- Edge vs RBF (preview, NOT the gate): hybrid below RBF at every rung; edge
+  widens with sparsity for `fewer_quotes` (+0.000126 → +0.000407) and
+  `missing_maturities` (+0.000126 → +0.000471); for `thin_wings`/`combined` a
+  small absolute edge on a catastrophic base (RBF MAE ×14).
+- Committed audit: `artifacts/runs/4B4/{manifest.json, hybrid_sweep_stats.csv}`.
+  Predictions parquet (~1.38 GB, gitignored) pulled local for 4B.5. Wall 2955 s.
+
+### Notes
+
+- Fairness caveat (documented in manifest + journal): eval-time only — a
+  full-context-trained checkpoint stress-tested on thinner context; a fair
+  per-regime retrain is the conditional 4B.7 (only if 4B.5 is `ambiguous`).
+- Pod env: torch 2.11 CPU; gaussian ckpt `artifacts/runs/4A4/gaussian/...`,
+  ensemble `artifacts/runs/4A5/checkpoints/ensemble/seed_{101..505}`.
+
+### Next actions
+
+- **4B.5 (local CPU):** apply the 4A.6 calibrator to the cached predictions,
+  compute the edge-vs-sparsity trajectory + date-clustered bootstrap CIs (mirror
+  4A.7), and adjudicate the ADR 0011 gate. **Pod now terminable** unless 4B.5
+  returns `ambiguous` (→ 4B.7 conditional retrain).

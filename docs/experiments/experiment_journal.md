@@ -2493,3 +2493,61 @@ narrative in [`docs/phase4_result_memo.md`](../phase4_result_memo.md).
   rows in memory.
 
 ---
+
+## 4B.4 — Hybrid checkpoint forward across the sparsity sweep (remote) (2026-06-21)
+
+### Run
+
+- **Where:** RunPod CPU pod (2 cores, `venv-2e2`, torch 2.11.0 CPU). Driver
+  `scripts/run_4b4_hybrid_forward_sweep.py` via `.sh`. Wall **2955 s** (~49 min),
+  seed 4023.
+- **Checkpoints (forward only, no retrain):** gaussian residual hybrid
+  `artifacts/runs/4A4/gaussian/checkpoints/best_conditional.pt` +
+  5-seed point ensemble `artifacts/runs/4A5/checkpoints/ensemble/seed_{101..505}`.
+- **What:** for each of 4 regimes × 5 rungs (intensity 0→0.8) on the OTM test
+  split (694 dates, 2.769M rows), encode the rung's sparser observed context,
+  predict the residual, add the rung RBF → `σ̂ = RBF_rung + f_θ`. Rung masks
+  regenerated from the 4B.2 harness (same seed as 4B.3); rung RBF recomputed
+  verbatim (`models/interpolation.py`); dense rung reuses the committed
+  `rbf_pred`. Emits **raw** σ̂ / gaussian σ / ensemble disagreement — the 4A.6
+  calibrator + coverage/CIs/gate are applied locally in **4B.5** (mirrors the
+  4A.4/4A.5 → 4A.7 factorisation).
+
+### Result (hybrid σ̂ MAE vs `iv_clean`, overall test)
+
+| regime | r0 (dense) | r1 | r2 | r3 | r4 (sparsest) |
+|---|---|---|---|---|---|
+| fewer_quotes | 0.006006 | 0.006333 | 0.006788 | 0.007499 | 0.009007 |
+| missing_maturities | 0.006006 | 0.006974 | 0.008748 | 0.013424 | 0.029803 |
+| thin_wings | 0.006006 | 0.017124 | 0.040024 | 0.059379 | 0.086419 |
+| combined_quotes_wings | 0.006006 | 0.017216 | 0.039108 | 0.060431 | 0.088105 |
+
+- **Provenance MET:** dense-rung hybrid MAE = 0.0060062045 == the committed
+  4A.4 gaussian `test_mae_mu` (`|err|` 2.8e-9). **0 non-finite**; hybrid MAE
+  **monotone non-decreasing** for all 4 regimes.
+- **Edge preview (RBF − hybrid, overall MAE), NOT the gate verdict (4B.5):** the
+  hybrid stays below RBF at every rung. For `fewer_quotes` the edge widens with
+  sparsity (dense +0.000126 → sparsest +0.000407, ~3×); `missing_maturities`
+  similar (+0.000126 → +0.000471). For `thin_wings` / `combined` the absolute
+  edge stays ~0.0001–0.0004 while both methods blow up (RBF MAE ×14), i.e. a
+  small edge on a catastrophic base. Whether this clears the ADR 0011 bar is
+  adjudicated with CIs in 4B.5.
+
+### Artifacts
+
+- Committed: `artifacts/runs/4B4/{manifest.json, hybrid_sweep_stats.csv}`.
+- Predictions (gitignored): `artifacts/runs/4B4/swept_hybrid_test.parquet`
+  (~1.38 GB zstd; per-query date/regime/rung × σ̂/σ/disagreement/rbf/iv) —
+  **pulled local** for 4B.5.
+
+### Notes / scope
+
+- **Fairness caveat (documented):** eval-time only — a full-context-trained
+  checkpoint is stress-tested on thinner context. This is a labelled robustness
+  read, not a fair per-regime retrain (that is the conditional 4B.7, fired only
+  if 4B.5 returns `ambiguous`).
+- No deltas / CIs / gate verdict here (4B.5). After the local pull the **Pod is
+  terminable** (4B.5 / 4B.6 run fully local from the cached parquet — same
+  pattern as 4A.7 / 4A.8), unless 4B.5 escalates to 4B.7.
+
+---
