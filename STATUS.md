@@ -1,4 +1,4 @@
-# STATUS — Phase 4 closed; 4B decomposed (4B.1 done); starting 4B.2 harness
+# STATUS — Phase 4 closed; 4B.2 harness done; next 4B.3 (remote CPU)
 
 **Updated:** 2026-06-21
 **Branch:** main
@@ -32,13 +32,16 @@ The forward direction is staged and recorded in
 - PMR gate dry-run: **PASS** (0 evidence-source files; docs-only).
 - No experiment was run; the Phase 4A result is unchanged.
 
-## Current task — 4B.1 DONE; starting 4B.2 (sparsity-sweep harness)
+## Current task — 4B.2 done (committed); next 4B.3
 
-**Story 4B.1** decomposed Phase 4B into atomic child stories; promoted → `done`
-(operator approved at push). Epic 4B is `in_progress`. **Next: 4B.2** —
-sparsity-sweep harness (fixed-query / shrinking-context, 4 regimes) + unit/smoke
-tests, local CPU, no checkpoint. Spec:
-[`docs/tasks/specs/4B.2_local_sparsity_sweep_harness.md`](docs/tasks/specs/4B.2_local_sparsity_sweep_harness.md).
+**Story 4B.1** decomposed Phase 4B; promoted → `done` and pushed (`0b5de5f`).
+**Story 4B.2** (sparsity-sweep harness) is **`done` — committed and pushed**.
+Operator reviewed and approved (2026-06-21). All claims re-verified this
+session: `diagnostics/sparsity_sweep.py` + tests + smoke green (26 harness
+tests; 465 full suite); smoke emits `artifacts/runs/4B2/manifest.json`; PMR
+gate PASS. Epic 4B remains `in_progress`.
+
+- Run tests with `PYTHONPATH=src python3 -m pytest tests/test_sparsity_sweep.py`.
 
 Spec: [`docs/tasks/specs/4B.1_decompose_phase_4b.md`](docs/tasks/specs/4B.1_decompose_phase_4b.md).
 Roadmap: [`docs/roadmaps/phase4b_sparsity_sweep.md`](docs/roadmaps/phase4b_sparsity_sweep.md).
@@ -64,8 +67,9 @@ Outcome (local CPU). `4B.7` per-regime retrain is **conditional** off 4B.5
 
 ## Next concrete action
 
-- Operator promotes 4B.1 → `done`, then picks up **4B.2** (sparsity-sweep
-  harness + tests, local CPU). Remote stories (4B.3 / 4B.4 / conditional 4B.7)
-  gated on operator Pod go-ahead; 4B.4 requires the 4A checkpoint volume.
-- All edits this session are docs/planning; PMR gate dry-run PASS (0
-  evidence-source files).
+- **4B.3** (remote CPU): materialize swept eval inputs on the full OTM test
+  split — per regime × rung, re-fit RBF on the sparser observed context and
+  predict at the fixed query coords; finiteness + monotone-MAE sanity audit.
+  Dense rung must reproduce the 4A RBF floor **0.006132**. Remote stories
+  (4B.3 / 4B.4 / conditional 4B.7) gated on operator Pod go-ahead; 4B.4
+  requires the 4A checkpoint volume.

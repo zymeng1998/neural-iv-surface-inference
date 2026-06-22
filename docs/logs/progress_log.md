@@ -5291,3 +5291,40 @@ hi-conf MAE 0.004710 < no-abstention 0.006006; width 0.0328 (< 3X.12's
 - Operator promotes 4B.1 → `done`; then 4B.2 (sparsity-sweep harness + tests,
   local CPU). Remote stories gated on Pod go-ahead; 4B.4 needs the 4A
   checkpoint volume.
+
+---
+
+## 2026-06-21 (update 3) — 4B.2: sparsity-sweep harness implemented (local, CPU)
+
+### What was completed
+
+- Pushed the forward-strategy + Phase 4B decomposition commit (`0b5de5f`) to
+  `origin/main` (scope waiver for the same-session 5A/6A planning siblings);
+  promoted 4B.1 → `done`.
+- **4B.2 (TDD, local CPU):** implemented the Phase 4B sparsity-sweep harness
+  `src/neural_iv_surface_inference/diagnostics/sparsity_sweep.py` —
+  `build_sweep` / `build_all_regimes` / `sweep_manifest` over four regimes
+  (`fewer_quotes`, `thin_wings`, `missing_maturities`, `combined_quotes_wings`),
+  parameterized by a canonical intensity ∈ [0,1) (0 = full observed context).
+
+### Result
+
+- Invariants implemented + tested: **fixed query** (eval target set = complement
+  of original observed, identical across rungs), **monotone nested** context
+  shrinkage, **determinism** per seed (`thin_wings` seed-independent;
+  `combined` == `fewer_quotes` ∩ `thin_wings`), **dense rung == full context**.
+- `pytest tests/test_sparsity_sweep.py` → **26 passed**; full suite **465
+  passed** (no regressions). Smoke `scripts/run_4b2_sweep_smoke.py` →
+  `artifacts/runs/4B2/manifest.json`.
+
+### Notes
+
+- Reuses the benchmark masking primitives' conventions (`observed` /
+  `log_moneyness` / `tau` / `expiration`); construction only — no RBF, no model,
+  no full-dataset build (those are 4B.3 / 4B.4).
+- Run tests with `PYTHONPATH=src` (repo convention; no editable install).
+
+### Next actions
+
+- Operator review of 4B.2; on approval promote → `done`, then 4B.3 (remote CPU:
+  per-rung RBF at the fixed query coords on the full OTM test split).
