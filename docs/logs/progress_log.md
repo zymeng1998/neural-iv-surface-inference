@@ -5405,3 +5405,38 @@ hi-conf MAE 0.004710 < no-abstention 0.006006; width 0.0328 (< 3X.12's
   compute the edge-vs-sparsity trajectory + date-clustered bootstrap CIs (mirror
   4A.7), and adjudicate the ADR 0011 gate. **Pod now terminable** unless 4B.5
   returns `ambiguous` (→ 4B.7 conditional retrain).
+
+## 2026-06-21 (update 6) — 4B.5: edge-vs-sparsity gate → **AMBIGUOUS** (local)
+
+### What was completed
+
+- Promoted 4B.4 → `done` (committed `979c928`, pushed).
+- **4B.5 (local, decision-bearing):** new `scripts/run_4b5_trajectory.py`.
+  From the cached 55.38M-row 4B.4 parquet, per regime × rung: RBF MAE, hybrid
+  MAE, relative edge, date-clustered paired-bootstrap 95 % CI (same statistic
+  as 4A.7), + calibrated 90 % coverage. Gate thresholds **frozen in code before
+  computing** (pre-registered).
+
+### Result — gate verdict `accuracy_survives = ambiguous` → triggers 4B.7
+
+- Relative edge (overall MAE): `fewer_quotes` grows 2.05→4.32 % (sub-5 %);
+  `missing_maturities` 2.05→1.56 % (peaks ~3 %); `thin_wings` collapses
+  2.05→0.31 %; `combined` collapses 2.05→0.46 %. All deltas significant.
+- **Accuracy does not survive the stresses that matter** (wings/maturities); it
+  grows only under benign random thinning. Wing collapse is confounded by the
+  eval-time OOD caveat (full-context checkpoint on wing-less context) → only a
+  fair retrain (4B.7) can disambiguate. Rule lands on `ambiguous`.
+- Secondary: calibrated coverage collapses 0.962 → 0.35–0.39 (wing regimes) —
+  reliability degrades faster than accuracy (Phase 5 motivation).
+- Provenance exact: dense rbf 0.006132 / hybrid 0.006006 / Δ −0.000126 / CI
+  [−1.44e-4,−1.06e-4] all == 4A.7 committed.
+- Artifacts: `results/4/.../4b_sweep/{trajectory.csv, trajectory_wide.md,
+  gate_verdict.json}` + `artifacts/runs/4B5/manifest.json`. Wall 37.7 s.
+
+### Next actions
+
+- **Operator decision** (the gate is informational, GPU spend is the operator's
+  call): either (a) run **4B.7** (remote GPU per-regime fair retrain) to resolve
+  the wing-collapse OOD ambiguity, or (b) accept the ambiguous-leaning-negative
+  read, mark 4B.7 `cancelled`, and go straight to **4B.6** (Phase 4B close +
+  ADR 0011 Outcome) → pivot to Phase 5 reliability-first.

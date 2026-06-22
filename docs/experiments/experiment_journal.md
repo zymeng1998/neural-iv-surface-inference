@@ -2551,3 +2551,82 @@ narrative in [`docs/phase4_result_memo.md`](../phase4_result_memo.md).
   pattern as 4A.7 / 4A.8), unless 4B.5 escalates to 4B.7.
 
 ---
+
+## 4B.5 — Edge-vs-sparsity trajectory + gate verdict: **AMBIGUOUS → 4B.7** (local) (2026-06-21)
+
+### Run
+
+- **Where:** local Mac CPU, from cached predictions only (no pod, no model).
+  `scripts/run_4b5_trajectory.py`. Wall **37.7 s** (efficient per-group
+  bootstrap), n_boot 2000, seed 0.
+- **Input:** `artifacts/runs/4B4/swept_hybrid_test.parquet` (55.38M rows) +
+  the frozen 4A.6 calibrator. Per regime × rung: RBF MAE, hybrid σ̂ MAE,
+  absolute + **relative** edge, date-clustered paired-bootstrap 95 % CI on the
+  per-query MAE delta (same statistic as 4A.7), and calibrated 90 % coverage.
+
+### Pre-registered gate rule (frozen in the script BEFORE computing)
+
+- **survives:** for **both** wing-sensitive regimes (`thin_wings`,
+  `combined_quotes_wings`) the relative edge increases dense→sparse by ≥ 1 pp,
+  the sparse-end 95 % CI is entirely < 0, and the sparse-end relative edge
+  ≥ 5 %.
+- **retired:** relative edge stays ≤ 2 % across **all** regimes × rungs.
+- **ambiguous:** anything else (trend present but sub-bar / CIs don't separate /
+  eval-time fairness caveat clouds the wing read) → triggers **4B.7**.
+
+### Result — relative edge % (RBF − hybrid)/RBF, overall test MAE
+
+| regime | r0 dense | r1 | r2 | r3 | r4 sparse |
+|---|---|---|---|---|---|
+| fewer_quotes | +2.05 | +2.61 | +3.18 | +3.80 | **+4.32** |
+| missing_maturities | +2.05 | +2.73 | +3.10 | +2.49 | +1.56 |
+| thin_wings | +2.05 | +0.77 | +0.16 | +0.11 | **+0.31** |
+| combined_quotes_wings | +2.05 | +0.96 | +0.30 | +0.26 | **+0.46** |
+
+Every cell's delta is statistically significant (date-clustered 95 % CI entirely
+< 0; n is large). The story is in the **relative** edge:
+
+- **fewer_quotes** (benign random thinning): the edge **grows** monotonically
+  2.05 → 4.32 %, but never reaches the 5 % survive bar.
+- **missing_maturities:** rises to ~3 % mid-ladder then falls to 1.56 % at the
+  sparsest rung (RBF degrades but the hybrid tracks it).
+- **thin_wings / combined** (the wing-sensitive regimes that matter most):
+  the relative edge **collapses** to 0.3–0.5 % — where RBF fails catastrophically
+  (MAE ×14), the hybrid fails almost identically.
+
+### Verdict: `accuracy_survives = ambiguous` → **triggers 4B.7**
+
+The rule lands on ambiguous: not `survives` (the wing regimes' edge collapses,
+not grows), not `retired` (fewer_quotes exceeds the 2 % band, peaking 4.32 %).
+The honest read: **the hybrid's relative edge over RBF does not survive the
+sparsity stresses that matter** (wings, deep maturity loss); it grows only under
+benign random thinning. The one open question is whether the wing collapse is a
+fundamental ceiling or an **eval-time OOD artifact** — the checkpoint was trained
+on full context and is here scored on wing-less / maturity-less context it never
+saw. A fair per-regime retrain (**4B.7**, GPU) is the only way to disambiguate;
+that is the designed conditional escalation.
+
+### Secondary reliability read (calibrated 90 % coverage, non-gating)
+
+The dense-calibrated band does **not** hold under sparsity. Coverage falls from
+0.962 (dense; == 4A.7's committed over-coverage) to **0.39** (thin_wings) /
+**0.35** (combined) / 0.63 (missing) / 0.86 (fewer_quotes) at the sparsest rung.
+i.e. reliability degrades faster than accuracy — strong motivation for the
+Phase 5 reliability-first / per-regime-recalibration direction regardless of the
+4B.7 outcome.
+
+### Provenance (dense rung tie-back to 4A)
+
+- RBF 0.0061318 == 3X.6 floor; hybrid 0.0060062 == 4A.4 gaussian; abs delta
+  −0.0001256 == 4A.7 `mae_delta_ci.json`; dense 95 % CI [−1.44e-4, −1.06e-4]
+  **exactly reproduces** 4A.7's committed CI (the bootstrap is validated).
+- Dense calibrated coverage 0.962 == 4A.7.
+
+### Artifacts / scope
+
+- `results/4/spy_phase1_random40_noiselow_otm/4b_sweep/{trajectory.csv,
+  trajectory_wide.md, gate_verdict.json}` + `artifacts/runs/4B5/manifest.json`.
+- 4B.5 only **flags** ambiguity; it does not retrain (4B.7) or write the phase
+  close / ADR Outcome (4B.6). Thresholds were frozen before the trajectory.
+
+---

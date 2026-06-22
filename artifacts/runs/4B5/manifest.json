@@ -1,0 +1,27 @@
+{
+  "story": "4B.5",
+  "pred": "/Users/mengziyue/Neural IV Surface inference/artifacts/runs/4B4/swept_hybrid_test.parquet",
+  "calibrator": "/Users/mengziyue/Neural IV Surface inference/artifacts/calibration/4A6_hybrid.json",
+  "n_rows": 55380420,
+  "n_boot": 2000,
+  "seed": 0,
+  "verdict": "ambiguous",
+  "dense_provenance": {
+    "dense_rbf_mae": 0.006131847058698476,
+    "dense_hybrid_mae": 0.0060062045073346415,
+    "dense_abs_delta": -0.0001256425513638344,
+    "rbf_floor_ref": 0.006131847035635011,
+    "hybrid_floor_ref": 0.006006201729178429,
+    "delta_4a7_ref": -0.00012564530645658208,
+    "rbf_matches": true,
+    "hybrid_matches": true,
+    "delta_matches_4a7": true
+  },
+  "wall_seconds": 37.7,
+  "results_dir": "/Users/mengziyue/Neural IV Surface inference/results/4/spy_phase1_random40_noiselow_otm/4b_sweep",
+  "versions": {
+    "python": "3.9.6",
+    "numpy": "1.26.4",
+    "pandas": "2.3.2"
+  }
+}
